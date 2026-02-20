@@ -1,0 +1,16 @@
+[package]
+name = "haunted-forest"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1"
+arcstr = "1"
+bevy = "0.18.0"
+crossbeam-channel = "0.5"
+futures = "0.3"
+log = "0.4"
+netidx = "0.31"
+netidx-protocols = "0.31"
+poolshark = "0.2"
+tokio = { version = "1", features = ["rt-multi-thread", "time", "sync", "macros"] }
