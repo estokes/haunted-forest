@@ -11,5 +11,6 @@ pushed to its limits and the questions that follow.
 4. **[Trade](trade.md)** — Interstellar economics, commodities, the futures market
 5. **[Colonies](colonies.md)** — Star systems, worlds, stations
 6. **[Ship Systems](ship-systems.md)** — Engineering reference for the player's ship
-7. **[Narrative](narrative.md)** — Main plot, the Warden, endings, side plots
-8. **[Ruins](ruins.md)** — Dead civilizations, archaeology, the Silence
+7. **[Architecture](architecture.md)** — Game technical design: simulations, netidx, Graphix, LLMs
+8. **[Narrative](narrative.md)** — Main plot, the Warden, endings, side plots
+9. **[Ruins](ruins.md)** — Dead civilizations, archaeology, the Silence
