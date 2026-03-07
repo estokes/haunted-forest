@@ -1,16 +1,13 @@
-use anyhow::Result;
 use bevy::prelude::*;
 use crossbeam_channel::{Receiver, Sender, unbounded};
 use futures::StreamExt;
 use netidx::{
     path::Path,
-    publisher::{Val, Value, WriteRequest},
+    publisher::{Publisher, Val, Value, WriteRequest},
     subscriber::{Event as SubEvent, SubId, UpdateChan, UpdatesFlags},
-    InternalOnly,
 };
 use poolshark::global::GPooled;
 use std::collections::HashMap;
-use tokio::runtime::Runtime;
 
 /// A subscription update received from netidx.
 pub struct SubUpdate {
@@ -39,22 +36,27 @@ pub struct NetBridge {
     to_net: Sender<ToNet>,
     from_net: Receiver<SubUpdate>,
     writes_from_net: Receiver<WriteEvent>,
-    _runtime: Runtime,
 }
 
 impl NetBridge {
-    pub fn start() -> Result<Self> {
+    pub fn start(infra: &super::NetInfra) -> Self {
         let (to_net_tx, to_net_rx) = unbounded::<ToNet>();
         let (from_net_tx, from_net_rx) = unbounded::<SubUpdate>();
         let (writes_tx, writes_rx) = unbounded::<WriteEvent>();
-        let runtime = Runtime::new()?;
-        runtime.spawn(bridge_task(to_net_rx, from_net_tx, writes_tx));
-        Ok(Self {
+        let publisher = infra.publisher();
+        let subscriber = infra.subscriber();
+        infra.handle().spawn(bridge_task(
+            to_net_rx,
+            from_net_tx,
+            writes_tx,
+            publisher,
+            subscriber,
+        ));
+        Self {
             to_net: to_net_tx,
             from_net: from_net_rx,
             writes_from_net: writes_rx,
-            _runtime: runtime,
-        })
+        }
     }
 
     /// Queue a value for publication. Non-blocking.
@@ -94,17 +96,10 @@ async fn bridge_task(
     from_bevy: Receiver<ToNet>,
     to_bevy: Sender<SubUpdate>,
     writes_to_bevy: Sender<WriteEvent>,
+    publisher: Publisher,
+    subscriber: netidx::subscriber::Subscriber,
 ) {
-    let net = match InternalOnly::new().await {
-        Ok(n) => n,
-        Err(e) => {
-            log::error!("failed to initialize netidx: {e}");
-            return;
-        }
-    };
     log::info!("netidx bridge started");
-    let publisher = net.publisher().clone();
-    let subscriber = net.subscriber().clone();
     let mut pubs: HashMap<Path, Val> = HashMap::new();
     let mut sub_paths: HashMap<SubId, Path> = HashMap::new();
     let mut sub_dvals: HashMap<Path, netidx::subscriber::Dval> = HashMap::new();

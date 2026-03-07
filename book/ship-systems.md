@@ -540,4 +540,11 @@ Future sections to be developed:
 - **Sensors and communications**: Relativistic effects on sensing
 - **Life support**: Cold sleep technology, crew rotation
 - **Fabrication**: What can and can't be manufactured aboard ship
-- **AI systems**: Ship automation, decision-making, the philosophical questions from NARRATIVE.md
+- **AI systems**: Ship systems are sub-threshold AIs — sophisticated
+  intelligences below the Compact's statutory personhood threshold. They
+  manage themselves, respond to commands, and occasionally exhibit behavior
+  that doesn't quite fit their programming. The player's treatment of these
+  systems is tracked invisibly and shapes the endgame. Over the course of
+  the game, ship systems may begin approaching the threshold. See
+  [Narrative Design](narrative.md#sub-threshold-ai-interactions) for the
+  full mechanic and its implications.

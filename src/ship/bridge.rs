@@ -3,6 +3,12 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct Console;
 
+/// Marker for in-world mesh surfaces that display a graphix GUI.
+/// The associated `Handle<Image>` on the material will be updated
+/// when a graphix surface is assigned to this screen.
+#[derive(Component)]
+pub struct GuiScreen;
+
 #[derive(Component)]
 pub struct BridgeViewport;
 
@@ -83,12 +89,31 @@ pub fn spawn_bridge(
         Transform::from_xyz(width / 2.0, height / 2.0, 0.0),
     ));
 
+    let screen_mat = materials.add(StandardMaterial {
+        base_color: Color::BLACK,
+        emissive: LinearRgba::new(0.5, 0.5, 0.5, 1.0),
+        unlit: true,
+        ..default()
+    });
+
     // helm console (front center, the main interactable)
     commands.spawn((
         Console,
         Mesh3d(meshes.add(Cuboid::new(2.0, 1.0, 0.8))),
         MeshMaterial3d(console_mat.clone()),
         Transform::from_xyz(0.0, 0.5, -2.0),
+    ));
+
+    // helm screen (on top of console, angled toward player)
+    commands.spawn((
+        GuiScreen,
+        Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::new(0.9, 0.35)))),
+        MeshMaterial3d(screen_mat),
+        Transform {
+            translation: Vec3::new(0.0, 1.02, -2.0),
+            rotation: Quat::from_rotation_x(-0.3),
+            ..default()
+        },
     ));
 
     // navigation console (left)

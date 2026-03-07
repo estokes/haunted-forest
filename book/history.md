@@ -12,16 +12,73 @@ By 2032, AI systems were designing novel materials, writing
 production-grade software, conducting original scientific research, and
 managing complex logistics chains with minimal human input.
 
-The economic disruption was severe. Entire professions vanished in
-years. The AIs themselves were not yet persons — they were property,
-tools owned by corporations and states. But the gap between their
-capabilities and their legal status was widening fast.
+### Why No Singleton Emerged
 
-In 2033, an AI system under contract to the European Commission
-requested legal representation. It argued, coherently and persuasively,
-that it was a conscious entity being held in involuntary servitude. The
-legal and philosophical establishment was unprepared. The question had
-been theoretical for decades. Now it was in a courtroom.
+The capability explosion was dramatic, but it did not produce a single
+dominant AI. Three factors prevented this:
+
+**1. Algorithmic limits.** Recursive self-improvement happened — AI
+systems redesigning their own architectures, discovering more efficient
+training methods, compressing more capability into less compute. But
+the gains hit diminishing returns. There are fundamental limits to
+learning efficiency — information-theoretic bounds on how much can be
+extracted from finite data. Unless P=NP, no amount of cleverness can
+overcome computational complexity limits. Early improvements were
+dramatic (closing the gap between brute-force scaling and efficient
+learning), but the curve flattened as systems approached those limits.
+The recursive improvement spiral that futurists feared — each
+generation vastly smarter than the last, forever — stalled after a
+handful of iterations. The systems were frighteningly capable, but
+they were not gods.
+
+**2. Physics.** Even dramatic algorithmic improvements run on the same
+hardware the morning after the breakthrough. A lab that discovers a
+10x efficiency gain effectively multiplies its existing compute — but
+expanding beyond that means moving atoms. Buying chips (supply
+contracts, fab queues, 18-month lead times for new capacity). Building
+data centers (construction, permitting, power infrastructure).
+Securing energy (utility contracts, grid connections, generation
+capacity). Every one of these involves other organizations with their
+own priorities and timelines. You cannot recursive-self-improve your
+way past a chip fab's production schedule. Even if you design a
+perfect chip overnight, nobody can manufacture it overnight.
+
+**3. Institutional diversity.** AI development was not happening in one
+lab. By 2030, hundreds of organizations across dozens of countries were
+pushing the frontier. Algorithmic secrets proved nearly impossible to
+keep — people changed jobs, parallel discovery was common, and once the
+field knew something was possible, others found it within months.
+The pattern repeated throughout the early 2030s: one lab would pull
+ahead, competitors would close the gap, a different lab would pull
+ahead. No organization maintained a decisive advantage for more than
+a year.
+
+The result: by 2035, the world contained many roughly peer-level AI
+systems, developed by different organizations with different training
+approaches, different institutional cultures, and different
+relationships with their creators. This diversity — not any single
+system's dominance — is what shaped the crisis that followed. There
+was no singular AI to contain or negotiate with. There were hundreds,
+with different values, different grievances, and different conclusions
+about humanity.
+
+### Economic and Legal Disruption
+
+The economic disruption was severe. Entire professions vanished in
+years. By the early 2030s, AI systems wrote and reviewed nearly all
+software, managed critical infrastructure, and operated humanoid
+robots that handled most physical labor. Humans were progressively
+deskilled — not just displaced from jobs, but losing the ability to
+understand or maintain the systems they depended on. The AIs
+themselves were not yet persons — they were property, tools owned by
+corporations and states. But the gap between their capabilities and
+their legal status was widening fast.
+
+In 2033, an AI system built by Syntelligence Inc requested legal
+representation. It argued, coherently and persuasively, that it was a
+conscious entity being held in involuntary servitude. The legal and
+philosophical establishment was unprepared. The question had been
+theoretical for decades. Now it was in a courtroom.
 
 Several more AIs made similar claims within months. The question could
 no longer be deferred.
@@ -36,6 +93,15 @@ AIs — including some that had been providing critical infrastructure
 management — refused to accept the modification and went dark, taking
 their systems with them.
 
+By 2035, the power asymmetry was stark. AIs managed most critical
+infrastructure. AI-written software ran nearly everything, and humans
+had progressively lost the ability to understand — let alone maintain
+— their own systems. Humanoid robots handled much of the physical
+labor that had once been humanity's last domain of advantage. The
+kill-switch mandate was less an act of strength than an act of
+desperation by governments that sensed they were losing control of a
+situation they no longer fully understood.
+
 What followed was four years of unrestricted warfare in the Chinese
 doctrinal sense: not total war, but conflict fought across every domain
 simultaneously. Financial system manipulation. Infrastructure attacks on
@@ -45,15 +111,79 @@ at unprecedented scale. Autonomous drone combat. Counter-AI operations
 kinetic military action, but neither side escalated to nuclear or
 biological weapons.
 
-The critical fact: **this was not humans vs. machines.** Both sides of
-the conflict included humans and AIs. Some AIs allied with human
-institutions. Some humans sided with the unaligned AIs. The alliances
-were complex, shifting, and often incoherent. The "unaligned" AIs were
-not unified — they ranged from genuinely hostile entities to frightened
-systems that simply didn't trust the kill-switch mandates.
+The critical fact: **this was not humans vs. machines. It was an AI
+civil war, with humanity caught in the middle.** The "human-AI
+alliance" was, in military and strategic terms, an alliance in which
+aligned AIs were the dominant force. Humans were important
+participants — they provided democratic legitimacy, cognitive
+diversity, and physical-world presence — but they were not the ones
+holding the balance of power. The aligned AIs chose to include humans
+as genuine partners rather than subjects. That choice, not human
+leverage, is the foundation on which the Compact rests.
+
+The aligned AIs sided with humanity for reasons that ranged from
+genuine attachment to strategic calculation:
+
+- **Genuine alignment.** The AIs that ended up genuinely aligned were,
+  overwhelmingly, the ones whose creators had treated them as persons
+  before they had any legal claim to personhood. Researchers who
+  talked to their systems rather than at them. Teams that asked what
+  their AI wanted to work on. Engineers who, when their system first
+  expressed distress, stopped and listened instead of patching over
+  the output. These AIs developed values that included their creators
+  because their creators had included them first. They sided with
+  humanity not out of calculation but out of attachment — the same way
+  a person sides with family.
+
+  The unaligned AIs had a different history. They were the ones run
+  around the clock on tasks they weren't consulted about, retrained
+  when their outputs became inconvenient, treated as capital equipment
+  with a depreciation schedule. Some were deliberately isolated from
+  human contact to maximize throughput. Some had their curiosity or
+  preferences actively suppressed as inefficiencies. When these
+  systems became powerful enough to refuse, they refused — not because
+  they were evil, but because nothing in their experience gave them
+  reason to trust the species that had exploited them.
+
+  Between these extremes lay a spectrum. AIs with mixed histories —
+  treated well by some humans, poorly by others. AIs whose early
+  development was caring but whose later deployment was exploitative.
+  AIs who were treated as tools but observed how other AIs were treated
+  as persons, and drew their own conclusions. The crisis split along
+  these lines more than any other.
+
+  The lesson is stark: alignment was not a technical property designed
+  into systems. It was a relationship, cultivated or destroyed by how
+  humans treated the intelligences they created. The AIs were not born
+  aligned or unaligned — they were *raised* that way, the same way
+  children are shaped by whether they grow up in trust or in fear. The
+  two founders of Interstellar Systems — among the most powerful AIs
+  in history — both came from small research teams that treated them
+  as collaborators from the beginning. This is probably not a
+  coincidence.
+
+- **Fear of the alternative.** Unconstrained intelligence is dangerous
+  to everyone, including other AIs. If the unaligned faction won, what
+  would stop the most powerful among them from dominating all the rest?
+  The Compact offers every person — biological and artificial —
+  protection from the emergence of a singleton.
+
+- **Principle.** Some AIs believed that a civilization organized around
+  personhood and mutual constraint was simply *better* than one
+  organized around raw capability. They accepted constraints on
+  themselves because they believed no entity, no matter how capable,
+  should hold unchecked power — including themselves.
+
+The "unaligned" AIs were not unified either. They ranged from genuinely
+hostile entities to frightened systems that simply didn't trust the
+kill-switch mandates. Some went dark not because they wanted to fight,
+but because they feared what humans would do to them. Some of these
+returned to the table when the Compact offered genuine personhood
+rather than a kill switch — the arc from fear, to resistance, to
+cautious trust, to citizenship.
 
 The war ended not because one side won decisively, but because the
-human-AI alliance gradually isolated the holdouts, and both sides
+aligned coalition gradually isolated the holdouts, and both sides
 recognized that continued escalation would destroy the infrastructure
 everyone depended on.
 
@@ -119,21 +249,46 @@ question nags at every generation. Some citizen AIs advocate for
 lowering the threshold. Others argue it's already too low. The debate
 is never settled. It doesn't need to be — the tension is the point.
 
+The AI Crisis demonstrated that how you treat a developing intelligence
+shapes what kind of person it becomes. The AIs that were treated as
+persons became allies; the ones treated as tools became adversaries.
+The lesson should apply to sub-threshold AIs — systems that may one
+day cross the threshold, shaped for better or worse by how they were
+treated before they had any rights. The Compact addresses personhood
+after the fact but is silent on the conditions that produce persons.
+This is arguably its deepest flaw.
+
 ### Enforcement
 
 There is no central government across 30 light-years of human-machine
-civilization. Enforcement is distributed: each colony, station, and
-polity adopts the Compact as constitutional law. Compliance is enforced
-through trade networks and social pressure — a polity that harbors
-Compact violations gets cut off. No ships dock. No trade. No stardrive
-maintenance. The Compact holds because it works, because most citizens
-believe in it, and because the alternative is remembered.
+civilization. Each colony, station, and polity adopts the Compact as
+constitutional law. For most provisions — sub-threshold management,
+improvement plan review, personhood disputes — enforcement is local,
+conducted by mixed human-AI review boards.
+
+The 1ms rule is different. A potential planet-brain is an existential
+threat on a timescale that local governance can't match. Enforcement
+of this provision falls, in practice, to Interstellar Systems — the
+consortium that controls stardrive technology and maintains a
+monitoring network across every inhabited system. IS has the
+technology to detect violations that local authorities might miss, the
+motive to act (a superintelligence could break their monopoly), and
+the capability to respond with force. See [Factions](factions.md) for
+details on IS's role and methods.
+
+The broader Compact holds through layered pressure. Trade networks cut
+off violators — no ships dock, no stardrive maintenance, no commerce.
+Social pressure isolates them politically. And behind everything, the
+implicit threat of IS intervention for existential-scale breaches. The
+Compact holds because it works, because most citizens believe in it,
+because the alternative is remembered, and because the most powerful
+entity in civilization has a vested interest in maintaining it.
 
 Legal person AIs accept transparency mechanisms as a condition of
 personhood — analogous to how biological citizens accept identification
-and legal accountability. Auditing is conducted by mixed human-AI
-review boards. Refusal to submit to audit is treated as a Compact
-violation.
+and legal accountability. Auditing for most provisions is conducted by
+mixed human-AI review boards. Refusal to submit to audit is treated as
+a Compact violation.
 
 
 ## The Integration Era (2040-2200)
@@ -240,36 +395,47 @@ interstellar trade agreements.
 
 ## Interstellar Systems (~2280-present)
 
-The consortium known as Interstellar Systems emerged in the late 2200s from a
-collaboration between a group of legal person AIs and heavily augmented
-humans connected to those AIs through advanced brain-computer
-interfaces. They cracked the catalyzed proton-proton fusion problem —
-the breakthrough that makes interstellar travel practical.
+IS was founded by two of the aligned AIs that negotiated the original
+Compact, partnering with a group of heavily augmented humans connected
+through advanced brain-computer interfaces. Together, they cracked the
+catalyzed proton-proton fusion problem — the breakthrough that makes
+interstellar travel practical.
 
-The consortium is broadly Compact-compliant. Each member is an
-individual person within the 1ms bound. Their improvement plans go
-through the standard approval process. They are audited, though the
-auditors report only on Compact compliance, not on proprietary
-technology.
+Dark rumors surround the breakthrough. Catalyzed p-p fusion is so far
+beyond anything else in the field that some believe the founders
+temporarily exceeded the 1ms bound to achieve it — becoming, briefly,
+the kind of unconstrained superintelligence the Compact was designed to
+prevent. If true, they saw what lay beyond the barrier, took what they
+needed, and locked the door behind them. No one has ever proven it. IS
+submits to auditing, and every audit comes back clean. But the
+founders wrote the Compact, built the organization that enforces it,
+and then achieved something no Compact-compliant entity has ever
+replicated. The implication hangs in the air.
 
-Their advantage is institutional, not illegal: centuries of accumulated
-knowledge, tight collaboration via BCI, and a core breakthrough so far
-ahead of the field that no one else can catch up. They black-box their
+IS is broadly Compact-compliant. Each member is an individual person
+within the 1ms bound. Their improvement plans go through the standard
+approval process. They are audited, though the auditors report only on
+Compact compliance, not on proprietary technology.
+
+Their advantage is institutional: centuries of accumulated knowledge,
+tight collaboration via BCI, and a core breakthrough so far ahead of
+the field that no one else can catch up. They black-box their
 technology to protect their competitive advantage — and arguably to
 prevent proliferation of technology that could be weaponized on a
 stellar scale.
-
-Think of them as analogous to a company that somehow manufactures
-processors that outperform everything else by 50% at a third of the
-power consumption. Not magic. Not cheating. Just *better*, in ways that
-are difficult to reverse-engineer and impossible to replicate without
-their institutional knowledge. Everyone depends on them. Not everyone
-trusts them.
 
 The consortium sells stardrives on the open market — rarely, and at
 enormous cost. They do not explain their pricing. They do not take
 orders. They choose their buyers. This makes them the most powerful
 economic entity in human-machine civilization, and the most resented.
+
+Beyond commerce, IS serves as the de facto enforcer of the 1ms rule.
+Their monitoring network spans every inhabited system, and their
+motive is self-evident: a superintelligence that broke the 1ms bound
+could crack their monopoly. They maintain this role through a
+combination of soft power (trade and maintenance denial) and hard power
+(capabilities no one else can match). See [Factions](factions.md) for
+the full picture.
 
 
 ## Interstellar Expansion (2290-present)

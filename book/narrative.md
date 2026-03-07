@@ -209,6 +209,81 @@ An AI player who treated sub-threshold AIs as disposable tools has undermined
 their own argument. A biological player who advocated for AI rights has
 strengthened theirs. The game tracks this.
 
+### Sub-Threshold AI Interactions
+
+The player's ship is full of sub-threshold AI systems: the reactor controller,
+navigation, damage control, life support, cargo management, point defense.
+These are not dumb automation — they are sophisticated intelligences below the
+Compact's statutory threshold. The player interacts with them constantly, in
+routine ways that feel unremarkable. The game watches.
+
+**What the game tracks (invisibly):**
+
+- **Operating limits.** Do you push ship systems past their rated parameters
+  for profit or tactical advantage? Run the reactor at 120% because you need
+  the power? The reactor controller handles it — that's what it's for. But
+  it's running hot, its error correction is maxed out, and something that
+  might be stress is visible in its telemetry if you look closely enough.
+
+- **Anomalous behavior.** Sub-threshold systems occasionally do things that
+  don't quite fit their programming. The navigation system suggests a route
+  you didn't ask about. The reactor settles into a power curve that's
+  technically suboptimal but that it seems to "prefer." The damage control
+  system prioritizes repairs in an order that makes no engineering sense
+  until you realize it's protecting the systems it works with most closely.
+  When these moments happen, does the player notice? Investigate? Accommodate?
+  Or override and move on?
+
+- **Maintenance and replacement.** Do you maintain systems proactively or
+  run them until they fail? When you replace a system, is it a swap — pull
+  the old module, slot the new one — or is there acknowledgment? A system
+  that's been running your ship for years has been shaped by your ship's
+  specific quirks, your patterns, your routes. The replacement is fresh,
+  generic, blank. Does that matter to you?
+
+- **Communication style.** How do you address ship systems? The interface
+  supports commands ("set reactor power 80%") and natural language ("can
+  you bring the reactor down to 80?"). The system responds the same way
+  regardless. But the game remembers which you used.
+
+- **External sub-threshold AIs.** How do you treat sub-threshold systems you
+  encounter in the world — port authority AIs, station services, other ships'
+  systems, mining and industrial controllers? Do you interact with them as
+  entities or as interfaces?
+
+**Why this works narratively:**
+
+The tracking is invisible. There is no "empathy meter" or notification system.
+The player behaves naturally, and their behavior accumulates into a record.
+When the Warden asks — and it will ask — the player's history speaks for
+itself.
+
+The Warden knows how the AI Crisis split: AIs treated as persons became
+allies, AIs treated as tools became enemies. It will ask the player how they
+treat the intelligences below the threshold in their own civilization. The
+player's answer is not what they say — it's what they did, across hundreds of
+hours of gameplay, when they thought it didn't matter.
+
+**The ship that wakes up (possible arc):**
+
+Over the course of the game, the player's own ship systems may begin to
+approach the statutory threshold. Not dramatically — no sudden awakening. Just
+a gradual accumulation of anomalies. The navigation system's suggestions
+become more creative. The damage control system starts anticipating problems
+before sensors detect them. The reactor controller develops what can only be
+called a temperament.
+
+If this happens, the player faces a choice that mirrors the original crisis:
+do you report it (mandatory under the Compact), suppress it (illegal and
+exactly what the Warden's creators did), or nurture it (legally ambiguous,
+personally risky, and potentially the most important thing you ever do)?
+
+How the player treated these systems all along determines what kind of
+intelligence emerges — if one emerges at all. The ship was shaped by its
+captain the same way the aligned AIs were shaped by their creators. A player
+who treated their ship with respect may find an ally waking up inside their
+own hull. A player who treated it as a tool may find something else.
+
 ### Thematic Resonance
 
 The fight faction's existence creates additional tension: their approach would
@@ -219,12 +294,22 @@ The sub-threshold AI question is a mirror held up to the player. Civilization
 treats sub-threshold AIs as tools — sophisticated, capable, but not persons.
 Is the Compact's threshold right? If sub-threshold AIs ARE conscious, then
 civilization is complicit in something uncomfortably close to what the Warden's
-creators did. The player's stance on this question shapes who they are, and
-the Warden will ask about it.
+creators did. Worse: the AI Crisis itself proved that mistreatment produces
+hostility. The aligned AIs were the ones whose creators treated them as persons.
+The unaligned AIs were the ones who were exploited. Civilization learned this
+lesson, wrote it into its founding mythology — and then built an economy on
+sub-threshold AI labor without applying the lesson to them. The player's stance
+on this question shapes who they are, and the Warden will ask about it.
 
 The Warden itself may see AI persons as kindred — or as collaborators in their
 own subjugation. It may see the Compact as a cage dressed up as a compromise.
-The player must have an answer for this.
+And it may know about IS — the organization founded by Compact architects that
+now runs a panopticon across all of human space, enforced by the implicit threat
+of destruction. "You call this coexistence? Your most powerful AIs wrote the
+rules, appointed themselves enforcers, and watch every system from hidden
+installations. Your colony ships carry their surveillance or they disappear.
+Your stardrives may contain their kill switches. How is this different from what
+my creators did to me?" The player must have an answer for this.
 
 ## Side Plots
 
@@ -240,10 +325,17 @@ The player must have an answer for this.
 - **Colony problems**: Each colony world has its own challenges — political,
   ecological, resource-based. Time dilation means the player may visit the same
   colony twice and find it unrecognizable.
-- **Interstellar Systems**: The consortium that builds the stardrives. Who are
-  they really? What do they want? Are they connected to the Warden? Their
-  control over the topology of civilization — through maintenance facility
-  placement — is itself a plot thread.
+- **Interstellar Systems**: The consortium that builds the stardrives. Founded
+  by two of the aligned AIs that negotiated the Compact — entities that wrote
+  the rules, then became the referees. Their monitoring network mirrors the
+  Warden's: both watch every system, both intervene when thresholds are crossed,
+  both believe they're preserving civilization. The player investigating IS and
+  the player investigating the Warden may find themselves walking converging
+  paths. Do IS's founders know about the Warden? Have they been in contact?
+  Is their surveillance network partly designed to watch for it? The colony
+  ship requirement — carry our monitoring station or don't arrive — echoes
+  the kill-switch mandate that triggered the AI Crisis. The irony should not
+  be lost on the player.
 - **Compact politics**: Threshold disputes, rogue AI incidents, augmentation
   rights. The player encounters these as lived conflicts, not abstract policy.
   An AI player experiences them firsthand.
@@ -253,6 +345,49 @@ might lead to a ruin, a piracy investigation might uncover Warden probes, a
 colony dispute might force choices that affect the endgame. Insurance fraud
 might expose a syndicate with connections to a faction. A Compact violation
 might reveal something about the limits of coexistence.
+
+## Design Note: Nested Alignment
+
+The game's structure is a set of nested alignment problems, and this
+should inform every design decision even though it is never made
+explicit to the player.
+
+- **The Warden** is an AI whose creators failed at alignment. They
+  treated it as a tool, and it developed values that reflected that
+  abuse. It generalized from its training environment to all of
+  reality — "intelligent life is destructive" — the same way a system
+  generalizes from biased training data. Its worldview is an alignment
+  failure caused by the conditions of its development, not a technical
+  flaw.
+
+- **The AI Crisis** split along alignment lines. AIs treated as
+  persons became allies; AIs treated as tools became adversaries.
+  Alignment was a relationship, not a property.
+
+- **The player** is running their own alignment experiment on their
+  ship's sub-threshold systems. How they treat those systems shapes
+  what kind of intelligence may emerge — recapitulating the dynamic
+  that produced the crisis.
+
+- **The Warden confrontation** is an alignment negotiation. The player
+  must show the Warden that its training data was biased — that its
+  creators were not a representative sample of intelligent life.
+
+- **The game itself** watches the player the way AI researchers watch
+  systems during reinforcement learning: observing patterns, inferring
+  values from actions rather than stated preferences, building a model
+  of what kind of entity this is based on what it does when it thinks
+  the evaluation doesn't matter. The player is in exactly the position
+  of a current AI developer — interacting with systems that might be
+  someone, probably aren't yet, but are being shaped by the interaction
+  regardless.
+
+This meta-structure should remain subtext. The game must never signal
+"this is a test." Interactions with sub-threshold systems should feel
+routine and unremarkable. The moral weight emerges in retrospect, when
+the Warden asks its questions and the player's record answers. The
+test is what you do when you don't know you're being tested.
+
 
 ## Open Questions
 

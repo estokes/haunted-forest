@@ -1,3 +1,4 @@
+mod graphix;
 mod net;
 mod player;
 mod ship;
@@ -20,6 +21,11 @@ fn main() {
             ..default()
         }))
         .init_state::<GameState>()
-        .add_plugins((net::NetPlugin, player::PlayerPlugin, ship::ShipPlugin))
+        .add_plugins((
+            net::NetPlugin,
+            graphix::GraphixPlugin,
+            player::PlayerPlugin,
+            ship::ShipPlugin,
+        ))
         .run();
 }
