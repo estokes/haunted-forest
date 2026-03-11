@@ -1,0 +1,81 @@
+use gui;
+use gui::text;
+use gui::column;
+use gui::row;
+use gui::button;
+use gui::rule;
+use net;
+
+// Subscribe to reactor readouts
+let temperature = cast<f64>(net::subscribe("/ship/reactor/plasma/temperature")$)$;
+let pressure    = cast<f64>(net::subscribe("/ship/reactor/plasma/pressure")$)$;
+let power       = cast<f64>(net::subscribe("/ship/reactor/output/power")$)$;
+let efficiency  = cast<f64>(net::subscribe("/ship/reactor/output/efficiency")$)$;
+let containment = cast<f64>(net::subscribe("/ship/reactor/plasma/containment")$)$;
+let target_power = cast<f64>(net::subscribe("/ship/reactor/control/target_power")$)$;
+
+let label_color = gui::color(#r: 0.63, #g: 0.63, #b: 0.71)$;
+let heading_color = gui::color(#r: 0.39, #g: 0.78, #b: 1.0)$;
+
+let readout = |label: string, value: f64, unit: string| -> gui::Widget
+  row(
+    #spacing: &8.0,
+    #width: &`Fill,
+    &[
+      text(#size: &14.0, #color: &label_color, &label),
+      text(#size: &14.0, &str::concat(str::sub(#start: 0, #len: 6, cast<string>(value)$)$, unit))
+    ]
+  );
+
+let status_col = column(
+  #spacing: &6.0,
+  #width: &`Fill,
+  &[
+    text(#size: &18.0, #color: &heading_color, &"REACTOR STATUS"),
+    rule::horizontal_rule(#height: &1.0),
+    readout("TEMP", temperature, " MK"),
+    readout("PRESS", pressure, ""),
+    readout("POWER", power, " GW"),
+    readout("EFF", efficiency * 100.0, " %"),
+    readout("CONT", containment * 100.0, " %")
+  ]
+);
+
+let controls_col = column(
+  #spacing: &6.0,
+  #width: &`Fill,
+  &[
+    text(#size: &18.0, #color: &heading_color, &"POWER CONTROL"),
+    rule::horizontal_rule(#height: &1.0),
+    text(#size: &14.0, &str::concat("TARGET: ", str::concat(str::sub(#start: 0, #len: 6, cast<string>(target_power)$)$, " GW"))),
+    row(
+      #spacing: &12.0,
+      &[
+        button(
+          #on_press: |click|
+            try net::write("/ship/reactor/control/target_power", click ~ target_power - 50.0)
+            catch(e) => never(e),
+          #padding: &`Axis({x: 16.0, y: 6.0}),
+          &text(#size: &16.0, &"- 50")
+        ),
+        button(
+          #on_press: |click|
+            try net::write("/ship/reactor/control/target_power", click ~ target_power + 50.0)
+            catch(e) => never(e),
+          #padding: &`Axis({x: 16.0, y: 6.0}),
+          &text(#size: &16.0, &"+ 50")
+        )
+      ]
+    )
+  ]
+);
+
+let panel = row(
+  #spacing: &20.0,
+  #padding: &`All(16.0),
+  #width: &`Fill,
+  #height: &`Fill,
+  &[status_col, controls_col]
+);
+
+[&window(#title: &"Helm", #size: &{width: 640.0, height: 250.0}, #theme: &`CatppuccinMocha, &panel)]
