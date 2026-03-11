@@ -26,16 +26,16 @@ netidx-protocols = { version = "0.31", path = "../netidx/netidx-protocols" }
 netidx-value = { version = "0.31", path = "../netidx/netidx-value" }
 
 # graphix
-graphix-compiler = { version = "0.5.0", path = "../graphix/graphix-compiler" }
-graphix-rt = { version = "0.5.0", path = "../graphix/graphix-rt" }
-graphix-package = { version = "0.5.0", path = "../graphix/graphix-package" }
-graphix-package-core = { version = "0.5.0", path = "../graphix/stdlib/graphix-package-core" }
-graphix-package-array = { version = "0.5.0", path = "../graphix/stdlib/graphix-package-array" }
-graphix-package-str = { version = "0.5.0", path = "../graphix/stdlib/graphix-package-str" }
-graphix-package-map = { version = "0.5.0", path = "../graphix/stdlib/graphix-package-map" }
-graphix-package-time = { version = "0.5.0", path = "../graphix/stdlib/graphix-package-time" }
-graphix-package-net = { version = "0.5.0", path = "../graphix/stdlib/graphix-package-net" }
-graphix-package-gui = { version = "0.5.0", path = "../graphix/stdlib/graphix-package-gui" }
+graphix-compiler = { version = "0.6.0", path = "../graphix/graphix-compiler" }
+graphix-rt = { version = "0.6.0", path = "../graphix/graphix-rt" }
+graphix-package = { version = "0.6.0", path = "../graphix/graphix-package" }
+graphix-package-core = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-core" }
+graphix-package-array = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-array" }
+graphix-package-str = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-str" }
+graphix-package-map = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-map" }
+graphix-package-time = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-time" }
+graphix-package-net = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-net" }
+graphix-package-gui = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-gui" }
 
 # iced (versions must match graphix-package-gui to ensure type identity)
 arboard = "3"

@@ -23,8 +23,8 @@ pub struct IcedSurface {
     texture_view: wgpu::TextureView,
     staging_buffer: wgpu::Buffer,
     viewport: Viewport,
-    width: u32,
-    height: u32,
+    pub(crate) width: u32,
+    pub(crate) height: u32,
     cache: user_interface::Cache,
     // Graphix refs
     gx: GXHandle<NoExt>,
@@ -40,6 +40,7 @@ pub struct IcedSurface {
     pub needs_redraw: bool,
     // Bevy image handle
     pub bevy_image: Handle<Image>,
+    pub new_image: bool,
 }
 
 /// Bytes per row, aligned to wgpu's COPY_BYTES_PER_ROW_ALIGNMENT.
@@ -141,6 +142,7 @@ impl IcedSurface {
             cursor_position: iced_core::Point::ORIGIN,
             needs_redraw: true,
             bevy_image,
+            new_image: true,
         }
     }
 
@@ -187,9 +189,13 @@ impl IcedSurface {
         ui.draw(&mut self.renderer, &theme, &style, cursor);
         self.cache = ui.into_cache();
         self.pending_events.clear();
-        // Present to offscreen texture
-        self.renderer
-            .present(None, gpu.format, &self.texture_view, &self.viewport);
+        // Present to offscreen texture (clear with theme background to avoid overdraw)
+        self.renderer.present(
+            Some(theme.palette().background),
+            gpu.format,
+            &self.texture_view,
+            &self.viewport,
+        );
         // Readback pixels to update the Bevy Image
         self.readback_to_image(gpu, images);
         self.needs_redraw = matches!(
@@ -203,7 +209,7 @@ impl IcedSurface {
     }
 
     /// Copy the offscreen texture to a staging buffer and read pixels into the Bevy Image.
-    fn readback_to_image(&self, gpu: &IcedGpu, images: &mut Assets<Image>) {
+    fn readback_to_image(&mut self, gpu: &IcedGpu, images: &mut Assets<Image>) {
         let bpr = aligned_bytes_per_row(self.width);
         let mut encoder =
             gpu.device
@@ -238,17 +244,34 @@ impl IcedSurface {
         let _ = gpu.device.poll(wgpu::PollType::wait_indefinitely());
         {
             let mapped = slice.get_mapped_range();
-            if let Some(image) = images.get_mut(&self.bevy_image) {
-                let row_bytes = (self.width * 4) as usize;
-                let mut pixels = Vec::with_capacity(row_bytes * self.height as usize);
-                for row in 0..self.height as usize {
-                    let start = row * bpr as usize;
-                    pixels.extend_from_slice(&mapped[start..start + row_bytes]);
+            let row_bytes = (self.width * 4) as usize;
+            let mut pixels = Vec::with_capacity(row_bytes * self.height as usize);
+            for row in (0..self.height as usize).rev() {
+                let start = row * bpr as usize;
+                let row_data = &mapped[start..start + row_bytes];
+                // Reverse pixel order within the row (4 bytes per pixel)
+                for px in (0..row_bytes).rev().step_by(4) {
+                    pixels.extend_from_slice(&row_data[px - 3..=px]);
                 }
-                image.data = Some(pixels);
             }
+            drop(mapped);
+            self.staging_buffer.unmap();
+            let mut new_image = Image::new_fill(
+                bevy::render::render_resource::Extent3d {
+                    width: self.width,
+                    height: self.height,
+                    depth_or_array_layers: 1,
+                },
+                bevy::render::render_resource::TextureDimension::D2,
+                &[0, 0, 0, 255],
+                bevy::render::render_resource::TextureFormat::Bgra8UnormSrgb,
+                bevy::asset::RenderAssetUsages::RENDER_WORLD,
+            );
+            new_image.data = Some(pixels);
+            // Replace the old handle with the new image and update bevy_image
+            self.bevy_image = images.add(new_image);
+            self.new_image = true;
         }
-        self.staging_buffer.unmap();
     }
 
     /// Handle a graphix value update. Returns true if the surface needs redraw.
@@ -258,6 +281,14 @@ impl IcedSurface {
         id: ExprId,
         v: &Value,
     ) -> Result<bool> {
+        static DBG_ENTRY: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+        let n = DBG_ENTRY.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        if n < 5 {
+            eprintln!(
+                "DBG handle_update: id={id:?} window_ref={:?} title={:?} size={:?} theme={:?} content_ref={:?} v={v:?}",
+                self.window_ref.id, self.title.r.id, self.size.r.id, self.theme.r.id, self.content_ref.id
+            );
+        }
         if id == self.window_ref.id {
             self.window_ref.last = Some(v.clone());
             let resolved = rt
@@ -289,7 +320,17 @@ impl IcedSurface {
                 .context("surface content recompile")?;
             changed = true;
         }
-        changed |= self.content.handle_update(rt, id, v)?;
+        let content_changed = self.content.handle_update(rt, id, v)?;
+        changed |= content_changed;
+        {
+            static DBG_UPD: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+            let n = DBG_UPD.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            if n < 20 {
+                eprintln!(
+                    "DBG handle_update: id={id:?} changed={changed} content_changed={content_changed}",
+                );
+            }
+        }
         self.needs_redraw |= changed;
         Ok(changed)
     }

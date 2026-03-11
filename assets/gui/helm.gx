@@ -5,6 +5,7 @@ use gui::row;
 use gui::button;
 use gui::rule;
 use net;
+use str;
 
 // Subscribe to reactor readouts
 let temperature = cast<f64>(net::subscribe("/ship/reactor/plasma/temperature")$)$;
@@ -12,7 +13,8 @@ let pressure    = cast<f64>(net::subscribe("/ship/reactor/plasma/pressure")$)$;
 let power       = cast<f64>(net::subscribe("/ship/reactor/output/power")$)$;
 let efficiency  = cast<f64>(net::subscribe("/ship/reactor/output/efficiency")$)$;
 let containment = cast<f64>(net::subscribe("/ship/reactor/plasma/containment")$)$;
-let target_power = cast<f64>(net::subscribe("/ship/reactor/control/target_power")$)$;
+let target_power_p = "/ship/reactor/control/target_power";
+let target_power = cast<f64>(net::subscribe(target_power_p)$)$;
 
 let label_color = gui::color(#r: 0.63, #g: 0.63, #b: 0.71)$;
 let heading_color = gui::color(#r: 0.39, #g: 0.78, #b: 1.0)$;
@@ -22,16 +24,16 @@ let readout = |label: string, value: f64, unit: string| -> gui::Widget
     #spacing: &8.0,
     #width: &`Fill,
     &[
-      text(#size: &14.0, #color: &label_color, &label),
-      text(#size: &14.0, &str::concat(str::sub(#start: 0, #len: 6, cast<string>(value)$)$, unit))
+      text(#size: &10.0, #color: &label_color, &label),
+      text(#size: &10.0, &sprintf("%.2f %s", value, unit))
     ]
   );
 
 let status_col = column(
-  #spacing: &6.0,
+  #spacing: &4.0,
   #width: &`Fill,
   &[
-    text(#size: &18.0, #color: &heading_color, &"REACTOR STATUS"),
+    text(#size: &12.0, #color: &heading_color, &"REACTOR STATUS"),
     rule::horizontal_rule(#height: &1.0),
     readout("TEMP", temperature, " MK"),
     readout("PRESS", pressure, ""),
@@ -42,28 +44,24 @@ let status_col = column(
 );
 
 let controls_col = column(
-  #spacing: &6.0,
+  #spacing: &4.0,
   #width: &`Fill,
   &[
-    text(#size: &18.0, #color: &heading_color, &"POWER CONTROL"),
+    text(#size: &12.0, #color: &heading_color, &"POWER CONTROL"),
     rule::horizontal_rule(#height: &1.0),
-    text(#size: &14.0, &str::concat("TARGET: ", str::concat(str::sub(#start: 0, #len: 6, cast<string>(target_power)$)$, " GW"))),
+    text(#size: &10.0, &sprintf("TARGET: %.2f GW", target_power)),
     row(
       #spacing: &12.0,
       &[
         button(
-          #on_press: |click|
-            try net::write("/ship/reactor/control/target_power", click ~ target_power - 50.0)
-            catch(e) => never(e),
-          #padding: &`Axis({x: 16.0, y: 6.0}),
-          &text(#size: &16.0, &"- 50")
+          #on_press: |c| net::write(target_power_p, c ~ target_power - 50.0)$,
+          #padding: &`Axis({x: 10.0, y: 4.0}),
+          &text(#size: &10.0, &"- 50")
         ),
         button(
-          #on_press: |click|
-            try net::write("/ship/reactor/control/target_power", click ~ target_power + 50.0)
-            catch(e) => never(e),
-          #padding: &`Axis({x: 16.0, y: 6.0}),
-          &text(#size: &16.0, &"+ 50")
+          #on_press: |c| net::write(target_power_p, c ~ target_power + 50.0)$,
+          #padding: &`Axis({x: 10.0, y: 4.0}),
+          &text(#size: &10.0, &"+ 50")
         )
       ]
     )
@@ -72,7 +70,7 @@ let controls_col = column(
 
 let panel = row(
   #spacing: &20.0,
-  #padding: &`All(16.0),
+  #padding: &`All(10.0),
   #width: &`Fill,
   #height: &`Fill,
   &[status_col, controls_col]
