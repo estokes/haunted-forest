@@ -43,19 +43,6 @@ pub fn grab_cursor(mut cursor: Single<&mut CursorOptions>) {
     cursor.visible = false;
 }
 
-pub fn toggle_cursor(keys: Res<ButtonInput<KeyCode>>, mut cursor: Single<&mut CursorOptions>) {
-    if keys.just_pressed(KeyCode::Escape) {
-        let locked = cursor.grab_mode == CursorGrabMode::Locked;
-        if locked {
-            cursor.grab_mode = CursorGrabMode::None;
-            cursor.visible = true;
-        } else {
-            cursor.grab_mode = CursorGrabMode::Locked;
-            cursor.visible = false;
-        }
-    }
-}
-
 pub fn player_movement(
     keys: Res<ButtonInput<KeyCode>>,
     mut player: Single<&mut Transform, With<Player>>,

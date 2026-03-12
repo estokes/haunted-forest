@@ -4,19 +4,23 @@ mod surface;
 
 use anyhow::{Context, Result};
 use arcstr::ArcStr;
+use bevy::ecs::message::MessageReader;
+use bevy::input::mouse::AccumulatedMouseMotion;
 use bevy::prelude::*;
-use bevy::window::{CursorGrabMode, CursorOptions};
+use bevy::winit::RawWinitWindowEvent;
 use crossbeam_channel::{unbounded, Receiver};
 use fxhash::FxHashMap;
 use graphix_compiler::{env::Env, expr::{ExprId, ModuleResolver}, BindId};
-use graphix_package_gui::{widgets::Message, window::ResolvedWindow};
+use graphix_package_gui::{convert, widgets::Message, window::ResolvedWindow};
 use graphix_rt::{GXConfig, GXEvent, GXHandle, GXRt, NoExt};
 use iced_core::clipboard;
 use log::error;
 use netidx::{protocol::valarray::ValArray, publisher::Value};
 use poolshark::{global::GPooled, local::LPooled};
 use std::cell::RefCell;
+use winit::keyboard::ModifiersState;
 
+use crate::GameState;
 use crate::net::NetInfra;
 use crate::player::PlayerCamera;
 use crate::ship::GuiScreen;
@@ -39,6 +43,13 @@ impl GraphixRuntime {
     pub fn rt(&self) -> &tokio::runtime::Handle {
         &self.rt_handle
     }
+}
+
+#[derive(Resource, Default)]
+pub struct ScreenInteraction {
+    pub screen_entity: Option<Entity>,
+    pub cursor_pos: Vec2,
+    pub modifiers: ModifiersState,
 }
 
 const HELM_GX: &str = include_str!("../../assets/gui/helm.gx");
@@ -206,75 +217,164 @@ fn looks_like_gui_root(v: &Value) -> bool {
     matches!(v, Value::Array(_)) && v.clone().cast_to::<LPooled<Vec<u64>>>().is_ok()
 }
 
-/// Raycast mouse against GuiScreen meshes and push iced events to the matching surface.
-fn screen_input(
-    mut gui_state: NonSendMut<GraphixGuiState>,
-    camera_q: Query<(&Camera, &GlobalTransform), With<PlayerCamera>>,
-    screen_q: Query<&GlobalTransform, With<GuiScreen>>,
-    mouse_buttons: Res<ButtonInput<MouseButton>>,
-    windows: Query<&Window>,
-    cursor_opts: Query<&CursorOptions>,
-) {
-    let Ok(opts) = cursor_opts.single() else { return };
-    if opts.grab_mode == CursorGrabMode::Locked {
-        return;
-    }
-    let Ok((camera, cam_gt)) = camera_q.single() else { return };
-    let Ok(window) = windows.single() else { return };
-    let Some(cursor_pos) = window.cursor_position() else { return };
-    let Ok(ray) = camera.viewport_to_world(cam_gt, cursor_pos) else { return };
+// Half-extents of the Plane3d mesh (from bridge.rs: Vec2::new(0.9, 0.35))
+const HALF_X: f32 = 0.9;
+const HALF_Z: f32 = 0.35;
 
+/// Raycast against a screen plane, returning UV (0..1) and distance if hit.
+fn raycast_screen(ray: Ray3d, screen_gt: &GlobalTransform) -> Option<(Vec2, f32)> {
+    let screen_normal = screen_gt.compute_transform().rotation * Vec3::Y;
+    let screen_point = screen_gt.translation();
+    let denom = ray.direction.dot(screen_normal);
+    if denom.abs() < 1e-6 {
+        return None;
+    }
+    let t = (screen_point - ray.origin).dot(screen_normal) / denom;
+    if t < 0.0 {
+        return None;
+    }
+    let hit_world = ray.origin + *ray.direction * t;
+    let local = screen_gt.affine().inverse().transform_point3(hit_world);
+    if local.x.abs() > HALF_X || local.z.abs() > HALF_Z {
+        return None;
+    }
+    // UV: U along +X, V along -Z (top-left origin for iced).
+    let u = (local.x + HALF_X) / (2.0 * HALF_X);
+    let v = (HALF_Z - local.z) / (2.0 * HALF_Z);
+    Some((Vec2::new(u, v), t))
+}
+
+/// Toggle screen interaction: E to focus, Escape to exit.
+fn interaction_toggle(
+    keys: Res<ButtonInput<KeyCode>>,
+    camera_q: Query<(&Camera, &GlobalTransform), With<PlayerCamera>>,
+    screen_q: Query<(Entity, &GlobalTransform), With<GuiScreen>>,
+    mut interaction: ResMut<ScreenInteraction>,
+    mut gui_state: NonSendMut<GraphixGuiState>,
+    state: Res<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    match state.get() {
+        GameState::Playing => {
+            if !keys.just_pressed(KeyCode::KeyE) {
+                return;
+            }
+            let Ok((camera, cam_gt)) = camera_q.single() else { return };
+            // Ray from camera center (crosshair)
+            let Ok(ray) = camera.viewport_to_world(cam_gt, Vec2::new(
+                // Use viewport center
+                camera.logical_viewport_size().map(|s| s.x / 2.0).unwrap_or(400.0),
+                camera.logical_viewport_size().map(|s| s.y / 2.0).unwrap_or(300.0),
+            )) else { return };
+
+            let mut best: Option<(Entity, f32)> = None;
+            for (entity, screen_gt) in &screen_q {
+                if let Some((_, dist)) = raycast_screen(ray, screen_gt)
+                    && dist < 3.0
+                    && best.is_none_or(|(_, d)| dist < d)
+                {
+                    best = Some((entity, dist));
+                }
+            }
+            if let Some((entity, _)) = best {
+                interaction.screen_entity = Some(entity);
+                // Center cursor on the actual surface dimensions
+                if let Some(surface) = gui_state.surfaces.values_mut().next() {
+                    let cx = surface.width as f32 / 2.0;
+                    let cy = surface.height as f32 / 2.0;
+                    interaction.cursor_pos = Vec2::new(cx, cy);
+                    surface.needs_redraw = true;
+                }
+                next_state.set(GameState::InteractingWithScreen);
+            }
+        }
+        GameState::InteractingWithScreen => {
+            if keys.just_pressed(KeyCode::Escape) {
+                interaction.screen_entity = None;
+                // Flag surface for redraw so cursor disappears
+                for surface in gui_state.surfaces.values_mut() {
+                    surface.needs_redraw = true;
+                }
+                next_state.set(GameState::Playing);
+            }
+        }
+    }
+}
+
+/// Route mouse/keyboard input to the focused screen's iced surface.
+fn screen_interaction_input(
+    mut interaction: ResMut<ScreenInteraction>,
+    mut gui_state: NonSendMut<GraphixGuiState>,
+    mouse_motion: Res<AccumulatedMouseMotion>,
+    mouse_buttons: Res<ButtonInput<MouseButton>>,
+    mut raw_events: MessageReader<RawWinitWindowEvent>,
+) {
     let state = &mut *gui_state;
     let Some(surface) = state.surfaces.values_mut().next() else { return };
 
-    // Half-extents of the Plane3d mesh (from bridge.rs)
-    const HALF_X: f32 = 0.9;
-    const HALF_Z: f32 = 0.35;
-
-    for screen_gt in &screen_q {
-        let screen_normal = screen_gt.compute_transform().rotation * Vec3::Y;
-        let screen_point = screen_gt.translation();
-
-        let denom = ray.direction.dot(screen_normal);
-        if denom.abs() < 1e-6 {
+    // Keyboard: convert raw winit events, filter to keyboard only
+    for raw in raw_events.read() {
+        if let winit::event::WindowEvent::ModifiersChanged(m) = &raw.event {
+            interaction.modifiers = m.state();
+        }
+        // Skip escape — handled by interaction_toggle
+        if matches!(
+            &raw.event,
+            winit::event::WindowEvent::KeyboardInput { event, .. }
+                if event.logical_key == winit::keyboard::Key::Named(winit::keyboard::NamedKey::Escape)
+        ) {
             continue;
         }
-        let t = (screen_point - ray.origin).dot(screen_normal) / denom;
-        if t < 0.0 {
-            continue;
+        let iced_events = convert::window_event(&raw.event, 1.0, interaction.modifiers);
+        for ev in iced_events.iter() {
+            if matches!(ev, iced_core::Event::Keyboard(_)) {
+                surface.push_event(ev.clone());
+            }
         }
+    }
 
-        let hit_world = ray.origin + *ray.direction * t;
-        let local = screen_gt.affine().inverse().transform_point3(hit_world);
-
-        if local.x.abs() > HALF_X || local.z.abs() > HALF_Z {
-            continue;
-        }
-
-        // Convert local XZ to UV (0..1), then to pixel coordinates.
-        // Plane3d UVs: U along +X, V along -Z (top-left origin for iced).
-        let u = (local.x + HALF_X) / (2.0 * HALF_X);
-        let v = (HALF_Z - local.z) / (2.0 * HALF_Z);
-        let px = u * surface.width as f32;
-        let py = v * surface.height as f32;
-        let position = iced_core::Point::new(px, py);
-
-        surface.cursor_position = position;
+    // Mouse movement: accumulate delta into virtual cursor.
+    // cursor_pos is in buffer-space (used for drawing the crosshair).
+    // Delta is negated because the readback double-flip mirrors buffer vs screen.
+    // Iced needs the inverse-mapped coordinate since iced-space is flipped
+    // relative to buffer-space: iced_pos = (width - buffer_x, height - buffer_y).
+    let w = surface.width as f32;
+    let h = surface.height as f32;
+    let delta = mouse_motion.delta;
+    if delta != Vec2::ZERO {
+        const MARGIN: f32 = 4.0;
+        interaction.cursor_pos.x =
+            (interaction.cursor_pos.x - delta.x).clamp(MARGIN, w - MARGIN);
+        interaction.cursor_pos.y =
+            (interaction.cursor_pos.y - delta.y).clamp(MARGIN, h - MARGIN);
+        let iced_pos =
+            iced_core::Point::new(w - interaction.cursor_pos.x, h - interaction.cursor_pos.y);
+        surface.cursor_position = iced_pos;
         surface.push_event(iced_core::Event::Mouse(
-            iced_core::mouse::Event::CursorMoved { position },
+            iced_core::mouse::Event::CursorMoved { position: iced_pos },
         ));
+    }
 
-        if mouse_buttons.just_pressed(MouseButton::Left) {
-            surface.push_event(iced_core::Event::Mouse(
-                iced_core::mouse::Event::ButtonPressed(iced_core::mouse::Button::Left),
-            ));
-        }
-        if mouse_buttons.just_released(MouseButton::Left) {
-            surface.push_event(iced_core::Event::Mouse(
-                iced_core::mouse::Event::ButtonReleased(iced_core::mouse::Button::Left),
-            ));
-        }
-        break;
+    // Mouse buttons
+    if mouse_buttons.just_pressed(MouseButton::Left) {
+        surface.push_event(iced_core::Event::Mouse(
+            iced_core::mouse::Event::ButtonPressed(iced_core::mouse::Button::Left),
+        ));
+    }
+    if mouse_buttons.just_released(MouseButton::Left) {
+        surface.push_event(iced_core::Event::Mouse(
+            iced_core::mouse::Event::ButtonReleased(iced_core::mouse::Button::Left),
+        ));
+    }
+    if mouse_buttons.just_pressed(MouseButton::Right) {
+        surface.push_event(iced_core::Event::Mouse(
+            iced_core::mouse::Event::ButtonPressed(iced_core::mouse::Button::Right),
+        ));
+    }
+    if mouse_buttons.just_released(MouseButton::Right) {
+        surface.push_event(iced_core::Event::Mouse(
+            iced_core::mouse::Event::ButtonReleased(iced_core::mouse::Button::Right),
+        ));
     }
 }
 
@@ -283,6 +383,8 @@ fn graphix_gui_update(
     runtime: Res<GraphixRuntime>,
     mut gui_state: NonSendMut<GraphixGuiState>,
     mut images: ResMut<Assets<Image>>,
+    interaction: Res<ScreenInteraction>,
+    game_state: Res<State<GameState>>,
 ) {
     let state = &mut *gui_state;
     let rt_handle = runtime.rt().clone();
@@ -352,6 +454,11 @@ fn graphix_gui_update(
     }
 
     // Render dirty surfaces
+    let cursor_overlay = if *game_state.get() == GameState::InteractingWithScreen {
+        Some(interaction.cursor_pos)
+    } else {
+        None
+    };
     for (bid, surface) in state.surfaces.iter_mut() {
         if surface.needs_redraw {
             eprintln!(
@@ -364,6 +471,7 @@ fn graphix_gui_update(
             &mut state.messages,
             &state.gpu,
             &mut images,
+            cursor_overlay,
         );
     }
 
@@ -421,10 +529,19 @@ impl Plugin for GraphixPlugin {
             .get_resource::<NetInfra>()
             .expect("GraphixPlugin requires NetPlugin to be added first");
         let runtime = start_graphix(infra).expect("failed to start graphix runtime");
-        app.insert_resource(runtime).add_systems(
-            Update,
-            (screen_input, graphix_gui_update, sync_screens).chain(),
-        );
+        app.insert_resource(runtime)
+            .init_resource::<ScreenInteraction>()
+            .add_systems(
+                Update,
+                (
+                    interaction_toggle,
+                    screen_interaction_input
+                        .run_if(in_state(GameState::InteractingWithScreen)),
+                    graphix_gui_update,
+                    sync_screens,
+                )
+                    .chain(),
+            );
     }
 
     fn finish(&self, app: &mut App) {

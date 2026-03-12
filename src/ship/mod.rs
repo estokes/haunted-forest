@@ -5,6 +5,8 @@ pub mod reactor;
 use bevy::prelude::*;
 pub use bridge::*;
 
+use crate::GameState;
+
 pub struct ShipPlugin;
 
 impl Plugin for ShipPlugin {
@@ -20,7 +22,7 @@ impl Plugin for ShipPlugin {
             .add_systems(
                 Update,
                 (
-                    reactor::reactor_keyboard_controls,
+                    reactor::reactor_keyboard_controls.run_if(in_state(GameState::Playing)),
                     reactor::reactor_apply_controls,
                     reactor::reactor_publish,
                     hud::update_readouts,

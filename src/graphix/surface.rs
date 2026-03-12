@@ -162,12 +162,14 @@ impl IcedSurface {
     }
 
     /// Run the iced render cycle: build UI → update → draw → present → readback.
+    /// If `cursor_overlay` is Some, draw a crosshair at that position on the final image.
     pub fn render(
         &mut self,
         clipboard: &mut dyn clipboard::Clipboard,
         messages: &mut Vec<Message>,
         gpu: &IcedGpu,
         images: &mut Assets<Image>,
+        cursor_overlay: Option<Vec2>,
     ) {
         if !self.needs_redraw {
             return;
@@ -197,7 +199,7 @@ impl IcedSurface {
             &self.viewport,
         );
         // Readback pixels to update the Bevy Image
-        self.readback_to_image(gpu, images);
+        self.readback_to_image(gpu, images, cursor_overlay);
         self.needs_redraw = matches!(
             state,
             user_interface::State::Outdated
@@ -209,7 +211,12 @@ impl IcedSurface {
     }
 
     /// Copy the offscreen texture to a staging buffer and read pixels into the Bevy Image.
-    fn readback_to_image(&mut self, gpu: &IcedGpu, images: &mut Assets<Image>) {
+    fn readback_to_image(
+        &mut self,
+        gpu: &IcedGpu,
+        images: &mut Assets<Image>,
+        cursor_overlay: Option<Vec2>,
+    ) {
         let bpr = aligned_bytes_per_row(self.width);
         let mut encoder =
             gpu.device
@@ -256,6 +263,12 @@ impl IcedSurface {
             }
             drop(mapped);
             self.staging_buffer.unmap();
+            // Draw crosshair cursor if interacting.
+            // cursor_overlay is in iced-space; the readback flip and UV mapping
+            // cancel out, so iced-space coordinates map directly to buffer pixels.
+            if let Some(pos) = cursor_overlay {
+                draw_cursor(&mut pixels, self.width, self.height, pos.x, pos.y);
+            }
             let mut new_image = Image::new_fill(
                 bevy::render::render_resource::Extent3d {
                     width: self.width,
@@ -346,5 +359,48 @@ impl IcedSurface {
         action: &iced_widget::text_editor::Action,
     ) -> Option<(graphix_rt::CallableId, Value)> {
         self.content.editor_action(id, action)
+    }
+}
+
+/// Draw a small crosshair cursor onto a BGRA pixel buffer.
+fn draw_cursor(pixels: &mut [u8], width: u32, height: u32, cx: f32, cy: f32) {
+    let cx = cx as i32;
+    let cy = cy as i32;
+    let w = width as i32;
+    let h = height as i32;
+    // Crosshair: 3px radius arms, black outline + white center
+    let offsets: &[(i32, i32)] = &[
+        (0, 0),
+        (-1, 0), (1, 0), (0, -1), (0, 1),
+        (-2, 0), (2, 0), (0, -2), (0, 2),
+        (-3, 0), (3, 0), (0, -3), (0, 3),
+    ];
+    let outline: &[(i32, i32)] = &[
+        (-4, 0), (4, 0), (0, -4), (0, 4),
+        (-1, -1), (1, -1), (-1, 1), (1, 1),
+        (-3, -1), (-3, 1), (3, -1), (3, 1),
+        (-1, -3), (-1, 3), (1, -3), (1, 3),
+    ];
+    for &(dx, dy) in outline {
+        let px = cx + dx;
+        let py = cy + dy;
+        if px >= 0 && px < w && py >= 0 && py < h {
+            let idx = ((py * w + px) * 4) as usize;
+            pixels[idx] = 0;     // B
+            pixels[idx + 1] = 0; // G
+            pixels[idx + 2] = 0; // R
+            pixels[idx + 3] = 255;
+        }
+    }
+    for &(dx, dy) in offsets {
+        let px = cx + dx;
+        let py = cy + dy;
+        if px >= 0 && px < w && py >= 0 && py < h {
+            let idx = ((py * w + px) * 4) as usize;
+            pixels[idx] = 255;     // B
+            pixels[idx + 1] = 255; // G
+            pixels[idx + 2] = 255; // R
+            pixels[idx + 3] = 255;
+        }
     }
 }
