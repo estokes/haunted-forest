@@ -1,4 +1,5 @@
 mod graphix;
+mod llm;
 mod net;
 mod player;
 mod ship;
@@ -27,6 +28,7 @@ fn main() {
             graphix::GraphixPlugin,
             player::PlayerPlugin,
             ship::ShipPlugin,
+            llm::LlmPlugin,
         ))
         .run();
 }

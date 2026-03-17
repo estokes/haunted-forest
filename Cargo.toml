@@ -37,6 +37,21 @@ graphix-package-time = { version = "0.6.0", path = "../graphix/stdlib/graphix-pa
 graphix-package-net = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-net" }
 graphix-package-gui = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-gui" }
 
+# Burn ML framework (LLM inference) — GPU via wgpu backend
+# NOTE: burn-wgpu uses wgpu 26 (via cubecl), Bevy uses wgpu 27. Two device
+# instances coexist fine — no GPU buffer sharing needed, only text tokens
+# cross the thread boundary via crossbeam channels.
+burn = { version = "=0.20.0", features = ["wgpu"] }
+
+# naga 26 (transitive via burn → cubecl → wgpu 26) needs termcolor feature
+# to match its codespan-reporting dependency. Without it, naga tries to pass
+# String to WriteColor. naga 27 (Bevy) gets this from wgpu 27 automatically.
+naga = { version = "26", features = ["termcolor"] }
+
+# Burn LM (Llama models) — local checkout, crates.io v0.0.1 is stale
+burn-lm-llama = { path = "../burn-lm/crates/burn-lm-llama", features = ["llama3"] }
+burn-lm-inference = { path = "../burn-lm/crates/burn-lm-inference" }
+
 # iced (versions must match graphix-package-gui to ensure type identity)
 arboard = "3"
 iced_core = "0.14"

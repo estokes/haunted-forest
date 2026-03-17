@@ -29,7 +29,7 @@ cargo test <name>    # run a single test by name
 
 3. **Graphix (Reactive UI/Scripting)** — Reactive dataflow language for building interfaces and player scripts. Runs as a tokio task sharing the same runtime and netidx pub/sub as the NetBridge. Integration in `src/graphix/`.
 
-4. **LLM (Character Interactions)** — Not yet implemented. Will use a local model via `llama-cpp-2` on a separate thread with crossbeam channel token streaming.
+4. **LLM (Character Interactions)** — Not yet implemented. Will use Burn (Rust ML framework) with wgpu backend for local model inference and fine-tuning. Runs on a separate thread with crossbeam channel token streaming.
 
 ### Key Resource Flow
 

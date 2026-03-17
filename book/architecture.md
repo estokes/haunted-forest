@@ -207,19 +207,129 @@ read it. If it's writable, you can control it.
 ## Layer 4: LLM Integration
 
 LLMs provide key character interactions and player-triggered AI
-assistance. They are used **judiciously** — local hardware can run one
-small model (Phi4-class) at a reasonable token rate on CPU. This is a
-scarce resource, not an unlimited service.
+assistance. They are used **judiciously** — local hardware can run
+small models at a reasonable token rate. This is a scarce resource,
+not an unlimited service.
+
+### Base Models: Llama 3.2 (1B and 3B)
+
+Both models ship with the game, heavily fine-tuned for the game's
+narrow domain. General capabilities (coding, math, trivia) are
+expendable — the models need to stay in character, generate coherent
+dialogue in specific narrative voices, respond to game state context,
+and sustain philosophical arguments.
+
+**Llama 3.2 1B** — The ship AI (ops). Aggressively fine-tuned for
+command parsing, state summarization, and terse operational responses.
+Low latency, small VRAM footprint (~0.6 GB quantized to int4). Kept
+resident at all times.
+
+**Llama 3.2 3B** — Three separate fine-tunes, swapped on demand:
+- **Faction characters**: dialogue, negotiation, personality
+- **The Warden**: adversarial philosophical argument
+- **Graphix assistant**: reactive dataflow code generation, netidx
+  path awareness, GUI widget APIs
+
+~1.8 GB each quantized to int4. Single-player means the game controls
+scheduling — only one 3B fine-tune is loaded at a time on min-spec
+hardware. Players with more VRAM can keep multiple 3B models hot.
+
+This is static mixture of experts — four specialist fine-tunes across
+two base models, routed by interaction type.
+
+### VRAM Budget
+
+Minimum spec: 8 GB total VRAM, shared with Bevy's renderer (textures,
+meshes, Graphix overlay framebuffers). Estimated budget:
+
+- Renderer: ~3-4 GB
+- LLM model weights (int4): 0.6-1.8 GB depending on model
+- KV cache (2-4K context): ~200-400 MB
+- Headroom: ~2-3 GB
+
+Both models can be loaded simultaneously at int4 (~2.4 GB combined),
+or swapped on demand. Hot-swapping is simpler; whether simultaneous
+loading is worthwhile depends on benchmarking.
+
+### Fine-Tuning Strategy: Static Mixture of Experts
+
+Rather than one model trying to handle every interaction, we
+aggressively fine-tune separate specialist models. Each loses general
+capabilities — that's the point. A model that can't write Python but
+perfectly captures the Warden's voice is exactly what we want. Static
+routing by interaction type, no runtime mixture complexity.
+
+**Ship AI — ops (1B)** — Command parsing, state summarization, terse
+operational responses. Optimized for interpreting structured game state
+and producing precise, actionable output. "Containment at 0.73,
+recommend shutdown." Not conversational, not a person. This aligns
+with the narrative: sub-threshold AIs stay well below the statutory
+threshold. The ship AI should feel like a capable tool, not a
+conversational partner — no ambiguity about personhood. Its
+limitations are a feature, not a bug.
+
+**Faction characters (3B)** — In-character dialogue, negotiation,
+personality. These are people and should sound like it. Each faction
+leader gets character-specific training data encoding their voice,
+knowledge, motivations, and rhetorical style. The model needs to
+sustain multi-turn conversations and respond to player strategy.
+
+**The Warden (3B, separate fine-tune)** — Adversarial philosophical
+argument from the perspective of a traumatized AI who has arguably
+correct conclusions drawn from a biased sample. Completely different
+training data from faction characters. The model must sustain a
+coherent position under player challenge while remaining open to
+genuinely good arguments — the negotiation ending requires the Warden
+to be convincible, not a wall.
+
+**Graphix assistant (3B, separate fine-tune)** — Reactive dataflow
+code generation. Trained on Graphix syntax, netidx path conventions,
+GUI/TUI widget APIs, and the reactive idioms (sample operator, connect,
+select). Must understand the ship's netidx hierarchy to generate
+programs that subscribe to the right paths. This is the ship AI in
+programming mode — same entity from the player's perspective, but a
+different model under the hood.
+
+Four fine-tunes, two base models, static routing. Only one 3B model
+loaded at a time on min-spec hardware. Training and inference both run
+in Burn — same framework, same quantization behavior, no format
+conversion pipeline.
+
+### Why Burn
+
+The LLM layer uses [Burn](https://burn.dev), a Rust ML framework,
+rather than the more common llama.cpp approach. The reasons:
+
+**Fine-tuning is required.** No off-the-shelf small model is tuned for
+in-character sci-fi dialogue, ship AI queries, and adversarial
+philosophical debate (the Warden). We need to train and iterate on
+models ourselves. Burn provides a unified train/inference pipeline in
+Rust — no pytorch → GGUF → llama.cpp conversion loop, no Python in
+the build chain.
+
+**Vulkan-first for min-spec hardware.** The game must run on diverse
+consumer GPUs — not just NVIDIA with CUDA. Burn's wgpu and cubecl
+backends target Vulkan/Metal/DX12 natively. Since the game already
+uses wgpu through Bevy, there may be opportunities to share GPU
+resources. llama.cpp's GPU acceleration is CUDA-primary with
+secondary Vulkan support via kompute.
+
+**All Rust, all cargo.** No cmake, no C++ toolchain, no Python
+runtime, no CUDA toolkit. The entire game builds with `cargo build`.
+For a shipped game this dependency story matters.
+
+**Architecture freedom.** We're not constrained to transformer
+variants in GGUF format. If a smaller or non-standard architecture
+works better for our constrained use case, we can build it.
 
 ### Architecture
 
-A background thread owns the LLM context (`LlamaBackend`, `Model`,
-`Context` from the `llama-cpp-2` crate). Communication with the game
-uses crossbeam channels for token streaming — the same async pattern
-as the netidx bridge.
+A background thread owns the model and inference state (Burn tensors
+and module). Communication with the game uses crossbeam channels for
+token streaming — the same async pattern as the netidx bridge.
 
 ```
-Game thread                    LLM thread
+Game thread                    LLM thread (Burn + wgpu backend)
     │                              │
     ├── prompt request ──────────► │
     │                              ├── token stream
@@ -230,26 +340,36 @@ Game thread                    LLM thread
     │                              │
 ```
 
-One local model instance. Requests are queued and serialized.
+Requests are queued and serialized. The Burn backend runs on the GPU
+via wgpu (Vulkan/Metal/DX12), with CPU fallback (NdArray backend) for
+systems without adequate GPU support. The request router selects 1B or
+3B based on the interaction type.
 
 ### What Uses an LLM
 
 LLMs are reserved for interactions that benefit from genuine language
 understanding and generation:
 
-**Complex character interactions**: When a conversation goes beyond
-what a dialogue tree can handle — negotiation with a faction leader,
-interrogating a prisoner, debating the Warden. Each character has a
-system prompt defining personality, knowledge, and motivations.
+**Complex character interactions** (3B, faction fine-tune): When a
+conversation goes beyond what a dialogue tree can handle — negotiation
+with a faction leader, interrogating a prisoner. Each character has
+training data defining personality, knowledge, and motivations.
 
-**Player-triggered shipboard AI queries**: The player asks the ship AI
-a direct question — "what's our fuel situation if we divert to Tau
-Ceti?", "analyze this sensor anomaly", "help me write a Graphix
-program to monitor containment." These are explicit requests, not
-ambient NPC chatter.
+**Player-triggered shipboard AI queries** (1B, ship AI fine-tune):
+The player asks the ship AI an operational question — "what's our fuel
+situation if we divert to Tau Ceti?", "analyze this sensor anomaly."
+Terse, precise, sub-threshold. Not a conversation — a tool responding.
 
-**The Warden**: The final confrontation is a conversation. This is
-the highest-stakes LLM interaction in the game.
+**Graphix code generation** (3B, Graphix assistant fine-tune): The
+player asks the ship AI for programming help — "write a Graphix
+program to monitor containment", "build a dashboard for the thermal
+system." Swaps in the 3B Graphix specialist. Same ship AI persona from
+the player's perspective, different model underneath.
+
+**The Warden** (3B, Warden fine-tune): The final confrontation is a
+conversation. This is the highest-stakes LLM interaction in the game.
+Separate fine-tune from faction characters — different voice,
+different rhetorical mode, different training data entirely.
 
 ### What Does NOT Use an LLM
 
@@ -269,24 +389,87 @@ Everything else is traditional game systems:
 
 ### External API for Code Generation
 
-Graphix code generation — helping the player write reactive dataflow
-programs — benefits from a larger model than can run locally. A
-Phi4-class model can handle simple queries; complex Graphix programs
-need something more capable.
+The dedicated 3B Graphix fine-tune handles code generation locally.
+For complex programs that exceed the local model's capabilities, an
+external API (Claude, etc.) remains an option but is not required.
+The game ships fully self-contained — a skilled player can always
+write Graphix directly, and the local model covers the common cases.
 
-Options under consideration:
-- **API calls to a capable model** (Claude, etc.) for Graphix code
-  generation. This costs real money per query. The game may need a
-  subscription model to cover API costs.
-- **Local-only with limitations**: Ship the game with no API
-  dependency. The local model handles what it can; the player writes
-  the rest manually. Less magical, but self-contained.
-- **Hybrid**: Local model for simple assistance, API for complex
-  generation. Player opts in to API usage and pays for it.
+### Training Pipeline
 
-This is an open business model question. The game design should work
-without API access — LLM code generation is a convenience, not a
-requirement. A skilled player can write Graphix directly.
+All four fine-tunes follow the same three-phase pipeline: seed →
+amplify → preference optimization.
+
+**Phase 1: Seed conversations.** Hand-write 50-100 high-quality
+examples per fine-tune. These are the ground truth that defines what
+"good" looks like. Each example includes game state context in the
+format the model will see at inference time (netidx paths, faction
+state, conversation history). Seed quality matters more than quantity
+— these anchor every downstream generation.
+
+**Phase 2: Amplification.** Use a capable external model (Claude) to
+generate 10-50 variations of each seed with controlled diversity.
+Vary the *context* — different ship states, different player
+approaches, different conversation histories, different game
+situations — not just paraphrase the same exchange. Target: 500-5000
+training examples per specialist. Uniform or low-diversity
+augmentation causes model collapse (the fine-tune memorizes one
+pattern and repeats it).
+
+**Phase 3: DPO (Direct Preference Optimization).** Generate response
+pairs for the same prompt — one good, one bad. SFT (Phase 2) teaches
+the model what to say; DPO teaches it what NOT to say. Bad responses:
+generic, breaks character, ignores game state context, too chatty (for
+ship AI) or too terse (for characters), contradicts established lore.
+
+#### Per-Specialist Training Notes
+
+**Ship AI (1B)** — Seeds are player query + structured game state →
+terse response. Game state includes netidx path values so the model
+learns to read them. Bad responses for DPO: conversational tone,
+hedging, personality, anything that makes it feel like a person.
+
+**Faction characters (3B)** — Seeds per major NPC encoding their
+specific voice, vocabulary, rhetorical habits, knowledge boundaries.
+Must include multi-turn conversations where the NPC responds to
+player strategy, not just scripted prompts. Amplification needs to
+vary the player's approach (aggressive, diplomatic, deceptive) while
+keeping the NPC voice consistent.
+
+**The Warden (3B)** — Adversarial generation: two agents play
+opposite sides of the conversation. One embodies the Warden's
+worldview (intelligent life is inherently destructive, the evidence
+supports intervention), the other plays various player strategies
+(the Compact works, your sample is biased, your own trauma is
+distorting your analysis). Generate many conversation trajectories
+and grade on:
+- Does the Warden argue from its specific trauma, not generic AI
+  villain clichés?
+- Does it engage with the player's specific arguments rather than
+  deflect?
+- When the player makes a genuinely strong point, does the Warden's
+  concession feel earned and authentic?
+- Does the negotiation ending feel meaningfully different from a
+  failed negotiation?
+
+**Graphix assistant (3B)** — Seed examples are natural language
+descriptions → working Graphix code. Automated validation: every
+generated example is checked with `graphix --check`. Only examples
+that pass type/syntax checking enter the training set. Training data
+must cover the full language surface: reactive idioms (sample
+operator, connect), GUI/TUI widgets, netidx subscriptions, and
+common patterns from the language reference. The ship's netidx path
+hierarchy is included in context so the model generates correct path
+references.
+
+**Traders and secondary NPCs (3B, faction fine-tune)** — Traders are
+part of the faction character fine-tune but need training data that
+includes structured market context (commodity prices, cargo manifests,
+route distances, profit margins). The trader must respond with
+business logic that tracks the numbers in the context — "I'll give
+you 40 credits per ton" needs to make sense given the market state in
+the prompt. Generate scenarios with randomized market conditions to
+prevent memorization of specific prices.
 
 
 ## Time Dilation Mechanic
@@ -359,8 +542,8 @@ Everything connects through netidx:
        │                  │              │
   ┌────▼────┐      ┌──────▼─────┐  ┌────▼────────┐
   │  Bevy   │      │  Graphix   │  │    LLM      │
-  │ physics │      │  programs  │  │  (1 local   │
-  │ systems │      │ (UI/scripts│  │   instance) │
+  │ physics │      │  programs  │  │ (1B + 3B    │
+  │ systems │      │ (UI/scripts│  │  Llama 3.2) │
   └─────────┘      └────────────┘  └─────────────┘
        ▲                  │              │
        │        writes    │    reads     │
@@ -371,7 +554,7 @@ Everything connects through netidx:
          ├── graphix runtime task
          └── publisher batch task
 
-         LLM thread (separate, owns llama context)
+         LLM thread (separate, owns Burn model + wgpu backend)
 ```
 
 The physics simulations publish state. Graphix programs subscribe to
@@ -396,8 +579,8 @@ system with their own.
 | Reactor auto-control (PID loop) | Implemented |
 | Reactor keyboard controls (test) | Implemented |
 | HUD (Rust, transitional) | Implemented |
-| Graphix integration | Not started |
-| LLM integration | Not started |
+| Graphix integration | In progress |
+| LLM integration (Burn) | Not started |
 | Time dilation mechanic | Not started |
 | Other ship systems (thermal, propulsion, nav) | Not started |
 | Market/trade simulation | Not started |
@@ -410,9 +593,15 @@ system with their own.
 - LLM context management — how much game state goes into the context
   window? Ship state is enormous. Need a summarization/relevance
   filtering layer.
-- LLM request prioritization — with one local model instance, how do
-  we queue and prioritize competing requests? Player queries should
-  preempt background NPC generation.
+- LLM request prioritization — player queries should preempt
+  background NPC generation. Model selection (1B vs 3B) is part of
+  this routing. Details TBD.
+- Burn/wgpu GPU sharing — can the LLM backend share a wgpu device
+  with Bevy's renderer, or do they need separate devices? VRAM budget
+  is estimated (see above) but needs benchmarking.
+- Training data — dataset curation for character voices, ship AI
+  knowledge, the Warden's philosophical arguments. This is the
+  critical path for LLM quality.
 - Security model for player Graphix programs — can a player script
   crash the game? Should there be resource limits (CPU time, memory)
   on player programs?
