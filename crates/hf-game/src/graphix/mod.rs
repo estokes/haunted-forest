@@ -52,7 +52,7 @@ pub struct ScreenInteraction {
     pub modifiers: ModifiersState,
 }
 
-const HELM_GX: &str = include_str!("../../assets/gui/helm.gx");
+const HELM_GX: &str = include_str!("../../../../assets/gui/helm.gx");
 
 fn start_graphix(infra: &NetInfra) -> Result<GraphixRuntime> {
     let publisher = infra.publisher();

@@ -19,8 +19,7 @@ pub(crate) fn register<X: GXExt>(
     graphix_package_array::P::register(ctx, modules, &mut root_mods)?;
     graphix_package_str::P::register(ctx, modules, &mut root_mods)?;
     graphix_package_map::P::register(ctx, modules, &mut root_mods)?;
-    graphix_package_time::P::register(ctx, modules, &mut root_mods)?;
-    graphix_package_net::P::register(ctx, modules, &mut root_mods)?;
+    graphix_package_sys::P::register(ctx, modules, &mut root_mods)?;
     graphix_package_gui::P::register(ctx, modules, &mut root_mods)?;
     let mut parts = Vec::new();
     for name in &root_mods {

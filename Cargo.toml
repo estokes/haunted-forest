@@ -1,5 +1,8 @@
-[package]
-name = "haunted-forest"
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
 version = "0.1.0"
 edition = "2024"
 
@@ -7,7 +10,7 @@ edition = "2024"
 opt-level = "s"
 lto = "thin"
 
-[dependencies]
+[workspace.dependencies]
 anyhow = "1"
 arcstr = { version = "1", features = ["serde"] }
 bevy = "0.18.0"
@@ -26,29 +29,19 @@ netidx-protocols = { version = "0.31", path = "../netidx/netidx-protocols" }
 netidx-value = { version = "0.31", path = "../netidx/netidx-value" }
 
 # graphix
-graphix-compiler = { version = "0.6.0", path = "../graphix/graphix-compiler" }
-graphix-rt = { version = "0.6.0", path = "../graphix/graphix-rt" }
-graphix-package = { version = "0.6.0", path = "../graphix/graphix-package" }
-graphix-package-core = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-core" }
-graphix-package-array = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-array" }
-graphix-package-str = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-str" }
-graphix-package-map = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-map" }
-graphix-package-time = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-time" }
-graphix-package-net = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-net" }
-graphix-package-gui = { version = "0.6.0", path = "../graphix/stdlib/graphix-package-gui" }
+graphix-compiler = { version = "0.7.0", path = "../graphix/graphix-compiler" }
+graphix-rt = { version = "0.7.0", path = "../graphix/graphix-rt" }
+graphix-package = { version = "0.7.0", path = "../graphix/graphix-package" }
+graphix-package-core = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-core" }
+graphix-package-array = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-array" }
+graphix-package-str = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-str" }
+graphix-package-map = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-map" }
+graphix-package-sys = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-sys" }
+graphix-package-gui = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-gui" }
 
-# Burn ML framework (LLM inference) — GPU via wgpu backend
-# NOTE: burn-wgpu uses wgpu 26 (via cubecl), Bevy uses wgpu 27. Two device
-# instances coexist fine — no GPU buffer sharing needed, only text tokens
-# cross the thread boundary via crossbeam channels.
+# Burn ML framework
 burn = { version = "=0.20.0", features = ["wgpu"] }
-
-# naga 26 (transitive via burn → cubecl → wgpu 26) needs termcolor feature
-# to match its codespan-reporting dependency. Without it, naga tries to pass
-# String to WriteColor. naga 27 (Bevy) gets this from wgpu 27 automatically.
 naga = { version = "26", features = ["termcolor"] }
-
-# Burn LM (Llama models) — local checkout, crates.io v0.0.1 is stale
 burn-lm-llama = { path = "../burn-lm/crates/burn-lm-llama", features = ["llama3"] }
 burn-lm-inference = { path = "../burn-lm/crates/burn-lm-inference" }
 
@@ -60,3 +53,7 @@ iced_runtime = "0.14"
 iced_wgpu = "0.14"
 iced_widget = "0.14"
 winit = { version = "0.30", features = ["rwh_06"] }
+
+# workspace crates
+hf-llm = { path = "crates/hf-llm" }
+hf-model = { path = "crates/hf-model" }

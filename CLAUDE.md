@@ -9,27 +9,28 @@ Haunted Forest is a sci-fi space game built with Bevy (0.18) and Rust (edition 2
 ## Build & Run
 
 ```bash
-cargo build          # build (uses opt-level="s" + thin LTO in dev)
-cargo run            # run the game
-cargo check          # type-check without building
-cargo clippy         # lint
-cargo test           # run tests
-cargo test <name>    # run a single test by name
+cargo build                    # build all crates
+cargo run -p hf-game           # run the game
+cargo check                    # type-check all crates
+cargo check -p hf-model        # type-check a specific crate
+cargo clippy                   # lint
+cargo test                     # run tests
+cargo test <name>              # run a single test by name
 ```
 
-**Path dependencies**: The project depends on local checkouts of `netidx` (at `../netidx/`) and `graphix` (at `../graphix/`). These must be present for compilation. The path deps must match graphix's workspace to ensure type identity across crates.
+**Path dependencies**: The project depends on local checkouts of `netidx` (at `../netidx/`), `graphix` (at `../graphix/`), and `burn-lm` (at `../burn-lm/`). These must be present for compilation. The path deps must match graphix's workspace to ensure type identity across crates.
 
 ## Architecture
 
 ### Four-Layer Design
 
-1. **Ship Systems (Bevy ECS)** — Physics simulations running at `FixedUpdate`. Each system publishes state and accepts control through netidx. The reactor (`src/ship/reactor.rs`) is the first implemented system.
+1. **Ship Systems (Bevy ECS)** — Physics simulations running at `FixedUpdate`. Each system publishes state and accepts control through netidx. The reactor (`crates/hf-game/src/ship/reactor.rs`) is the first implemented system.
 
-2. **netidx (Data Fabric)** — In-process pub/sub hierarchy at paths like `/ship/reactor/plasma/temperature`. Values can be read-only or writable (bidirectional control). The `NetBridge` (`src/net/bridge.rs`) connects Bevy's sync ECS to netidx's async runtime via crossbeam channels.
+2. **netidx (Data Fabric)** — In-process pub/sub hierarchy at paths like `/ship/reactor/plasma/temperature`. Values can be read-only or writable (bidirectional control). The `NetBridge` (`crates/hf-game/src/net/bridge.rs`) connects Bevy's sync ECS to netidx's async runtime via crossbeam channels.
 
-3. **Graphix (Reactive UI/Scripting)** — Reactive dataflow language for building interfaces and player scripts. Runs as a tokio task sharing the same runtime and netidx pub/sub as the NetBridge. Integration in `src/graphix/`.
+3. **Graphix (Reactive UI/Scripting)** — Reactive dataflow language for building interfaces and player scripts. Runs as a tokio task sharing the same runtime and netidx pub/sub as the NetBridge. Integration in `crates/hf-game/src/graphix/`.
 
-4. **LLM (Character Interactions)** — Not yet implemented. Will use Burn (Rust ML framework) with wgpu backend for local model inference and fine-tuning. Runs on a separate thread with crossbeam channel token streaming.
+4. **LLM (Character Interactions)** — Bevy plugin in `crates/hf-llm/` bridges game to LLM inference via crossbeam channels. Model implementation (1-bit Qwen3/Bonsai) will live in `crates/hf-model/`.
 
 ### Key Resource Flow
 
@@ -54,13 +55,16 @@ The project bridges Bevy (sync, single-threaded ECS) to tokio (async) using:
 
 Ship state is published under `/ship/<system>/<subsystem>/<value>`. Writable control paths go under `.../control/`. The hierarchy mirrors the ship's physical structure. See `book/architecture.md` for the full path tree.
 
-## Source Layout
+## Source Layout (Cargo Workspace)
 
-- `src/main.rs` — App setup, plugin registration, `GameState` enum
-- `src/net/` — `NetInfra` (tokio runtime + netidx), `NetBridge` (pub/sub/write bridge)
-- `src/graphix/` — Graphix runtime integration, stdlib package registration
-- `src/ship/` — Ship systems: `reactor.rs` (physics + auto-control + publish), `bridge.rs` (3D bridge room), `hud.rs` (reactor HUD via netidx subscriptions)
-- `src/player/` — First-person controller (camera, movement, cursor grab)
+- `crates/hf-game/` — Binary crate: the Bevy game
+  - `src/main.rs` — App setup, plugin registration, `GameState` enum
+  - `src/net/` — `NetInfra` (tokio runtime + netidx), `NetBridge` (pub/sub/write bridge)
+  - `src/graphix/` — Graphix runtime integration, iced offscreen rendering, input routing
+  - `src/ship/` — Ship systems: `reactor.rs` (physics + auto-control + publish), `bridge.rs` (3D bridge room), `hud.rs` (reactor HUD via netidx subscriptions)
+  - `src/player/` — First-person controller (camera, movement, cursor grab)
+- `crates/hf-llm/` — Library crate: Bevy LLM plugin, crossbeam bridge, request/response types
+- `crates/hf-model/` — Library crate: 1-bit model implementation (GGUF, Qwen3, BitLinear, training). No Bevy dependency.
 - `book/` — World bible and design docs (setting, architecture, ship systems, narrative)
 
 ## World & Design Docs

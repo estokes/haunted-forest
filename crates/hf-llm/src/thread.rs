@@ -9,7 +9,7 @@ use burn_lm_inference::{InferenceJob, InferenceJobListener, InferenceTask};
 use burn_lm_llama::{LlamaConfig, generation::Sampler, tokenizer::Tiktoken};
 use crossbeam_channel::{Receiver, Sender};
 
-use super::types::*;
+use crate::*;
 
 type B = Wgpu;
 type LlamaModel = burn_lm_llama::Llama<B, Tiktoken>;
