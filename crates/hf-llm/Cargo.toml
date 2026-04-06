@@ -8,9 +8,6 @@ anyhow.workspace = true
 bevy.workspace = true
 crossbeam-channel.workspace = true
 log.workspace = true
-
 burn.workspace = true
-burn-lm-llama.workspace = true
-burn-lm-inference.workspace = true
 
 hf-model.workspace = true

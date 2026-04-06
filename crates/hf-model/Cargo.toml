@@ -5,3 +5,11 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+burn.workspace = true
+burn-cubecl.workspace = true
+burn-backend.workspace = true
+burn-std.workspace = true
+cubecl.workspace = true
+half.workspace = true
+memmap2.workspace = true
+log.workspace = true

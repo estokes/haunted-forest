@@ -39,11 +39,13 @@ graphix-package-map = { version = "0.7.0", path = "../graphix/stdlib/graphix-pac
 graphix-package-sys = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-sys" }
 graphix-package-gui = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-gui" }
 
-# Burn ML framework
-burn = { version = "=0.20.0", features = ["wgpu"] }
-naga = { version = "26", features = ["termcolor"] }
-burn-lm-llama = { path = "../burn-lm/crates/burn-lm-llama", features = ["llama3"] }
-burn-lm-inference = { path = "../burn-lm/crates/burn-lm-inference" }
+# Burn ML framework — local checkout for development/PRs
+# default-features = false avoids burn-cuda's fusion wrapper so Cuda = CubeBackend directly
+burn = { path = "../burn/crates/burn", default-features = false, features = ["std", "cuda", "cubecl"] }
+burn-cubecl = { path = "../burn/crates/burn-cubecl", default-features = false, features = ["std"] }
+burn-backend = { path = "../burn/crates/burn-backend" }
+burn-std = { path = "../burn/crates/burn-std" }
+cubecl = { git = "https://github.com/tracel-ai/cubecl", default-features = false, rev = "e743e8f7b22b93378bab28b26916f7cf61321ccc", features = ["cuda"] }
 
 # iced (versions must match graphix-package-gui to ensure type identity)
 arboard = "3"
@@ -53,6 +55,10 @@ iced_runtime = "0.14"
 iced_wgpu = "0.14"
 iced_widget = "0.14"
 winit = { version = "0.30", features = ["rwh_06"] }
+
+# utilities
+half = "2"
+memmap2 = "0.9"
 
 # workspace crates
 hf-llm = { path = "crates/hf-llm" }

@@ -1,5 +1,7 @@
 mod thread;
 
+use std::collections::HashMap;
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use bevy::prelude::*;
@@ -43,6 +45,12 @@ pub enum LlmResponse {
     Ready,
 }
 
+/// Configuration for the LLM worker thread.
+pub struct LlmConfig {
+    /// Map from ModelId to GGUF file path.
+    pub model_paths: HashMap<ModelId, PathBuf>,
+}
+
 /// Bevy resource for communicating with the background LLM thread.
 #[derive(Resource)]
 pub struct LlmBridge {
@@ -53,13 +61,13 @@ pub struct LlmBridge {
 }
 
 impl LlmBridge {
-    fn start() -> Self {
+    fn start(config: LlmConfig) -> Self {
         let (req_tx, req_rx) = unbounded::<LlmRequest>();
         let (resp_tx, resp_rx) = unbounded::<LlmResponse>();
 
         std::thread::Builder::new()
             .name("llm-worker".into())
-            .spawn(move || thread::run(req_rx, resp_tx))
+            .spawn(move || thread::run(req_rx, resp_tx, config))
             .expect("failed to spawn LLM thread");
 
         Self {
@@ -117,7 +125,14 @@ pub struct LlmPlugin;
 
 impl Plugin for LlmPlugin {
     fn build(&self, app: &mut App) {
-        let bridge = LlmBridge::start();
+        let mut model_paths = HashMap::new();
+        // TODO: read from game config file
+        model_paths.insert(
+            ModelId::ShipAi,
+            PathBuf::from("/home/eric/projb/Bonsai-1.7B-gguf/Bonsai-1.7B.gguf"),
+        );
+        let config = LlmConfig { model_paths };
+        let bridge = LlmBridge::start(config);
         app.insert_resource(bridge)
             .add_systems(Update, drain_llm_responses);
     }

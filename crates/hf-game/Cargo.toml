@@ -42,7 +42,4 @@ iced_wgpu.workspace = true
 iced_widget.workspace = true
 winit.workspace = true
 
-# naga 26 (transitive via burn → cubecl → wgpu 26) needs termcolor feature
-naga.workspace = true
-
 hf-llm.workspace = true
