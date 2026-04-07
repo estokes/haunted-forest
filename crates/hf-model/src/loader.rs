@@ -52,14 +52,31 @@ fn load_weights(
     load_norm(gguf, "output_norm.weight", &mut model.final_norm, device)?;
 
     // lm_head: use output.weight if present, otherwise tie with embedding
-    if gguf.get_tensor("output.weight").is_some() {
-        load_linear_f32(gguf, "output.weight", &mut model.lm_head, device)?;
+    if let Some(info) = gguf.get_tensor("output.weight") {
+        let mut lin = burn::nn::LinearConfig::new(cfg.d_model, cfg.vocab_size)
+            .with_bias(false)
+            .init(device);
+        let f32_data = dequantize_tensor(gguf, info)?;
+        let ne0 = info.dims[0] as usize;
+        let ne1 = info.dims[1] as usize;
+        let tensor = Tensor::<B, 2>::from_data(
+            TensorData::new(f32_data, Shape::from([ne1, ne0])), device,
+        ).transpose();
+        lin.weight = Param::from_tensor(tensor);
+        lin.bias = None;
+        model.lm_head = crate::qwen3::LmHead::Linear(lin);
     } else {
-        let embd_weight = model.embedding.weight.val();
-        let lm_weight = embd_weight.transpose();
-        model.lm_head.weight = Param::from_tensor(lm_weight);
-        model.lm_head.bias = None;
-        log::info!("lm_head tied with token_embd");
+        // Tied: load same tensor as BitLinear for fused GEMV (reads packed data directly)
+        let info = gguf.get_tensor("token_embd.weight")
+            .with_context(|| "missing token_embd.weight for tied lm_head")?;
+        let data = gguf.tensor_data(info);
+        let n_elements = info.n_elements() as usize;
+        let ne0 = info.dims[0] as usize;
+        let ne1 = info.dims[1] as usize;
+        model.lm_head = crate::qwen3::LmHead::BitLinear(
+            BitLinear::from_packed(data, n_elements, [ne0, ne1], device),
+        );
+        log::info!("lm_head tied with token_embd (fused BitLinear, {}MB packed)", n_elements / 8 / 1024 / 1024);
     }
 
     // Per-layer tensors
@@ -226,7 +243,7 @@ mod tests {
         println!("prompt: {prompt:?}");
         println!("input_ids: {input_ids:?}");
 
-        let mut state = crate::qwen3::InferenceState::new(model.config.n_layers);
+        let mut state = crate::qwen3::InferenceState::new(&model.config, &device);
         let params = crate::sample::SampleParams::greedy();
 
         // Prefill
@@ -287,5 +304,94 @@ mod tests {
         if n_decode > 5 {
             println!("  last 5 tokens: {:?}ms", &decode_times_ms[n_decode-5..]);
         }
+    }
+
+    #[test]
+    fn profile_decode_step() {
+        use std::time::Instant;
+
+        let path = Path::new("/home/eric/projb/Bonsai-1.7B-gguf/Bonsai-1.7B.gguf");
+        if !path.exists() {
+            eprintln!("skipping: model file not found");
+            return;
+        }
+
+        let device = burn::backend::cuda::CudaDevice::default();
+        let (model, tokenizer, rope) = load_model(path, &device).unwrap();
+
+        let prompt = "The capital of France is";
+        let input_ids = tokenizer.encode(prompt);
+        let mut state = crate::qwen3::InferenceState::new(&model.config, &device);
+        let params = crate::sample::SampleParams::greedy();
+        let vocab = model.config.vocab_size;
+
+        // Force GPU sync by reading a scalar from a small tensor
+        fn gpu_sync(device: &burn::backend::cuda::CudaDevice) {
+            let t: Tensor<B, 1> = Tensor::zeros([1], device);
+            let _ = t.into_scalar();
+        }
+
+        // Warm up: prefill + 10 decode tokens to compile all kernels
+        let input_tensor = Tensor::<B, 2, burn::tensor::Int>::from_data(
+            TensorData::new(input_ids.iter().map(|&id| id as i64).collect::<Vec<_>>(), [1, input_ids.len()]),
+            &device,
+        );
+        let logits = model.forward(input_tensor, &rope, &mut state);
+        let [_, sl, _] = logits.dims();
+        let last = logits.slice([0..1, (sl-1)..sl, 0..vocab]).reshape([vocab]);
+        let mut token = crate::sample::sample_token(last, &params);
+
+        for _ in 0..10 {
+            let inp = Tensor::<B, 2, burn::tensor::Int>::from_data(
+                TensorData::new(vec![token as i64], [1, 1]), &device,
+            );
+            let logits = model.forward(inp, &rope, &mut state);
+            let logits = logits.reshape([vocab]);
+            token = crate::sample::sample_token(logits, &params);
+        }
+
+        // Profile one decode step with GPU sync between sections
+        gpu_sync(&device);
+
+        let inp = Tensor::<B, 2, burn::tensor::Int>::from_data(
+            TensorData::new(vec![token as i64], [1, 1]), &device,
+        );
+
+        let t0 = Instant::now();
+        let h = model.embedding.forward(inp);
+        gpu_sync(&device);
+        let t_embed = t0.elapsed();
+
+        let pos = state.seq_len;
+        let mut h = h;
+        let t0 = Instant::now();
+        for (i, layer) in model.layers.iter().enumerate() {
+            h = layer.forward(h, &rope, pos, None, &mut state.caches[i]);
+        }
+        gpu_sync(&device);
+        let t_layers = t0.elapsed();
+
+        state.seq_len += 1;
+
+        let t0 = Instant::now();
+        let h = model.final_norm.forward(h);
+        gpu_sync(&device);
+        let t_final_norm = t0.elapsed();
+
+        let t0 = Instant::now();
+        let logits = model.lm_head.forward(h);
+        gpu_sync(&device);
+        let t_lm_head = t0.elapsed();
+
+        let logits = logits.reshape([vocab]);
+        let _ = crate::sample::sample_token(logits, &params);
+
+        let total = t_embed + t_layers + t_final_norm + t_lm_head;
+        println!("--- profile decode step (pos={}) ---", pos);
+        println!("  embedding:  {:>6.2}ms", t_embed.as_secs_f64() * 1000.0);
+        println!("  28 layers:  {:>6.2}ms", t_layers.as_secs_f64() * 1000.0);
+        println!("  final_norm: {:>6.2}ms", t_final_norm.as_secs_f64() * 1000.0);
+        println!("  lm_head:    {:>6.2}ms", t_lm_head.as_secs_f64() * 1000.0);
+        println!("  total:      {:>6.2}ms ({:.1} tok/s)", total.as_secs_f64() * 1000.0, 1000.0 / total.as_secs_f64() / 1000.0);
     }
 }

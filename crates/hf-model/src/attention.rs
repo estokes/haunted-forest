@@ -53,15 +53,31 @@ impl AttentionConfig {
     }
 }
 
-/// Per-layer KV cache for autoregressive generation.
+/// Pre-allocated KV cache for autoregressive generation.
+///
+/// Allocates to max_seq_len upfront; new KV is written at the current
+/// position via slice_assign, avoiding per-token allocation and full-copy.
+/// The Option wrapper allows moving the tensor out to get exclusive ownership,
+/// which lets slice_assign operate in-place (refcount = 1).
 pub struct KvCache {
-    pub k: Option<Tensor<B, 4>>, // [batch, n_kv_heads, cached_seq, d_head]
-    pub v: Option<Tensor<B, 4>>, // [batch, n_kv_heads, cached_seq, d_head]
+    pub k: Option<Tensor<B, 4>>, // [batch, n_kv_heads, max_seq_len, d_head]
+    pub v: Option<Tensor<B, 4>>,
+    pub len: usize,
 }
 
 impl KvCache {
-    pub fn empty() -> Self {
-        KvCache { k: None, v: None }
+    pub fn new(
+        batch: usize,
+        n_kv_heads: usize,
+        max_seq_len: usize,
+        d_head: usize,
+        device: &burn::backend::cuda::CudaDevice,
+    ) -> Self {
+        KvCache {
+            k: Some(Tensor::zeros([batch, n_kv_heads, max_seq_len, d_head], device)),
+            v: Some(Tensor::zeros([batch, n_kv_heads, max_seq_len, d_head], device)),
+            len: 0,
+        }
     }
 }
 
@@ -111,16 +127,23 @@ impl Attention {
         let q = rope.apply(q, pos);
         let k = rope.apply(k, pos);
 
-        // Update KV cache
-        let (k, v) = if let (Some(cached_k), Some(cached_v)) = (cache.k.take(), cache.v.take()) {
-            let k = Tensor::cat(vec![cached_k, k], 2);
-            let v = Tensor::cat(vec![cached_v, v], 2);
-            (k, v)
-        } else {
-            (k, v)
-        };
-        cache.k = Some(k.clone());
-        cache.v = Some(v.clone());
+        // Move buffer out to get exclusive ownership (refcount=1), enabling in-place write
+        let pos_end = pos + seq_len;
+        let k_buf = cache.k.take().unwrap().slice_assign(
+            [0..batch, 0..self.n_kv_heads, pos..pos_end, 0..self.d_head],
+            k,
+        );
+        let v_buf = cache.v.take().unwrap().slice_assign(
+            [0..batch, 0..self.n_kv_heads, pos..pos_end, 0..self.d_head],
+            v,
+        );
+        cache.len = pos_end;
+
+        // Slice active portion (zero-copy view), then put buffer back
+        let k = k_buf.clone().slice([0..batch, 0..self.n_kv_heads, 0..pos_end, 0..self.d_head]);
+        let v = v_buf.clone().slice([0..batch, 0..self.n_kv_heads, 0..pos_end, 0..self.d_head]);
+        cache.k = Some(k_buf);
+        cache.v = Some(v_buf);
 
         // GQA: repeat KV heads to match Q heads
         let (k, v) = if self.n_q_heads != self.n_kv_heads {

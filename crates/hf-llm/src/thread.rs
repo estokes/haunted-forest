@@ -137,7 +137,7 @@ fn generate(
     cancel: &AtomicBool,
 ) {
     let input_ids = m.tokenizer.encode(prompt);
-    let mut state = InferenceState::new(m.model.config.n_layers);
+    let mut state = InferenceState::new(&m.model.config, device);
     let vocab = m.model.config.vocab_size;
 
     let params = if temperature == 0.0 {

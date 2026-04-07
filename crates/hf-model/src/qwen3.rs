@@ -117,8 +117,25 @@ pub struct Qwen3Model {
     pub embedding: Embedding<B>,
     pub layers: Vec<Qwen3Block>,
     pub final_norm: FusedRmsNorm,
-    pub lm_head: Linear<B>,
+    /// lm_head as BitLinear when tied to embedding (reads packed Q1_0_g128 directly).
+    /// Falls back to Linear<B> for untied models with f32 output.weight.
+    pub lm_head: LmHead,
     pub config: ModelConfig,
+}
+
+#[derive(Debug)]
+pub enum LmHead {
+    BitLinear(BitLinear),
+    Linear(Linear<B>),
+}
+
+impl LmHead {
+    pub fn forward<const D: usize>(&self, input: Tensor<B, D>) -> Tensor<B, D> {
+        match self {
+            LmHead::BitLinear(bl) => bl.forward(input),
+            LmHead::Linear(lin) => lin.forward(input),
+        }
+    }
 }
 
 /// Inference state: KV caches for all layers.
@@ -128,9 +145,11 @@ pub struct InferenceState {
 }
 
 impl InferenceState {
-    pub fn new(n_layers: usize) -> Self {
+    pub fn new(cfg: &ModelConfig, device: &burn::backend::cuda::CudaDevice) -> Self {
         InferenceState {
-            caches: (0..n_layers).map(|_| KvCache::empty()).collect(),
+            caches: (0..cfg.n_layers).map(|_| {
+                KvCache::new(1, cfg.n_kv_heads, cfg.max_seq_len, cfg.d_head, device)
+            }).collect(),
             seq_len: 0,
         }
     }
@@ -146,8 +165,9 @@ impl Qwen3Model {
         Qwen3Model {
             embedding: EmbeddingConfig::new(cfg.vocab_size, cfg.d_model).init(device),
             layers,
+            // Placeholder — loader will replace with BitLinear (tied) or Linear (untied)
             final_norm: FusedRmsNorm::empty(cfg.d_model, cfg.rms_norm_eps, device),
-            lm_head: LinearConfig::new(cfg.d_model, cfg.vocab_size).with_bias(false).init(device),
+            lm_head: LmHead::Linear(LinearConfig::new(cfg.d_model, cfg.vocab_size).with_bias(false).init(device)),
             config: cfg.clone(),
         }
     }

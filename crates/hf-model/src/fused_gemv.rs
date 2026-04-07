@@ -17,6 +17,16 @@ use burn_backend::{DType, Shape, TensorMetadata};
 /// All 32 threads load the same 4 packed u32 words (L1 broadcast), each
 /// thread extracts its bit, multiplies by scale and input, then plane_sum
 /// reduces across the warp.
+/// Fused 1-bit dequant + GEMV kernel (multi-warp).
+///
+/// Each block has WARPS_PER_BLOCK warps (128 threads for 4 warps).
+/// Each warp computes one output element independently.
+/// All warps in a block read the same input row → shared L1 cache.
+///
+/// CUBE_POS_X = block index for output columns (each block handles WARPS_PER_BLOCK columns)
+/// CUBE_POS_Y = input row
+/// UNIT_POS_X = lane within warp (0..31)
+/// UNIT_POS_Y = warp index within block (0..WARPS_PER_BLOCK-1)
 #[cube(launch_unchecked)]
 fn q1_fused_gemv<F: Float>(
     packed: &Tensor<u32>,
@@ -24,16 +34,24 @@ fn q1_fused_gemv<F: Float>(
     input: &Tensor<F>,
     output: &mut Tensor<F>,
     #[comptime] blocks_per_row: u32,
+    #[comptime] warps_per_block: u32,
     d_in: u32,
     d_out: u32,
 ) {
-    let j = CUBE_POS_X as usize;
+    let warp_id = UNIT_POS_Y;
+    let j = (CUBE_POS_X * warps_per_block + warp_id) as usize;
     let row = CUBE_POS_Y as usize;
-    let tid = UNIT_POS as usize;
+    let lane = UNIT_POS_X as usize;
+
+    let d_out_us = d_out as usize;
+
+    // Guard: last block may have fewer than warps_per_block valid outputs
+    if j >= d_out_us {
+        terminate!();
+    }
 
     let blocks_per_row_us = blocks_per_row as usize;
     let d_in_us = d_in as usize;
-    let d_out_us = d_out as usize;
 
     let mut sum = F::new(0.0);
 
@@ -53,13 +71,13 @@ fn q1_fused_gemv<F: Float>(
         let w2 = packed[wb + 2];
         let w3 = packed[wb + 3];
 
-        let tid32 = UNIT_POS;
-        let s0 = F::cast_from((w0 >> tid32) & 1u32) * two - one;
-        let s1 = F::cast_from((w1 >> tid32) & 1u32) * two - one;
-        let s2 = F::cast_from((w2 >> tid32) & 1u32) * two - one;
-        let s3 = F::cast_from((w3 >> tid32) & 1u32) * two - one;
+        let lane32 = UNIT_POS_X;
+        let s0 = F::cast_from((w0 >> lane32) & 1u32) * two - one;
+        let s1 = F::cast_from((w1 >> lane32) & 1u32) * two - one;
+        let s2 = F::cast_from((w2 >> lane32) & 1u32) * two - one;
+        let s3 = F::cast_from((w3 >> lane32) & 1u32) * two - one;
 
-        let base = input_base + b * 128 + tid;
+        let base = input_base + b * 128 + lane;
         let x0 = input[base];
         let x1 = input[base + 32];
         let x2 = input[base + 64];
@@ -68,9 +86,10 @@ fn q1_fused_gemv<F: Float>(
         sum += scale * (s0 * x0 + s1 * x1 + s2 * x2 + s3 * x3);
     }
 
+    // plane_sum operates per-warp (CUDA warp shuffle is per-warp)
     sum = plane_sum(sum);
 
-    if UNIT_POS == 0u32 {
+    if UNIT_POS_X == 0u32 {
         output[row * d_out_us + j] = sum;
     }
 }
@@ -110,8 +129,10 @@ pub fn launch<R: CubeRuntime>(
         DType::U32,
     );
 
-    let cube_dim = CubeDim::new_1d(32);
-    let cube_count = CubeCount::new_2d(d_out as u32, n_rows as u32);
+    let warps_per_block: u32 = 4;
+    let cube_dim = CubeDim::new_2d(32, warps_per_block);
+    let blocks_x = (d_out as u32 + warps_per_block - 1) / warps_per_block;
+    let cube_count = CubeCount::new_2d(blocks_x, n_rows as u32);
 
     unsafe {
         q1_fused_gemv::launch_unchecked::<f32, R>(
@@ -123,6 +144,7 @@ pub fn launch<R: CubeRuntime>(
             input.into_tensor_arg(),
             output.clone().into_tensor_arg(),
             blocks_per_row as u32,
+            warps_per_block,
             d_in as u32,
             d_out as u32,
         );
