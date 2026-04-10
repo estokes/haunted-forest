@@ -41,11 +41,11 @@ graphix-package-gui = { version = "0.7.0", path = "../graphix/stdlib/graphix-pac
 
 # Burn ML framework — local checkout for development/PRs
 # default-features = false avoids burn-cuda's fusion wrapper so Cuda = CubeBackend directly
-burn = { path = "../burn/crates/burn", default-features = false, features = ["std", "cuda", "cubecl"] }
+burn = { path = "../burn/crates/burn", default-features = false, features = ["std", "cuda", "cubecl", "autotune", "autodiff"] }
 burn-cubecl = { path = "../burn/crates/burn-cubecl", default-features = false, features = ["std"] }
 burn-backend = { path = "../burn/crates/burn-backend" }
 burn-std = { path = "../burn/crates/burn-std" }
-cubecl = { git = "https://github.com/tracel-ai/cubecl", default-features = false, rev = "e743e8f7b22b93378bab28b26916f7cf61321ccc", features = ["cuda"] }
+cubecl = { path = "../cubecl/crates/cubecl", default-features = false, features = ["cuda"] }
 
 # iced (versions must match graphix-package-gui to ensure type identity)
 arboard = "3"
@@ -63,3 +63,17 @@ memmap2 = "0.9"
 # workspace crates
 hf-llm = { path = "crates/hf-llm" }
 hf-model = { path = "crates/hf-model" }
+
+# Patch cubecl to use local checkout with u32→u64 overflow fix in memory allocator
+[patch."https://github.com/tracel-ai/cubecl"]
+cubecl = { path = "../cubecl/crates/cubecl" }
+cubecl-common = { path = "../cubecl/crates/cubecl-common" }
+cubecl-zspace = { path = "../cubecl/crates/cubecl-zspace" }
+cubecl-core = { path = "../cubecl/crates/cubecl-core" }
+cubecl-runtime = { path = "../cubecl/crates/cubecl-runtime" }
+cubecl-cuda = { path = "../cubecl/crates/cubecl-cuda" }
+cubecl-ir = { path = "../cubecl/crates/cubecl-ir" }
+cubecl-opt = { path = "../cubecl/crates/cubecl-opt" }
+cubecl-macros = { path = "../cubecl/crates/cubecl-macros" }
+cubecl-std = { path = "../cubecl/crates/cubecl-std" }
+cubecl-macros-internal = { path = "../cubecl/crates/cubecl-macros-internal" }

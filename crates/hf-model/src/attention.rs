@@ -1,8 +1,10 @@
-use burn::nn::RotaryEncoding;
 use burn::tensor::Tensor;
+use burn::tensor::module::attention;
+use burn_backend::ops::AttentionModuleOptions;
 
 use crate::B;
 use crate::bit_linear::BitLinear;
+use crate::fused_rope::FusedRoPE;
 use crate::fused_rms_norm::FusedRmsNorm;
 
 /// Grouped Query Attention with per-head QK normalization.
@@ -23,7 +25,6 @@ pub struct Attention {
     pub n_q_heads: usize,
     pub n_kv_heads: usize,
     pub d_head: usize,
-    pub scale: f64,
 }
 
 /// Configuration for constructing an Attention module (used during weight loading).
@@ -48,7 +49,6 @@ impl AttentionConfig {
             n_q_heads: self.n_q_heads,
             n_kv_heads: self.n_kv_heads,
             d_head: self.d_head,
-            scale: 1.0 / (self.d_head as f64).sqrt(),
         }
     }
 }
@@ -86,19 +86,19 @@ impl Attention {
     ///
     /// # Arguments
     /// - `x`: [batch, seq_len, d_model]
-    /// - `rope`: rotary position encoding module
+    /// - `rope`: fused rotary position encoding
     /// - `pos`: starting position in sequence (for KV cache / RoPE offset)
-    /// - `mask`: optional causal mask [batch, 1, seq_len, total_seq_len] (additive, -inf for masked)
-    /// - `cache`: optional KV cache (mutated in-place)
+    /// - `is_causal`: whether to apply causal masking (true during prefill, false during decode)
+    /// - `cache`: KV cache (mutated in-place)
     ///
     /// # Returns
     /// Output tensor [batch, seq_len, d_model]
     pub fn forward(
         &self,
         x: Tensor<B, 3>,
-        rope: &RotaryEncoding<B>,
+        rope: &FusedRoPE,
         pos: usize,
-        mask: Option<Tensor<B, 4>>,
+        is_causal: bool,
         cache: &mut KvCache,
     ) -> Tensor<B, 3> {
         let [batch, seq_len, _] = x.dims();
@@ -108,24 +108,23 @@ impl Attention {
         let k = self.k_proj.forward(x.clone());
         let v = self.v_proj.forward(x);
 
-        // Reshape to heads: [b, s, n, d_h] → [b, n, s, d_h]
-        let q = q
-            .reshape([batch, seq_len, self.n_q_heads, self.d_head])
-            .swap_dims(1, 2);
-        let k = k
-            .reshape([batch, seq_len, self.n_kv_heads, self.d_head])
-            .swap_dims(1, 2);
-        let v = v
-            .reshape([batch, seq_len, self.n_kv_heads, self.d_head])
-            .swap_dims(1, 2);
+        // Reshape to heads: [b, s, n, d_h] — d_head is contiguous
+        let q = q.reshape([batch, seq_len, self.n_q_heads, self.d_head]);
+        let k = k.reshape([batch, seq_len, self.n_kv_heads, self.d_head]);
+        let v = v.reshape([batch, seq_len, self.n_kv_heads, self.d_head]);
 
-        // Per-head QK normalization (Qwen3-specific)
+        // Per-head QK normalization (operates on last dim = d_head)
         let q = self.q_norm.forward(q);
         let k = self.k_norm.forward(k);
 
-        // Apply RoPE with position offset
+        // Apply fused RoPE (single kernel per call, operates on contiguous d_head pairs)
         let q = rope.apply(q, pos);
         let k = rope.apply(k, pos);
+
+        // Now swap to [b, n, s, d_h] for attention computation
+        let q = q.swap_dims(1, 2);
+        let k = k.swap_dims(1, 2);
+        let v = v.swap_dims(1, 2);
 
         // Move buffer out to get exclusive ownership (refcount=1), enabling in-place write
         let pos_end = pos + seq_len;
@@ -153,19 +152,14 @@ impl Attention {
             (k, v)
         };
 
-        // Scaled dot-product attention
-        let attn_weights = q.matmul(k.transpose())
-            .mul_scalar(self.scale);
-
-        let attn_weights = if let Some(mask) = mask {
-            attn_weights + mask
-        } else {
-            attn_weights
+        // Scaled dot-product attention via burn's fused attention kernel.
+        // scale=None uses default 1/sqrt(d_head), which avoids the fallback path.
+        // is_causal=true during prefill (seq_len > 1), false during single-token decode.
+        let options = AttentionModuleOptions {
+            is_causal,
+            ..Default::default()
         };
-
-        let attn_weights = burn::tensor::activation::softmax(attn_weights, 3);
-
-        let out = attn_weights.matmul(v);
+        let out = attention(q, k, v, None, None, options);
 
         // Reshape back: [b, n_q, s_q, d_h] → [b, s_q, n_q * d_h]
         let out = out

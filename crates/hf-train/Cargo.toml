@@ -1,0 +1,15 @@
+[package]
+name = "hf-train"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "hf-train"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+burn.workspace = true
+burn-backend.workspace = true
+hf-model.workspace = true
+log.workspace = true

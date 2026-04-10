@@ -2,12 +2,11 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use burn::backend::cuda::CudaDevice;
 use burn::backend::Cuda;
-use burn::nn::RotaryEncoding;
 use burn::tensor::{Int, Tensor, TensorData};
 use crossbeam_channel::{Receiver, Sender};
 
 use hf_model::{
-    InferenceState, Qwen3Model, SampleParams, Tokenizer,
+    FusedRoPE, InferenceState, Qwen3Model, SampleParams, Tokenizer,
     load_model, sample_token,
 };
 
@@ -18,7 +17,7 @@ type B = Cuda;
 struct LoadedModel {
     model: Qwen3Model,
     tokenizer: Tokenizer,
-    rope: RotaryEncoding<B>,
+    rope: FusedRoPE,
     id: ModelId,
 }
 

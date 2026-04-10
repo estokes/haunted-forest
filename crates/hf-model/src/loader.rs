@@ -2,11 +2,11 @@ use std::path::Path;
 
 use anyhow::{bail, Context, Result};
 use burn::module::Param;
-use burn::nn::RotaryEncoding;
 use burn::tensor::{Shape, Tensor, TensorData};
 
 use crate::B;
 use crate::bit_linear::BitLinear;
+use crate::fused_rope::FusedRoPE;
 use crate::gguf::{GgufFile, TensorInfo, GGML_TYPE_F32, GGML_TYPE_Q1_0, GGML_TYPE_Q1_0_G128};
 use crate::quant;
 use crate::qwen3::{ModelConfig, Qwen3Model};
@@ -14,11 +14,11 @@ use crate::tokenizer::Tokenizer;
 
 type Device = burn::backend::cuda::CudaDevice;
 
-/// Load a Bonsai GGUF model, returning the model, tokenizer, and RoPE module.
+/// Load a Bonsai GGUF model, returning the model, tokenizer, and fused RoPE module.
 pub fn load_model(
     path: &Path,
     device: &Device,
-) -> Result<(Qwen3Model, Tokenizer, RotaryEncoding<B>)> {
+) -> Result<(Qwen3Model, Tokenizer, FusedRoPE)> {
     log::info!("loading GGUF: {}", path.display());
 
     let gguf = GgufFile::open(path)?;
@@ -366,7 +366,7 @@ mod tests {
         let mut h = h;
         let t0 = Instant::now();
         for (i, layer) in model.layers.iter().enumerate() {
-            h = layer.forward(h, &rope, pos, None, &mut state.caches[i]);
+            h = layer.forward(h, &rope, pos, false, &mut state.caches[i]);
         }
         gpu_sync(&device);
         let t_layers = t0.elapsed();
@@ -393,5 +393,110 @@ mod tests {
         println!("  final_norm: {:>6.2}ms", t_final_norm.as_secs_f64() * 1000.0);
         println!("  lm_head:    {:>6.2}ms", t_lm_head.as_secs_f64() * 1000.0);
         println!("  total:      {:>6.2}ms ({:.1} tok/s)", total.as_secs_f64() * 1000.0, 1000.0 / total.as_secs_f64() / 1000.0);
+    }
+
+    #[test]
+    fn training_forward_and_loss() {
+        let path = Path::new("/home/eric/projb/Bonsai-1.7B-gguf/Bonsai-1.7B.gguf");
+        if !path.exists() {
+            eprintln!("skipping: model file not found");
+            return;
+        }
+
+        let device = burn::backend::cuda::CudaDevice::default();
+        let (model, tokenizer, rope) = load_model(path, &device).unwrap();
+
+        let prompt = "The capital of France is Paris";
+        let input_ids = tokenizer.encode(prompt);
+        println!("tokens: {input_ids:?} ({} tokens)", input_ids.len());
+
+        // Run training forward
+        let token_tensor = Tensor::<B, 2, burn::tensor::Int>::from_data(
+            TensorData::new(
+                input_ids.iter().map(|&t| t as i64).collect::<Vec<_>>(),
+                [1, input_ids.len()],
+            ),
+            &device,
+        );
+
+        let (logits, acts) = crate::training::forward_with_activations(&model, token_tensor, &rope);
+        let [b, s, v] = logits.dims();
+        println!("logits shape: [{b}, {s}, {v}]");
+        println!("stored {} layer activations", acts.layers.len());
+
+        // Compute loss and gradient
+        let (loss, grad) = crate::training::cross_entropy_loss_and_grad(
+            logits, &input_ids, v,
+        );
+        let [gn, gv] = grad.dims();
+        println!("loss: {loss:.4}");
+        println!("grad shape: [{gn}, {gv}]");
+        println!("grad abs mean: {:.6}", grad.abs().mean().into_scalar());
+
+        assert!(loss > 0.0, "loss should be positive");
+        assert!(loss < 20.0, "loss should be reasonable (not diverged)");
+    }
+
+    #[test]
+    fn training_full_backward() {
+        let path = Path::new("/home/eric/projb/Bonsai-1.7B-gguf/Bonsai-1.7B.gguf");
+        if !path.exists() {
+            eprintln!("skipping: model file not found");
+            return;
+        }
+
+        let device = burn::backend::cuda::CudaDevice::default();
+        let (model, tokenizer, rope) = load_model(path, &device).unwrap();
+
+        let prompt = "The capital of France is Paris";
+        let input_ids = tokenizer.encode(prompt);
+        println!("tokens: {input_ids:?} ({} tokens)", input_ids.len());
+
+        let token_tensor = Tensor::<B, 2, burn::tensor::Int>::from_data(
+            TensorData::new(
+                input_ids.iter().map(|&t| t as i64).collect::<Vec<_>>(),
+                [1, input_ids.len()],
+            ),
+            &device,
+        );
+
+        // Forward
+        let (logits, acts) = crate::training::forward_with_activations(&model, token_tensor, &rope);
+
+        // Loss + grad
+        let (loss, grad_logits) = crate::training::cross_entropy_loss_and_grad(
+            logits, &input_ids, model.config.vocab_size,
+        );
+        println!("loss: {loss:.4}");
+
+        // Backward through head + norm
+        let t0 = std::time::Instant::now();
+        let (mut grad, _lm_grad) = crate::training::backward_head_and_norm(
+            grad_logits, &model, &acts, &model.config,
+        );
+
+        // Backward through all layers
+        let cfg = &model.config;
+        let mut last_layer_grads = None;
+        for i in (0..cfg.n_layers).rev() {
+            let (lg, grad_input) = crate::training::backward_one_layer(
+                grad, &acts.layers[i], &model.layers[i], &rope, cfg,
+            );
+            if i == 27 { last_layer_grads = Some(lg); }
+            grad = grad_input;
+        }
+        // Force GPU sync
+        let _ = grad.clone().into_data();
+        let elapsed = t0.elapsed();
+        println!("backward: {:.1}ms", elapsed.as_secs_f64() * 1000.0);
+
+        // Verify gradients from last layer are nonzero
+        let lg = last_layer_grads.unwrap();
+        let q_grad_norm: f32 = lg.q_proj.clone().powf_scalar(2.0).sum().sqrt().into_scalar();
+        let ffn_grad_norm: f32 = lg.ffn_gate.clone().powf_scalar(2.0).sum().sqrt().into_scalar();
+        println!("layer 27 q_proj grad L2: {q_grad_norm:.6}");
+        println!("layer 27 ffn_gate grad L2: {ffn_grad_norm:.6}");
+        assert!(q_grad_norm > 0.0, "q_proj gradient should be nonzero");
+        assert!(ffn_grad_norm > 0.0, "ffn_gate gradient should be nonzero");
     }
 }
