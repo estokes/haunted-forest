@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 use netidx::{path::Path, publisher::FromValue};
-use std::collections::HashMap;
+use ahash::AHashMap;
 use crate::net::NetBridge;
 use super::reactor::{ReactorMode, ReactorStatus};
 
 /// Stores the latest values received from netidx subscriptions.
 #[derive(Resource, Default)]
 pub struct ReactorReadouts {
-    pub values: HashMap<String, f64>,
+    pub values: AHashMap<String, f64>,
     pub status: Option<ReactorStatus>,
     pub mode: Option<ReactorMode>,
 }

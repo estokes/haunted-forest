@@ -9,7 +9,8 @@ use bevy::input::mouse::AccumulatedMouseMotion;
 use bevy::prelude::*;
 use bevy::winit::RawWinitWindowEvent;
 use crossbeam_channel::{unbounded, Receiver};
-use fxhash::FxHashMap;
+use ahash::AHashMap;
+use nohash::IntMap;
 use graphix_compiler::{env::Env, expr::{ExprId, ModuleResolver}, BindId};
 use graphix_package_gui::{convert, widgets::Message, window::ResolvedWindow};
 use graphix_rt::{GXConfig, GXEvent, GXHandle, GXRt, NoExt};
@@ -62,7 +63,7 @@ fn start_graphix(infra: &NetInfra) -> Result<GraphixRuntime> {
         let mut ctx =
             graphix_compiler::ExecCtx::new(GXRt::<NoExt>::new(publisher, subscriber))
                 .context("creating graphix context")?;
-        let mut vfs_modules = FxHashMap::default();
+        let mut vfs_modules = AHashMap::default();
         let result = deps::register::<NoExt>(&mut ctx, &mut vfs_modules)
             .context("register package modules")?;
         let mods = vec![ModuleResolver::VFS(vfs_modules)];
@@ -148,7 +149,7 @@ impl clipboard::Clipboard for Clipboard {
 /// All GUI state. NonSend because iced_wgpu::Renderer may be !Send.
 pub struct GraphixGuiState {
     gpu: IcedGpu,
-    surfaces: FxHashMap<BindId, IcedSurface>,
+    surfaces: IntMap<BindId, IcedSurface>,
     clipboard: Clipboard,
     messages: Vec<Message>,
     env: Option<Env>,
@@ -484,18 +485,26 @@ fn graphix_gui_update(
                     error!("failed to call: {e:?}");
                 }
             }
-            Message::EditorAction(id, action) => {
+            msg @ Message::EditorAction(..) => {
                 for surface in state.surfaces.values_mut() {
-                    if let Some((callable_id, v)) = surface.editor_action(id, &action) {
+                    let calls = surface.editor_action(&msg);
+                    if calls.is_empty() {
+                        continue;
+                    }
+                    for (callable_id, v) in calls {
                         if let Err(e) =
                             runtime.handle().call(callable_id, ValArray::from_iter([v]))
                         {
                             error!("failed to call editor callback: {e:?}");
                         }
-                        break;
                     }
+                    break;
                 }
             }
+            // graphix 0.9 added Scroll/CellClick/CellEdit/etc. GUI messages this
+            // integration does not route yet; ignoring is correct — exhaustively
+            // matching a foreign, growing enum would be the brittle choice.
+            _ => {}
         }
     }
 }
@@ -568,7 +577,7 @@ impl Plugin for GraphixPlugin {
 
         let gui_state = GraphixGuiState {
             gpu: iced_gpu,
-            surfaces: FxHashMap::default(),
+            surfaces: IntMap::default(),
             clipboard: Clipboard::new(),
             messages: Vec::new(),
             root_expr_id: None,

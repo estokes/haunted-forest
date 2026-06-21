@@ -27,7 +27,7 @@ fn main() {
             graphix::GraphixPlugin,
             player::PlayerPlugin,
             ship::ShipPlugin,
-            hf_llm::LlmPlugin,
+            // hf_llm::LlmPlugin, // temporarily disabled with the hf-llm dep (CUDA 13.3 / cudarc)
         ))
         .run();
 }

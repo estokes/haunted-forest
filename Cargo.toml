@@ -11,35 +11,36 @@ opt-level = "s"
 lto = "thin"
 
 [workspace.dependencies]
+ahash = "0.8"
 anyhow = "1"
 arcstr = { version = "1", features = ["serde"] }
 bevy = "0.18.0"
 crossbeam-channel = "0.5"
 enumflags2 = "0.7"
 futures = "0.3"
-fxhash = "0.2"
 log = "0.4"
+nohash = "0.2"
 poolshark = "0.2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "time", "sync", "macros"] }
 
 # netidx — path deps must match graphix's workspace to ensure type identity
-netidx = { version = "0.31", default-features = false, path = "../netidx/netidx" }
-netidx-core = { version = "0.31", path = "../netidx/netidx-core" }
-netidx-protocols = { version = "0.31", path = "../netidx/netidx-protocols" }
-netidx-value = { version = "0.31", path = "../netidx/netidx-value" }
+netidx = { version = "0.32", default-features = false, path = "../netidx/netidx" }
+netidx-core = { version = "0.32", path = "../netidx/netidx-core" }
+netidx-protocols = { version = "0.32", path = "../netidx/netidx-protocols" }
+netidx-value = { version = "0.32", path = "../netidx/netidx-value" }
 
 # graphix
-graphix-compiler = { version = "0.7.0", path = "../graphix/graphix-compiler" }
-graphix-rt = { version = "0.7.0", path = "../graphix/graphix-rt" }
-graphix-package = { version = "0.7.0", path = "../graphix/graphix-package" }
-graphix-package-core = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-core" }
-graphix-package-array = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-array" }
-graphix-package-str = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-str" }
-graphix-package-map = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-map" }
-graphix-package-sys = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-sys" }
-graphix-package-gui = { version = "0.7.0", path = "../graphix/stdlib/graphix-package-gui" }
+graphix-compiler = { version = "0.9.0", path = "../graphix/graphix-compiler" }
+graphix-rt = { version = "0.9.0", path = "../graphix/graphix-rt" }
+graphix-package = { version = "0.9.0", path = "../graphix/graphix-package" }
+graphix-package-core = { version = "0.9.0", path = "../graphix/stdlib/graphix-package-core" }
+graphix-package-array = { version = "0.9.0", path = "../graphix/stdlib/graphix-package-array" }
+graphix-package-str = { version = "0.9.0", path = "../graphix/stdlib/graphix-package-str" }
+graphix-package-map = { version = "0.9.0", path = "../graphix/stdlib/graphix-package-map" }
+graphix-package-sys = { version = "0.9.0", path = "../graphix/stdlib/graphix-package-sys" }
+graphix-package-gui = { version = "0.9.0", path = "../graphix/stdlib/graphix-package-gui" }
 
 # Burn ML framework — local checkout for development/PRs
 # default-features = false avoids burn-cuda's fusion wrapper so Cuda = CubeBackend directly

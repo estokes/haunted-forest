@@ -8,14 +8,15 @@ name = "haunted-forest"
 path = "src/main.rs"
 
 [dependencies]
+ahash.workspace = true
 anyhow.workspace = true
 arcstr.workspace = true
 bevy.workspace = true
 crossbeam-channel.workspace = true
 enumflags2.workspace = true
 futures.workspace = true
-fxhash.workspace = true
 log.workspace = true
+nohash.workspace = true
 poolshark.workspace = true
 tokio.workspace = true
 
@@ -42,4 +43,4 @@ iced_wgpu.workspace = true
 iced_widget.workspace = true
 winit.workspace = true
 
-hf-llm.workspace = true
+# hf-llm.workspace = true  # temporarily disabled: burn/cuda (cudarc 0.19.4) has no CUDA 13.3 support; re-enable for AI work

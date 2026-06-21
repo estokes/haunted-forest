@@ -5,11 +5,11 @@ use graphix_package_gui::{
     render::GpuState,
     theme::GraphixTheme,
     types::{SizeV, ThemeV},
-    widgets::{compile, GuiW, Message},
+    widgets::{compile, GuiW, Message, MessageShell},
     window::ResolvedWindow,
 };
 use graphix_rt::{GXHandle, NoExt, Ref, TRef};
-use iced_core::{clipboard, mouse, renderer::Style, Size};
+use iced_core::{clipboard, mouse, renderer::Style, Point, Size};
 use iced_runtime::user_interface::{self, UserInterface};
 use iced_wgpu::{graphics::Viewport, wgpu};
 use netidx::publisher::Value;
@@ -353,12 +353,19 @@ impl IcedSurface {
         self.needs_redraw = true;
     }
 
-    pub fn editor_action(
-        &mut self,
-        id: ExprId,
-        action: &iced_widget::text_editor::Action,
-    ) -> Option<(graphix_rt::CallableId, Value)> {
-        self.content.editor_action(id, action)
+    /// Drive an editor message through the widget tree (graphix 0.9 `on_message`)
+    /// and collect the `Call`s the matching text editor publishes back.
+    pub fn editor_action(&mut self, msg: &Message) -> Vec<(graphix_rt::CallableId, Value)> {
+        let mut shell = MessageShell::new(Point::ORIGIN);
+        self.content.on_message(msg, &mut shell);
+        shell
+            .out
+            .drain(..)
+            .filter_map(|m| match m {
+                Message::Call(cid, args) => args.into_iter().next().map(|v| (cid, v)),
+                _ => None,
+            })
+            .collect()
     }
 }
 
