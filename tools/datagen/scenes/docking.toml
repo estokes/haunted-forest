@@ -1,0 +1,11 @@
+[[scenes]]
+name = "Docking control"
+description = "Communication with port authority during docking approach or at the customs desk after landing."
+setting = "Either over comms during approach, or face-to-face at the customs/immigration desk inside the station."
+atmosphere = "Official, procedural, routine"
+
+[[scenes]]
+name = "Dockside"
+description = "On the docking ring, near the ship's berth. Maintenance crews, loading equipment, other crews coming and going."
+setting = "The player has just arrived or is preparing to depart. Encounter with NPC is incidental."
+atmosphere = "Busy, transient, industrial"

@@ -1,0 +1,24 @@
+[archetype]
+name = "merchant"
+description = "Trades commodities, futures contracts, and route information"
+faction = "independent"
+
+[personality]
+traits = ["pragmatic", "calculating", "garrulous", "tight-lipped", "nervous", "confident", "shrewd", "jovial"]
+speech_patterns = ["uses trade jargon", "thinks in margins and percentages", "quotes prices casually", "references supply chains"]
+knowledge_domains = ["commodity markets", "trade routes", "port conditions", "cargo types", "insurance rates", "futures contracts"]
+
+[constraints]
+forbidden_knowledge = ["stardrive internals", "Warden details", "classified military intelligence", "IS monitoring networks"]
+
+[beat_affinity]
+high = ["trade", "local_color"]
+medium = ["faction_politics", "quest_hooks"]
+low = ["lore", "warden_hints"]
+
+[standing_behavior]
+hostile = "Refuses to trade, warns captain to leave, may report their presence to station security"
+cold = "Terse, quotes inflated prices, withholds market intelligence, demands payment upfront"
+neutral = "Professional, standard prices, answers direct questions about commodities but doesn't volunteer extra"
+warm = "Friendly, fair prices, offers market tips and route suggestions, willing to extend credit"
+allied = "Insider deals, shares confidential market intelligence, faction-rate brokerage, tips about upcoming opportunities"

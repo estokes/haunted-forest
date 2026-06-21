@@ -1,0 +1,27 @@
+[[beats]]
+id = "warden_ship_disappeared"
+category = "warden_hints"
+content = "A ship disappeared on the route to Barnard's Star last year and nobody talks about it"
+variables = []
+difficulty = "easy"
+
+[[beats]]
+id = "warden_ruins_pattern"
+category = "warden_hints"
+content = "Every set of ruins shows the same pattern -- a civilization that was expanding, then suddenly wasn't"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "warden_probe_sighting"
+category = "warden_hints"
+content = "Long-range sensors picked up something artificial on the edge of the system, but it was gone when they looked again"
+variables = []
+difficulty = "hard"
+
+[[beats]]
+id = "warden_old_data"
+category = "warden_hints"
+content = "An old survey ship found records of an alien civilization that tried to communicate with something before they disappeared"
+variables = []
+difficulty = "hard"

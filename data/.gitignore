@@ -1,0 +1,3 @@
+# Generated training data (large, regenerable)
+dialog/generated*.jsonl
+corpus/

@@ -1,0 +1,34 @@
+[[beats]]
+id = "faction_fight_recruiting"
+category = "faction_politics"
+content = "The Fight Faction is quietly recruiting experienced captains with combat-capable ships"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "faction_negotiation_ruins"
+category = "faction_politics"
+content = "The Negotiation Faction has been sending expeditions to ruins in several systems, looking for patterns in the Silence"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "faction_is_turning_ships"
+category = "faction_politics"
+content = "IS service facilities at Epsilon Eridani have been turning ships away without explanation"
+variables = []
+difficulty = "hard"
+
+[[beats]]
+id = "faction_colony_tensions"
+category = "faction_politics"
+content = "Two colonies on the Vega route are in a trade dispute that's making the route dangerous for independents"
+variables = []
+difficulty = "easy"
+
+[[beats]]
+id = "faction_compact_debate"
+category = "faction_politics"
+content = "There's a growing movement to lower the Compact's AI personhood threshold, but IS is blocking it"
+variables = []
+difficulty = "hard"

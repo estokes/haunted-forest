@@ -1,0 +1,34 @@
+[[beats]]
+id = "local_station_history"
+category = "local_color"
+content = "This station used to be an IS service depot before the colony bought it out fifty years ago"
+variables = []
+difficulty = "easy"
+
+[[beats]]
+id = "local_cold_sleep_incident"
+category = "local_color"
+content = "A ship arrived last month with half its cold sleep pods malfunctioning -- crew aged twenty years in transit"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "local_sub_threshold_quirk"
+category = "local_color"
+content = "The station's navigation AI has been suggesting unusual routes lately, ones that save fuel but nobody programmed"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "local_time_dilation"
+category = "local_color"
+content = "A captain who left here thirty years ago just came back -- she's only aged five years while everyone she knew got old"
+variables = []
+difficulty = "easy"
+
+[[beats]]
+id = "local_nanofab_shortage"
+category = "local_color"
+content = "The nanofabricators have been down for a week, something about feedstock purity, so everyone's making do with what they have"
+variables = []
+difficulty = "easy"

@@ -1,0 +1,11 @@
+[[scenes]]
+name = "Station marketplace"
+description = "An open trading floor on a station. Screens showing commodity prices, brokers at desks, cargo manifests being exchanged."
+setting = "Busy commercial area. The player approaches the NPC at their trading desk or stall."
+atmosphere = "Busy, commercial, competitive"
+
+[[scenes]]
+name = "Cargo bay office"
+description = "A small office adjacent to the cargo bays. Functional furniture, cargo manifests on screens, the rumble of loading equipment through the walls."
+setting = "Private meeting between the player and the NPC. Doors closed for business discussion."
+atmosphere = "Professional, private, deal-making"

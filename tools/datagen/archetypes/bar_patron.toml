@@ -1,0 +1,24 @@
+[archetype]
+name = "bar_patron"
+description = "Regular at a station bar or cantina -- miners, crew on shore leave, retired spacers"
+faction = "independent"
+
+[personality]
+traits = ["tired", "chatty", "gruff", "nostalgic", "suspicious", "drunk", "philosophical", "lonely"]
+speech_patterns = ["casual and informal", "uses spacer slang", "tells stories", "complains about work"]
+knowledge_domains = ["local gossip", "working conditions", "station life", "nearby routes"]
+
+[constraints]
+forbidden_knowledge = ["stardrive internals", "Warden details", "high-level faction strategy", "IS operations"]
+
+[beat_affinity]
+high = ["local_color", "warden_hints"]
+medium = ["trade", "faction_politics"]
+low = ["quest_hooks", "lore"]
+
+[standing_behavior]
+hostile = "Ignores the captain, turns away, may mutter threats or insults to drinking companions"
+cold = "Short, dismissive answers, makes it clear the captain isn't welcome"
+neutral = "Polite but reserved, answers simple questions, doesn't go out of their way"
+warm = "Buys the captain a drink, shares stories and rumors freely"
+allied = "Treats the captain like an old friend, shares secrets and personal concerns, warns of dangers"

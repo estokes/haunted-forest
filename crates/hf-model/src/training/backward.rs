@@ -70,6 +70,69 @@ pub fn cross_entropy_loss_and_grad(
     (loss, grad)
 }
 
+/// Masked variant of cross-entropy loss: only positions where
+/// `loss_mask[i]` is true contribute to the loss and gradient.
+///
+/// `loss_mask` has the same length as `target_ids`. After the standard
+/// shift (logits[:-1] predict targets[1:]), we use `mask[1:]`.
+pub fn cross_entropy_loss_and_grad_masked(
+    logits: Tensor<B, 3>,
+    target_ids: &[u32],
+    vocab_size: usize,
+    loss_mask: &[bool],
+) -> (f32, Tensor<B, 2>) {
+    let [batch, seq_len, _vocab] = logits.dims();
+    let device = logits.device();
+    let n = batch * (seq_len - 1);
+
+    // Shifted mask: mask[1:] aligns with targets[1:]
+    let mask_shifted: Vec<f32> = loss_mask[1..]
+        .iter()
+        .map(|&m| if m { 1.0 } else { 0.0 })
+        .collect();
+    let mask_sum: f32 = mask_shifted.iter().sum();
+    if mask_sum == 0.0 {
+        // No positions to train on — return zero loss and zero gradient
+        let grad = Tensor::<B, 2>::zeros([n, vocab_size], &device);
+        return (0.0, grad);
+    }
+
+    let mask_tensor = Tensor::<B, 2>::from_data(
+        burn::tensor::TensorData::new(mask_shifted, [n, 1]),
+        &device,
+    );
+
+    // Shift: logits[:-1] predict targets[1:]
+    let logits_shifted: Tensor<B, 2> = logits
+        .slice([0..batch, 0..(seq_len - 1), 0..vocab_size])
+        .reshape([n, vocab_size]);
+
+    let targets = Tensor::<B, 1, Int>::from_data(
+        burn::tensor::TensorData::new(
+            target_ids[1..].iter().map(|&t| t as i64).collect::<Vec<_>>(),
+            [target_ids.len() - 1],
+        ),
+        &device,
+    );
+
+    // Softmax
+    let probs = burn::tensor::activation::softmax(logits_shifted, 1);
+
+    // Loss: mean of -log(prob at target) * mask, averaged over mask_sum
+    let target_2d = targets.clone().reshape([n, 1]);
+    let target_probs = probs.clone().gather(1, target_2d);
+    let per_pos_loss = target_probs.log().neg(); // [n, 1]
+    let masked_loss = per_pos_loss * mask_tensor.clone();
+    let loss = masked_loss.sum().into_scalar() / mask_sum;
+
+    // Gradient: (softmax - one_hot) * mask / mask_sum
+    let one_hot = Tensor::<B, 2>::zeros([n, vocab_size], &device)
+        .scatter(1, targets.reshape([n, 1]), Tensor::ones([n, 1], &device), IndexingUpdateOp::Add);
+    let grad = (probs - one_hot) * mask_tensor / mask_sum;
+
+    (loss, grad)
+}
+
 /// Backward through lm_head + final_norm, returning the gradient
 /// ready to flow into the layer stack and the lm_head weight gradient.
 pub fn backward_head_and_norm(

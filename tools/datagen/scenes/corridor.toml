@@ -1,0 +1,11 @@
+[[scenes]]
+name = "Station corridor"
+description = "A corridor or common area in the station interior. People going about their business."
+setting = "Chance encounter. The player and NPC happen to cross paths, or the player approaches someone waiting."
+atmosphere = "Casual, incidental, everyday"
+
+[[scenes]]
+name = "Research station common room"
+description = "A common area in a research or survey station. Smaller, quieter than a commercial station."
+setting = "Fewer people, more academic atmosphere. Charts and data on screens. Coffee and working meals."
+atmosphere = "Academic, focused, remote"

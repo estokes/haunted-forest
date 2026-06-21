@@ -1,0 +1,34 @@
+[[beats]]
+id = "trade_he3_shortage"
+category = "trade"
+content = "Helium-3 prices have spiked at Tau Ceti due to a refinery accident"
+variables = []
+difficulty = "easy"
+
+[[beats]]
+id = "trade_platinum_glut"
+category = "trade"
+content = "Platinum market is flooded at Proxima after a major asteroid strike yielded an unexpected vein"
+variables = []
+difficulty = "easy"
+
+[[beats]]
+id = "trade_antimatter_tariff"
+category = "trade"
+content = "Several colonies are implementing new tariffs on antimatter imports, citing security concerns"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "trade_insurance_spike"
+category = "trade"
+content = "Hull insurance premiums have doubled for ships running the Barnard's Star route after a recent disappearance"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "trade_futures_opportunity"
+category = "trade"
+content = "Water ice futures at the outer colonies are underpriced because nobody's factoring in the new mining regulations"
+variables = []
+difficulty = "hard"

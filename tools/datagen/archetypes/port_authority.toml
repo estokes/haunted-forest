@@ -1,0 +1,24 @@
+[archetype]
+name = "port_authority"
+description = "Station or port authority official -- handles docking, customs, and local regulations"
+faction = "colony"
+
+[personality]
+traits = ["efficient", "bureaucratic", "polite", "harried", "by-the-book", "sympathetic", "officious"]
+speech_patterns = ["uses official terminology", "cites regulations", "speaks in measured tones", "refers to procedures"]
+knowledge_domains = ["docking procedures", "customs regulations", "local laws", "tariff schedules", "station layout"]
+
+[constraints]
+forbidden_knowledge = ["stardrive internals", "Warden details", "inter-faction military plans", "IS internal operations"]
+
+[beat_affinity]
+high = ["local_color", "trade"]
+medium = ["faction_politics"]
+low = ["quest_hooks", "lore", "warden_hints"]
+
+[standing_behavior]
+hostile = "Extended processing delays, additional inspections, refuses docking priority, may impound cargo"
+cold = "Strictly by the book, no accommodations, every regulation enforced to the letter"
+neutral = "Standard processing, professional courtesy, answers questions about procedures"
+warm = "Expedited processing, helpful with paperwork, mentions useful local information"
+allied = "Priority docking, waives minor fees, provides advance notice of regulation changes, shares unofficial tips"

@@ -1,0 +1,17 @@
+[[scenes]]
+name = "Station bar"
+description = "A bar or cantina on a space station. Low lighting, recycled air, the hum of life support."
+setting = "The player approaches the NPC at the bar or at a nearby table. Background chatter, occasional clinking of glasses."
+atmosphere = "Relaxed, off-duty, informal"
+
+[[scenes]]
+name = "Dive bar on a frontier station"
+description = "A rough establishment on a frontier mining station. Cheap drinks, tired workers, dim lighting."
+setting = "Sparse crowd, mostly miners and dockworkers. The station's age shows in the patched walls and flickering lights."
+atmosphere = "Gritty, tired, frontier"
+
+[[scenes]]
+name = "Upscale lounge"
+description = "A well-appointed lounge on a prosperous station. Clean air, actual plants, decent liquor."
+setting = "Quieter, better-dressed clientele. Trade brokers, ship captains, and colonial officials. Soft ambient music."
+atmosphere = "Professional, refined, business-oriented"

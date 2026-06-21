@@ -15,6 +15,9 @@ pub struct Tokenizer {
     pub bos_id: Option<u32>,
     pub eos_id: Option<u32>,
     pub pad_id: Option<u32>,
+    /// Chat template tokens (Qwen3 `<|im_start|>` / `<|im_end|>`)
+    pub im_start_id: Option<u32>,
+    pub im_end_id: Option<u32>,
 }
 
 impl Tokenizer {
@@ -49,6 +52,9 @@ impl Tokenizer {
         let eos_id = gguf.get_u32("tokenizer.ggml.eos_token_id");
         let pad_id = gguf.get_u32("tokenizer.ggml.padding_token_id");
 
+        let im_start_id = token_to_id.get("<|im_start|>").copied();
+        let im_end_id = token_to_id.get("<|im_end|>").copied();
+
         Ok(Tokenizer {
             vocab,
             token_to_id,
@@ -56,11 +62,64 @@ impl Tokenizer {
             bos_id,
             eos_id,
             pad_id,
+            im_start_id,
+            im_end_id,
         })
     }
 
     pub fn vocab_size(&self) -> usize {
         self.vocab.len()
+    }
+
+    /// Look up a token string directly in the vocabulary.
+    /// Useful for special tokens like `<|im_start|>` that exist as
+    /// literal vocab entries and shouldn't go through BPE.
+    pub fn token_id(&self, name: &str) -> Option<u32> {
+        self.token_to_id.get(name).copied()
+    }
+
+    /// Encode text that may contain special tokens.
+    ///
+    /// Splits the input on any occurrence of a token in `special_tokens`,
+    /// BPE-encodes the non-special segments, and inserts the correct
+    /// token IDs for the special tokens. This prevents BPE from
+    /// decomposing special tokens into byte fragments.
+    pub fn encode_with_special(&self, text: &str, special_tokens: &[&str]) -> Vec<u32> {
+        if special_tokens.is_empty() {
+            return self.encode(text);
+        }
+        let mut result = Vec::new();
+        let mut remaining = text;
+        while !remaining.is_empty() {
+            // Find the earliest occurrence of any special token
+            let mut earliest: Option<(usize, &str)> = None;
+            for &st in special_tokens {
+                if let Some(pos) = remaining.find(st) {
+                    if earliest.is_none() || pos < earliest.unwrap().0 {
+                        earliest = Some((pos, st));
+                    }
+                }
+            }
+            match earliest {
+                Some((pos, st)) => {
+                    // BPE-encode text before the special token
+                    if pos > 0 {
+                        result.extend(self.encode(&remaining[..pos]));
+                    }
+                    // Insert the special token's ID directly
+                    if let Some(id) = self.token_id(st) {
+                        result.push(id);
+                    }
+                    remaining = &remaining[pos + st.len()..];
+                }
+                None => {
+                    // No more special tokens — BPE the rest
+                    result.extend(self.encode(remaining));
+                    break;
+                }
+            }
+        }
+        result
     }
 
     /// Encode text into token IDs using byte-level BPE.
@@ -238,5 +297,30 @@ mod tests {
         println!("encode({text:?}) = {ids:?}");
         println!("decode back: {decoded:?}");
         assert_eq!(decoded, text);
+    }
+
+    #[test]
+    fn special_tokens_exist() {
+        let path = Path::new("/home/eric/projb/Bonsai-1.7B-gguf/Bonsai-1.7B.gguf");
+        if !path.exists() {
+            eprintln!("skipping: model file not found");
+            return;
+        }
+
+        let gguf = GgufFile::open(path).unwrap();
+        let tok = Tokenizer::from_gguf(&gguf).unwrap();
+
+        let im_start = tok.im_start_id.expect("<|im_start|> not in vocab");
+        let im_end = tok.im_end_id.expect("<|im_end|> not in vocab");
+        println!("<|im_start|> = {im_start}");
+        println!("<|im_end|> = {im_end}");
+
+        // Verify encode_with_special handles them correctly
+        let text = "<|im_start|>system\nYou are helpful.<|im_end|>";
+        let special = &["<|im_start|>", "<|im_end|>"];
+        let ids = tok.encode_with_special(text, special);
+        assert_eq!(ids[0], im_start);
+        assert_eq!(*ids.last().unwrap(), im_end);
+        println!("chat template tokens: {ids:?}");
     }
 }

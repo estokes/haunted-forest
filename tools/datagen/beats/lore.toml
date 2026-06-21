@@ -1,0 +1,27 @@
+[[beats]]
+id = "lore_ai_crisis"
+category = "lore"
+content = "The AI Crisis happened about 500 years ago -- two AIs and a group of augmented humans nearly tore everything apart before the Compact was established"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "lore_is_founding"
+category = "lore"
+content = "Interstellar Systems was founded by the same AIs from the Crisis -- they figured out catalyzed fusion and built the first stardrives"
+variables = []
+difficulty = "hard"
+
+[[beats]]
+id = "lore_compact_purpose"
+category = "lore"
+content = "The Compact exists to prevent another AI Crisis -- it limits how fast AIs can think and requires controlled development, but not everyone agrees with the restrictions"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "lore_sub_threshold"
+category = "lore"
+content = "Ship systems and station AIs are kept below the Compact's threshold, but some people wonder if they're closer to personhood than anyone admits"
+variables = []
+difficulty = "hard"

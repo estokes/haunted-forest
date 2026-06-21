@@ -1,0 +1,27 @@
+[[beats]]
+id = "quest_cargo_delivery"
+category = "quest_hooks"
+content = "Someone needs a discreet cargo run to a frontier station, no questions asked, paying above market rate"
+variables = []
+difficulty = "easy"
+
+[[beats]]
+id = "quest_missing_crew"
+category = "quest_hooks"
+content = "A crew member went missing on the station and their captain is looking for someone to help search"
+variables = []
+difficulty = "easy"
+
+[[beats]]
+id = "quest_ruin_expedition"
+category = "quest_hooks"
+content = "An archaeological team needs transport and security for an expedition to newly discovered ruins"
+variables = []
+difficulty = "medium"
+
+[[beats]]
+id = "quest_data_courier"
+category = "quest_hooks"
+content = "A researcher has data that needs to reach a specific person at another colony, but doesn't trust the normal channels"
+variables = []
+difficulty = "medium"
