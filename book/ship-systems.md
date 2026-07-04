@@ -117,6 +117,153 @@ face is about 2.8 kW/m². Unshielded, this would cook the crew in hours.
 - **Net**: collection exceeds erosion — shield is continuously replenished
 
 
+## Active Debris Defense
+
+### The Threat the Passive Shield Misses
+
+The magnetic scoop and H₂ ice handle the *interstellar medium* — individual
+atoms and ions, ~117 MeV apiece at 0.5c (see Ablative Shield). They do nothing
+against a **grain**. The ISM is ~1% dust by mass: silicate and carbonaceous
+motes from sub-micron up through the rare sand- and pebble-sized debris of
+shattered worlds. A neutral grain isn't deflected by the scoop's field, and the
+ice cannot absorb a concentrated impactor. At 0.5c the kinetic energy of even a
+speck is absurd (KE ≈ (γ−1)mc², γ ≈ 1.155):
+
+| Grain | Mass | KE at 0.5c | Equivalent | Handled by |
+|-------|------|-----------|------------|------------|
+| 1 µm mote | ~1.6 pg | ~22 J | a hard flick | ice ablation |
+| 10 µm dust | ~1.6 ng | ~22 kJ | a rifle round | ice, marginally |
+| 100 µm fine sand | ~1.6 µg | ~22 MJ | ~5 kg TNT | **active defense** |
+| 1 mm coarse sand | ~1.6 mg | ~22 GJ | ~5 t TNT | **avoidance** |
+| 1 cm pebble | ~1.6 g | ~22 TJ | ~5 kt (nuclear) | **avoid at all costs** |
+
+Nothing larger than a molecule may strike the hull at cruise. A grain of sand
+is a tactical munition; a pebble is a warhead. The ship cannot tank these — it
+must never let them arrive intact.
+
+### The Layered Bow
+
+No single mechanism spans twelve orders of magnitude, so defense is binned by
+energy:
+
+1. **Magnetic deflection** (scoop, existing): sweeps aside ionized matter *and*
+   charged dust — most ISM grains are photoelectrically charged — thousands of
+   km out.
+2. **Ablative shield** (ice + CNT, existing): absorbs the small *neutral* grains
+   (≲ a few µm) that slip through, by ablation.
+3. **Active detection** (new): finds the medium grains the first two layers miss,
+   far enough out to act.
+4. **Active interdiction** (new): vaporizes or deflects them at standoff.
+5. **Navigational avoidance** (new): the rare large bodies that can't be
+   interdicted are detected at long range and routed around. You do not vaporize
+   a pebble carrying kilotons.
+
+### Detecting at Relativistic Closing Speed
+
+The closing speed is 1.5×10⁸ m/s, and active ranging is a race against its own
+echo. A pulse to a grain at range R and back takes 2R/(c+v); during that time
+the grain closes from R to **R·(c−v)/(c+v) — to one third of the detection range
+at 0.5c, before the echo even returns.** Detect at 150,000 km and you learn of
+it at 50,000 km with ~0.3 s to act; everything closer is effectively undetectable
+by round-trip means. The forward sky is also aberrated (threats compressed into a
+forward cone) and Doppler-shifted by √((1+β)/(1−β)) ≈ 1.7×, so the whole suite is
+tuned for a blueshifted, forward-bunched world.
+
+The suite is multi-modal, layered by wavelength because no single band sees
+everything:
+
+- **Long-wave radar** for rare large bodies at long range — big cross-section,
+  enough resolution to flag a threat and start a course solution minutes to hours
+  out.
+- **mm- and sub-mm radar** for sand-grade grains close in — small targets need
+  short wavelengths; the Rayleigh-suppressed return is brutally weak, so this is a
+  high-power, short-range band.
+- **LIDAR** for precise track and aimpoint on grains already flagged — narrow
+  beam, must be cued, but pins the solution the laser needs.
+- **Multi-frequency coverage** so grains that are radar-dark in one band
+  (absorption features, size resonances) light up in another.
+- **Passive forward-staring IR/optical** — the only channel with no round-trip
+  penalty. Grains entering the bow wave (the scoop's compressed plasma and the
+  forward radiation field) flash-heat and ablate *before* arrival; their own
+  emission is one-way light, so the passive channel often sees a threat sooner
+  than the radar chasing it.
+
+### Interdiction — Spread It, Don't Destroy It
+
+The interdictor is a **free-electron laser array** — tunable across wavelengths
+to match grain composition and punch through the bow plasma, with multiple
+independently-steered beam directors to engage many threats at once. The
+crucial, counterintuitive physics: **the laser cannot remove the grain's kinetic
+energy.** Momentum is conserved; 22 MJ of forward-directed energy is still 22 MJ
+after vaporization. What it *can* do is spread it: a concentrated point impact
+drills through ice and hull, but the same energy arriving as a diffuse plasma
+cloud fanned across a square meter of H₂ ice merely ablates a scar. So the FEL's
+job is to detonate each grain at standoff and let the passive shield take the
+diffuse remnant — **converting an impactor into an ablation load.** Where range
+and time allow it does better: an asymmetric ablation jet gives the grain a
+sideways kick (the rocket effect off its own vaporizing face) and walks it clear
+of the hull — far cheaper than destroying it.
+
+The array is, by temperament, **deeply anti-social.** As a sub-threshold ship
+intelligence (see [Narrative Design](narrative.md#sub-threshold-ai-interactions))
+it has settled into a personality defined almost entirely by ordnance: its sense
+of a quarter well spent correlates directly with tonnage vaporized, and it does
+not love long clean stretches of empty medium. The crew learns to read its mood
+the way you'd read a bored predator.
+
+### Ionize and Scoop — the Threat as Fuel
+
+There's a better outcome than spreading a grain onto the ice, and it falls out of
+a system the ship already carries. The bussard scoop funnels **charged** matter
+into the collector — that is its day job. So if the FEL doesn't merely vaporize a
+grain but *ionizes the plume*, the resulting plasma is charged, and the same field
+that deflects ISM ions bends the debris plasma off the hull and **into the
+collector throat.** The impactor isn't neutralized, it's *eaten* — redirected into
+the reaction-mass and fuel stream. This is deflection in the truest sense: the
+grain never reaches the hull, and its mass is on the books.
+
+The physics constrains it. A solid grain, however charged, has far too little
+charge-to-mass ratio for the field to bend — its gyroradius dwarfs the scoop. You
+must vaporize it to a plasma first, so the field acts on individual ions (high
+q/m) rather than a massive solid. And heavy debris ions (silicon, iron) carry
+lower q/m than the hydrogen the scoop is tuned for, so they funnel less cleanly: a
+fraction makes the collector, the rest still ends up as a diffuse ablation load on
+the ice. As fuel it's second-rate — the stardrive fuses hydrogen, not metal — but
+any mass is reaction mass, and the hydrogen/helium fraction is real fuel. So the
+interdiction hierarchy is: **ionize-and-scoop where the geometry allows (threat →
+fuel), vaporize-and-spread as the fallback (threat → ablation), avoid what's too
+large for either.**
+
+This sharpens the route tension: a dirty region is more dangerous *and* more
+fuel-rich. More grains means more impacts to interdict and more power on the laser
+bus — but also more mass funneled into the tanks. Flying the dusty lane is a
+gamble that pays in propellant, if the FEL keeps up.
+
+### Where It Couples
+
+The FEL is not free. It draws from the reactor's ~315 GW electrical bus, so a
+debris-heavy passage is a *power* event — beams up means less for everything
+else, and the generation losses land as waste heat on the same tin loop that
+cools the reactor, nudging the whole ship toward its thermal limit (see Thermal
+Management). Conversely, every beam that leaves the hull *exports* energy to
+space — the debris laser is one of the few loads that radiates its draw outward
+rather than dumping it inboard. And detection coverage is finite: the crew (or
+the AI) allocates sensor power and standoff across the forward cone, and the
+route planner weighs known dust density against schedule — because the cheapest
+defense against a pebble is to never fly at it.
+
+### Open Tensions
+
+- **The undetectable close-in fraction.** Round-trip ranging can't see the last
+  few tens of thousands of km; the passive forward-stare and a standoff kill-zone
+  cover some of it, and the residual is an accepted, ice-absorbed hit rate. How
+  high that runs in a dirty region is a real operational risk.
+- **The pebble you can't dodge.** At 0.1 G and a few thousand km/s of in-system
+  Δv, evading a body spotted light-minutes out is marginal. Avoidance is mostly a
+  *navigation*-layer problem — route around dense regions — not a last-second
+  maneuver.
+
+
 ## Mass Budget
 
 ### Empty Mass (~150,000 tonnes)
@@ -536,7 +683,9 @@ Details TBD.
 Future sections to be developed:
 
 - **Weapons systems**: What does combat look like at these energy scales?
-- **Defensive systems**: Beyond the ice shield and magnetic field
+- **Active combat defense**: Active Debris Defense (above) handles natural
+  hazards; defending against a hostile actor's weapons, saturation, and
+  countermeasures is unspecified — see Weapons systems
 - **Sensors and communications**: Relativistic effects on sensing
 - **Life support**: Cold sleep technology, crew rotation
 - **Fabrication**: What can and can't be manufactured aboard ship
