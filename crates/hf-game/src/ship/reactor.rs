@@ -22,7 +22,18 @@ use crate::ship::instruments::NoiseClock;
 use crate::ship::interconnect::Interconnect;
 use crate::ship::value_enum::str_enum;
 
-const V_CHAMBER: f64 = 10_000.0; // plasma chamber volume [m^3]
+// --- confinement geometry: the length throttle ---
+// Power is throttled by the *length* of the burning column at constant plasma
+// density and temperature (P ∝ volume), not by thinning the plasma. Because
+// fusion, bremsstrahlung, and transport all scale with volume together, the
+// ignition margin is length-independent: the plasma stays lit from full length
+// down to the geometric floor. See book/ship-systems.md "Confinement and Throttle".
+const R_PLASMA: f64 = 3.0; // burning-column radius [m]
+const A_CC: f64 = std::f64::consts::PI * R_PLASMA * R_PLASMA; // central-cell cross-section [m^2]
+const L_MAX: f64 = 354.0; // full burning-column length [m] (A_CC·L_MAX ≈ 10,000 m^3)
+const V_MAX: f64 = A_CC * L_MAX; // full burning volume [m^3]
+const L_MIN_GEO: f64 = 7.0; // geometric floor (plug/transition length) [m] (~10 GW at rated density)
+const L_SLEW: f64 = 35.0; // max coil re-energize (throttle slew) rate [m/s]
 const KEV_J: f64 = 1.602176634e-16; // keV in joules
 const MEV_J: f64 = 1.602176634e-13; // MeV in joules
 const MU0: f64 = 1.25663706212e-6; // vacuum permeability [H/m]
@@ -35,7 +46,16 @@ const ASH_CONFINEMENT: f64 = 3.0; // ash particle confinement = this × tau_E
 const BETA_SOFT: f64 = 0.75; // soft beta limit (warn)
 const BETA_HARD: f64 = 0.90; // hard beta limit (disruption)
 const LAWSON_MIN: f64 = 1.0e22; // ignition floor on n·tau·T [keV·s/m^3]
-const MIN_SUSTAIN_FUSION: f64 = 400.0e9; // power floor — below this a D-³He plasma collapses
+// --- density hold + overdraw ---
+const N_D_SET: f64 = 4.66e20; // deuterium density setpoint [m^-3]
+const N_HE3_SET: f64 = 2.33e20; // helium-3 density setpoint [m^-3]
+const K_DENS: f64 = 2.0; // density-hold controller gain [1/s]
+const P_LIT_MIN: f64 = 3.0e9; // aux-driven floor: below this the burn is banked [W]
+// Balance-of-plant overhead: fixed loads that don't shrink with the burning
+// column, so at low power they dominate gross output (the cruise floor).
+const P_PLUG_DRIVE: f64 = 2.0e9; // electrostatic-plug drive power [W]
+const P_CRYO: f64 = 0.5e9; // cryoplant load [W]
+const P_TIN_PUMP: f64 = 1.0e9; // coolant pump load [W]
 
 const M_D: f64 = 3.3445e-27; // deuteron mass [kg]
 const M_HE3: f64 = 5.0082e-27; // helium-3 mass [kg]
@@ -160,6 +180,12 @@ pub struct Reactor {
     inv_d_t: f64,     // deuterium fuel inventory [tonnes]
     inv_he3_t: f64,   // helium-3 fuel inventory [tonnes]
 
+    // --- confinement geometry (the length throttle) ---
+    l_active: f64, // current burning-column length [m]
+    l_target: f64, // commanded length [m]
+    v_burn: f64,   // active burning volume A_CC·l_active [m^3]
+    l_rate: f64,   // throttle slew this tick [m/s]
+
     // --- controls ---
     inj_d: f64,        // deuterium injection [kg/s]
     inj_he3: f64,      // helium-3 injection [kg/s]
@@ -184,6 +210,10 @@ pub struct Reactor {
     p_elec: f64,
     p_waste: f64,
     d_burn_kg_s: f64,
+    he3_burn_kg_s: f64,
+    p_elec_net: f64,        // gross electrical minus plant overhead [W]
+    overhead_fraction: f64, // plant overhead / gross electrical
+    plug_drive: f64,        // electrostatic-plug drive power [W]
 
     pub phase: ReactorPhase,
     pub status: ReactorStatus,
@@ -207,19 +237,22 @@ impl Default for Reactor {
             n_he4: 0.0,
             n_p: 0.0,
             n_t: 0.0,
-            w_i: 1.5 * n_i * t_i_j * V_CHAMBER,
-            w_e: 1.5 * n_e * t_e_j * V_CHAMBER,
+            w_i: 1.5 * n_i * t_i_j * V_MAX,
+            w_e: 1.5 * n_e * t_e_j * V_MAX,
             b_field: 9.0,
             containment: 1.0,
             inv_d_t: 1000.0,
             inv_he3_t: 100.0,
+            l_active: L_MAX,
+            l_target: L_MAX,
+            v_burn: V_MAX,
+            l_rate: 0.0,
             inj_d: 0.0,
             inj_he3: 0.0,
             p_aux: 0.0,
             b_setpoint: 9.0,
-            // The reactor idles near its rated point: a self-heated D-³He plasma
-            // can't throttle to a low cruise load without auxiliary-heating-
-            // sustained operation (a fast-follow). See MIN_SUSTAIN_FUSION.
+            // Boots at its rated point; the demand-driven controller sets the
+            // burning-column length from the power setpoint (see auto_control).
             target_power: RATED_ELECTRICAL_W,
             mode: ReactorMode::Auto,
             t_i_kev: 80.0,
@@ -237,6 +270,10 @@ impl Default for Reactor {
             p_elec: 0.0,
             p_waste: 0.0,
             d_burn_kg_s: 0.0,
+            he3_burn_kg_s: 0.0,
+            p_elec_net: 0.0,
+            overhead_fraction: 0.0,
+            plug_drive: P_PLUG_DRIVE,
             phase: ReactorPhase::Burn,
             status: ReactorStatus::Nominal,
             noise: NoiseClock::default(),
@@ -286,16 +323,32 @@ impl Reactor {
         if self.status == ReactorStatus::Offline {
             self.fusion_power = 0.0;
             self.p_elec = 0.0;
+            self.p_elec_net = 0.0;
             self.p_waste = 0.0;
             ic.reactor_waste_heat = 0.0;
             return;
         }
 
+        // --- length throttle: slew the burning column toward its commanded
+        // length at the coil re-energize rate, carrying thermal energy with the
+        // volume so density and temperature are untouched — only the *amount* of
+        // plasma changes. Power ∝ burning length. ---
+        let l_old = self.l_active;
+        self.l_rate = (self.l_target - l_old).clamp(-L_SLEW * dt, L_SLEW * dt) / dt.max(1e-9);
+        self.l_active = (l_old + self.l_rate * dt).clamp(L_MIN_GEO, L_MAX);
+        self.v_burn = A_CC * self.l_active;
+        if l_old > 0.0 {
+            let ratio = self.l_active / l_old;
+            self.w_i *= ratio;
+            self.w_e *= ratio;
+        }
+        let v = self.v_burn;
+
         // --- state-derived quantities ---
         let n_i = self.n_d + self.n_he3 + self.n_he4 + self.n_p + self.n_t;
         let n_e = self.n_d + 2.0 * self.n_he3 + 2.0 * self.n_he4 + self.n_p + self.n_t;
-        let t_i_j = if n_i > 0.0 { (2.0 / 3.0) * self.w_i / (n_i * V_CHAMBER) } else { 0.0 };
-        let t_e_j = if n_e > 0.0 { (2.0 / 3.0) * self.w_e / (n_e * V_CHAMBER) } else { 0.0 };
+        let t_i_j = if n_i > 0.0 { (2.0 / 3.0) * self.w_i / (n_i * v) } else { 0.0 };
+        let t_e_j = if n_e > 0.0 { (2.0 / 3.0) * self.w_e / (n_e * v) } else { 0.0 };
         let t_i_kev = t_i_j / KEV_J;
         let t_e_kev = t_e_j / KEV_J;
         let z_eff = if n_e > 0.0 {
@@ -308,9 +361,9 @@ impl Reactor {
         let sv3 = reactivity(&BH_DHE3, t_i_kev.min(190.0));
         let svp = reactivity(&BH_DDP, t_i_kev);
         let svn = reactivity(&BH_DDN, t_i_kev);
-        let r_dhe3 = self.n_d * self.n_he3 * sv3 * V_CHAMBER;
-        let r_ddp = 0.5 * self.n_d * self.n_d * svp * V_CHAMBER;
-        let r_ddn = 0.5 * self.n_d * self.n_d * svn * V_CHAMBER;
+        let r_dhe3 = self.n_d * self.n_he3 * sv3 * v;
+        let r_ddp = 0.5 * self.n_d * self.n_d * svp * v;
+        let r_ddn = 0.5 * self.n_d * self.n_d * svn * v;
         let r_td = r_ddp; // f_T = 1.0 full triton burnup
 
         // --- fusion power split [W] ---
@@ -319,7 +372,7 @@ impl Reactor {
         let p_fusion = p_charged + p_neutron;
 
         // --- losses ---
-        let p_brem = C_BREM * z_eff * n_e * n_e * t_e_kev.max(0.0).sqrt() * V_CHAMBER;
+        let p_brem = C_BREM * z_eff * n_e * n_e * t_e_kev.max(0.0).sqrt() * v;
         let nu_eq = self.equipartition_rate(t_i_j, t_e_j);
         let tau_e = (TAU_E_REF * (self.b_field / 9.0).powi(2) * (n_e / 9.31e20).max(0.0).sqrt())
             .max(1e-3);
@@ -335,9 +388,9 @@ impl Reactor {
         // fraction per step rather than integrating P_ie (which detonates when the
         // collision time drops below dt).
         if n_i > 0.0 && n_e > 0.0 {
-            let t_eq = (w_i + w_e) / (1.5 * (n_i + n_e) * V_CHAMBER);
-            let w_i_eq = 1.5 * n_i * t_eq * V_CHAMBER;
-            let w_e_eq = 1.5 * n_e * t_eq * V_CHAMBER;
+            let t_eq = (w_i + w_e) / (1.5 * (n_i + n_e) * v);
+            let w_i_eq = 1.5 * n_i * t_eq * v;
+            let w_e_eq = 1.5 * n_e * t_eq * v;
             let relax = (nu_eq * dt).clamp(0.0, 1.0);
             w_i += (w_i_eq - w_i) * relax;
             w_e += (w_e_eq - w_e) * relax;
@@ -346,14 +399,14 @@ impl Reactor {
         self.w_e = w_e.max(0.0);
 
         // --- particle balance ---
-        let inj_d_dens = self.inj_d / (M_D * V_CHAMBER);
-        let inj_he3_dens = self.inj_he3 / (M_HE3 * V_CHAMBER);
+        let inj_d_dens = self.inj_d / (M_D * v);
+        let inj_he3_dens = self.inj_he3 / (M_HE3 * v);
         let tau_p = ASH_CONFINEMENT * tau_e;
-        let dn_d = inj_d_dens - (r_dhe3 + 2.0 * r_ddp + 2.0 * r_ddn + r_td) / V_CHAMBER;
-        let dn_he3 = inj_he3_dens - r_dhe3 / V_CHAMBER + r_ddn / V_CHAMBER;
-        let dn_t = r_ddp / V_CHAMBER - r_td / V_CHAMBER;
-        let dn_he4 = (r_dhe3 + r_td) / V_CHAMBER - self.n_he4 / tau_p;
-        let dn_p = (r_dhe3 + r_ddp) / V_CHAMBER - self.n_p / tau_p;
+        let dn_d = inj_d_dens - (r_dhe3 + 2.0 * r_ddp + 2.0 * r_ddn + r_td) / v;
+        let dn_he3 = inj_he3_dens - r_dhe3 / v + r_ddn / v;
+        let dn_t = r_ddp / v - r_td / v;
+        let dn_he4 = (r_dhe3 + r_td) / v - self.n_he4 / tau_p;
+        let dn_p = (r_dhe3 + r_ddp) / v - self.n_p / tau_p;
         self.n_d = (self.n_d + dn_d * dt).max(0.0);
         self.n_he3 = (self.n_he3 + dn_he3 * dt).max(0.0);
         self.n_t = (self.n_t + dn_t * dt).max(0.0);
@@ -376,6 +429,12 @@ impl Reactor {
         let p_dc_in = (p_charged - p_brem).max(0.0);
         let p_elec = ETA_CONV * p_dc_in;
         let p_waste = p_neutron + p_brem + (1.0 - ETA_CONV) * p_dc_in;
+
+        // --- balance-of-plant overhead: fixed loads that don't shrink with the
+        // burning column, so at low power they dominate gross output. ---
+        let overhead = self.plug_drive + P_CRYO + P_TIN_PUMP;
+        let p_elec_net = (p_elec - overhead).max(0.0);
+        let overhead_fraction = if p_elec > 0.0 { overhead / p_elec } else { 1.0 };
 
         // --- pressure / beta / confinement ---
         let pressure = n_e * t_e_j + n_i * t_i_j;
@@ -407,8 +466,11 @@ impl Reactor {
         self.p_neutron = p_neutron;
         self.p_brem = p_brem;
         self.p_elec = p_elec;
+        self.p_elec_net = p_elec_net;
+        self.overhead_fraction = overhead_fraction;
         self.p_waste = p_waste;
         self.d_burn_kg_s = d_burn_kg_s;
+        self.he3_burn_kg_s = he3_burn_kg_s;
         ic.reactor_waste_heat = p_waste;
 
         // --- phase / status ---
@@ -445,29 +507,39 @@ impl Reactor {
             return;
         }
         if self.mode == ReactorMode::Shutdown {
-            // cut the fuel: the plasma starves and gutters out (fusion can't run away)
+            // cut the fuel and retract the column: the plasma starves and gutters
+            // out (fusion can't run away).
             self.inj_d = 0.0;
             self.inj_he3 = 0.0;
+            self.l_target = L_MIN_GEO;
         } else {
-            // electrical demand -> thermal-capped fusion target. Inject *around*
-            // the current burn rate to hold density, biased by the power error;
-            // the 0.3 floor keeps a normal throttle from crashing the plasma to
-            // extinction (only Shutdown fully starves it).
-            // Burn control (feedforward): hold density around the current burn
-            // rate, biased by the power error and capped by thermal headroom. NOTE:
-            // 80 keV is thermally unstable (rising reactivity), so this simple loop
-            // holds the operating point only over short spans; a proper aux+density
-            // burn controller that stabilizes it indefinitely is a documented
-            // follow-up. That the reactor *needs* active stabilization is itself the
-            // "lose the control computers and it runs away" mechanic.
+            // Demand -> throttle. Length carries the throttle from the geometric
+            // floor up to rated at *constant density*; beyond rated (overdraw) the
+            // column is maxed and density is pushed up instead (β climbs — the
+            // combat-surge regime). Thermal headroom caps the achievable target.
+            //
+            // NOTE: 80 keV is on the rising branch of the reactivity curve, so the
+            // burn is thermally unstable; holding density steady does not by itself
+            // stabilize temperature. A proper aux+density burn controller is a
+            // documented follow-up — and that the reactor *needs* one is the "lose
+            // the control computers and it runs away" mechanic.
             let target_fusion = (self.target_power / 0.63)
-                .max(MIN_SUSTAIN_FUSION)
+                .max(P_LIT_MIN)
                 .min(ic.thermal_headroom * P_REACTOR_CEILING);
-            let err_norm = (target_fusion - self.fusion_power) / RATED_FUSION_W;
-            let factor = (1.0 + 1.5 * err_norm).clamp(0.3, 2.5);
-            let base_inj = self.d_burn_kg_s.max(1.0e-5);
-            self.inj_d = (base_inj * factor).clamp(0.0, 1.0e-2);
-            self.inj_he3 = self.inj_d * 0.5; // hold fuel ratio n_He3/n_D ≈ 0.5
+            let frac = target_fusion / RATED_FUSION_W;
+            self.l_target = (L_MAX * frac.min(1.0)).clamp(L_MIN_GEO, L_MAX);
+            // Density setpoint: rated up to 100%, raised as √(overdraw) beyond it
+            // (fusion power ∝ n² at fixed temperature).
+            let dens_scale = frac.max(1.0).sqrt();
+            let n_d_tgt = N_D_SET * dens_scale;
+            let n_he3_tgt = N_HE3_SET * dens_scale;
+            // Hold density: replace the burn (feedforward) plus a proportional
+            // correction toward the setpoint.
+            let v = self.v_burn;
+            self.inj_d =
+                (self.d_burn_kg_s + K_DENS * (n_d_tgt - self.n_d) * M_D * v).clamp(0.0, 1.0e-2);
+            self.inj_he3 = (self.he3_burn_kg_s + K_DENS * (n_he3_tgt - self.n_he3) * M_HE3 * v)
+                .clamp(0.0, 1.0e-2);
         }
 
         // field trim to keep beta under the soft limit
@@ -483,6 +555,7 @@ impl Reactor {
         if self.containment < 0.5 {
             self.inj_d *= 1.0 - 0.5 * dt;
             self.inj_he3 *= 1.0 - 0.5 * dt;
+            self.l_target = L_MIN_GEO;
             self.b_setpoint = (self.b_setpoint + 2.0 * dt).min(14.0);
         }
     }
@@ -491,7 +564,7 @@ impl Reactor {
     fn he3_burn_t_yr(&self) -> f64 {
         // R_DHe3 = n_d·n_he3·⟨σv⟩·V, mass per reaction = m_He3
         let sv3 = reactivity(&BH_DHE3, self.t_i_kev.min(190.0));
-        let r_dhe3 = self.n_d * self.n_he3 * sv3 * V_CHAMBER;
+        let r_dhe3 = self.n_d * self.n_he3 * sv3 * self.v_burn;
         r_dhe3 * HE3_MASS_KG * SECONDS_PER_YEAR / 1000.0
     }
 
@@ -518,6 +591,7 @@ impl Reactor {
             Stressor { value: 1.0 - self.containment, soft: 0.3, hard: 0.9 },
             Stressor { value: self.fusion_power / RATED_FUSION_W, soft: 1.0, hard: 1.4 },
             Stressor { value: self.t_e_kev, soft: 70.0, hard: 80.0 },
+            Stressor { value: self.l_rate.abs() / L_SLEW, soft: 0.7, hard: 1.5 },
         ])
     }
 }
@@ -567,6 +641,10 @@ pub fn reactor_publish(reactor: Res<Reactor>, bridge: Res<NetBridge>) {
     pub_noisy("output/p_brem_gw", reactor.p_brem / 1e9, 11.0);
     pub_noisy("fuel/he3_inventory_t", reactor.inv_he3_t, 12.0);
     pub_noisy("fuel/he3_burn_t_yr", reactor.he3_burn_t_yr(), 13.0);
+    pub_noisy("output/burning_length_m", reactor.l_active, 14.0);
+    pub_noisy("output/p_electrical_net_gw", reactor.p_elec_net / 1e9, 15.0);
+    pub_noisy("output/overhead_fraction", reactor.overhead_fraction, 16.0);
+    pub_noisy("output/plug_drive_gw", reactor.plug_drive / 1e9, 17.0);
 
     bridge.publish_writable(
         Path::from(format!("{base}/control/target_power_gw")),
@@ -741,5 +819,48 @@ mod tests {
             min_headroom < 0.9,
             "thermal throttle never engaged: min headroom {min_headroom:.2}"
         );
+    }
+
+    #[test]
+    fn length_throttle_retracts_at_held_density() {
+        // The throttle mechanic: commanding lower power retracts the burning column
+        // at the coil-slew rate while density stays pinned (the constant-density
+        // length throttle). Power then tracks length at constant plasma condition.
+        //
+        // We verify within the ~1 s stable window: holding the *power* setpoint over
+        // long spans additionally needs burn-control stabilization of the 80 keV
+        // rising-branch thermal instability, a separate documented follow-up (the
+        // reactor runs its ion temperature up and disrupts on beta in a few seconds
+        // without it — which is also the "lose the control computers" mechanic).
+        let mut r = Reactor::default();
+        let mut t = Thermal::default();
+        let mut ic = Interconnect::default();
+        for _ in 0..(2 * 64) {
+            tick(&mut r, &mut t, &mut ic);
+        }
+        assert!(r.l_active > 350.0, "did not boot at full length: {:.0} m", r.l_active);
+        let n_d0 = r.n_d;
+
+        r.target_power = 0.25 * RATED_ELECTRICAL_W; // command a deep throttle-down
+        for _ in 0..64 {
+            tick(&mut r, &mut t, &mut ic); // 1 s — inside the stable window
+        }
+
+        // Column slews toward the shorter target at ~L_SLEW (a deterministic control,
+        // independent of the plasma state).
+        let expected = L_MAX - L_SLEW * 1.0;
+        assert!(
+            (r.l_active - expected).abs() < 8.0,
+            "column not slewing at rate: l={:.0} m (expected ~{expected:.0})",
+            r.l_active
+        );
+        // Density held pinned through the throttle — the constant-density claim.
+        assert!(
+            (r.n_d / n_d0 - 1.0).abs() < 0.03,
+            "density not held: {:.2e} vs {:.2e}",
+            r.n_d,
+            n_d0
+        );
+        assert!(r.status != ReactorStatus::Offline, "plasma dropped offline mid-throttle");
     }
 }

@@ -349,6 +349,116 @@ civilization uses ~18 TW for 8 billion people. The surplus covers weapons,
 fabrication, and the ever-present need for antimatter containment power.
 
 
+## Confinement and Throttle
+
+### The Tandem Mirror
+
+The reactor confines its plasma in a **tandem magnetic mirror**: a straight
+magnetic bottle roughly **350 m** long running down the ship's spine, with the
+field intensified at each end into a magnetic "choke" that reflects escaping
+particles back toward the middle. The burning plasma is a thin column about
+**3 m** in radius — some **10,000 m³** at full length — held at **9 T** in the
+central cell, rising to ~27 T at the end chokes (mirror ratio ≈ 3).
+
+D-³He forces this choice. Because the fuel is nearly aneutronic, its fusion
+power density is low and bremsstrahlung is always trying to outrun it, so the
+plasma must run at high pressure relative to its confining field — high **beta**
+(β, the ratio of plasma pressure to magnetic pressure). The mirror is a
+naturally high-β machine; at the 500 GW operating point it runs **β ≈ 0.57**,
+against a soft limit of 0.75 and a hard (disruption) limit of 0.90. A tokamak,
+capped near β ≈ 0.04, would be strangled by bremsstrahlung on this fuel.
+
+A simple mirror leaks: particles moving too nearly along the axis fall into the
+**loss cone** and stream out the ends. The tandem design plugs those ends
+electrostatically — small, dense **plug cells** at each extremity, sustained by
+continuous beam and microwave heating, raise an electric potential that repels
+central-cell ions back inward. That plug drive is a permanent power overhead,
+and it is what sets the reactor's low-power floor (below).
+
+The leak is not wasted. Particles that do escape the chokes stream directly into
+the endcap **direct converters** — this is the "magnetic decelerator" described
+above. The confinement geometry and the power-conversion geometry are the same
+hardware.
+
+### Throttling: The Length Knob
+
+A burning D-³He plasma is **bistable** — ignited-hot or cold-dead, with nothing
+stable between. Try to throttle it down the obvious way, by cutting fuel and
+thinning the plasma, and self-heating falls faster than losses: the plasma
+cools, reactivity collapses, and it quenches. You cannot idle a fusion fire by
+starving it.
+
+The mirror throttles a different way — it changes **how much** plasma is
+burning, not how hard. Energizing more or fewer of the central-cell coils
+lengthens or shortens the burning column while leaving its density and
+temperature untouched. Every meter that is lit is fully, happily ignited; the
+reactor simply lights more or fewer meters.
+
+> P_fusion ≈ 500 GW × (L_active / 354 m)
+
+Because density and temperature never move, the plasma never approaches the
+collapse cliff — there is just less of it. This is the throttle: **power
+proportional to burning length, at constant plasma condition.** Fuel feed tracks
+the length; the field is held.
+
+The central-cell **field strength** is a second, slower knob. It does not set
+power — it sets *margin*. Raising the field lowers beta (more distance to the
+disruption limit) and improves confinement (energy confinement time scales as
+the square of the field), at the cost of coil stress that rises as the square of
+the field. Operators trim it for the regime, not for throttling.
+
+### Operating Envelope
+
+| Regime | Fusion power | Burning length | Character |
+|--------|--------------|----------------|-----------|
+| Redline | 500 GW | ~354 m (full) | Combat / peak. β riding toward 0.75; radiators saturated. Two guards lit. |
+| Self-sustaining | 10–500 GW (2–100%) | ~7–354 m | Everyday range. Ignited at constant density across the whole span; overhead turns marginal below ~5% (25 GW). |
+| Aux-driven / lean | 3–10 GW (0.6–2%) | at the ~7 m geometric floor | Deepest idle and the flip minimum. The column can't shorten further, so density is dropped with aux heating holding temperature. Delicate. |
+| Shutdown | < ~3 GW | cold | Overhead exceeds output — cold-and-dark, cold-start to relight. |
+| Overdraw | 500–700 GW | ~354 m (full) | Combat surge past rated: length maxed, density pushed up, β climbing toward the disruption limit. Thermally brutal. |
+
+The **top** is a hard wall with two independent guards: the plasma's own
+stability (beta past 0.90 → flute/interchange disruption) and thermal rejection
+(the radiators saturate; see Thermal Management). The **bottom** is soft and
+economic rather than physical: the burning column shrinks but the plug drive,
+cryogenics, and coolant pumps do not, so at a few percent power the fixed
+overhead is a large fraction of output, and below ~3 GW it exceeds output
+entirely. There is no point idling there — the reactor is shut down and later
+cold-started. (There is also a hard geometric floor: the central cell cannot be
+shorter than the plug and transition regions.)
+
+Cruising lean is what makes a voyage possible. At a few percent power the reactor
+sips a small fraction of its rated fuel, stretching the **2,000 t** D-³He load
+across interstellar transit times. A ship that could only run at its 500 GW
+rating would drink its fuel in months.
+
+The **risk lives in the transitions, not the setpoints.** Changing the burning
+length re-energizes superconducting coil groups, moving large amounts of stored
+magnetic energy — done too fast, that stresses the coils and can quench them.
+And ramping *up* can out-run the thermal loop, which lags 10–30 s behind a power
+change: push power faster than the tin and radiators can follow and the plasma
+overheats before cooling catches up. A good engineer throttles gently.
+
+### Reactor Failure Modes
+
+- **Beta-limit disruption** — pressure driven past β ≈ 0.90 (too much fuel, or
+  field lost) trips a flute/interchange instability; the plasma loses
+  confinement and dumps.
+- **Plug collapse** — loss of electrostatic-plug drive (battle damage, heater
+  failure) drops the end barrier; central-cell ions pour out the loss cone, and
+  the plasma drains, cools, and quenches. The most likely way to lose the
+  reactor on a long cruise, when the plugs run for months.
+- **Coil quench** — ramping coils too fast or pushing the field too high quenches
+  a superconducting magnet; the stored field energy dumps as a bang and
+  confinement is lost.
+- **Thermal cascade** — a power ramp that outpaces the radiators saturates the
+  tin loop and forces an automatic throttle or SCRAM (see Thermal Management).
+- **Control drift** — the mirror leaks continuously and must be actively held;
+  lose the (physical, destructible) control computers and nothing trims fuel,
+  field, and plugs against the loss cone, so the reactor wanders off its
+  operating point.
+
+
 ## Thermal Management
 
 ### The Problem
