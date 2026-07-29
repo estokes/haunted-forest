@@ -53,12 +53,9 @@ asteroid belts, rocky planets, or nothing much at all.
 |---------|---------------|-------------------|
 | Helium-3 (³He) | D-³He fusion reactor fuel. Every ship, every station, every colony needs it. | Gas giant atmospheres. Systems without gas giants import or die slowly. |
 | Platinum (Pt) | Catalysts, high-performance manufacturing, dense value store. The closest thing to a universal currency. | Differentiated asteroids. Systems with a good belt are rich; systems without are poor. |
-| Antimatter | Conventional propulsion fuel. Every ship needs it. | Manufactured, not mined. Requires enormous energy infrastructure. Some systems produce surplus; most don't. |
-
-These three function as interstellar quasi-currency. A trader accepts
+These two function as interstellar quasi-currency. A trader accepts
 payment in ³He or platinum because they know exactly where to sell it
-at a profit. Antimatter is liquid at any port with docking traffic
-because every ship burns it.
+at a profit.
 
 **Tier 2 — Important, unevenly distributed:**
 
@@ -130,7 +127,7 @@ energy laser links.
 - Destination system
 - Delivery window (a range of dates)
 - Payment in destination-local currency, or in trade commodities
-  (³He, platinum, antimatter)
+  (³He, platinum)
 
 **Exclusive contracts**: One party takes the contract, one ship
 fulfills it. Guaranteed payment on delivery. Higher margins, but you're
@@ -266,7 +263,7 @@ barter intermediated by local currencies:
 4. Repeat.
 
 The balance of trade IS the currency exchange. Commodity quasi-
-currencies (³He, platinum, antimatter) smooth this — a trader who
+currencies (³He, platinum) smooth this — a trader who
 doesn't want to speculate on cargo can convert to commodities that
 hold value anywhere.
 

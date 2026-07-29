@@ -22,7 +22,7 @@ Each colony system needs:
 ## Interstellar Routes
 
 Not all routes are equal. ISM density varies — denser regions mean
-faster stardrive acceleration but more shield ablation. The Local Bubble
+faster stardrive acceleration but more hull wear and dust hazard. The Local Bubble
 near Sol is thin (~0.1 atoms/cm³), making nearby departures sluggish.
 Denser regions near spiral arms offer 5-50 atoms/cm³.
 

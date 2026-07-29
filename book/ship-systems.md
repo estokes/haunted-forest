@@ -31,8 +31,9 @@ The ship is built in concentric layers, designed to protect the crew and
 sensitive cargo from radiation regardless of orientation:
 
 ```
-     Outer hull (CNT, 1mm)
-     H₂ ice coating (10-30cm, entire surface)
+     Carbon-nanosheet Whipple bumpers (outer, multi-layer)
+     Water stuffing (barrel: radiation shield + debris absorber)
+     Inner hull (carbon nanosheet, structural)
      ─────────────────────────────────────
      Unpressurized bays (cargo, hangars)
      LH₂ reaction mass tanks (distributed)
@@ -42,16 +43,24 @@ sensitive cargo from radiation regardless of orientation:
      LH₂ reaction mass tanks (distributed)
      Unpressurized bays (cargo, hangars)
      ─────────────────────────────────────
-     H₂ ice coating
-     Outer hull (CNT)
+     Inner hull / water stuffing / carbon Whipple bumpers
 ```
 
-The LH₂ reaction mass tanks are the primary radiation shield — hydrogen
-is the best radiation shielding material per unit mass. The tanks are
-distributed around the crew compartment on all sides, not concentrated at
-one end, because the ship must flip at the midpoint of every interstellar
-transit. The ice coating handles ISM ablation. Together they protect the
-crew regardless of ship orientation.
+The barrel hull is a **stuffed Whipple shield**: spaced carbon-nanosheet
+bumper layers with water in the gaps. The carbon shrugs off the
+interstellar gas and shatters micrometeoroids; the water disperses the
+debris cloud and is the primary radiation shield for the crew's flanks.
+Water and hydrogen are the best radiation shielding per unit mass, and the
+water — unlike the reaction mass — is never burned, so the shield doesn't
+thin as you spend fuel. The LH₂ tanks are distributed around the crew on
+all sides (not concentrated at one end, because the ship flips at
+midcourse), adding shielding and covering fore and aft. The endcaps carry a
+*dry* carbon Whipple — spaced bumper layers with vacuum gaps, no water —
+because they double as the ship's 1800 K radiators (see Thermal Management)
+and water can't ride red heat. The same layered carbon serves as both the
+tin-cooled radiator panels and the micrometeoroid bumper. The leading
+endcap meets the ISM head-on and is the single most-hit surface on the
+ship, so it is the most heavily layered and raked.
 
 ### Longitudinal Layout
 
@@ -80,59 +89,94 @@ forward through the scoop field — the exhaust velocity far exceeds the
 ISM approach speed, so the scoop doesn't recollect it.
 
 
-## Ablative Shield and Radiation Protection
+## Hull Armor and Radiation Protection
 
 ### The Problem
 
 At 0.5c, each ISM hydrogen atom carries ~117 MeV of kinetic energy —
 comparable to a cosmic ray proton. The raw particle flux on the forward
 face is about 2.8 kW/m². Unshielded, this would cook the crew in hours.
+And the ISM is ~1% dust: a neutral grain the magnetic field can't touch
+arrives as a hypervelocity impactor (see Active Debris Defense).
 
 ### The Solution (three layers)
 
 1. **Magnetic deflection**: The bussard scoop's magnetic field extends
    thousands of kilometers ahead of the ship, deflecting ~95% of ionized
-   ISM particles before they reach the hull. Most of the ISM is ionized.
+   ISM particles — and most photoelectrically-charged dust — before they
+   reach the hull.
 
-2. **H₂ ice coating**: Solid hydrogen ice, reinforced with CNT mesh,
-   coats the entire hull. Not water ice — there's no oxygen in
-   interstellar space. Deep space is ~3K, well below hydrogen's 14K
-   freezing point. The ice handles the ~5% of ISM particles that get
-   through the magnetic field (~140 W/m² on the exposed endcap), ablating
-   and carrying energy away. During cruise, the ramscoop collects more
-   hydrogen than the shield loses to ablation — the coating is maintained
-   indefinitely.
+2. **Stuffed carbon-Whipple hull**: The outer hull is not a coating but a
+   **Whipple shield** — spaced carbon-nanosheet bumper layers with water in
+   the gaps — doing two jobs at once:
+   - *Gas erosion*: carbon is bound ~700× more tightly than the hydrogen
+     ice it replaces (covalent ~7 eV/atom vs van der Waals ~0.01 eV), so
+     the relativistic ISM gas barely touches it. Where the old ice eroded
+     at ~85 kg/s and had to be continuously regrown, a carbon hull outlasts
+     the ship by orders of magnitude against the gas — no ablation, no
+     cryo, no scoop-fed replenishment.
+   - *Micrometeoroids*: the outer bumper shatters and vaporizes a
+     penetrating grain into a spreading debris cloud; the standoff gap lets
+     it fan out; the water disperses it as a diffuse impulse instead of a
+     hole-punch. Gas bladders in the water manage the pressure pulse and
+     water's 9% freeze-expansion.
 
-3. **Distributed LH₂ tanks**: 100,000 tonnes of liquid hydrogen reaction
-   mass in tanks surrounding the crew compartment on all sides. This is
-   the primary radiation barrier. Hydrogen's low atomic mass makes it the
-   best neutron moderator and cosmic ray shield per unit mass.
+3. **Water + LH₂ radiation shield**: The barrel's water stuffing is the
+   primary radiation barrier for the crew's flanks; the distributed LH₂
+   reaction-mass tanks add more and cover fore and aft. Water and hydrogen
+   are the best radiation shielding per unit mass. And because the water is
+   never burned as propellant, the shield doesn't thin out as you spend
+   fuel — a robustness the old LH₂-only barrier never had.
 
-### Ice Shield Details
+### The Whipple Hull
 
-- **Coverage**: Entire hull — both endcaps (30 cm) and barrel (10 cm)
-- **Mass**: ~31,000 tonnes
-- **Endcap erosion at 0.5c**: ~85 kg/s (after magnetic deflection)
-- **Ramscoop collection at 0.5c**: ~155 kg/s
-- **Net**: collection exceeds erosion — shield is continuously replenished
+- **Barrel**: spaced carbon-nanosheet bumpers, water-stuffed, ~1 m thick.
+  Always cool (grazing incidence), so the water self-arranges
+  frozen-outer / liquid-inner with no active cryo.
+- **Endcaps**: a *dry* carbon Whipple — spaced bumper layers, vacuum gaps,
+  **no water** (water can't survive the 1800 K radiator duty they pull).
+  A dry Whipple is less mass-efficient than the stuffed barrel, so the
+  endcaps are built thicker and more-layered — which suits them, because
+  the leading endcap meets the forward dust cone head-on and is the single
+  most-hit surface on the ship. It also gets the most help from active
+  defense, whose beams are trained on the same forward cone. The layered
+  carbon doubles as the tin-cooled radiator: its tin is **drained** when
+  the cap is forward (shield mode) and flowing when it's aft (radiator
+  mode), so the two jobs never overlap and an impact can't breach a live
+  coolant channel. Raked/conical to glance dust. The LH₂ tanks behind carry
+  the fore/aft radiation shielding.
+- **Erosion**: negligible against the ISM *gas*. Practical lifetime is set
+  by the rare large grain active defense misses and slow dust
+  micro-cratering — patched at drydock, not self-healed. A raked, conical
+  leading cap spreads the flux and glances off dust (sloped-armor logic),
+  buying more margin still.
+- **Inspection and repair**: the barrel gaps are a meter of water a person
+  can enter. Crew suit up and **dive the hull** — internal, wet EVA — to
+  inspect bumper layers and patch battle damage or micrometeoroid
+  punctures from the inside, the water pumped down locally to work a
+  section dry.
+- **No scoop dependence**: the hull needs no in-flight replenishment. Water
+  is topped up at any icy body; carbon is patched at service intervals.
+  Lose the scoop and the *shield is fine* — only the fuel supply suffers.
 
 
 ## Active Debris Defense
 
 ### The Threat the Passive Shield Misses
 
-The magnetic scoop and H₂ ice handle the *interstellar medium* — individual
-atoms and ions, ~117 MeV apiece at 0.5c (see Ablative Shield). They do nothing
-against a **grain**. The ISM is ~1% dust by mass: silicate and carbonaceous
+The magnetic scoop and the carbon-Whipple hull handle the *interstellar medium* —
+individual atoms and ions, ~117 MeV apiece at 0.5c (see Hull Armor), and the hull's
+bumper layers shatter the smallest grains. But a **grain** with real mass is another
+matter. The ISM is ~1% dust by mass: silicate and carbonaceous
 motes from sub-micron up through the rare sand- and pebble-sized debris of
-shattered worlds. A neutral grain isn't deflected by the scoop's field, and the
-ice cannot absorb a concentrated impactor. At 0.5c the kinetic energy of even a
+shattered worlds. A neutral grain isn't deflected by the scoop's field, and above
+a few micrometres no passive hull can absorb a concentrated impactor. At 0.5c the kinetic energy of even a
 speck is absurd (KE ≈ (γ−1)mc², γ ≈ 1.155):
 
 | Grain | Mass | KE at 0.5c | Equivalent | Handled by |
 |-------|------|-----------|------------|------------|
-| 1 µm mote | ~1.6 pg | ~22 J | a hard flick | ice ablation |
-| 10 µm dust | ~1.6 ng | ~22 kJ | a rifle round | ice, marginally |
+| 1 µm mote | ~1.6 pg | ~22 J | a hard flick | Whipple hull |
+| 10 µm dust | ~1.6 ng | ~22 kJ | a rifle round | Whipple hull, marginally |
 | 100 µm fine sand | ~1.6 µg | ~22 MJ | ~5 kg TNT | **active defense** |
 | 1 mm coarse sand | ~1.6 mg | ~22 GJ | ~5 t TNT | **avoidance** |
 | 1 cm pebble | ~1.6 g | ~22 TJ | ~5 kt (nuclear) | **avoid at all costs** |
@@ -149,8 +193,8 @@ energy:
 1. **Magnetic deflection** (scoop, existing): sweeps aside ionized matter *and*
    charged dust — most ISM grains are photoelectrically charged — thousands of
    km out.
-2. **Ablative shield** (ice + CNT, existing): absorbs the small *neutral* grains
-   (≲ a few µm) that slip through, by ablation.
+2. **Whipple hull** (carbon + water, existing): shatters and absorbs the small
+   *neutral* grains (≲ a few µm) that slip through.
 3. **Active detection** (new): finds the medium grains the first two layers miss,
    far enough out to act.
 4. **Active interdiction** (new): vaporizes or deflects them at standoff.
@@ -197,7 +241,7 @@ crucial, counterintuitive physics: **the laser cannot remove the grain's kinetic
 energy.** Momentum is conserved; 22 MJ of forward-directed energy is still 22 MJ
 after vaporization. What it *can* do is spread it: a concentrated point impact
 drills through ice and hull, but the same energy arriving as a diffuse plasma
-cloud fanned across a square meter of H₂ ice merely ablates a scar. So the FEL's
+cloud fanned across a square meter of the carbon hull merely craters a scar. So the FEL's
 job is to detonate each grain at standoff and let the passive shield take the
 diffuse remnant — **converting an impactor into an ablation load.** Where range
 and time allow it does better: an asymmetric ablation jet gives the grain a
@@ -266,36 +310,35 @@ defense against a pebble is to never fly at it.
 
 ## Mass Budget
 
-### Empty Mass (~150,000 tonnes)
+### Empty Mass (~165,000 tonnes)
 
 The ship with nothing in it — hull, structure, permanently installed
 systems:
 
 | Component | Mass |
 |-----------|------|
-| Hull (CNT, 1mm) | 3,500 t |
+| Hull (multi-layer carbon-nanosheet Whipple armor) | 20,000 t |
 | Internal structure (decks, bulkheads, framing) | 20,000 t |
 | Ship reactor + direct conversion (~500 GW fusion) | 25,000 t |
 | Thermal management (tin loops, endcap radiators) | 8,000 t |
-| Drive reactors + conventional engines (~25 TW) | 20,000 t |
+| ICF drive: igniter banks, reaction chamber, magnetic nozzles, neutron shield (~25 TW) | 20,000 t |
 | Stardrive nacelles (black-boxed, incl. structure) | 50,000 t |
 | Weapons systems | 10,000 t |
 | Sensors, communications, computing | 5,000 t |
 | Life support (sized for ~10 crew) | 500 t |
 | Hangar structures and launch systems | 3,000 t |
-| Antimatter containment systems | 5,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-### Operating Mass (~310,000 tonnes)
+### Operating Mass (~350,000 tonnes)
 
 Ready to fly — fueled, shielded, crewed, but no cargo:
 
 | Component | Mass |
 |-----------|------|
-| Empty mass | 150,000 t |
-| H₂ ice shield (full hull) | 31,000 t |
-| Reaction mass (LH₂, distributed tanks) | 100,000 t |
-| Antimatter | 100 t |
+| Empty mass | 165,000 t |
+| Whipple shield water (barrel: radiation + impact stuffing) | 30,000 t |
+| Reaction mass (LH₂ — drive fuel + supplementary shield) | 100,000 t |
+| Drive fuel (deuterium, distributed tanks) | 45,000 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (crew areas only) | 500 t |
 | Water and consumables | 100 t |
@@ -304,14 +347,19 @@ Ready to fly — fueled, shielded, crewed, but no cargo:
 
 ### Loaded Mass (up to ~500,000 tonnes)
 
-Operating mass plus cargo. **Cargo capacity: ~190,000 tonnes.**
+Operating mass plus cargo. **Cargo capacity: ~150,000 tonnes.**
+
+The ICF drive's deuterium fuel is a real slice of the mass budget — the
+price of fusion's modest energy density, and the reason cargo capacity sits
+where it does. The designers took the trade gladly: the ship carries cheap,
+inert fuel instead of anything that has to be *contained*.
 
 Cargo includes: cold sleep pods with passengers, black-boxed technology,
 trade goods, raw materials, colonization equipment — whatever the mission
 requires. Actual loaded mass varies:
 
-- Trade run: ~400,000 t
-- Military patrol: ~300,000 t
+- Trade run: ~420,000 t
+- Military patrol: ~370,000 t (light load)
 - Colony expedition: ~500,000 t (maximum)
 
 
@@ -338,15 +386,14 @@ The reactor powers:
 - Weapons systems
 - Sensors and communications
 - Computing (AI systems)
-- Antimatter magnetic containment (critical — if this fails, bad things happen)
 
-The reactor is **not** involved in propulsion. The conventional engines
-have their own dedicated drive reactors (~25 TW total). The stardrive is
-an entirely separate black-boxed system.
+The reactor is **not** involved in propulsion. The ICF drive has its own
+dedicated drive reactors (~25 TW total) feeding its igniter banks. The
+stardrive is an entirely separate black-boxed system.
 
 315 GW is enormously overprovisioned for 10 crew — modern human
-civilization uses ~18 TW for 8 billion people. The surplus covers weapons,
-fabrication, and the ever-present need for antimatter containment power.
+civilization uses ~18 TW for 8 billion people. The surplus covers weapons
+charge, fabrication, cryogenics, and the ship's hotel load.
 
 
 ## Confinement and Throttle
@@ -501,6 +548,16 @@ losses in the collector structures, carries the combined ~185 GW to the
 endcap radiator panels, and returns. No thermal cycle extracts work from
 this loop — the heat is dumped directly.
 
+Because the radiators are at the endcaps and the reactor sits fore-of-
+center, the loop runs most of the ship's length to reach the far cap — a
+kilometer of ~1800 K piping along an insulated thermal spine through the
+structural core, routed clear of the habitable volume. That costs tin
+inventory, pumping power (the ~1 GW tin pump), and *demanding* insulation:
+even a 0.1% leak along the run would dump ~185 MW into the ship's interior.
+The price buys radiators with a clear view to cold space and no deployable
+moving parts. (Centering the reactor would balance the two runs; the
+fore-bias keeps it beside the conventional engines instead.)
+
 ### Endcap Radiators
 
 The ship radiates waste heat from its endcaps — flat surfaces of
@@ -513,8 +570,8 @@ waste heat load with margin. Both endcaps together (in-system) provide
 ~460 GW of rejection capacity.
 
 **Shadow placement**: During acceleration, the aft endcap faces empty
-space and radiates freely. The fore endcap faces the ISM and is coated
-in H₂ ice for ablative shielding. At the midpoint flip, roles swap (see
+space and radiates freely. The fore endcap faces the ISM; its
+carbon-nanosheet armor shrugs off the gas with no ice needed. At the midpoint flip, roles swap (see
 Flip Thermal Sequence below).
 
 During in-system operations (no ISM flux), both endcaps radiate
@@ -525,14 +582,17 @@ No deployable mechanisms. No moving parts.
 
 ### Flip Thermal Sequence
 
-The midpoint flip swaps which endcap radiates and which carries ice.
-The outgoing radiator is at ~1800 K; H₂ ice freezes at 14 K. Bridging
-that gap requires a multi-day sequenced procedure:
+The midpoint flip swaps which endcap radiates into shadow and which
+faces the ISM. Both endcaps are carbon-nanosheet armor, and carbon is
+happy at either extreme — the interstellar wind or ~1800 K red heat (it
+sublimes only at ~3900 K). So the same structure serves as leading shield
+or radiator, and the flip is now just a thermal hand-off, not the old
+ice-melt-and-regrow ordeal:
 
 **Phase 1 — Radiative cooldown (~3-4 days before flip)**
 
-The reactor throttles to minimum power (a few GW — enough for
-antimatter containment). Tin coolant is drained from the aft radiator
+The reactor throttles to minimum power (a few GW — enough for hotel
+load, cryo, and compute). Tin coolant is drained from the aft radiator
 endcap. With no heat input, the endcap cools radiatively into the
 shadow of the ship. Radiative cooling follows T⁴ — the first 1700 K
 sheds in hours, the last hundred takes days:
@@ -543,9 +603,12 @@ sheds in hours, the last hundred takes days:
 | 100 K | ~10 hours |
 | 50 K | ~3.5 days |
 
-During this phase, the ship's thermal mass absorbs the reactor's
-minimal waste heat (a few hundred MW — negligible temperature rise
-across 300,000 tonnes of ship). The stardrive runs independently.
+Why cool it first: a glowing endcap swung to the front would radiate
+uselessly into the oncoming ISM and bake the bow instead of rejecting
+heat into cold shadow. Cooling it hands the radiator job cleanly to the
+other face. During this phase the ship's thermal mass absorbs the
+reactor's minimal waste heat (a few hundred MW — negligible across
+350,000 tonnes of ship). The stardrive runs independently.
 
 **Phase 2 — Physical flip (minutes)**
 
@@ -553,31 +616,22 @@ RCS thrusters or reaction wheels rotate the ship 180°.
 
 **Phase 3 — New radiator online (~1 hour after flip)**
 
-The old fore endcap (now aft, still coated in H₂ ice) becomes the new
-radiator. Warm tin coolant is routed through it, sublimating ~7,300
-tonnes of ice. At ~449 kJ/kg sublimation energy, this takes ~3.3 TJ —
-about 5 minutes at 10 GW of reactor waste heat. The hydrogen vents to
-space. Once clear, the endcap is the active radiator and the reactor
-ramps back to operating power.
+The old fore endcap (now aft, in shadow) becomes the new radiator: warm
+tin coolant is routed through its panels and it climbs back to ~1800 K in
+minutes. The reactor ramps to operating power. There is no ice to
+sublimate and nothing to vent — the carbon endcap simply reheats.
 
-**Phase 4 — Ice buildup (~1-2 days after flip)**
+**No vulnerable window.** The leading face is *always* armored — the
+carbon Whipple hull is permanent structure, not a coating that has to be
+regrown. The old design's dangerous "shield not yet rebuilt" gap is gone;
+both faces are protected before, during, and after the maneuver. The only
+transient is thermal — one endcap briefly warm as it swings forward —
+never structural.
 
-The old aft endcap (now fore, at ~50 K) is actively cooled to 14 K
-with LH₂ spray from the ramscoop — about 15 minutes. Ice deposition
-begins immediately: ~7,300 tonnes of H₂ ice for 30 cm of coverage,
-fed from scoop surplus at the ship's current velocity. At practical
-deposition rates, full coverage takes 1-2 days.
-
-**Vulnerable window**: Between the flip and full ice coverage, the
-forward endcap has no ablative shield. The scoop's magnetic field still
-deflects ~95% of ISM radiation, and the distributed LH₂ tanks protect
-the crew from the remainder. Radiation exposure is elevated but
-survivable. An attack during this window would hit the ship at its most
-vulnerable — reactor just coming back online, one face unshielded.
-
-**Total flip sequence: ~5-6 days.** This is a planned, predictable
-event at the midpoint of every interstellar transit. The ship AI begins
-the procedure autonomously; the crew remains in cold sleep throughout.
+**Total flip sequence: ~4-5 days**, nearly all of it the slow radiative
+cooldown of Phase 1. This is a planned, predictable event at the midpoint
+of every interstellar transit. The ship AI runs it autonomously; the crew
+remains in cold sleep throughout.
 
 ### Stardrive Thermal Management
 
@@ -587,8 +641,6 @@ ship reactor:
 - **Drive plume**: The vast majority of stardrive waste heat is dumped
   directly into the exhaust stream. The reaction mass is the coolant —
   heated and expelled.
-- **Antimatter factory**: Integrated into the nacelles, powered by
-  siphoned stardrive output. Thermodynamic losses go into the exhaust.
 - **Nacelle radiators**: Residual heat that can't be dumped into the
   plume is radiated from nacelle-mounted panels, part of the black-boxed
   stardrive package.
@@ -597,25 +649,87 @@ ship reactor:
 ## Conventional Propulsion
 
 For in-system operations — maneuvering, combat, docking, and boosting to
-stardrive catch speed — the ship uses antimatter-heated hydrogen.
+stardrive catch speed — the ship uses an **inertial-confinement fusion
+(ICF) pulse drive**.
 
-A small quantity of antimatter (~50-100 tonnes) annihilates with an equal
-mass of matter, releasing energy that heats the LH₂ reaction mass to
-extreme temperatures. The superheated hydrogen is expelled through
-magnetic nozzles at ~13,000 km/s (0.044c).
+Dedicated drive reactors (~25 TW) power the igniter banks — lasers and ion
+beams that compress and light **deuterium fuel pellets** hundreds of times
+a second. Each microdetonation is caught and turned by a magnetic nozzle.
+The drive doesn't hum; it hammers. Inert LH₂ injected into each pulse
+augments and cools the exhaust — which is how thrust and exhaust velocity
+are traded against each other.
 
-### Performance
+Deuterium is the fuel because it's cheap and everywhere. Helium-3 is far
+too scarce to feed a drive — the reactor alone nearly exhausts the scoop's
+³He — so the drive burns plain deuterium and pays for it in neutrons: the
+D-D reactions make the drive the ship's neutron source. The nacelle throat
+is shielded, activates over its service life, and dumps its neutron heat
+into the thermal system.
+
+Nothing here is to be feared in a hull breach. A hit to a fuel tank spills
+cold deuterium and hydrogen. The worst the drive itself can do is stop, or
+burn through a nozzle — bad, but survivable.
+
+### Two Knobs, and Combat Lives Between Them
+
+**Exhaust velocity (Isp).** At fixed power, throwing reaction mass *slower*
+buys *more thrust* — the fundamental thrust-versus-range trade. Cruise runs
+lean: high exhaust velocity, gentle thrust, best range. A fight runs rich:
+low exhaust velocity, hard thrust, ruinous range.
+
+**Power (overdraw).** The nozzles are rated for **3.2 PW** continuously.
+You can run them hotter — bigger pulses, higher rep rate — at rising risk:
+a **soft redline at 2× (6.4 PW)**, sustainable for minutes, and a **hard
+limit at 3.5× (11 PW)**, good for seconds. Past that the exhaust plasma
+overwhelms the nozzle field and burns through the physical throat, or the
+nozzle coils quench. Overdraw buys thrust *without* spending your range —
+you pay in nozzle life instead.
+
+Acceleration is **a = 2·P / (m·v_e)**. At the same 3.2 PW that cruises a
+loaded hull at 0.1 G:
+
+| Mode | Exhaust vel | Accel (~490 kt) | Full-tank endurance | Δv from whole tank |
+|------|------------:|----------------:|--------------------:|-------------------:|
+| Cruise (lean) | 13,100 km/s | 0.1 G | ~30 days | ~2,900 km/s |
+| Hard maneuver | 1,300 km/s | 1 G | ~7 hours | ~290 km/s |
+| Combat | 435 km/s | 3 G | ~50 min | ~97 km/s |
+| Violent | 260 km/s | 5 G | ~18 min | ~58 km/s |
+
+Read the last column and wince: hard acceleration is **Δv-catastrophic**.
+Empty the whole tank at 5 G and you've changed velocity by 58 km/s; spend
+it gently and the same mass buys 2,900. Every combat jink is Δv you needed
+to get home.
+
+### The Combat Redline
+
+Maximum acceleration is **~9 G**, reached with overdraw and a rich mixture
+together — and it is a *convergent* redline. Three independent systems hit
+their limit at the same number:
+
+- **Crew** — in immersion couches with pharmacological support (the same
+  tech as the cold-sleep pods), the crew take ~9 G briefly, ~5 G sustained.
+  Bare, it's ~5 G.
+- **Nozzle** — the 3.5× overdraw burn-through / quench limit.
+- **Reaction mass** — the tanks empty in minutes at these rates.
+
+Below 9 G you have margin on all three; at 9 G you have margin on none, and
+battle damage lowers whichever gives first. Combat is a three-resource
+economy — **nozzle life, Δv-efficiency, reaction mass** — traded live. The
+ship handles like a supertanker that can throw one hard punch: it lunges at
+several G, but each lunge spends stamina it needs to get home. The agile
+work belongs to the fighters (100 t, ~5,000× lighter), which pull tens of G
+on the same drive tech. The capital ship punches; the fighters knife-fight.
+
+### Performance Envelope
 
 | Loaded mass | Available Δv | 0.1G endurance |
 |-------------|-------------|----------------|
-| 500,000 t (max cargo) | ~2,900 km/s | ~30 days |
-| 400,000 t | ~3,750 km/s | ~24 days |
-| 300,000 t (light) | ~5,270 km/s | ~18 days |
+| ~490,000 t (max cargo) | ~2,900 km/s | ~30 days |
+| ~400,000 t | ~3,700 km/s | ~24 days |
+| ~330,000 t (light) | ~5,200 km/s | ~18 days |
 
-Maximum acceleration: 0.1G. The ship feels heavy — maneuvers take
-minutes to hours. In-system transits take days. This is deliberate: the
-ship is a kilometer long and masses hundreds of thousands of tonnes. It
-handles like a supertanker, not a fighter.
+In-system transits still take days; the ship is a kilometer long and masses
+hundreds of thousands of tonnes. The drive changed; the heft did not.
 
 ### Port Call Δv Budget
 
@@ -630,15 +744,16 @@ Every port call costs Δv:
 | Reserve | 200 km/s |
 | **Total per port call** | **~2,300 km/s** |
 
-At maximum cargo (500 kt, 2,900 km/s available), this leaves only 600
+At maximum cargo (~490 kt, ~2,900 km/s available), this leaves only ~600
 km/s of margin — enough for a clean port call, but combat or unexpected
 maneuvering eats into it fast. At lighter loads the margin is comfortable.
 
-**The trade tension**: Arrive loaded with cargo, sell it, depart light.
-You have plenty of Δv to leave. But if you want to depart loaded — having
-bought cargo to fill the hold — you either need to refuel at the station
-or trust that your margin is enough. Fuel isn't free, and not every port
-has antimatter for sale.
+**The trade tension**: Arrive loaded with cargo, sell it, depart light. You
+have plenty of Δv to leave. But if you want to depart loaded — having
+bought cargo to fill the hold — you either refuel at the station or trust
+your margin. Deuterium and reaction mass are cheap and available at most
+ports, but topping up still costs time and money, and a lean departure is a
+gamble.
 
 
 ## The Stardrive
@@ -728,8 +843,10 @@ to replenish ship stores:
 
 - **Reaction mass (LH₂)**: Tanks refill in ~2-3 months. Ships arrive at
   every destination with full tanks.
-- **H₂ ice shield**: Continuously replenished. Collection rate exceeds
-  ablation rate — the shield is maintained indefinitely.
+- **Hull armor**: Needs no in-flight replenishment — the carbon Whipple hull
+  doesn't ablate, and its water stuffing is sealed behind it (topped up at
+  ports, not scooped). Losing the scoop no longer threatens the shield,
+  only the fuel supply.
 - **D-³He reactor fuel**: The scoop collects deuterium freely (~20 ppm
   of ISM hydrogen — far more than the reactor consumes). Helium-3 is
   scarcer: the scoop's magnetic field is optimized for protons, and He²⁺
@@ -740,11 +857,13 @@ to replenish ship stores:
   accumulating a modest ³He surplus. This surplus is spent down during
   in-system operations. ³He is a port commodity — sourced primarily from
   gas giant atmosphere mining.
-- **Antimatter**: An onboard particle accelerator, powered by the
-  stardrive's multi-petawatt energy output, produces ~30-100 tonnes of
-  antimatter per year. Over a multi-year transit, the antimatter supply
-  is substantially replenished. (For reference, CERN produces nanograms
-  per year today. The stardrive has ~10¹⁵ times more power available.)
+- **Drive deuterium**: The scoop can't skim deuterium at drive scale —
+  it's only ~20 ppm of ISM hydrogen, a trickle that barely covers the
+  reactor. The drive banks a modest reserve in transit and loads the bulk
+  at destination, extracted from local water or gas-giant hydrogen.
+  Deuterium is cheap and available almost everywhere, so the drive is never
+  fuel-starved the way a scarce-fuel ship would be — but topping up is a
+  routine part of every port call.
 
 The crew is in cold sleep during transit. Ship AI handles navigation,
 shield maintenance, and resource management autonomously.

@@ -44,7 +44,7 @@ can't be replicated.
 
 Between star systems, trade operates through a futures market over laser
 links, settled in local currencies or commodity quasi-currencies (³He,
-platinum, antimatter). There is no universal currency. Reputation is the
+platinum). There is no universal currency. Reputation is the
 only enforcement mechanism.
 
 See [Trade](trade.md) for full details — commodities, the futures market,

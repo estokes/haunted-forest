@@ -57,8 +57,8 @@ state and accepting control through netidx:
 
 - **Thermal management**: Tin coolant loops, endcap radiator
   temperatures, waste heat balance
-- **Conventional propulsion**: Antimatter-heated hydrogen, thrust
-  vectoring, fuel consumption
+- **Conventional propulsion**: ICF pulse drive — deuterium pellet
+  ignition, magnetic-nozzle thrust vectoring, fuel consumption
 - **Stardrive**: Black-boxed but with observable externals — scoop
   collection rate, thrust, fuel flow
 - **Navigation**: Position, velocity, course plotting, stardrive

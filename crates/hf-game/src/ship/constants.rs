@@ -24,7 +24,7 @@ pub const RATED_ELECTRICAL_W: f64 = 315.0e9;
 /// Reactor rating: waste heat to the tin loop at the redline [W].
 pub const RATED_WASTE_HEAT_W: f64 = 185.0e9;
 
-/// Cruise electrical demand — the ship loafing along on antimatter containment,
+/// Cruise electrical demand — the ship loafing along on hab and cryo load,
 /// life support, compute, and sensors. The reactor is demand-driven and idles
 /// here; 500 GW is the redline it reaches only under combat or AI surge load.
 pub const CRUISE_DEMAND_W: f64 = 18.0e9;
