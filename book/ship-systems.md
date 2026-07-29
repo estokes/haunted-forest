@@ -28,7 +28,7 @@ decisions.
 ### Cross-Section
 
 The ship is built in concentric layers, designed to protect the crew and
-sensitive cargo from radiation regardless of orientation:
+sensitive cargo from radiation coming from any direction:
 
 ```
      Carbon-nanosheet Whipple bumpers (outer, multi-layer)
@@ -53,40 +53,57 @@ debris cloud and is the primary radiation shield for the crew's flanks.
 Water and hydrogen are the best radiation shielding per unit mass, and the
 water — unlike the reaction mass — is never burned, so the shield doesn't
 thin as you spend fuel. The LH₂ tanks are distributed around the crew on
-all sides (not concentrated at one end, because the ship flips at
-midcourse), adding shielding and covering fore and aft. The endcaps carry a
-*dry* carbon Whipple — spaced bumper layers with vacuum gaps, no water —
-because they double as the ship's 1800 K radiators (see Thermal Management)
-and water can't ride red heat. The same layered carbon serves as both the
-tin-cooled radiator panels and the micrometeoroid bumper. The leading
-endcap meets the ISM head-on and is the single most-hit surface on the
-ship, so it is the most heavily layered and raked.
+all sides — cosmic rays are isotropic, so the crew needs shielding from
+every direction — adding to the water barrel and covering fore and aft. The
+ship is **directionally specialized**: it never flips (the drive reverses
+instead — see The Stardrive), so each end does one job. The **nose** is a
+thick water-stuffed Whipple, the same construction as the barrel but
+heavier and raked; it always faces the ISM and is the single most-hit
+surface on the ship, so it gets the best armor the design has, not a
+dual-role compromise. The **tail** is a pure radiator (see Thermal
+Management) — it never meets the ISM, so it carries no shield duty at all.
 
 ### Longitudinal Layout
 
 ```
-[Stardrive nacelles] ← aft during acceleration
-    [Radiator endcap (shadow side)]
-    [Cargo bays / hangars]
-    [LH₂ tanks]
-    [Crew compartment / sensitive cargo]
-    [LH₂ tanks]
-    [Cargo bays / hangars]
-    [Ship reactor / engineering]
-    [Radiator endcap (shadow side during decel)]
-[Conventional engine nozzles] → fore during acceleration
+                  ↑ direction of travel — always
+
+     [ Water-Whipple nose cap ]      ← always faces the ISM
+     [ Cargo bays / hangars    ]
+     [ LH₂ tanks               ]
+     [ Crew / sensitive cargo  ]
+     [ LH₂ tanks               ]
+     [ Cargo bays / hangars    ]
+     [ Ship reactor / engineering ]
+     [ Radiator tail           ]      ← always in the wake → cold space
+     [ Conventional engines    ]
+
+  Stardrive nacelles ride on booms alongside the hull, each a lockable
+  turret: nozzle aft to accelerate, nozzle forward to decelerate.
 ```
 
-The stardrive modules are housed in nacelles offset from the main hull,
-connected by structural booms. This isolates stardrive waste heat and
-radiation from the ship proper. Each nacelle contains its own thermal
-management (see Thermal Management below).
+The ship is **directionally specialized and never flips**: the nose always
+meets the ISM, the tail always radiates into the wake, and the reactor sits
+aft beside the radiator and the conventional engines. The stardrive modules
+ride in nacelles offset from the hull on structural booms, which isolates
+their waste heat and radiation; each nacelle is a lockable two-position
+turret (see The Stardrive). To decelerate at midcourse, the drive cuts out,
+the ship coasts a few minutes while the nacelles swing 180°, and the drive
+relights facing the other way. The scoop keeps collecting ISM hydrogen
+throughout; the exhaust, far faster than the ISM, blasts clear without being
+recollected.
 
-During cruise acceleration, the stardrive is aft. The ISM hits the fore
-endcap. At the midpoint, the ship flips: the stardrive now faces the ISM.
-The scoop collects incoming hydrogen while the engine exhaust blasts
-forward through the scoop field — the exhaust velocity far exceeds the
-ISM approach speed, so the scoop doesn't recollect it.
+Because the *ship* never turns over, **thrust-gravity reverses at
+midcourse**. On the outbound accelerating half the drive pushes the ship
+forward, so "down" is toward the **tail**; after the nacelle-flip the drive
+decelerates and "down" is toward the **nose**, with a brief weightless coast
+between. **The floor becomes the ceiling halfway through the trip.** The
+crew rides interstellar cruise in cold sleep, so no one walks the decks
+during the swap, and the pods, tankage, and fluid systems are built to work
+under thrust from either direction. But anyone awake and active during a
+burn — an in-flight emergency, a mid-cruise wake-up — finds the ship's
+usable "down" set entirely by which half of the voyage they're in, with a
+space laid out for the outbound floor now hanging overhead on the way home.
 
 
 ## Hull Armor and Radiation Protection
@@ -133,18 +150,17 @@ arrives as a hypervelocity impactor (see Active Debris Defense).
 - **Barrel**: spaced carbon-nanosheet bumpers, water-stuffed, ~1 m thick.
   Always cool (grazing incidence), so the water self-arranges
   frozen-outer / liquid-inner with no active cryo.
-- **Endcaps**: a *dry* carbon Whipple — spaced bumper layers, vacuum gaps,
-  **no water** (water can't survive the 1800 K radiator duty they pull).
-  A dry Whipple is less mass-efficient than the stuffed barrel, so the
-  endcaps are built thicker and more-layered — which suits them, because
-  the leading endcap meets the forward dust cone head-on and is the single
-  most-hit surface on the ship. It also gets the most help from active
-  defense, whose beams are trained on the same forward cone. The layered
-  carbon doubles as the tin-cooled radiator: its tin is **drained** when
-  the cap is forward (shield mode) and flowing when it's aft (radiator
-  mode), so the two jobs never overlap and an impact can't breach a live
-  coolant channel. Raked/conical to glance dust. The LH₂ tanks behind carry
-  the fore/aft radiation shielding.
+- **Nose**: full water-stuffed Whipple — the same construction as the
+  barrel, built thicker and raked. Because the ship never flips (see The
+  Stardrive), the nose is *always* the leading face and the single most-hit
+  surface on the ship, so it gets the best armor the design has rather than
+  the dry compromise a dual-role endcap would force. It also sits inside the
+  active-defense cone, which is trained forward, so it gets the most help
+  shedding the medium grains.
+- **Tail**: a pure radiator (see Thermal Management). It never meets the
+  ISM, so it carries no shield duty — no bumper compromise, no
+  drained-coolant dance, just a radiator built to radiate. The LH₂ tanks
+  behind the crew carry the fore/aft radiation shielding.
 - **Erosion**: negligible against the ISM *gas*. Practical lifetime is set
   by the rare large grain active defense misses and slow dust
   micro-cratering — patched at drydock, not self-healed. A raked, conical
@@ -320,7 +336,7 @@ systems:
 | Hull (multi-layer carbon-nanosheet Whipple armor) | 20,000 t |
 | Internal structure (decks, bulkheads, framing) | 20,000 t |
 | Ship reactor + direct conversion (~500 GW fusion) | 25,000 t |
-| Thermal management (tin loops, endcap radiators) | 8,000 t |
+| Thermal management (tin loops, tail radiator) | 8,000 t |
 | ICF drive: igniter banks, reaction chamber, magnetic nozzles, neutron shield (~25 TW) | 20,000 t |
 | Stardrive nacelles (black-boxed, incl. structure) | 50,000 t |
 | Weapons systems | 10,000 t |
@@ -460,7 +476,7 @@ the field. Operators trim it for the regime, not for throttling.
 |--------|--------------|----------------|-----------|
 | Redline | 500 GW | ~354 m (full) | Combat / peak. β riding toward 0.75; radiators saturated. Two guards lit. |
 | Self-sustaining | 10–500 GW (2–100%) | ~7–354 m | Everyday range. Ignited at constant density across the whole span; overhead turns marginal below ~5% (25 GW). |
-| Aux-driven / lean | 3–10 GW (0.6–2%) | at the ~7 m geometric floor | Deepest idle and the flip minimum. The column can't shorten further, so density is dropped with aux heating holding temperature. Delicate. |
+| Aux-driven / lean | 3–10 GW (0.6–2%) | at the ~7 m geometric floor | Deepest idle and the deep-cruise minimum. The column can't shorten further, so density is dropped with aux heating holding temperature. Delicate. |
 | Shutdown | < ~3 GW | cold | Overhead exceeds output — cold-and-dark, cold-start to relight. |
 | Overdraw | 500–700 GW | ~354 m (full) | Combat surge past rated: length maxed, density pushed up, β climbing toward the disruption limit. Thermally brutal. |
 
@@ -548,90 +564,53 @@ losses in the collector structures, carries the combined ~185 GW to the
 endcap radiator panels, and returns. No thermal cycle extracts work from
 this loop — the heat is dumped directly.
 
-Because the radiators are at the endcaps and the reactor sits fore-of-
-center, the loop runs most of the ship's length to reach the far cap — a
-kilometer of ~1800 K piping along an insulated thermal spine through the
-structural core, routed clear of the habitable volume. That costs tin
-inventory, pumping power (the ~1 GW tin pump), and *demanding* insulation:
-even a 0.1% leak along the run would dump ~185 MW into the ship's interior.
-The price buys radiators with a clear view to cold space and no deployable
-moving parts. (Centering the reactor would balance the two runs; the
-fore-bias keeps it beside the conventional engines instead.)
+With the ship directionally specialized, the reactor sits aft alongside the
+tail radiator and the conventional engines, so the tin loop is **short** —
+reactor to radiator is a few decks, not a kilometer of ~1800 K piping down
+the hull. That long run was a real cost of the old flip design (radiators at
+both ends, reactor amidships); specializing the ship retires it. The loop
+still wants good insulation and the ~1 GW tin pump, but it no longer
+threatens to bake the habitable volume along its length.
 
-### Endcap Radiators
+### The Tail Radiator
 
-The ship radiates waste heat from its endcaps — flat surfaces of
-283,000 m² each. At 1800 K, one endcap radiates:
+The ship radiates its waste heat from the **tail** — a radiating endcap of
+~283,000 m² that always faces the ship's wake. At 1800 K it radiates:
 
 > P = ε × σ × A × T⁴ = 0.9 × 5.67×10⁻⁸ × 283,000 × 1800⁴ ≈ **152 GW**
 
-At 2000 K: **231 GW** per endcap. One endcap handles the full 185 GW
-waste heat load with margin. Both endcaps together (in-system) provide
-~460 GW of rejection capacity.
+That's short of the 185 GW rated load, so the tail runs a little hotter —
+~1900 K clears 185 GW, and at 2000 K it reaches 231 GW. Because the ship is
+directionally specialized, the nose is a *shield*, not a second radiator, so
+this single tail face does all the rejecting. That is the price of not
+flipping: where the old two-endcap design had ~460 GW of in-system capacity,
+the tail alone is the ceiling — and **peak heat rejection, not a spare
+endcap, is what saturates first under combat overdraw**, feeding straight
+into the reactor's thermal-cascade guard.
 
-**Shadow placement**: During acceleration, the aft endcap faces empty
-space and radiates freely. The fore endcap faces the ISM; its
-carbon-nanosheet armor shrugs off the gas with no ice needed. At the midpoint flip, roles swap (see
-Flip Thermal Sequence below).
+**Wake placement**: the tail always faces cold space behind the direction
+of travel, so it radiates freely on every phase of the trip. No shadow
+choreography, no role-swapping — the nose shields and the tail radiates,
+always, even across the midcourse turnaround (the nacelles flip, not the
+ship).
 
-During in-system operations (no ISM flux), both endcaps radiate
-simultaneously — matching the higher power demands of combat,
-fabrication, and weapons.
+No deployable mechanisms. No moving parts on the radiator itself.
 
-No deployable mechanisms. No moving parts.
+### Midcourse Turnaround
 
-### Flip Thermal Sequence
+The ship never flips, so there is no flip thermal sequence — the old
+multi-day cool-the-radiator, rebuild-the-shield ordeal is simply gone. At
+midcourse the drive cuts out, the ship coasts a few minutes while the
+stardrive nacelles slew 180° from accelerate-lock to decelerate-lock (see
+The Stardrive), and the drive relights facing the other way. The tail
+radiates throughout; the nose shields throughout. Nothing structural on the
+ship itself moves, and there is no vulnerable window — the armor is
+permanent, not a coating that has to be regrown.
 
-The midpoint flip swaps which endcap radiates into shadow and which
-faces the ISM. Both endcaps are carbon-nanosheet armor, and carbon is
-happy at either extreme — the interstellar wind or ~1800 K red heat (it
-sublimes only at ~3900 K). So the same structure serves as leading shield
-or radiator, and the flip is now just a thermal hand-off, not the old
-ice-melt-and-regrow ordeal:
-
-**Phase 1 — Radiative cooldown (~3-4 days before flip)**
-
-The reactor throttles to minimum power (a few GW — enough for hotel
-load, cryo, and compute). Tin coolant is drained from the aft radiator
-endcap. With no heat input, the endcap cools radiatively into the
-shadow of the ship. Radiative cooling follows T⁴ — the first 1700 K
-sheds in hours, the last hundred takes days:
-
-| Target temp | Time from 1800 K |
-|-------------|------------------|
-| 500 K | ~2 hours |
-| 100 K | ~10 hours |
-| 50 K | ~3.5 days |
-
-Why cool it first: a glowing endcap swung to the front would radiate
-uselessly into the oncoming ISM and bake the bow instead of rejecting
-heat into cold shadow. Cooling it hands the radiator job cleanly to the
-other face. During this phase the ship's thermal mass absorbs the
-reactor's minimal waste heat (a few hundred MW — negligible across
-350,000 tonnes of ship). The stardrive runs independently.
-
-**Phase 2 — Physical flip (minutes)**
-
-RCS thrusters or reaction wheels rotate the ship 180°.
-
-**Phase 3 — New radiator online (~1 hour after flip)**
-
-The old fore endcap (now aft, in shadow) becomes the new radiator: warm
-tin coolant is routed through its panels and it climbs back to ~1800 K in
-minutes. The reactor ramps to operating power. There is no ice to
-sublimate and nothing to vent — the carbon endcap simply reheats.
-
-**No vulnerable window.** The leading face is *always* armored — the
-carbon Whipple hull is permanent structure, not a coating that has to be
-regrown. The old design's dangerous "shield not yet rebuilt" gap is gone;
-both faces are protected before, during, and after the maneuver. The only
-transient is thermal — one endcap briefly warm as it swings forward —
-never structural.
-
-**Total flip sequence: ~4-5 days**, nearly all of it the slow radiative
-cooldown of Phase 1. This is a planned, predictable event at the midpoint
-of every interstellar transit. The ship AI runs it autonomously; the crew
-remains in cold sleep throughout.
+The one thing the crew would feel, if any were awake, is that
+thrust-gravity reverses: "down" points sternward on the accelerating half
+and bow-ward on the decelerating half, with a brief weightless coast
+between. The floor becomes the ceiling. See Longitudinal Layout.
 
 ### Stardrive Thermal Management
 
@@ -800,20 +779,26 @@ critical phase is the conventional boost from 0 to 900 km/s, where the
 stardrive barely catches. Every km/s of conventional Δv spent on in-system
 maneuvering is fuel you might need for that transition.
 
-### Flip-and-Burn
+### Nacelle-Flip Deceleration
 
-At the midpoint of an interstellar transit, the ship flips to decelerate.
-The stardrive — now facing the direction of travel — continues to collect
-ISM hydrogen with its scoop field. The engine exhaust exits forward
-through the scoop field; because the exhaust velocity far exceeds the ISM
-approach speed, the scoop doesn't recollect it. The ship decelerates on
-free ISM hydrogen all the way down to ~900 km/s, where the stardrive
-hands off to conventional engines for final approach.
+At the midpoint of an interstellar transit the ship decelerates — but it
+never turns over. Each stardrive nacelle is a **lockable two-position
+turret** on its boom: nozzle aft to accelerate, nozzle forward to
+decelerate. At turnaround the drive cuts out, the ship coasts for a few
+minutes while the nacelles swing 180° and relock, and the drive relights
+pointing the other way. The scoop keeps collecting ISM hydrogen throughout;
+the exhaust, far faster than the ISM, blasts clear without being
+recollected. The ship decelerates on free ISM hydrogen down to ~900 km/s,
+where the stardrive hands off to the conventional engines for final
+approach.
 
-The flip itself is a ~5-6 day thermal management procedure — the
-radiator endcap must cool to cryogenic temperatures before ice can form,
-and the ice-covered endcap must be cleared for radiator duty. See the
-Flip Thermal Sequence in Thermal Management for details.
+This retires the old flip-and-burn. Turning a 500,000-tonne hull over was a
+multi-day ordeal; slewing two nacelles during a drive-off coast takes
+minutes, and the specialized nose and tail never swap jobs. The cost is a
+pair of big turret bearings and their rotary utility feeds — and a sharp
+new failure mode: **a jammed turret at turnaround means you cannot
+reconfigure to decelerate**, and you arrive at your destination system at a
+fraction of *c* with no way to stop. See Maintenance.
 
 ### Maintenance
 
