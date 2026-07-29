@@ -7356,6 +7356,7 @@ dependencies = [
  "keyring",
  "log",
  "netidx-core",
+ "netidx-derive",
  "netidx-netproto",
  "netidx-tpm",
  "nohash",
