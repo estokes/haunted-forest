@@ -2,18 +2,24 @@
 
 ## Hull and Structure
 
-The ship is a cylinder roughly 1 km long and 300 m in radius, constructed
-from carbon nanotube composites and graphene sheets — materials with
-tensile strengths of 50-100 GPa at densities of ~1,400 kg/m³.
+The ship is a slender cylinder — roughly 1 km long and 30 m in radius (a
+60 m diameter, a ~17:1 needle). Facing the interstellar medium head-on at a
+fraction of light speed, a small frontal cross-section is worth far more
+than interior convenience, so the hull is long and narrow. It is
+constructed from carbon nanotube composites and graphene sheets — materials
+with tensile strengths of 50-100 GPa at densities of ~1,400 kg/m³.
 
 For perspective: the structural stress at the base of a 1 km column under
-1G acceleration, at the ship's average density, is about 7 kPa. CNT
-handles 50 GPa. The structure could withstand thousands of G before
-failing. Continuous 1G is nothing.
+1G, at the ship's average density (~120 kg/m³ at operating mass), is about
+1.2 MPa. CNT handles 50 GPa. The structure could withstand tens of thousands
+of G before failing; the drive's 9G redline is nothing to the frame — the
+limits are the crew and the nozzles, not the structure.
 
-The hull is a 1 mm CNT pressure shell — about 3,500 tonnes for the entire
-ship. This is thinner than a soda can relative to its size, yet stronger
-than any steel structure ever built.
+The load-bearing structure — a carbon-nanosheet inner hull plus the ship's
+longitudinal frame — is a small fraction of the mass. The heavy part of the
+hull is the multi-layer, water-stuffed Whipple armor wrapped around it (see
+Hull Armor and Radiation Protection); the inner shell mainly holds pressure
+and carries thrust.
 
 Most of the interior volume is **unpressurized**: cargo bays, hangars,
 engineering spaces, fuel tankage. Pressurized habitable space for the crew
