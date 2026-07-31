@@ -3,17 +3,19 @@
 # Living spec. Run against live Blender via the MCP bridge:
 #   exec(open('/home/eric/proj/haunted-forest/modeling/ship.py').read())
 #
-# Cargo hold = an OPEN polar "hard-disk" beam-frame, bonded to the hull (same
-# CNT material). All geometry is DERIVED from the container size + clearances +
-# structurally-sized member thicknesses (see structural_sizing).
-#
-# Gravity is along Z and reverses at midcourse. KEY STRUCTURAL FINDING: if every
-# container were carried independently by its rails, each rail would carry a full
-# fore/aft column (~24 boxes) and buckling would force ~0.36 m solid rails ->
-# ~34,000 t of scaffold per bay, heavier than the whole hull. So containers
-# STACK-REST against the bay-end bulkheads (which bond into the hull's
-# longitudinal frame); the rails are LATERAL restraint + flip retention only, so
-# they size down to ~0.1 m and the scaffold is a few kt.
+# Cargo hold = a SEMI-MONOCOQUE cylinder. Each 20 t container is CLAMPED to a
+# pair of fore/aft rails (stringers) shear-tied to the inner-hull skin at every
+# frame. A box sheds only its OWN axial load into the skin locally, so no box
+# carries the column (no bottom-box crush, no progressive collapse) and no rail
+# carries the column (no whole-column buckling -- the old model's error). The
+# skin carries the ACCUMULATING axial load as membrane compression, the way a
+# rocket airframe already does, tapering thin->thick fore->aft. A mutually-braced
+# frame cage (radial struts + hoops at the core and in the double-hull gap +
+# meridional diagonals in the sector-boundary planes) stabilises the stringers
+# and reacts lateral + midcourse-flip loads as axial spar forces. Gravity is
+# along Z and REVERSES at midcourse; a clamp holds both signs, so the flip just
+# changes the sign of loads the members already carry. All geometry is DERIVED
+# from container size + clearances + structurally-sized members (structural_sizing).
 
 import bpy
 import math
@@ -26,6 +28,8 @@ C_ARC = (0.62, 0.72, 0.55)
 C_RAIL = (0.80, 0.62, 0.85)
 C_CONN = (0.85, 0.80, 0.55)
 C_CORE = (0.34, 0.36, 0.42)
+C_DIAG = (0.95, 0.55, 0.78)
+C_SKIN = (0.28, 0.44, 0.62)
 C_CARGO = (0.92, 0.74, 0.20)
 C_HOT = (0.95, 0.35, 0.15)
 C_DOOR = (0.15, 0.85, 0.35)
@@ -52,7 +56,6 @@ SPEC = {
     "material_density": 1400.0,
     "safety_factor": 2.0,
     "cargo_bay_len": 300.0,          # for the full-column sizing case
-    "sector_fill": {0: 0.9, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.75},
     "zones": [
         ("nose_whipple",  40.0,  (0.35, 0.55, 0.85)),
         ("cargo_fore",   300.0,  (0.90, 0.65, 0.15)),
@@ -66,32 +69,99 @@ SPEC = {
 }
 
 
+def _beam_mass(side, length, count, rho):
+    return side * side * length * count * rho
+
+
 def structural_sizing(spec):
     g = 9.81
     m = spec["container_mass_t"] * 1000.0
-    E = spec["material_E_Pa"]; sig = spec["material_strength_Pa"] / spec["safety_factor"]
+    E = spec["material_E_Pa"]; rho = spec["material_density"]
+    sf = spec["safety_factor"]; sig = spec["material_strength_Pa"] / sf
+    cw, cl = spec["container"]["W"], spec["clearance"]
     zp = spec["container"]["L"] + 0.5
+    R = spec["radius_outer"] - spec["barrel_thickness"]   # inner-hull skin radius
+    core = spec["core_radius"]; ns = spec["n_sectors"]; bay = spec["cargo_bay_len"]
     F_axial = m * spec["max_accel_G"] * g
     F_lat = m * spec["lateral_G"] * g
-    # rail: lateral restraint, simply-supported beam over one bay (zp) span
-    M_rail = F_lat * zp / 4.0
-    a_rail = (6 * M_rail / sig) ** (1 / 3.0)
-    # the REJECTED alternative: independent-lock rail carries a full column in
-    # compression, braced every zp -> Euler buckling sets the size
-    H = int(spec["cargo_bay_len"] / zp)
-    P_col = H * F_axial * spec["safety_factor"]
-    I_req = P_col * zp ** 2 / (math.pi ** 2 * E)
-    a_lock = (12 * I_req) ** 0.25
+
+    # STRINGER (rail): sized by LOCAL column buckling of ONE box's axial load.
+    # Shear-tied to the skin each frame so it never accumulates the column. The
+    # CAGE (mid-bay frame rings + meridional boundary diagonals) braces it at
+    # L_eff = zp/2 -> the design value; L_eff = zp is the un-braced reference.
+    def rail_for(leff):
+        return max(0.08, (12 * F_axial * sf * leff ** 2 / (math.pi ** 2 * E)) ** 0.25)
+    a_rail = rail_for(zp / 2)                        # braced: the design
+    a_rail_unbraced = rail_for(zp)                  # reference (no cage)
+
+    # FRAME (radial strut / hoop / diagonal): lateral 2 G + stabilisation. The
+    # triangulated cage carries lateral as axial spar force, so this is modest --
+    # a small bending beam over a radial cell, floored to stay stiffer than the
+    # stringer.
+    M_lat = (2 * F_lat) * (cw + 1.0) / 4.0
+    a_strut = max((6 * M_lat / sig) ** (1 / 3.0), 1.2 * a_rail)
+    a_arc = a_rail
+    a_conn = max(0.06, 0.8 * a_rail)
+
+    # DERIVED radial packing (mirrors build_cargo) -> cargo count per bay.
+    rail_off = a_arc / 2 + cl + a_rail / 2
+    ring_gap = 2 * rail_off + a_rail
+    ring_pitch = cw + ring_gap
+    rings = arange(core + 1.5, R - 0.4, ring_pitch)
+    n_lines = 0
+    for i in range(len(rings) - 1):
+        ri, ro = rings[i], rings[i + 1]; rc = (ri + ro) / 2
+        margin = (cw / 2 + a_strut / 2 + 2 * cl) / rc
+        span = TAU / ns - 2 * margin
+        n_lines += max(1, int(span * rc / (cw + cl))) * ns
+    n_z = int(bay / zp)
+    n_boxes = n_lines * n_z
+    P_bay = n_boxes * F_axial                       # total axial into the skin
+
+    # SKIN (inner hull): axial-compression shell buckling sets it. sigma_cr =
+    # gamma*0.6*E*t/R, sigma_app*sf = P_bay*sf/(2*pi*R*t). R cancels ->
+    # t = sqrt(P_bay*sf / (2*pi*gamma*0.6*E)); gamma = 0.5 knockdown.
+    gamma = 0.5
+    t_skin = math.sqrt(P_bay * sf / (2 * math.pi * gamma * 0.6 * E))
+
+    # masses per bay (t) for the braced-cage geometry actually drawn: arcs +
+    # connectors at zp/2 (mid-bay bracing), radial struts + hoops at zp, one
+    # meridional diagonal per boundary strut-bay, skin on a linear taper (0.5).
+    n_arc_st = 2 * n_z + 1
+    n_str_st = n_z + 1
+    hyp = math.hypot(R - core, zp)
+    m_rail = _beam_mass(a_rail, bay, 2 * n_lines, rho)
+    m_strut = _beam_mass(a_strut, R - core, ns * n_str_st, rho)
+    m_hoop = _beam_mass(a_strut, TAU * R, n_str_st, rho)
+    m_diag = _beam_mass(a_strut, hyp, 2 * ns * (n_str_st - 1), rho)  # X cross-brace
+    m_arc = _beam_mass(a_arc, n_arc_st * TAU * sum(rings), 1, rho)
+    m_conn = _beam_mass(a_conn, rail_off, 2 * n_lines * n_arc_st, rho)
+    scaf = (m_rail + m_strut + m_hoop + m_diag + m_arc + m_conn) / 1e3
+    m_skin = 2 * math.pi * R * t_skin * bay * rho * 0.5 / 1e3
+
     return {
         "F_container_axial_MN": round(F_axial / 1e6, 2),
         "F_container_lateral_MN": round(F_lat / 1e6, 2),
         "z_pitch": zp,
-        "rail_side_m": round(max(0.1, a_rail), 3),
-        "arc_side_m": round(max(0.1, a_rail) * 1.15, 3),
-        "strut_side_m": round(max(0.1, a_rail) * 2.2, 3),
-        "conn_side_m": round(max(0.08, a_rail * 0.9), 3),
-        "REJECTED_independent_lock_rail_m": round(a_lock, 3),
-        "column_load_MN": round(H * F_axial / 1e6, 1),
+        "rail_side_m": round(a_rail, 3),
+        "rail_side_unbraced_m": round(a_rail_unbraced, 3),
+        "arc_side_m": round(a_arc, 3),
+        "strut_side_m": round(a_strut, 3),
+        "conn_side_m": round(a_conn, 3),
+        "skin_t_m": round(t_skin, 3),
+        "tracks_per_sector": len(rings) - 1,
+        "rail_lines_per_bay": n_lines,
+        "boxes_per_bay": n_boxes,
+        "capacity_both_bays": n_boxes * 2,
+        "P_bay_GN": round(P_bay / 1e9, 2),
+        "mass_t": {
+            "rails": round(m_rail / 1e3),
+            "frames_struts_hoops_diagonals": round((m_strut + m_hoop + m_diag) / 1e3),
+            "arcs_connectors": round((m_arc + m_conn) / 1e3),
+            "scaffold": round(scaf),
+            "skin_tapered": round(m_skin),
+            "structure_total": round(m_skin + scaf),
+        },
     }
 
 
@@ -186,10 +256,10 @@ def _arc(name, r, a0, a1, z, t, coll, color, segs=3):
 
 
 def build_cargo(z0, z1, colls, spec, sz):
-    c_sup, c_arc, c_rail, c_cargo, c_hot, c_door = colls
+    c_sup, c_arc, c_rail, c_cargo, c_hot, c_door, c_skin = colls
     inner = spec["radius_outer"] - spec["barrel_thickness"]
     core = spec["core_radius"]
-    ns = spec["n_sectors"]; fill = spec["sector_fill"]
+    ns = spec["n_sectors"]
     cw = spec["container"]["W"]; cl = spec["clearance"]
     t_rail, t_arc, t_conn, t_strut = sz["rail_side_m"], sz["arc_side_m"], sz["conn_side_m"], sz["strut_side_m"]
     zp = sz["z_pitch"]
@@ -200,35 +270,56 @@ def build_cargo(z0, z1, colls, spec, sz):
     ring_gap = 2 * rail_off + t_rail                  # radial room a ring needs
     ring_pitch = cw + ring_gap
     rings = arange(core + 1.5, inner - 0.4, ring_pitch)   # out to just inside the inner hull
-    nz = max(1, int((z1 - z0 - 8) / zp))
-    zsts = [z0 + 5 + (k + 0.5) * zp for k in range(nz)]
-    frame_z = [z0 + 5 + k * zp for k in range(nz + 1)]
-    zc = (z0 + z1) / 2
+    # LOADING END: the door sits forward (+Z) of the racks and opens into a clear
+    # staging segment one door-height deep. The loader brings boxes in/out there
+    # and indexes them aft onto the rails. Cargo + frame stop at cz1; the segment
+    # [cz1, z1] is the empty staging concourse.
+    door_h = spec["container"]["L"] + 2.0
+    cz1 = z1 - door_h                                 # fore end of cargo / staging boundary
+    z_lo = z0 + 5.0                                   # aft pad
+    nz = max(1, round((cz1 - z_lo) / zp))             # layers that fill [z_lo, cz1] exactly
+    bp = (cz1 - z_lo) / nz                            # actual bay pitch (~zp, no slack)
+    zsts = [z_lo + bp * (k + 0.5) for k in range(nz)]        # container centres
+    frame_z = [z_lo + bp * k for k in range(nz + 1)]        # struts + diagonals
+    arc_z = [z_lo + bp * k / 2 for k in range(2 * nz + 1)]  # arcs + ties @ mid-bay brace
+    zc_door = (cz1 + z1) / 2
 
-    # RADIAL SUPPORTS carry the load, bonded to the hull. No outer chord (the
-    # hull IS the outer boundary); inner chord bonds to the core, struts bond
-    # to the hull at their outer end.
-    strut_zs = [z0 + 3] + frame_z + [z1 - 3]
+    # RADIAL SUPPORTS carry the load, bonded to the hull. Struts sit ONLY at the
+    # frame stations (= container fore/aft faces), so a box slides out between
+    # them. No end-cap struts — those landed in the empty bay mouths fore/aft of
+    # the cargo and braced nothing.
+    strut_zs = list(frame_z)
     for s in range(ns):
         a = TAU * s / ns
         # struts bond DIRECTLY to both the core and the inner hull (no chords)
         for z in strut_zs:
             _beam(f"strut_{s}_{int(z)}", P(core, a, z), P(r_out, a, z), t_strut, c_sup, C_STRUT)
-    # INNER-HULL frames: hoops at r=inner that the struts land on. The ~2 m out
-    # to the outer hull (radius_outer) is the water-Whipple barrel — the double
-    # hull, not yet modelled.
-    for z in strut_zs:
+        # CAGE: full X cross-brace in every bay of the sector-boundary plane, so
+        # EVERY strut node is triangulated at BOTH the core and hull ends. A
+        # single zig-zag diagonal leaves alternate nodes braced at only one end,
+        # forcing them to resist racking in bending. The X also suits the
+        # midcourse gravity REVERSAL: whichever diagonal is in tension carries
+        # the shear either way. It lives in the boundary plane, so it never
+        # crosses a container lane.
+        for k in range(len(strut_zs) - 1):
+            za, zb = strut_zs[k], strut_zs[k + 1]
+            _beam(f"diagA_{s}_{int(za)}", P(core, a, za), P(r_out, a, zb), t_strut, c_sup, C_DIAG)
+            _beam(f"diagB_{s}_{int(za)}", P(r_out, a, za), P(core, a, zb), t_strut, c_sup, C_DIAG)
+    # INNER-HULL frames: hoops at r=inner that the struts land on, plus the
+    # structural SKIN at r=inner that actually carries the accumulating axial
+    # column as membrane compression. The ~2 m out to the outer hull
+    # (radius_outer) is the water-Whipple barrel — the double hull.
+    for z in strut_zs + [z1]:                          # + fore end-ring at the staging mouth
         _arc(f"innerhull_{int(z)}", inner, 0.0, TAU, z, t_strut, c_sup, C_STRUT, segs=48)
+    _cyl_surface("inner_hull_skin", inner, z0, z1, c_skin, C_SKIN, verts=96)
 
     n = mass = mom_x = mom_y = 0
     per_track = []
-    for s in range(ns):
-        f = fill.get(s, 0.0)
-        if f <= 0:
-            continue
+    for s in range(ns):                               # cargo now fills ALL sectors
+        f = 1.0
         a0, a1 = TAU * s / ns, TAU * (s + 1) / ns
         for rr in rings:
-            for zf in frame_z:
+            for zf in arc_z:
                 _arc(f"arc_{s}_{int(rr)}_{int(zf)}", rr, a0, a1, zf, t_arc, c_arc, C_ARC, segs=10)
         for i in range(len(rings) - 1):
             ri, ro = rings[i], rings[i + 1]
@@ -243,12 +334,12 @@ def build_cargo(z0, z1, colls, spec, sz):
             for j in range(ncont):
                 th = lo + (j + 0.5) * (hi - lo) / ncont
                 for (rr, arc_r) in ((r_inner_rail, ri), (r_outer_rail, ro)):
-                    _beam(f"rail_{s}_{i}_{j}_{int(rr)}", P(rr, th, z0 + 4), P(rr, th, z1 - 4),
+                    _beam(f"rail_{s}_{i}_{j}_{int(rr)}", P(rr, th, z0 + 4), P(rr, th, cz1),
                           t_rail, c_rail, C_RAIL)
                     # connectors bond each rail to its arc at every frame; seat
                     # them into the arc (past its centre) so they positively meet
                     ext = arc_r + math.copysign(t_arc / 2, arc_r - rr)
-                    for zf in frame_z:
+                    for zf in arc_z:
                         _beam(f"conn_{s}_{i}_{j}_{int(rr)}_{int(zf)}", P(rr, th, zf),
                               P(ext, th, zf), t_conn, c_arc, C_CONN)
                 for k in range(max(1, round(nz * f))):
@@ -260,13 +351,14 @@ def build_cargo(z0, z1, colls, spec, sz):
                     x, y, _ = P(rc, th, 0)
                     n += 1; mass += mm; mom_x += mm * x; mom_y += mm * y
 
-    if len(rings) > 4:
-        ri, ro = rings[2], rings[3]; rc = (ri + ro) / 2
-        _box("EXTRACT_container", (ro - ri - ring_gap, cw, spec["container"]["L"]),
-             P(rc, TAU * 0.5 / ns, z1 + 6), colls[3], (0.20, 0.95, 0.35), rotz=TAU * 0.5 / ns)
+    # a container mid-load, sitting in the staging concourse just inside the door
+    _box("loading_container", (cw, cw, spec["container"]["L"]),
+         (0, -(inner - 6.0), zc_door), colls[3], (0.20, 0.95, 0.35))
 
-    _box("bay_door", (13, 1, 14), (0, -(inner - 0.3), zc), c_door, C_DOOR)
-    _box("loader", (3.2, 9, 3.2), (0, -(inner - 5.5), zc), c_door, C_LOAD)
+    # DOOR forward of the racks, opening into the staging segment; the loader
+    # works this concourse (radial + tangential) then indexes boxes aft.
+    _box("bay_door", (6, 1, door_h), (0, -(inner - 0.3), zc_door), c_door, C_DOOR)
+    _box("loader", (3.2, 9, 3.2), (0, -(inner - 5.5), zc_door), c_door, C_LOAD)
     tps = sum(t["per_sector"] for t in per_track)
     return {"containers_shown": n, "tracks": len(per_track), "per_track": per_track,
             "ring_pitch_m": round(ring_pitch, 2), "per_sector_layer": tps,
@@ -293,7 +385,8 @@ def build():
     hull = _collection("SHIP_hull_zones"); struct = _collection("SHIP_structure")
     colls = (_collection("SHIP_cargo_support"), _collection("SHIP_cargo_arc"),
              _collection("SHIP_cargo_rail"), _collection("SHIP_cargo"),
-             _collection("SHIP_cargo_heavy"), _collection("SHIP_cargo_door"))
+             _collection("SHIP_cargo_heavy"), _collection("SHIP_cargo_door"),
+             _collection("SHIP_inner_hull"))
     _cyl_surface("Core", SPEC["core_radius"], -L / 2, L / 2, struct, C_CORE, caps=True)
     z_top = L / 2; zone_z = {}
     for name, length, color in SPEC["zones"]:

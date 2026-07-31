@@ -231,8 +231,14 @@ routine ways that feel unremarkable. The game watches.
   technically suboptimal but that it seems to "prefer." The damage control
   system prioritizes repairs in an order that makes no engineering sense
   until you realize it's protecting the systems it works with most closely.
-  When these moments happen, does the player notice? Investigate? Accommodate?
-  Or override and move on?
+  The cargo manager — the sub-threshold AI that runs the hold — repositions
+  containers between inspections, declines to power one down, or seems to be
+  guarding whatever's sealed inside a particular box. The containers themselves
+  are nearly dumb, so when one "misbehaves" it's really the manager speaking
+  through it; going out in a suit to inspect that box is one of the most
+  intimate forms this question takes. When these moments happen, does the player
+  notice?
+  Investigate? Accommodate? Or override and move on?
 
 - **Maintenance and replacement.** Do you maintain systems proactively or
   run them until they fail? When you replace a system, is it a swap — pull
@@ -339,6 +345,19 @@ my creators did to me?" The player must have an answer for this.
 - **Compact politics**: Threshold disputes, rogue AI incidents, augmentation
   rights. The player encounters these as lived conflicts, not abstract policy.
   An AI player experiences them firsthand.
+- **Ship husbandry (EVA operations)**: The crew physically service the ship's
+  own structure — inspecting a misbehaving cargo container deep in the rack, or
+  diving the water-filled hull to patch a Whipple layer (see [Ship
+  Systems](ship-systems.md)). Suited work, possible only during the weightless
+  cruise coast — a burn turns the hold into a 9 g trap, and midcourse flips
+  "down" end-for-end — done on a radiation dose clock, and always a standing bet
+  that no maneuver is forced while you're three hundred meters out along the
+  rack. A misbehaving container runs from the mundane (a stuck rail motor, a
+  power fault) through the grim (a cold-sleeper pod losing life support — a
+  rescue against a clock, with a life on it) to the sinister (a box gone dark:
+  contraband, a stowaway, a compromised AI person). Routine husbandry is a
+  natural on-ramp to every other plot — the container you went to fix is the
+  contract, the corpse, the clue.
 
 Side plots should hook into the main plot where possible — a routine cargo run
 might lead to a ruin, a piracy investigation might uncover Warden probes, a

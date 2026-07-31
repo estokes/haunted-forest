@@ -112,6 +112,99 @@ usable "down" set entirely by which half of the voyage they're in, with a
 space laid out for the outbound floor now hanging overhead on the way home.
 
 
+## Cargo — The Hold
+
+This is what the ship is *for*. Strip away the drive, the shield, the reactor,
+and their only job is to carry the hold between stars. Two cargo bays — one
+forward of the crew core, one aft — run about 300 m each and together are
+roughly **60% of the ship's length**. Everything else is in service of them.
+
+### The Standard Container
+
+Cargo is fully containerized in a single standard box: **12 × 2.5 × 2.5 m**,
+about 75 m³, ~20 t loaded — a deliberate descendant of the twentieth-century
+intermodal container, because a standard that already worked for four hundred
+years isn't worth reinventing. One size means one set of rails, one handling
+system, one lock. A full hold is on the order of **7,500 containers** (~150,000
+t of cargo); the rack is sized for a little more, to leave slack for trim.
+
+### The Rack — a Hard Disk Stood on Its Axis
+
+Gravity aboard runs *along* the long axis (the drive thrusts that way) and
+**reverses at midcourse** — see Longitudinal Layout. That single fact shapes
+the whole rack. The cargo rails run fore-and-aft, parallel to gravity; each
+container clamps to an **inner and an outer rail** and rides the gap between
+them.
+
+Those rails hang on a polar skeleton that, seen down the ship's axis, looks
+like a hard disk: **radial support trusses** split each bay into eight
+**sectors** (the spokes), **concentric arc rings** mark the boundary of each
+**track**, and the rails run between the rings. Seven tracks nest from the core
+out to the inner hull; because the outer tracks have more circumference they
+hold more boxes — one or two per sector at the cramped inner rings, six at the
+outermost. The trusses bond directly to the central core and to the inner hull,
+grown from the same carbon-nanotube stock and fused to both. It's all open
+framework: a container slides straight along its rails and out through the open
+rings, so no box ever has to be dug out from behind another.
+
+### What Actually Holds It Up
+
+Under a 9 g combat burn a 20 t container weighs **1.77 MN** — and there are
+thousands. If each box hung from its own rails, every rail would carry a whole
+fore-and-aft column, buckling would force them absurdly thick, and the rack
+alone would out-mass the entire hull. So the boxes **stack against the bay-end
+bulkheads** under thrust, the way cargo has always ridden down onto a floor,
+and the bulkheads carry that load into the ship's spine. The rails don't hold
+the weight — they hold *position*: lateral restraint plus a positive lock so
+nothing drifts during the weightless coast when the ship flips. The
+unglamorous **bay-end bulkheads, not the elegant rack, are the primary
+structure of the hold.**
+
+### Loading and Trim
+
+Containers enter through a few small **bay doors** — the hull is never opened
+along its length — and an internal handler runs them along the rails to any
+slot. Where a box goes is a **center-of-gravity** decision: mass can be placed
+at any sector (port/starboard) and any station (fore/aft), and the loadmaster
+trims the ship by choosing. A lopsided load pulls the CG off the thrust axis
+and the ship handles badly under burn — and the trim that balances the
+*outbound* leg is wrong for the *return*, because down has flipped. Load heavy
+and careless before a hard maneuver and the cargo itself can shift; a sudden CG
+lurch mid-burn is how ships are lost.
+
+### The Cargo Manager and Its Boxes
+
+Individually the containers are nearly dumb. Each has a small embedded
+controller — about as clever as a hobbyist single-board computer — enough to
+run a rail motor, pulse a **cold-gas thruster** for fine repositioning in
+free-fall, report its telemetry, and hold power to whatever's inside. The
+intelligence lives ship-side: one of the ship's **sub-threshold AIs is
+dedicated full-time to the hold**, a cargo manager that commands the whole swarm
+at once. None of a container's motion is quick, but interstellar cruise is
+*years* of weightless coast, and given that much time the manager can quietly
+**reorganize the entire hold** — rebalancing trim, consolidating a delivery,
+clearing a path to a box the crew wants. A ship can arrive with its cargo
+arranged differently than it left, and no human touched it.
+
+The rails carry **power and data** to every slot, so the manager keeps a live
+inventory — every container's identity, telemetry, and internal state — and the
+crew can address any box, or the manager itself, from the bridge. A container
+that goes dark, or a manager that starts moving boxes for reasons of its own, is
+an event.
+
+### Passengers as Freight
+
+Some containers carry **people**. Biological passengers cross in cold sleep, AI
+persons in hardened storage (see [Trade — Passengers and Persons](trade.md));
+either way they ride in the hold, as cargo, in a powered container. For the
+cold sleepers the rail power is **not optional** — it runs their cryo life
+support for the entire voyage. A freighter is therefore also a sleeper ship,
+and the same rail that flags a misplaced pallet is keeping a hundred people
+alive in the dark. Losing power to a passenger container isn't a manifest
+error; it's a body count. The hold is monitored the way a hospital ward is
+monitored, and for the same reason.
+
+
 ## Hull Armor and Radiation Protection
 
 ### The Problem
