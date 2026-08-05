@@ -34,6 +34,14 @@ C_CARGO = (0.92, 0.74, 0.20)
 C_HOT = (0.95, 0.35, 0.15)
 C_DOOR = (0.15, 0.85, 0.35)
 C_LOAD = (0.15, 0.72, 0.88)
+C_PLASMA = (0.96, 0.28, 0.72)
+C_CHAMBER = (0.40, 0.42, 0.48)
+C_COIL = (0.28, 0.54, 0.86)
+C_CHOKE = (0.20, 0.85, 0.92)
+C_PLUG = (0.96, 0.80, 0.25)
+C_CONV = (0.55, 0.85, 0.55)
+C_FUEL = (0.36, 0.62, 0.92)
+C_ENG = (0.88, 0.56, 0.30)
 
 
 def arange(lo, hi, step):
@@ -66,6 +74,20 @@ SPEC = {
         ("reactor",       90.0,  (0.70, 0.30, 0.90)),
         ("radiator_tail", 50.0,  (0.90, 0.40, 0.20)),
     ],
+    # REACTOR: one D-3He tandem mirror on the spine (closed-cycle power plant).
+    # The 354 m burning column runs down the axis; the main-drive deuterium fuel
+    # farm fills the annulus around it (feeds the reactor's own D need too, and
+    # neutron-shields everything outboard). Terminates fore at a fuel-shielded
+    # engineering deck carrying the manual fuel shutoff.
+    "reactor": {
+        "aft_choke_z": -420.0, "burn_len": 354.0,
+        "plasma_r": 3.0, "chamber_r": 5.0,
+        "coil_r": 7.0, "coil_minor": 0.9, "coil_pitch": 15.0,
+        "choke_r": 8.5, "choke_minor": 1.8,
+        "plug_len": 12.0, "plug_r": 3.0, "plug_coil_r": 5.0, "plug_coil_minor": 1.1,
+        "conv_len": 18.0, "conv_r": 12.0,
+        "fuel_r_in": 9.0, "fuel_r_out": 24.0, "eng_deck_len": 10.0,
+    },
 }
 
 
@@ -226,6 +248,23 @@ def _cone(name, radius, z_base, z_apex, coll, color, verts=64):
     return _add(bpy.data.objects.new(name, mesh), coll, color)
 
 
+def _torus(name, R, r, z, coll, color, nu=28, nv=12):
+    mesh = bpy.data.meshes.new(name)
+    vs, faces = [], []
+    for i in range(nu):
+        a = TAU * i / nu; ca, sa = math.cos(a), math.sin(a)
+        for j in range(nv):
+            b = TAU * j / nv; rr = R + r * math.cos(b)
+            vs.append((rr * ca, rr * sa, z + r * math.sin(b)))
+    for i in range(nu):
+        i2 = (i + 1) % nu
+        for j in range(nv):
+            j2 = (j + 1) % nv
+            faces.append((i * nv + j, i2 * nv + j, i2 * nv + j2, i * nv + j2))
+    mesh.from_pydata(vs, [], faces); mesh.update()
+    return _add(bpy.data.objects.new(name, mesh), coll, color)
+
+
 def P(r, th, z):
     return (r * math.cos(th), r * math.sin(th), z)
 
@@ -365,6 +404,47 @@ def build_cargo(z0, z1, colls, spec, sz):
             "full_bay_capacity_est": tps * ns * int(spec["cargo_bay_len"] / zp)}
 
 
+def build_reactor(coll, fuel_coll, spec):
+    rc = spec["reactor"]
+    z_aft = rc["aft_choke_z"]
+    z_fore = z_aft + rc["burn_len"]                  # fore choke, at the engineering deck
+    chr_ = rc["chamber_r"]
+    # burning plasma column + vacuum vessel / first wall
+    _cyl_surface("reactor_plasma", rc["plasma_r"], z_aft, z_fore, coll, C_PLASMA, verts=32)
+    _cyl_surface("reactor_chamber", chr_, z_aft, z_fore, coll, C_CHAMBER, verts=48)
+    # central-cell coils along the burning length (energize more/fewer -> throttle)
+    for z in arange(z_aft + rc["coil_pitch"], z_fore - rc["coil_pitch"] + 1e-6, rc["coil_pitch"]):
+        _torus(f"cc_coil_{int(z)}", rc["coil_r"], rc["coil_minor"], z, coll, C_COIL)
+    # end chokes (high-field mirror coils, ~27 T): a pair at each end
+    for zc in (z_fore, z_aft):
+        for dz in (-2.5, 2.5):
+            _torus(f"choke_{int(zc)}_{int(zc + dz)}", rc["choke_r"], rc["choke_minor"], zc + dz, coll, C_CHOKE)
+    # plug cells + direct-converter expanders beyond each choke; leaked plasma
+    # streams into the converters (confinement geometry == conversion geometry)
+    for sgn, zc in ((1.0, z_fore), (-1.0, z_aft)):
+        zp0 = zc + sgn * 3.0
+        zp1 = zp0 + sgn * rc["plug_len"]
+        _cyl_surface(f"plug_bore_{int(zc)}", rc["plug_r"], min(zp0, zp1), max(zp0, zp1), coll, C_CHAMBER, verts=24)
+        for frac in (0.35, 0.65):
+            zp = zp0 + sgn * rc["plug_len"] * frac
+            _torus(f"plugcoil_{int(zc)}_{int(zp)}", rc["plug_coil_r"], rc["plug_coil_minor"], zp, coll, C_PLUG)
+        _cone(f"converter_{int(zc)}", rc["conv_r"], zp1 + sgn * rc["conv_len"], zp1, coll, C_CONV)
+    # main-drive DEUTERIUM fuel farm: annular tankage wrapping the column -- also
+    # the reactor's own D supply and a neutron shield for everything outboard
+    _cyl_surface("drive_fuel_inner", rc["fuel_r_in"], z_aft, z_fore, fuel_coll, C_FUEL, verts=48)
+    _cyl_surface("drive_fuel_outer", rc["fuel_r_out"], z_aft, z_fore, fuel_coll, C_FUEL, verts=64)
+    # engineering deck forward of the fore converter, behind a fuel-tank shield;
+    # the manual fuel shutoff lives here, shielded from the reactor by its fuel
+    z_shield = z_fore + 3.0 + rc["plug_len"] + rc["conv_len"]
+    _cyl_surface("reactor_fuel_shield", rc["conv_r"], z_shield, z_shield + 4.0, fuel_coll, C_FUEL, verts=32, caps=True)
+    z_ed = z_shield + 4.0
+    _cyl_surface("eng_deck", rc["conv_r"] * 0.8, z_ed, z_ed + rc["eng_deck_len"], coll, C_ENG, verts=32, caps=True)
+    return {"burn_len_m": rc["burn_len"], "column_z": [round(z_aft, 1), round(z_fore, 1)],
+            "eng_deck_z": round(z_ed + rc["eng_deck_len"] / 2, 1),
+            "fuel_annulus_r": [rc["fuel_r_in"], rc["fuel_r_out"]],
+            "objects": len(coll.objects) + len(fuel_coll.objects)}
+
+
 def _set_viewport_object_color():
     try:
         for area in bpy.context.screen.areas:
@@ -396,13 +476,14 @@ def build():
     _cyl_surface("Tail_cap", R, -L / 2 - SPEC["tail_len"], -L / 2, struct, (0.90, 0.45, 0.25), caps=True)
     z0f, _ = zone_z["cargo_fore"]
     sec = build_cargo(z0f + 15, z0f + 95, colls, SPEC, sz)
+    rsec = build_reactor(_collection("SHIP_reactor"), _collection("SHIP_reactor_fuel"), SPEC)
     _set_viewport_object_color()
     try:
         bpy.ops.ed.undo_push(message="haunted-forest: build ship")
     except Exception:
         pass
     return {"radius_m": R, "length_m": L, "objects": len(bpy.data.objects),
-            "sizing": sz, "section": sec}
+            "sizing": sz, "section": sec, "reactor": rsec}
 
 
 result = build()
