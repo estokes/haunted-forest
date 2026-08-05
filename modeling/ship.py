@@ -42,6 +42,9 @@ C_PLUG = (0.96, 0.80, 0.25)
 C_CONV = (0.55, 0.85, 0.55)
 C_FUEL = (0.36, 0.62, 0.92)
 C_ENG = (0.88, 0.56, 0.30)
+C_RAD = (0.93, 0.42, 0.18)
+C_DRIVE = (0.72, 0.76, 0.84)
+C_NAC = (0.24, 0.25, 0.30)
 
 
 def arange(lo, hi, step):
@@ -88,6 +91,18 @@ SPEC = {
         "conv_len": 18.0, "conv_r": 12.0,
         "fuel_r_in": 9.0, "fuel_r_out": 24.0, "eng_deck_len": 10.0,
     },
+    # TAIL RADIATOR: ~283,000 m2 of fixed radiating fin fanning out at the wake
+    # face (no moving parts). Rejects the ~185 GW reactor waste at 1800-2000 K.
+    "radiator": {"n_fins": 32, "r_in": 6.0, "r_out": 61.0, "len": 80.0,
+                 "z_center": -490.0, "thick": 0.4},
+    # ICF PULSE DRIVE: cluster of magnetic nozzles at the tail centre; fires
+    # deuterium pellets, exhaust out the back through the radiator fan's core.
+    "icf_drive": {"n_ring": 6, "cluster_r": 9.0, "bell_r": 5.0,
+                  "z_base": -540.0, "z_throat": -524.0, "body_r": 12.0, "body_len": 14.0},
+    # STARDRIVE NACELLES: two black-boxed RAIR pods on lateral booms (each a
+    # lockable turret; shown in accelerate-lock, nozzle aft).
+    "nacelle": {"count": 2, "pod_r": 9.0, "pod_len": 92.0, "boom_len": 20.0,
+                "boom_t": 3.0, "z_center": -150.0, "nozzle_len": 18.0},
 }
 
 
@@ -445,6 +460,40 @@ def build_reactor(coll, fuel_coll, spec):
             "objects": len(coll.objects) + len(fuel_coll.objects)}
 
 
+def build_radiator(coll, spec):
+    r = spec["radiator"]
+    depth = r["r_out"] - r["r_in"]; rc = (r["r_in"] + r["r_out"]) / 2
+    for i in range(r["n_fins"]):
+        th = TAU * i / r["n_fins"]
+        _box(f"radfin_{i}", (depth, r["thick"], r["len"]), P(rc, th, r["z_center"]), coll, C_RAD, rotz=th)
+    return {"fin_area_m2": round(2 * depth * r["len"] * r["n_fins"]), "r_out": r["r_out"]}
+
+
+def build_drive(coll, spec):
+    d = spec["icf_drive"]
+    pos = [(0.0, 0.0)] + [(d["cluster_r"] * math.cos(TAU * i / d["n_ring"]),
+                           d["cluster_r"] * math.sin(TAU * i / d["n_ring"])) for i in range(d["n_ring"])]
+    for j, (x, y) in enumerate(pos):
+        o = _cone(f"nozzle_{j}", d["bell_r"], d["z_base"], d["z_throat"], coll, C_DRIVE)
+        o.location = (x, y, 0.0)
+    _cyl_surface("drive_body", d["body_r"], d["z_throat"], d["z_throat"] + d["body_len"], coll, C_NAC, verts=32, caps=True)
+    return {"nozzles": len(pos)}
+
+
+def build_nacelles(coll, spec):
+    nc = spec["nacelle"]; R = spec["radius_outer"]
+    for s in range(nc["count"]):
+        th = TAU * s / nc["count"]
+        zc = nc["z_center"]; half = nc["pod_len"] / 2
+        px, py = P(R + nc["boom_len"] + nc["pod_r"], th, 0)[:2]
+        _beam(f"boom_{s}", P(R, th, zc), P(R + nc["boom_len"], th, zc), nc["boom_t"], coll, C_STRUT)
+        pod = _cyl_surface(f"nacelle_{s}", nc["pod_r"], zc - half, zc + half, coll, C_NAC, verts=28, caps=True)
+        pod.location = (px, py, 0.0)
+        noz = _cone(f"nac_nozzle_{s}", nc["pod_r"] * 0.9, zc - half - nc["nozzle_len"], zc - half, coll, C_DRIVE)
+        noz.location = (px, py, 0.0)
+    return {"nacelles": nc["count"]}
+
+
 def _set_viewport_object_color():
     try:
         for area in bpy.context.screen.areas:
@@ -477,13 +526,17 @@ def build():
     z0f, _ = zone_z["cargo_fore"]
     sec = build_cargo(z0f + 15, z0f + 95, colls, SPEC, sz)
     rsec = build_reactor(_collection("SHIP_reactor"), _collection("SHIP_reactor_fuel"), SPEC)
+    radsec = build_radiator(_collection("SHIP_radiator"), SPEC)
+    drvsec = build_drive(_collection("SHIP_drive"), SPEC)
+    nacsec = build_nacelles(_collection("SHIP_nacelle"), SPEC)
     _set_viewport_object_color()
     try:
         bpy.ops.ed.undo_push(message="haunted-forest: build ship")
     except Exception:
         pass
     return {"radius_m": R, "length_m": L, "objects": len(bpy.data.objects),
-            "sizing": sz, "section": sec, "reactor": rsec}
+            "sizing": sz, "section": sec, "reactor": rsec,
+            "radiator": radsec, "drive": drvsec, "nacelles": nacsec}
 
 
 result = build()
