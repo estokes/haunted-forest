@@ -205,6 +205,132 @@ error; it's a body count. The hold is monitored the way a hospital ward is
 monitored, and for the same reason.
 
 
+## Speed and the Forward Environment — the Price of Time Dilation
+
+Everything below this line — the Whipple hull, the magnetic deflection, the
+active debris defense — is quoted for a **0.5c baseline**. But 0.5c is not where
+the ship *wants* to be. The reason to fly a relativistic hull at all is **time
+dilation**: at speed the crew's clocks — and their lives, and their cold-sleep
+consumables — run slow against the galaxy, and a decade-long crossing becomes a
+season of ship-time. That is the whole incentive, and it fights the forward
+environment the entire way up. The trip the crew *lives* shortens with speed;
+the environment they must survive gets worse **faster**. Every figure in the
+sections that follow is the easy end of a steep curve.
+
+### The Payoff — Why Chase γ
+
+Crew-experienced time over a fixed proper distance scales as 1/(βγ). For a
+10-light-year crossing:
+
+| Speed  | γ    | Galaxy sees | Crew ages   |
+|--------|------|-------------|-------------|
+| 0.5c   | 1.15 | 20.0 yr     | 17.3 yr     |
+| 0.9c   | 2.29 | 11.1 yr     | 4.8 yr      |
+| 0.99c  | 7.09 | 10.1 yr     | 1.4 yr      |
+| 0.999c | 22.4 | 10.0 yr     | 5.4 months  |
+
+Past ~0.9c the *coordinate* trip barely shortens — you are already nearly at c —
+but the *crew's* trip keeps collapsing, because γ keeps climbing. Time dilation
+is the only thing still being bought up there. That is why a captain with
+perishable cargo, a finite cold-sleep consumables budget, or a crew that would
+rather not lose years reaches for the next nine.
+
+### The Price — Three Escalation Laws
+
+Each additional nine on β is paid for three times over, in three independent
+currencies.
+
+**1. The forward flux grows as ~γ² — and it is both fuel and fire.** The ISM is
+length-contracted (γ denser in the ship frame) and each proton arrives carrying
+(γ−1)mc², so the incident power on the forward face scales as γ(γ−1)β —
+effectively γ² near c. Anchored to the 0.5c figure of 2.8 kW/m²:
+
+| Speed  | Forward flux | Nose total (~2,800 m²) | vs 0.5c |
+|--------|--------------|------------------------|---------|
+| 0.5c   | 2.8 kW/m²    | ~8 MW                  | 1×      |
+| 0.9c   | 84 kW/m²     | ~0.24 GW               | 30×     |
+| 0.99c  | 1.3 MW/m²    | ~3.8 GW                | 480×    |
+| 0.999c | 15 MW/m²     | ~42 GW                 | 5,300×  |
+
+The ship's design turns this threat into its fuel: this is the same stream the
+bussard scoop funnels into the stardrive (see The Stardrive, The Bussard
+Collector) — the γ² that would cook the crew is the γ² that feeds the drive. But
+the scoop only ingests what it can bend, and **bending gets harder with speed**:
+a relativistic proton's gyroradius scales as ~γ, so holding the same
+collect-and-deflect fraction demands a scoop field — and the power behind it —
+that climbs faster than the flux itself. At 0.5c the field is a 95%-effective
+convenience; by 0.99c it is the ship's largest continuous system, straddling fuel
+supply and radiation shield at once. And the fraction it *fails* to bend —
+leak-through gas plus every neutral grain — is the residual the Whipple hull and
+the active defense must eat, now drawn from a stream ~500× denser in energy. The
+nose cannot simply tank that: it can't radiate forward into its own path, and
+carting the residual aft is a heat fight the hull won't win. Collect-and-deflect
+is no longer optional at any efficiency — it is the only thing standing between
+the crew and the fuel stream.
+
+**2. The reaction budget collapses as (1−β).** The interval between detecting a
+grain and being hit by it, for a threat first seen at light-distance T, is
+T·(1−β)/(β(1+β)) — because your own radar echo outruns the grain it bounced off
+by only a hair. Per light-second of detection range:
+
+| Speed  | Reaction budget / light-second |
+|--------|--------------------------------|
+| 0.5c   | 670 ms                         |
+| 0.9c   | 58 ms                          |
+| 0.99c  | 5.1 ms                         |
+| 0.999c | 0.5 ms                         |
+
+Every nine divides the budget by ten. The lesson the engineers learn early is
+that **the compute was never the bottleneck — causality is.** You can throw an
+arbitrarily fast processor at the fire solution and still lose, because the
+information itself arrives only milliseconds ahead of the grain. The only levers
+that help are detecting *farther out* (linear in T, but small grains have almost
+no cross-section at range) and the passive forward-stare — one-way light, no
+round-trip penalty (see Active Debris Defense).
+
+**3. The threat table shifts up two bins.** Grain kinetic energy scales as
+(γ−1). A speck the Whipple hull shrugs off at 0.5c is an active-defense problem
+at 0.99c and an *avoidance* problem at 0.999c:
+
+| Grain               | at 0.5c                    | at 0.99c            | at 0.999c          |
+|---------------------|----------------------------|---------------------|--------------------|
+| 10 µm dust (1.6 ng) | 22 kJ — rifle round, eaten | 0.87 MJ — dynamite  | 3 MJ — a grenade   |
+| 100 µm sand (1.6 µg)| 22 MJ — ~5 kg TNT          | 870 MJ — ~200 kg TNT| 3 GJ — ~0.7 t TNT  |
+
+At 0.999c the passive hull — sized for 0.5c dust — is being asked to eat
+grenades it was never rated for, and the active defense inherits threats two
+orders of magnitude more common than the ones it handles at 0.5c, on a reaction
+budget 100× shorter. Both ends of the problem move the wrong way at once.
+
+Two riders come along for free:
+- **The threat cone tightens** (aberration half-angle ~1/γ: ~8° at 0.99c, ~2.6°
+  at 0.999c). Threats bunch into a narrow forward cone — which concentrates the
+  flux the nose must survive, but also tells you exactly where to aim the sensors
+  and the interdictor.
+- **Echoes blueshift** by up to ~D² round-trip (D = √((1+β)/(1−β)) each way): a
+  ~200× shift at 0.99c, ~2,000× at 0.999c. A 10 GHz radar return comes back in
+  the THz / far-IR band, so the ranging suite — and the outgoing beam — climb
+  up-band with speed. (Large, but not into gamma; the fear is worse than the
+  factor.)
+
+### Where the Curve Bites — the Practical Speed Ceiling
+
+Put the halves together and the deal is stark. Near c, crew-time falls as ~1/γ
+while forward power climbs as ~γ² — so **forward power scales as the inverse
+square of crew-time.** Every halving of the crew's aging costs a *quadrupling* of
+the gigawatts the scoop must bend and the hull must survive (plus a halving of
+the reaction budget, plus an upward shift of the threat table). The ship
+therefore does not fly at the speed physics allows; it flies at the speed the
+scoop field, the radiators, the interdictor bus, and the nerve of the navigator
+allow — a knee on the curve, chosen per voyage, well short of the limit.
+
+This is the master tension the whole forward complex exists to manage, and it is
+a *route-planning* knob as much as a throttle: a clean lane buys another nine
+cheaply; a dusty one makes the same nine a gauntlet. A captain who wants the crew
+home young is spending reactor power, radiator margin, and hull life to buy it,
+and the exchange rate only worsens with every nine.
+
+
 ## Hull Armor and Radiation Protection
 
 ### The Problem
