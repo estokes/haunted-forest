@@ -21,13 +21,19 @@ Each colony system needs:
 
 ## Interstellar Routes
 
-Not all routes are equal. ISM density varies — denser regions mean
-faster stardrive acceleration but more hull wear and dust hazard. The Local Bubble
-near Sol is thin (~0.1 atoms/cm³), making nearby departures sluggish.
-Denser regions near spiral arms offer 5-50 atoms/cm³.
+Not all routes are equal. The entire 30 ly inhabited sphere sits inside
+the Local Bubble (~0.1 atoms/cm³). Spiral-arm densities are not on this
+map. What varies is local clouds and filaments — a factor of a few, not
+three orders of magnitude. Denser gas means faster time-to-cruise and
+more ³He skim, and more dust for the FEL. It does not raise the 0.12c
+speed wall.
 
 Route knowledge is valuable. The best paths between systems — balancing
-ISM density, distance, and hazards — are closely guarded trade secrets.
+density, distance, and grains — are closely guarded trade secrets.
+
+Typical flight times at 0.10c cruise, Local Bubble, accel and decel
+included: α Cen ~70 years; a 10 ly leg ~125 years; the far edge ~330
+years. See [Ship Systems](ship-systems.md#speed-and-the-forward-environment).
 
 ## Open Questions
 

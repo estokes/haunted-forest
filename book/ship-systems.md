@@ -93,23 +93,25 @@ meets the ISM, the tail always radiates into the wake, and the reactor sits
 aft beside the radiator and the conventional engines. The stardrive modules
 ride in nacelles offset from the hull on structural booms, which isolates
 their waste heat and radiation; each nacelle is a lockable two-position
-turret (see The Stardrive). To decelerate at midcourse, the drive cuts out,
-the ship coasts a few minutes while the nacelles swing 180°, and the drive
-relights facing the other way. The scoop keeps collecting ISM hydrogen
-throughout; the exhaust, far faster than the ISM, blasts clear without being
-recollected.
+turret (see The Stardrive). To decelerate at midcourse the scoop field
+reshapes from funnel to parachute and the ship bleeds speed on magnetic
+drag; once well below the 0.12c wall the nacelles slew 180° and the drive
+relights facing the other way to finish the descent to the 900 km/s
+handoff. The ship never turns over.
 
 Because the *ship* never turns over, **thrust-gravity reverses at
-midcourse**. On the outbound accelerating half the drive pushes the ship
-forward, so "down" is toward the **tail**; after the nacelle-flip the drive
-decelerates and "down" is toward the **nose**, with a brief weightless coast
-between. **The floor becomes the ceiling halfway through the trip.** The
-crew rides interstellar cruise in cold sleep, so no one walks the decks
-during the swap, and the pods, tankage, and fluid systems are built to work
-under thrust from either direction. But anyone awake and active during a
-burn — an in-flight emergency, a mid-cruise wake-up — finds the ship's
-usable "down" set entirely by which half of the voyage they're in, with a
-space laid out for the outbound floor now hanging overhead on the way home.
+midcourse**. On the outbound half the drive pushes the ship forward, so
+"down" is toward the **tail**; when the scoop becomes a parachute,
+"down" is toward the **nose**, and it stays there through the reverse
+burn. Cruise itself is milligees in the Bubble — almost free-fall. The
+only true weightless moment is the nacelle slew. **The floor becomes
+the ceiling halfway through the trip.** The crew rides interstellar
+cruise in cold sleep, so no one walks the decks during the swap, and the
+pods, tankage, and fluid systems are built to work under thrust from
+either direction. But anyone awake — an in-flight emergency, a
+mid-cruise wake-up, an AI captain who never slept — finds the ship's
+usable "down" set by which half of the voyage they're in, with a space
+laid out for the outbound floor now hanging overhead on the way home.
 
 
 ## Cargo — The Hold
@@ -205,148 +207,143 @@ error; it's a body count. The hold is monitored the way a hospital ward is
 monitored, and for the same reason.
 
 
-## Speed and the Forward Environment — the Price of Time Dilation
+## Speed and the Forward Environment
 
-Everything below this line — the Whipple hull, the magnetic deflection, the
-active debris defense — is quoted for a **0.5c baseline**. But 0.5c is not where
-the ship *wants* to be. The reason to fly a relativistic hull at all is **time
-dilation**: at speed the crew's clocks — and their lives, and their cold-sleep
-consumables — run slow against the galaxy, and a decade-long crossing becomes a
-season of ship-time. That is the whole incentive, and it fights the forward
-environment the entire way up. The trip the crew *lives* shortens with speed;
-the environment they must survive gets worse **faster**. Every figure in the
-sections that follow is the easy end of a steep curve.
+The ship **cruises at 0.10c** (30,000 km/s). The stardrive's hard limit is
+**0.12c**. That is not an engineering redline. It is a conservation-law wall.
 
-### The Payoff — Why Chase γ
+The drive fuses the hydrogen it scoops. The p-p mass defect is ~0.007 \(mc^2\),
+which buys an exhaust velocity \(v_e \approx 0.12c\) and no more. Catalysis —
+Interstellar Systems' secret — makes the reaction *fast enough to run*. It does
+not pay more energy per nucleon. Net thrust on a ram that swallows what it
+fuses is \(\dot{m}(v_e - v)\). As \(v\) approaches \(v_e\), thrust dies. **0.12c
+is the asymptote.** Captains hold **0.10c** so there is still something to push
+with: midcourse corrections, a density clump, the first bite of turnaround.
 
-Crew-experienced time over a fixed proper distance scales as 1/(βγ). For a
-10-light-year crossing:
+Time dilation is not in this bargain. \(\gamma(0.10c) \approx 1.005\). A century
+in flight is a century at home. The crew buys time with **cold sleep**, not
+with \(\gamma\). An AI captain who stays awake pays the century in lived years.
+See [Narrative](narrative.md) and [History](history.md).
 
-| Speed  | γ    | Galaxy sees | Crew ages   |
-|--------|------|-------------|-------------|
-| 0.5c   | 1.15 | 20.0 yr     | 17.3 yr     |
-| 0.9c   | 2.29 | 11.1 yr     | 4.8 yr      |
-| 0.99c  | 7.09 | 10.1 yr     | 1.4 yr      |
-| 0.999c | 22.4 | 10.0 yr     | 5.4 months  |
+### Why a Tenth Is Worth Having
 
-Past ~0.9c the *coordinate* trip barely shortens — you are already nearly at c —
-but the *crew's* trip keeps collapsing, because γ keeps climbing. Time dilation
-is the only thing still being bought up there. That is why a captain with
-perishable cargo, a finite cold-sleep consumables budget, or a crew that would
-rather not lose years reaches for the next nine.
+Onboard ICF is a few thousand km/s of \(\Delta v\) — \(0.01c\), a port-call
+engine. Ten light-years at that speed is a millennium. The ram is the only
+thing that makes a 30-light-year civilization possible, and a tenth of \(c\)
+is as fast as the ram goes.
 
-### The Price — Three Escalation Laws
+Flight time in the Local Bubble, accel and decel included (see below):
 
-Each additional nine on β is paid for three times over, in three independent
-currencies.
+| Hop | Distance | Galaxy / sleeper-skip |
+|-----|----------|------------------------|
+| α Cen | 4.4 ly | ~70 yr |
+| Typical trade leg | 10 ly | ~125 yr |
+| Far edge of inhabited space | 30 ly | ~330 yr |
 
-**1. The forward flux grows as ~γ² — and it is both fuel and fire.** The ISM is
-length-contracted (γ denser in the ship frame) and each proton arrives carrying
-(γ−1)mc², so the incident power on the forward face scales as γ(γ−1)β —
-effectively γ² near c. Anchored to the 0.5c figure of 2.8 kW/m²:
+The minimum interstellar crossing is a human career. A campaign of ports is
+centuries of galactic time. Sleepers skip it. Anyone who stays up lives it.
 
-| Speed  | Forward flux | Nose total (~2,800 m²) | vs 0.5c |
-|--------|--------------|------------------------|---------|
-| 0.5c   | 2.8 kW/m²    | ~8 MW                  | 1×      |
-| 0.9c   | 84 kW/m²     | ~0.24 GW               | 30×     |
-| 0.99c  | 1.3 MW/m²    | ~3.8 GW                | 480×    |
-| 0.999c | 15 MW/m²     | ~42 GW                 | 5,300×  |
+### The Local Bubble — the Map Is Inside It
 
-The ship's design turns this threat into its fuel: this is the same stream the
-bussard scoop funnels into the stardrive (see The Stardrive, The Bussard
-Collector) — the γ² that would cook the crew is the γ² that feeds the drive. But
-the scoop only ingests what it can bend, and **bending gets harder with speed**:
-a relativistic proton's gyroradius scales as ~γ, so holding the same
-collect-and-deflect fraction demands a scoop field — and the power behind it —
-that climbs faster than the flux itself. At 0.5c the field is a 95%-effective
-convenience; by 0.99c it is the ship's largest continuous system, straddling fuel
-supply and radiation shield at once. And the fraction it *fails* to bend —
-leak-through gas plus every neutral grain — is the residual the Whipple hull and
-the active defense must eat, now drawn from a stream ~500× denser in energy. The
-nose cannot simply tank that: it can't radiate forward into its own path, and
-carting the residual aft is a heat fight the hull won't win. Collect-and-deflect
-is no longer optional at any efficiency — it is the only thing standing between
-the crew and the fuel stream.
+Inhabited space is a 30-light-year sphere. The Local Bubble is on the order of
+a thousand light-years across. **Every voyage the player can fly is in thin
+air:** ~0.1 atoms/cm³, not the galactic-disk average of ~1. Spiral-arm densities
+(5–50 cm⁻³) are not on this map. Route knowledge is local clouds and filaments
+— a factor of a few, not three orders of magnitude.
 
-**2. The reaction budget collapses as (1−β).** The interval between detecting a
-grain and being hit by it, for a threat first seen at light-distance T, is
-T·(1−β)/(β(1+β)) — because your own radar echo outruns the grain it bounced off
-by only a hair. Per light-second of detection range:
+Density does not change the speed limit. \(v_e\) is set by the mass defect, not
+by how much hydrogen is out there. Density changes **how fast you reach cruise,
+how hard the dust hits, and how much ³He you skim.** A fat filament is a gust:
+you punch up to 0.10c faster, and you eat more sand. A clean lane is light air.
 
-| Speed  | Reaction budget / light-second |
-|--------|--------------------------------|
-| 0.5c   | 670 ms                         |
-| 0.9c   | 58 ms                          |
-| 0.99c  | 5.1 ms                         |
-| 0.999c | 0.5 ms                         |
+### The Acceleration Hump
 
-Every nine divides the budget by ten. The lesson the engineers learn early is
-that **the compute was never the bottleneck — causality is.** You can throw an
-arbitrarily fast processor at the fire solution and still lose, because the
-information itself arrives only milliseconds ahead of the grain. The only levers
-that help are detecting *farther out* (linear in T, but small grains have almost
-no cross-section at range) and the passive forward-stare — one-way light, no
-round-trip penalty (see Active Debris Defense).
+Collection \(\dot{m} = \pi r^2 \rho v\) grows with speed, but net thrust is
+\(\dot{m}(v_e - v)\). Acceleration is a **hump**, not a snowball: it peaks near
+\(v_e/2 = 0.06c\) and falls to zero at the wall.
 
-**3. The threat table shifts up two bins.** Grain kinetic energy scales as
-(γ−1). A speck the Whipple hull shrugs off at 0.5c is an active-defense problem
-at 0.99c and an *avoidance* problem at 0.999c:
+At 500,000 t, disk-average ISM (1 atom/cm³) — a dense local cloud, not the
+Bubble:
 
-| Grain               | at 0.5c                    | at 0.99c            | at 0.999c          |
-|---------------------|----------------------------|---------------------|--------------------|
-| 10 µm dust (1.6 ng) | 22 kJ — rifle round, eaten | 0.87 MJ — dynamite  | 3 MJ — a grenade   |
-| 100 µm sand (1.6 µg)| 22 MJ — ~5 kg TNT          | 870 MJ — ~200 kg TNT| 3 GJ — ~0.7 t TNT  |
+| Ship velocity | Collection | Accel (500 kt) | Accel (250 kt) |
+|---------------|------------|----------------|----------------|
+| 0.003c (900 km/s) — catch | 0.93 kg/s | 0.0066 G | 0.013 G |
+| 0.03c | 9.3 kg/s | 0.051 G | 0.10 G |
+| 0.06c — peak | 19 kg/s | 0.068 G | 0.14 G |
+| 0.08c | 25 kg/s | 0.060 G | 0.12 G |
+| **0.10c — cruise** | **31 kg/s** | **0.038 G** | **0.076 G** |
+| 0.11c | 34 kg/s | 0.021 G | 0.042 G |
+| 0.12c — wall | 37 kg/s | 0 | 0 |
 
-At 0.999c the passive hull — sized for 0.5c dust — is being asked to eat
-grenades it was never rated for, and the active defense inherits threats two
-orders of magnitude more common than the ones it handles at 0.5c, on a reaction
-budget 100× shorter. Both ends of the problem move the wrong way at once.
+In the Local Bubble, divide collection and accel by ten. Catch is 0.00066 G on
+a loaded hull. Peak is 0.007 G. Cruise thrust is 0.004 G — station-keeping
+against a clump, not a surge. Leaving Sol is a long climb in light air; the
+ICF boost to the 900 km/s catch is the whole game for the first year.
 
-Two riders come along for free:
-- **The threat cone tightens** (aberration half-angle ~1/γ: ~8° at 0.99c, ~2.6°
-  at 0.999c). Threats bunch into a narrow forward cone — which concentrates the
-  flux the nose must survive, but also tells you exactly where to aim the sensors
-  and the interdictor.
-- **Echoes blueshift** by up to ~D² round-trip (D = √((1+β)/(1−β)) each way): a
-  ~200× shift at 0.99c, ~2,000× at 0.999c. A 10 GHz radar return comes back in
-  the THz / far-IR band, so the ranging suite — and the outgoing beam — climb
-  up-band with speed. (Large, but not into gamma; the fear is worse than the
-  factor.)
+Time 0.003c → 0.10c at 500 kt: **~2.3 years** and **~0.09 ly** in a dense cloud;
+**~23 years** and **~0.9 ly** in the Bubble. The rest of any long hop is
+cruise. The critical phase is still the conventional boost from 0 to 900 km/s,
+where the ram barely bites. Every km/s of ICF \(\Delta v\) spent in-system is
+fuel you might need for that transition.
 
-### Where the Curve Bites — the Practical Speed Ceiling
+### The Forward Environment at Cruise
 
-Put the halves together and the deal is stark. Near c, crew-time falls as ~1/γ
-while forward power climbs as ~γ² — so **forward power scales as the inverse
-square of crew-time.** Every halving of the crew's aging costs a *quadrupling* of
-the gigawatts the scoop must bend and the hull must survive (plus a halving of
-the reaction budget, plus an upward shift of the threat table). The ship
-therefore does not fly at the speed physics allows; it flies at the speed the
-scoop field, the radiators, the interdictor bus, and the nerve of the navigator
-allow — a knee on the curve, chosen per voyage, well short of the limit.
+At 0.10c each ISM proton carries \((\gamma-1)mc^2 \approx 4.7\,\mathrm{MeV}\)
+(use the relativistic figure; \(\tfrac12 mv^2\) is only 1% low here). Incident
+power on the nose, disk-average:
 
-This is the master tension the whole forward complex exists to manage, and it is
-a *route-planning* knob as much as a throttle: a clean lane buys another nine
-cheaply; a dusty one makes the same nine a gauntlet. A captain who wants the crew
-home young is spending reactor power, radiator margin, and hull life to buy it,
-and the exchange rate only worsens with every nine.
+> \(n\,c\,(mc^2)\,\gamma(\gamma-1)\beta \approx 23\,\mathrm{W/m}^2\)
+
+About 64 kW over the ~2,800 m² nose. In the Bubble, 2.3 W/m² — a rounding
+error next to sunlight. The hull does not have a heat problem. Unshielded, the
+*dose* is still promptly lethal (MeV protons stop in the first millimetre of
+tissue at tens of gray per second), so the Whipple water is the radiation
+shield that matters. The scoop's job at this speed is **fuel and pre-filter**,
+not keeping the crew alive; 4.7 MeV protons do not punch a water-stuffed metre.
+
+Aberration and blueshift are mild: \(D = \sqrt{(1+\beta)/(1-\beta)} \approx 1.11\),
+round-trip \(D^2 \approx 1.22\). Threats are still biased forward. They are not
+crammed into an 8° cone. The ranging suite stays in the band it was built for.
+
+The reaction budget, for a grain first pinged at light-distance \(T\), is
+\(T\cdot(1-\beta)/(\beta(1+\beta))\) — **8.2 seconds per light-second** of
+ping range. Detect at 150,000 km and the echo is back with the grain at
+~123,000 km and **~4 s to act.** Causality is no longer the bottleneck.
+Automation is. Sand still kills you if you miss (see Active Debris Defense);
+you just have time to take the shot.
+
+### The Master Tension
+
+The ship does not fly at the speed a captain wants. It flies at **0.10c**
+because that is the last tenth the ram can still push, and it flies the lane
+the navigator will sign because density is accel and dust, not a higher wall.
+A clean lane is slow to cruise and kind to the hull. A dirty one is a gust
+that pays in ³He and in FEL time. Sleepers do not care how long the crossing
+is. The cargo, the insurance clock, and anyone awake do.
 
 
 ## Hull Armor and Radiation Protection
 
 ### The Problem
 
-At 0.5c, each ISM hydrogen atom carries ~117 MeV of kinetic energy —
-comparable to a cosmic ray proton. The raw particle flux on the forward
-face is about 2.8 kW/m². Unshielded, this would cook the crew in hours.
-And the ISM is ~1% dust: a neutral grain the magnetic field can't touch
-arrives as a hypervelocity impactor (see Active Debris Defense).
+At 0.10c cruise, each ISM hydrogen atom carries \((\gamma-1)mc^2 \approx
+4.7\,\mathrm{MeV}\). The raw particle flux on the forward face is about
+23 W/m² at disk-average density, ~2 W/m² in the Local Bubble — thermally
+nothing. Unshielded, the *dose* is still promptly lethal: MeV protons stop
+in the first millimetre of tissue. The ISM is also ~1% dust, and a neutral
+grain the magnetic field can't touch arrives as a hypervelocity impactor
+(see Active Debris Defense). Galactic cosmic rays (GeV, roughly isotropic
+at this \(\beta\)) are the penetrating radiation problem; the ram is not.
 
 ### The Solution (three layers)
 
 1. **Magnetic deflection**: The bussard scoop's magnetic field extends
-   thousands of kilometers ahead of the ship, deflecting ~95% of ionized
-   ISM particles — and most photoelectrically-charged dust — before they
-   reach the hull.
+   thousands of kilometers ahead of the ship, funneling ionized ISM into
+   the collector and glancing the rest aside — and most
+   photoelectrically-charged dust with it — before they reach the hull.
+   At 0.10c this is a fuel system and a sputtering pre-filter, not the
+   crew's radiation shield; 4.7 MeV protons stop in the first millimetre
+   of the Whipple.
 
 2. **Stuffed carbon-Whipple hull**: The outer hull is not a coating but a
    **Whipple shield** — spaced carbon-nanosheet bumper layers with water in
@@ -406,25 +403,27 @@ arrives as a hypervelocity impactor (see Active Debris Defense).
 ### The Threat the Passive Shield Misses
 
 The magnetic scoop and the carbon-Whipple hull handle the *interstellar medium* —
-individual atoms and ions, ~117 MeV apiece at 0.5c (see Hull Armor), and the hull's
+individual atoms and ions, ~4.7 MeV apiece at 0.10c (see Hull Armor), and the hull's
 bumper layers shatter the smallest grains. But a **grain** with real mass is another
 matter. The ISM is ~1% dust by mass: silicate and carbonaceous
 motes from sub-micron up through the rare sand- and pebble-sized debris of
 shattered worlds. A neutral grain isn't deflected by the scoop's field, and above
-a few micrometres no passive hull can absorb a concentrated impactor. At 0.5c the kinetic energy of even a
-speck is absurd (KE ≈ (γ−1)mc², γ ≈ 1.155):
+a few tens of micrometres no passive hull can absorb a concentrated impactor.
+At 0.10c the kinetic energy is KE ≈ (γ−1)mc² with γ ≈ 1.005
+(masses below are 1.6 g/cm³ cubes of the stated size — order-of-magnitude):
 
-| Grain | Mass | KE at 0.5c | Equivalent | Handled by |
-|-------|------|-----------|------------|------------|
-| 1 µm mote | ~1.6 pg | ~22 J | a hard flick | Whipple hull |
-| 10 µm dust | ~1.6 ng | ~22 kJ | a rifle round | Whipple hull, marginally |
-| 100 µm fine sand | ~1.6 µg | ~22 MJ | ~5 kg TNT | **active defense** |
-| 1 mm coarse sand | ~1.6 mg | ~22 GJ | ~5 t TNT | **avoidance** |
-| 1 cm pebble | ~1.6 g | ~22 TJ | ~5 kt (nuclear) | **avoid at all costs** |
+| Grain | Mass | KE at 0.10c | Equivalent | Handled by |
+|-------|------|-------------|------------|------------|
+| 1 µm mote | ~1.6 pg | ~0.7 J | a flicked pebble | Whipple hull |
+| 10 µm dust | ~1.6 ng | ~0.7 kJ | a thrown rock | Whipple hull |
+| 100 µm fine sand | ~1.6 µg | ~0.7 MJ | a hand grenade | Whipple hull, marginally / **active defense** |
+| 1 mm coarse sand | ~1.6 mg | ~0.7 GJ | ~170 kg TNT | **active defense** / **avoidance** |
+| 1 cm pebble | ~1.6 g | ~0.7 TJ | ~170 t TNT | **avoid at all costs** |
 
-Nothing larger than a molecule may strike the hull at cruise. A grain of sand
-is a tactical munition; a pebble is a warhead. The ship cannot tank these — it
-must never let them arrive intact.
+Nothing millimetre-class may strike the hull at cruise. Fine sand is a
+grenade the Whipple can be asked to eat once; coarse sand is a tactical
+munition; a pebble is a warhead. The ship cannot tank those — it must never
+let them arrive intact.
 
 ### The Layered Bow
 
@@ -445,14 +444,14 @@ energy:
 
 ### Detecting at Relativistic Closing Speed
 
-The closing speed is 1.5×10⁸ m/s, and active ranging is a race against its own
-echo. A pulse to a grain at range R and back takes 2R/(c+v); during that time
-the grain closes from R to **R·(c−v)/(c+v) — to one third of the detection range
-at 0.5c, before the echo even returns.** Detect at 150,000 km and you learn of
-it at 50,000 km with ~0.3 s to act; everything closer is effectively undetectable
-by round-trip means. The forward sky is also aberrated (threats compressed into a
-forward cone) and Doppler-shifted by √((1+β)/(1−β)) ≈ 1.7×, so the whole suite is
-tuned for a blueshifted, forward-bunched world.
+The closing speed is 3.0×10⁷ m/s. A pulse to a grain at range R and back takes
+2R/(c+v); during that time the grain closes from R to **R·(c−v)/(c+v) — to 82%
+of the detection range at 0.10c, before the echo even returns.** Detect at
+150,000 km and you learn of it at ~123,000 km with **~4 s to act.** The
+close-in fraction is still there — ping at 30,000 km and you have under a
+second — but causality is not the enemy it would be at a few tenths of c.
+The forward sky is mildly aberrated and Doppler-shifted by
+√((1+β)/(1−β)) ≈ 1.11× (round-trip ~1.22×). The suite stays in-band.
 
 The suite is multi-modal, layered by wavelength because no single band sees
 everything:
@@ -479,10 +478,10 @@ The interdictor is a **free-electron laser array** — tunable across wavelength
 to match grain composition and punch through the bow plasma, with multiple
 independently-steered beam directors to engage many threats at once. The
 crucial, counterintuitive physics: **the laser cannot remove the grain's kinetic
-energy.** Momentum is conserved; 22 MJ of forward-directed energy is still 22 MJ
-after vaporization. What it *can* do is spread it: a concentrated point impact
-drills through ice and hull, but the same energy arriving as a diffuse plasma
-cloud fanned across a square meter of the carbon hull merely craters a scar. So the FEL's
+energy.** Momentum is conserved; 0.7 MJ of forward-directed energy is still
+0.7 MJ after vaporization. What it *can* do is spread it: a concentrated point
+impact drills through the Whipple, but the same energy arriving as a diffuse
+plasma cloud fanned across a square metre of carbon merely craters a scar. So the FEL's
 job is to detonate each grain at standoff and let the passive shield take the
 diffuse remnant — **converting an impactor into an ablation load.** Where range
 and time allow it does better: an asymmetric ablation jet gives the grain a
@@ -498,7 +497,7 @@ the way you'd read a bored predator.
 
 ### Ionize and Scoop — the Threat as Fuel
 
-There's a better outcome than spreading a grain onto the ice, and it falls out of
+There's a better outcome than spreading a grain onto the hull, and it falls out of
 a system the ship already carries. The bussard scoop funnels **charged** matter
 into the collector — that is its day job. So if the FEL doesn't merely vaporize a
 grain but *ionizes the plume*, the resulting plasma is charged, and the same field
@@ -513,7 +512,7 @@ must vaporize it to a plasma first, so the field acts on individual ions (high
 q/m) rather than a massive solid. And heavy debris ions (silicon, iron) carry
 lower q/m than the hydrogen the scoop is tuned for, so they funnel less cleanly: a
 fraction makes the collector, the rest still ends up as a diffuse ablation load on
-the ice. As fuel it's second-rate — the stardrive fuses hydrogen, not metal — but
+the hull. As fuel it's second-rate — the stardrive fuses hydrogen, not metal — but
 any mass is reaction mass, and the hydrogen/helium fraction is real fuel. So the
 interdiction hierarchy is: **ionize-and-scoop where the geometry allows (threat →
 fuel), vaporize-and-spread as the fallback (threat → ablation), avoid what's too
@@ -539,10 +538,11 @@ defense against a pebble is to never fly at it.
 
 ### Open Tensions
 
-- **The undetectable close-in fraction.** Round-trip ranging can't see the last
-  few tens of thousands of km; the passive forward-stare and a standoff kill-zone
-  cover some of it, and the residual is an accepted, ice-absorbed hit rate. How
-  high that runs in a dirty region is a real operational risk.
+- **The undetectable close-in fraction.** Round-trip ranging is thin inside
+  the last few tens of thousands of km; the passive forward-stare and a
+  standoff kill-zone cover some of it, and the residual is an accepted
+  Whipple-absorbed hit rate. How high that runs in a dirty filament is a
+  real operational risk.
 - **The pebble you can't dodge.** At 0.1 G and a few thousand km/s of in-system
   Δv, evading a body spotted light-minutes out is marginal. Avoidance is mostly a
   *navigation*-layer problem — route around dense regions — not a last-second
@@ -825,12 +825,12 @@ No deployable mechanisms. No moving parts on the radiator itself.
 
 The ship never flips, so there is no flip thermal sequence — the old
 multi-day cool-the-radiator, rebuild-the-shield ordeal is simply gone. At
-midcourse the drive cuts out, the ship coasts a few minutes while the
-stardrive nacelles slew 180° from accelerate-lock to decelerate-lock (see
-The Stardrive), and the drive relights facing the other way. The tail
-radiates throughout; the nose shields throughout. Nothing structural on the
-ship itself moves, and there is no vulnerable window — the armor is
-permanent, not a coating that has to be regrown.
+midcourse the scoop becomes a magnetic parachute and the ship brakes for
+years on ISM drag; the nacelles slew 180° only when it is time to burn
+the last of the speed off (see The Stardrive). The tail radiates
+throughout; the nose shields throughout. Nothing structural on the ship
+itself moves, and there is no vulnerable window — the armor is permanent,
+not a coating that has to be regrown.
 
 The one thing the crew would feel, if any were awake, is that
 thrust-gravity reverses: "down" points sternward on the accelerating half
@@ -979,51 +979,60 @@ Normal D-D or D-³He fusion can only burn deuterium or helium-3 — trace
 elements in the interstellar medium (deuterium is ~20 parts per million of
 ISM hydrogen). The stardrive can fuse **all** collected hydrogen, turning
 the entire ISM into both fuel and reaction mass. This is the difference
-between a ship limited to a few thousand km/s of Δv and one that can reach
-99% of lightspeed.
+between a ship limited to a few thousand km/s of Δv and one that can cruise
+at a tenth of lightspeed — the only thing that makes a 30-light-year
+civilization possible.
+
+The secret is the *rate*. Catalyzed p-p does not increase the yield. The
+energy per nucleon is still ~6.7 MeV, \(v_e \approx 0.12c\), and the wall
+is still \(v = v_e\). A static magnetic field does no work; the scoop
+steers, it does not add energy. There is no field geometry that retires
+the asymptote.
 
 ### Acceleration Profile
 
-The stardrive's thrust depends on how fast the ship is moving — faster
-means more hydrogen collected per second. It catches weakly at ~0.003c
-(900 km/s) and builds from there:
+Thrust is \(\dot{m}(v_e - v)\) with \(\dot{m} \propto v\). Collection grows
+with speed; net thrust dies as \(v\) approaches \(v_e\). The curve is a
+hump that peaks near 0.06c and is zero at 0.12c. The table below is
+disk-average ISM (1 atom/cm³) — a fat local cloud. In the Local Bubble,
+divide collection and accel by ten. See Speed and the Forward Environment.
 
-| Ship velocity | ISM collection | Accel (500 kt) | Accel (250 kt) |
-|---------------|---------------|-----------------|-----------------|
-| 0.003c (900 km/s) | 0.9 kg/s | 0.007G | 0.013G |
-| 0.005c (1,500 km/s) | 1.5 kg/s | 0.011G | 0.022G |
-| 0.01c (3,000 km/s) | 3.1 kg/s | 0.022G | 0.044G |
-| 0.03c (9,000 km/s) | 9.3 kg/s | 0.067G | 0.13G |
-| 0.1c (30,000 km/s) | 31 kg/s | 0.22G | 0.44G |
-| 0.3c (90,000 km/s) | 93 kg/s | 0.67G | 1.3G |
-| 0.5c (150,000 km/s) | 155 kg/s | 1.1G | 2.2G |
-| 0.9c (270,000 km/s) | 279 kg/s | 2.0G | 4.0G |
+| Ship velocity | Collection (disk) | Accel (500 kt) | Accel (250 kt) |
+|---------------|-------------------|----------------|----------------|
+| 0.003c (900 km/s) — catch | 0.93 kg/s | 0.0066 G | 0.013 G |
+| 0.03c | 9.3 kg/s | 0.051 G | 0.10 G |
+| 0.06c — peak | 19 kg/s | 0.068 G | 0.14 G |
+| 0.08c | 25 kg/s | 0.060 G | 0.12 G |
+| **0.10c — cruise** | **31 kg/s** | **0.038 G** | **0.076 G** |
+| 0.11c | 34 kg/s | 0.021 G | 0.042 G |
+| 0.12c — wall | 37 kg/s | 0 | 0 |
 
-The snowball effect is dramatic: sluggish at first, then surging. The
-critical phase is the conventional boost from 0 to 900 km/s, where the
-stardrive barely catches. Every km/s of conventional Δv spent on in-system
-maneuvering is fuel you might need for that transition.
+Sluggish at catch, a modest shove in the middle, nothing at the wall. The
+critical phase is the conventional boost from 0 to 900 km/s, where the ram
+barely bites — especially in the Bubble, where catch is 0.00066 G on a
+loaded hull. Every km/s of ICF Δv spent on in-system maneuvering is fuel
+you might need for that transition.
 
-### Nacelle-Flip Deceleration
+### Deceleration — Parachute, then Flip, then Handoff
 
-At the midpoint of an interstellar transit the ship decelerates — but it
-never turns over. Each stardrive nacelle is a **lockable two-position
-turret** on its boom: nozzle aft to accelerate, nozzle forward to
-decelerate. At turnaround the drive cuts out, the ship coasts for a few
-minutes while the nacelles swing 180° and relock, and the drive relights
-pointing the other way. The scoop keeps collecting ISM hydrogen throughout;
-the exhaust, far faster than the ISM, blasts clear without being
-recollected. The ship decelerates on free ISM hydrogen down to ~900 km/s,
-where the stardrive hands off to the conventional engines for final
-approach.
+Near cruise, \(v \approx v_e\): a reverse burn has almost nothing to give,
+and firing the exhaust forward into the scoop field is a good way to
+thrash the magnetosphere. So the first brake is the scoop itself. The
+same coils reshape from **funnel to parachute** — a magnetic sail. Incoming
+ISM reflects off the magnetosphere instead of being swallowed; the ship
+takes the recoil. Drag scales as \(\dot{m}\,v \propto v^2\). From 0.10c
+the sail has leverage the rocket has just lost.
 
-This retires the old flip-and-burn. Turning a 500,000-tonne hull over was a
-multi-day ordeal; slewing two nacelles during a drive-off coast takes
-minutes, and the specialized nose and tail never swap jobs. The cost is a
-pair of big turret bearings and their rotary utility feeds — and a sharp
-new failure mode: **a jammed turret at turnaround means you cannot
-reconfigure to decelerate**, and you arrive at your destination system at a
-fraction of *c* with no way to stop. See Maintenance.
+Once speed is well below the asymptote the nacelles slew — each is a
+**lockable two-position turret**, nozzle aft to accelerate, nozzle forward
+to decelerate — and the drive relights to finish the descent to ~900 km/s,
+where the ICF engines take the port-call. The ship never turns over. The
+nose stays on the ISM; the tail stays a radiator.
+
+A jammed turret no longer means "you cannot stop." The sail still dumps
+speed. It does mean you may arrive into the system too hot for a clean
+handoff — still tens of thousands of km/s, still a bad day — and that the
+last of the burn has to be improvised. See Maintenance.
 
 ### Maintenance
 
@@ -1034,8 +1043,10 @@ details of what they found. The cost varies unpredictably.
 
 Skipping maintenance is possible but not advisable. Stardrives that
 exceed their service interval have been known to fail in "energetic"
-ways — a drive capable of pushing 500,000 tonnes to 0.99c does not
-fail quietly. No captain pushes the interval twice.
+ways — a drive that throws 500,000 tonnes at a tenth of \(c\) does not
+fail quietly. No captain pushes the interval twice. Sixty light-years at
+cruise is six hundred years of flight; the interval is a fluence and wear
+budget, not a calendar.
 
 IS maintains service facilities in a handful of systems across
 inhabited space. This constrains route planning — your circuit must
@@ -1047,36 +1058,39 @@ for the strategic implications.
 
 ## Cruise Operations
 
-During interstellar cruise at ~0.5c, the ramscoop collects far more
-hydrogen than the stardrive consumes for thrust. The surplus is diverted
-to replenish ship stores:
+During interstellar cruise at 0.10c the ramscoop is both the drive's
+intake and the ship's refinery. What it gathers, and how long a tank
+takes to fill, is a density question. Numbers below are **Local Bubble**
+(~0.1 atoms/cm³) first — that is the map — with a dense local cloud
+(1 atom/cm³) in parentheses.
 
-- **Reaction mass (LH₂)**: Tanks refill in ~2-3 months. Ships arrive at
-  every destination with full tanks.
+- **Reaction mass (LH₂)**: Collection ~3.1 kg/s (31 kg/s). The 100,000 t
+  remass tanks refill in **~1–2 years** in the Bubble (~a month in a fat
+  cloud). Ships still arrive with full tanks on any hop long enough to
+  matter.
 - **Hull armor**: Needs no in-flight replenishment — the carbon Whipple hull
   doesn't ablate, and its water stuffing is sealed behind it (topped up at
   ports, not scooped). Losing the scoop no longer threatens the shield,
   only the fuel supply.
-- **D-³He reactor fuel**: The scoop collects deuterium freely (~20 ppm
-  of ISM hydrogen — far more than the reactor consumes). Helium-3 is
-  scarcer: the scoop's magnetic field is optimized for protons, and He²⁺
-  has half the charge-to-mass ratio, yielding only **~25 tonnes of ³He
-  per year** at cruise speed. The reactor at full power burns ~27 t/year
-  of ³He — so cruise collection barely covers full-power consumption.
-  During cruise the reactor runs at reduced power (crew in cold sleep),
-  accumulating a modest ³He surplus. This surplus is spent down during
-  in-system operations. ³He is a port commodity — sourced primarily from
-  gas giant atmosphere mining.
+- **D-³He reactor fuel**: Deuterium skims freely (~20 ppm of ISM hydrogen).
+  Helium-3 is scarcer: the field is optimized for protons, He²⁺ has half
+  the charge-to-mass ratio, and the Bubble is thin. Cruise skim is
+  **~0.5 t/year of ³He** in the Bubble (~5 t/year in a dense cloud). The
+  reactor at full power burns ~27 t/year, so collection never covers
+  redline. At a deep-cruise few percent of rated power, Bubble skim is
+  roughly break-even or a slight deficit. There is no comfortable surplus
+  to bank. **³He is a port commodity** — gas-giant atmosphere mining —
+  and a long cruise in thin air spends the tank you bought at the last
+  dock.
 - **Drive deuterium**: The scoop can't skim deuterium at drive scale —
-  it's only ~20 ppm of ISM hydrogen, a trickle that barely covers the
-  reactor. The drive banks a modest reserve in transit and loads the bulk
-  at destination, extracted from local water or gas-giant hydrogen.
-  Deuterium is cheap and available almost everywhere, so the drive is never
-  fuel-starved the way a scarce-fuel ship would be — but topping up is a
-  routine part of every port call.
+  ~2 t/year in the Bubble, enough for the reactor, not for the ICF banks.
+  The drive loads the bulk at destination, extracted from local water or
+  gas-giant hydrogen. Deuterium is cheap and available almost everywhere.
+  Topping up is a routine part of every port call.
 
 The crew is in cold sleep during transit. Ship AI handles navigation,
-shield maintenance, and resource management autonomously.
+scoop-field shaping, and resource management autonomously. An AI captain
+who stays awake lives the crossing.
 
 
 ## The Bussard Collector
@@ -1091,18 +1105,24 @@ and funnels interstellar hydrogen into the stardrive's reaction chamber.
 
 Where:
 - r = scoop radius (~14,000 km = 1.4 × 10⁷ m)
-- ρ = ISM density (~1 atom/cm³ = 1.67 × 10⁻²¹ kg/m³, galactic disk average)
+- ρ = ISM density
 - v = ship velocity
 
-At 0.5c: π × (1.4×10⁷)² × 1.67×10⁻²¹ × 1.5×10⁸ ≈ 155 kg/s
+At 0.10c and disk-average density (1 atom/cm³ = 1.67 × 10⁻²¹ kg/m³):
 
-ISM density varies by region. In the Local Bubble (near Sol): ~0.1
-atoms/cm³. In denser regions near spiral arms: 5-50 atoms/cm³. This
-affects stardrive performance — some routes are faster than others.
+> π × (1.4×10⁷)² × 1.67×10⁻²¹ × 3.0×10⁷ ≈ **31 kg/s**
 
-The scoop also serves double duty as the first layer of radiation
-protection, deflecting ~95% of incoming ionized particles before they
-reach the hull.
+The Local Bubble, which contains the entire 30 ly inhabited sphere, is
+~0.1 atoms/cm³: **~3.1 kg/s** at cruise. Local clouds and filaments move
+that number by a factor of a few. Spiral-arm densities are not on this
+map. Density sets time-to-cruise, dust load, and ³He skim — not the
+0.12c wall.
+
+The same coils do three jobs: **funnel** (collect and fuse), **glance**
+(deflect what you do not want, cheaply), and **parachute** (reflect the
+ISM and brake). They are not a radiation shield for the crew; 4.7 MeV
+protons stop in the Whipple. They are not an accelerator; a static B
+field does no work.
 
 
 ## Small Craft
@@ -1125,7 +1145,8 @@ Future sections to be developed:
 - **Active combat defense**: Active Debris Defense (above) handles natural
   hazards; defending against a hostile actor's weapons, saturation, and
   countermeasures is unspecified — see Weapons systems
-- **Sensors and communications**: Relativistic effects on sensing
+- **Sensors and communications**: Light-time and faint targets; relativistic
+  corrections are mild at 0.10c
 - **Life support**: Cold sleep technology, crew rotation
 - **Fabrication**: What can and can't be manufactured aboard ship
 - **AI systems**: Ship systems are sub-threshold AIs — sophisticated

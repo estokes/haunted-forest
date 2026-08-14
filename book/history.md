@@ -419,10 +419,11 @@ Compact compliance, not on proprietary technology.
 
 Their advantage is institutional: centuries of accumulated knowledge,
 tight collaboration via BCI, and a core breakthrough so far ahead of
-the field that no one else can catch up. They black-box their
-technology to protect their competitive advantage — and arguably to
-prevent proliferation of technology that could be weaponized on a
-stellar scale.
+the field that no one else can catch up. Founders who stay awake —
+and many of them do — are old in both calendar and experience. They
+black-box their technology to protect their competitive advantage —
+and arguably to prevent proliferation of technology that could be
+weaponized on a stellar scale.
 
 The consortium sells stardrives on the open market — rarely, and at
 enormous cost. They do not explain their pricing. They do not take
@@ -441,51 +442,52 @@ the full picture.
 ## Interstellar Expansion (2290-present)
 
 The first stardrive-equipped ship departed Sol system around 2290,
-bound for Alpha Centauri. The journey took roughly 4.4 years objective
-time, about 8 months shipboard. The crew arrived to find a habitable
-(if barely) world and the first hints of something unsettling — unusual
-geological formations that didn't match any natural process.
+bound for Alpha Centauri. In the Local Bubble a 4.4 ly crossing is
+about seventy years. The crew slept. They arrived in the 2360s to find
+a habitable (if barely) world and the first extrasolar confirmation of
+something Sol had already begun to suspect — unusual geological
+formations that didn't match any natural process.
 
 Expansion has been slow and uneven, limited by the scarcity of
-stardrives. Within 30 light-years of Sol, perhaps 20-30 systems have
-permanent human presence, ranging from major colony worlds to small
-research outposts. Each system is effectively self-governing — with no
-FTL communication, news travels at the speed of the next ship.
+stardrives and by the crossings themselves. At 0.10c the 30-light-year
+sphere takes on the order of three centuries to fill. The present sits
+just after that filling. Within 30 light-years of Sol, perhaps 20-30
+systems have permanent human presence, ranging from major colony worlds
+to small research outposts. Each system is effectively self-governing.
+Public news rides the laser net at \(c\); people and the bulk of
+history arrive with the next hull.
 
-### Time Dilation
+### Cold Sleep and Temporal Outsiders
 
-At 0.99c, the Lorentz factor is ~7. A 10 light-year journey takes ~10
-years from the perspective of those left behind, but only ~1.4 years
-shipboard time.
+\(\gamma\) at cruise is 1.005. Relativity does not make captains young.
+Cold sleep does — or it doesn't, for anyone who stays awake.
 
-This creates a class of temporal outsiders — traders, explorers, and
-ship crews who age slowly while the worlds they visit change around
-them. A trader who makes three interstellar round trips has experienced
-maybe 8 years of personal time while 60+ years pass at home. The
-civilization that sent them may have changed beyond recognition. Old
-friends are dead or elderly. Institutions have reformed. Cultural
-references are obsolete.
+This creates a class of temporal outsiders. A trader who makes three
+ten-light-year round trips skips something like seven centuries of
+galactic time and experiences only the port years. Old friends are
+dead. Institutions have reformed. Cultural references are obsolete.
+An AI captain who stays up lives every year of it, and is actually old.
 
-The stardrive builders, who travel frequently, include some of the
-oldest continuously living persons in civilization. Some founding
-members of the consortium may still be active — centuries old in
-objective time, but having experienced far less personal time.
+The stardrive builders travel often and many of them do not sleep. Some
+founding members of the consortium are still active — centuries old in
+both calendar and experience. That is not a side effect of \(\gamma\).
+It is what happens when you stay at the helm.
 
-Time dilation is not just flavor. It is a core source of narrative
-tension and a fundamental constraint on civilization's structure.
-Governance, culture, economics — everything is shaped by the fact that
-people who travel between stars experience time differently from those
-who stay home.
+The time door is not flavor. It is a core source of narrative tension
+and a fundamental constraint on civilization's structure. Governance,
+culture, economics — everything is shaped by the fact that people who
+travel between stars vanish for a century and step into a city that
+has replaced itself.
 
 
 ## Discovery of the Ruins (2310-present)
 
-Alien ruins were first identified conclusively around 2310, though
-earlier expeditions had noted anomalies that were not recognized at the
-time. As human expansion continued, the pattern became impossible to
-ignore: ruins were everywhere. Every system explored showed signs of
-past intelligence — different species, different levels of advancement,
-all gone.
+Unusual formations in the Sol system were recognized as artificial
+around 2310. The Alpha Centauri expedition confirmed the pattern was
+galactic when it arrived in the 2360s. As human expansion continued,
+the rest became impossible to ignore: ruins were everywhere. Every
+system explored showed signs of past intelligence — different species,
+different levels of advancement, all gone.
 
 The Silence — the name given to the absence of living alien
 civilizations — became the defining mystery of the age. See

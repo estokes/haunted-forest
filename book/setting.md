@@ -7,9 +7,11 @@ understanding, but engineering has advanced fantastically.
 
 - **No FTL.** The light barrier is never broken by humans, augmented humans,
   or AIs.
-- **Stardrives**: A consortium called Interstellar Systems builds engines
-  capable of accelerating massive ships to 99% of lightspeed. They sell rarely,
-  to buyers they choose. See [Factions](factions.md).
+- **Stardrives**: A consortium called Interstellar Systems builds ram
+  engines that fuse scooped interstellar hydrogen, including protium.
+  Cruise is **0.10c**; the drive's conservation-law wall is **0.12c**.
+  They sell rarely, to buyers they choose. See [Factions](factions.md)
+  and [Ship Systems](ship-systems.md).
 - **Nanofabrication**: Manufacturing any object from raw materials is trivial
   given a design. This creates post-scarcity for most goods.
 - **Black-boxed tech**: Some items (powerful weapons, stardrives, etc.) have
@@ -28,7 +30,8 @@ understanding, but engineering has advanced fantastically.
 ## Civilization
 
 - Human-machine civilization has spread within a roughly 30 light-year radius
-  from Sol, expanding slowly due to the rarity of starship engines.
+  from Sol, expanding slowly: stardrives are rare, and a typical hop is a
+  century. The sphere sits entirely inside the Local Bubble.
 - Most planets, moons, and bodies are airless rocks. Colony worlds exist but are
   relatively few, mostly empty with a few cities and large natural environments.
 - The aesthetic is far-future cyberpunk — advanced enough to feel alien, but
@@ -57,9 +60,11 @@ constitutional framework, adopted independently by each polity. Enforcement
 is through trade networks and social pressure, not a central authority.
 See [History](history.md) for how this evolved.
 
-With no FTL communication, each colony is effectively sovereign. News
-travels at the speed of the next ship. Political alliances form and
-dissolve over the decades between visits.
+With no FTL communication, each colony is effectively sovereign. Public
+news and contract data travel at lightspeed over the laser net; people,
+bulk archives, and the version of events anyone trusts arrive with the
+next hull, a century late. Political alliances form and dissolve over
+the generations between visits.
 
 ## Open Questions
 

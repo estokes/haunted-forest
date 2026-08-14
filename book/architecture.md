@@ -565,6 +565,12 @@ prevent memorization of specific prices.
 
 ## Time Dilation Mechanic
 
+This is implant and compute slow-time in combat and operations, **not**
+Lorentz \(\gamma\). The ship cruises at 0.10c; \(\gamma \approx 1.005\).
+A century in flight is a century at home. Crew skip it with cold sleep.
+This section is the other clock: how fast a mind can think when the
+missiles are already in the air.
+
 The game simulation rate is adjustable based on character type. This
 is the mechanical expression of computational superiority — not a
 stat bonus, but a change in how the player experiences time-critical

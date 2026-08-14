@@ -38,8 +38,10 @@ Between star systems, trade exists because of what nanofab can't solve:
 
 The bread-and-butter revenue for any ship operator. Biological humans
 in cold sleep, AI persons in hardened storage, augmented humans with
-their cognitive hardware. Everyone who needs to get to another system
-pays for passage or buys their own ship.
+their cognitive hardware. A hop is a century. Passage is emigration,
+exile, colonization, or an institutional posting — not a sales call.
+Everyone who needs to be in another system in another century pays, or
+buys their own ship.
 
 ### Elemental Commodities
 
@@ -106,14 +108,16 @@ atoms, but it can't copy the authenticity.
 ### The Problem
 
 You're loading cargo in System A, bound for System B. The journey
-takes years. You're betting on what System B will need when you
-arrive, based on information that's already years old by the time you
-see it. Other ships may be heading there with the same cargo. The
-market may have shifted. The colony may have had a disaster — or a
-boom.
+takes a century. You're betting on what System B will need when you
+arrive, based on laser data that's already a decade stale and will be
+a lifetime old when you dock. Other ships may be heading there with
+the same cargo. The market may have shifted. The colony may have had
+a disaster — or a boom — or several of each.
 
-This is 18th century maritime trade at interstellar scale. Fortunes
-are made and lost on information asymmetry and timing.
+This is cathedral-funding, not a clipper run: institutions think in
+dynasties, captains skip the years, and fortunes are made and lost on
+information that was true when someone you will never meet wrote it
+down.
 
 ### How It Works
 
@@ -143,9 +147,11 @@ potential reward, much higher risk.
 
 Contract postings propagate across laser links at lightspeed. A
 contract posted at Tau Ceti arrives at Sol 12 years later. By the time
-a trader at Sol sees it, loads cargo, and makes the journey, 15+ years
+a trader at Sol sees it, loads cargo, and makes the journey, ~130 years
 have passed at Tau Ceti. The contract may have been filled. The need
-may have evaporated. The colony may not exist anymore.
+may have evaporated. The colony may not exist anymore. Exclusive
+contracts are written with delivery windows measured in decades, and
+only houses that expect to still be there sign them.
 
 Smart traders don't rely solely on contract postings. They cultivate
 information networks — buying recent data from arriving ships, building
@@ -211,12 +217,12 @@ single party carries the whole exposure.
 **The latency nightmare:**
 
 If a ship is lost between systems, the underwriter doesn't know until
-another ship carries the news — potentially years later. The premium
-has been sitting in the underwriter's accounts, invested, growing. Then
-a claim arrives for a loss that happened years ago.
+another ship carries the news — potentially a lifetime later. The
+premium has been sitting in the underwriter's accounts, invested,
+growing. Then a claim arrives for a loss that happened a century ago.
 
-An underwriter with 50 ships insured, all departed years ago, must
-hold reserves against the possibility that any of them are already
+An underwriter with 50 ships insured, all departed generations ago,
+must hold reserves against the possibility that any of them are already
 lost. Managing reserves against that uncertainty — with claim arrivals
 that are essentially random — requires deep pockets and sophisticated
 actuarial modeling. This naturally favors large syndicates over
@@ -233,8 +239,8 @@ contact).
 
 False claims — scuttling a ship, diverting cargo — would eventually
 surface through the reputation network. But "eventually" might mean
-decades. Insurance fraud is a long game, and some practitioners have
-gotten away with it for entire careers. Premiums reflect this reality:
+a century. Insurance fraud is a long game, and some practitioners have
+gotten away with it for entire (slept) careers. Premiums reflect this reality:
 captains with long, clean records pay less. First-time operators pay
 through the nose.
 
@@ -285,8 +291,8 @@ at each conversion.
 - **Commodity banking**: Accepting payment in ³He or platinum instead
   of local currency, because you know where to sell it reliably.
 - **The IS maintenance tax**: Your route must pass an Interstellar
-  Systems service facility every ~60 light-years. This constrains your
-  circuit and may force suboptimal legs.
+  Systems service facility every ~60 light-years (~600 years of flight).
+  This constrains your circuit and may force suboptimal legs.
 - **Reputation management**: Every contract honored builds your name.
   Every breach — or association with a bad port — costs you.
 - **Insurance decisions**: Insure the cargo and eat the premium, or
@@ -301,21 +307,23 @@ at each conversion.
 
 ## Interstellar Systems and the Shape of Civilization
 
-Stardrive maintenance is required every ~60 light-years of travel.
+Stardrive maintenance is required every ~60 light-years of travel
+(six hundred years of flight at cruise — the interval is fluence and
+wear, not a calendar).
 Interstellar Systems performs all maintenance. They have service
 facilities in perhaps 3-5 systems across inhabited space. The
 inspection is opaque — they tell you what needs doing and what it
 costs, never why. You pay, because the alternative is a stardrive
-failure, and a drive that can push 500,000 tonnes to 0.99c does not
-fail quietly.
+failure, and a drive that throws 500,000 tonnes at a tenth of \(c\)
+does not fail quietly.
 
 This gives IS control over the topology of human expansion:
 
 **The 30 light-year leash.** A ship can travel at most ~30 light-years
-from the nearest IS facility before it must turn back for maintenance.
-Effectively, civilization cannot expand beyond 30 ly from an IS service
-point. IS chooses where to build facilities. Therefore IS chooses the
-shape of the frontier.
+from the nearest IS facility before it must turn back for maintenance —
+about three centuries of flight. Effectively, civilization cannot expand
+beyond 30 ly from an IS service point. IS chooses where to build
+facilities. Therefore IS chooses the shape of the frontier.
 
 **Service hub economics.** Systems with IS facilities become mandatory
 waypoints for every ship. This makes them trade hubs, population

@@ -16,22 +16,27 @@ vessel. During character creation, the player chooses their nature:
   **slow to 1/2 speed for ~2-3 minutes** before thermal buildup in
   neural implants forces a return to real time. Needs cooldown.
 - Heavily augmented: approaching the Compact threshold. Faster,
-  sharper, potentially centuries old via time dilation. Subject to the
-  2221 Amendment — same constraints as AI persons. Can **slow to
-  1/10th speed for ~5-10 minutes** — longer than augmented but still
-  constrained by biology. Push past the thermal limit and risk
-  permanent neurological damage.
+  sharper, calendar-old from a career of slept crossings — or actually
+  old, if they stayed awake. Subject to the 2221 Amendment — same
+  constraints as AI persons. Can **slow to 1/10th speed for ~5-10
+  minutes** — longer than augmented but still constrained by biology.
+  Push past the thermal limit and risk permanent neurological damage.
 
 **AI legal person** — a fully artificial intelligence inhabiting a
 ship as its primary substrate.
 
 Advantages:
 - Direct integration with ship systems — no implant intermediary
-- **Unlimited time dilation**: slow the game to 1/100th speed with no
-  duration limit. Write Graphix programs mid-combat, consult LLMs for
-  strategy, run tactical simulations, iterate on approaches — all
+- **Unlimited combat slow-time**: slow the game to 1/100th speed with
+  no duration limit (implant/compute time, not Lorentz \(\gamma\) —
+  cruise is 0.10c). Write Graphix programs mid-combat, consult LLMs
+  for strategy, run tactical simulations, iterate on approaches — all
   while the enemy's missile crawls toward you. See
   [Architecture](architecture.md#time-dilation-mechanic) for details.
+- **The crossing is optional experience.** Parking is a low-power
+  state, cheap and safe. Staying awake means living the century. An AI
+  captain who stays up is actually old, and was there when the ship
+  went strange.
 - No biological life support requirements (power and cooling instead)
 - "Cold sleep" is just a low-power state — simpler, safer, cheaper
 - Potentially centuries of accumulated experience
@@ -329,8 +334,8 @@ my creators did to me?" The player must have an answer for this.
   just cargo but potentially exclusive contracts — and the insurance
   implications cascade.
 - **Colony problems**: Each colony world has its own challenges — political,
-  ecological, resource-based. Time dilation means the player may visit the same
-  colony twice and find it unrecognizable.
+  ecological, resource-based. A century in the tank means the player may
+  visit the same colony twice and find it unrecognizable.
 - **Interstellar Systems**: The consortium that builds the stardrives. Founded
   by two of the aligned AIs that negotiated the Compact — entities that wrote
   the rules, then became the referees. Their monitoring network mirrors the
@@ -348,11 +353,12 @@ my creators did to me?" The player must have an answer for this.
 - **Ship husbandry (EVA operations)**: The crew physically service the ship's
   own structure — inspecting a misbehaving cargo container deep in the rack, or
   diving the water-filled hull to patch a Whipple layer (see [Ship
-  Systems](ship-systems.md)). Suited work, possible only during the weightless
-  cruise coast — a burn turns the hold into a 9 g trap, and midcourse flips
-  "down" end-for-end — done on a radiation dose clock, and always a standing bet
-  that no maneuver is forced while you're three hundred meters out along the
-  rack. A misbehaving container runs from the mundane (a stuck rail motor, a
+  Systems](ship-systems.md)). Suited work is possible through most of an
+  interstellar crossing — cruise thrust is milligees in the Bubble — but
+  an ICF burn turns the hold into a 9 g trap, and after turnaround "down"
+  points the other way. Done on a radiation dose clock, and always a
+  standing bet that no maneuver is forced while you're three hundred
+  metres out along the rack. A misbehaving container runs from the mundane (a stuck rail motor, a
   power fault) through the grim (a cold-sleeper pod losing life support — a
   rescue against a clock, with a life on it) to the sinister (a box gone dark:
   contraband, a stowaway, a compromised AI person). Routine husbandry is a
@@ -414,8 +420,8 @@ test is what you do when you don't know you're being tested.
   understand what it is?)
 - Specific ruin civilizations and their stories
 - The fight faction and negotiation faction — names, leaders, philosophies
-- How time dilation at 0.99c affects the story (decades pass on Earth during a
-  long voyage — this is rich narrative territory)
+- How a century in the tank (or a century awake) affects the story —
+  the player may visit the same colony twice and find it replaced
 - Does the Warden react differently to an AI player vs. a biological one?
 - Can an AI player exceed the Compact constraints during the endgame? What are
   the consequences?

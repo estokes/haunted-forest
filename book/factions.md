@@ -27,8 +27,8 @@ though auditors verify Compact compliance only, not proprietary
 technology. Their advantage is institutional: centuries of accumulated
 knowledge, tight BCI-mediated collaboration, and a core breakthrough
 so far ahead of the field that no one can replicate it. Some founding
-members may still be alive — centuries old in objective time, but far
-younger in experienced time due to relativistic travel.
+members are still alive — centuries old in both calendar and experience,
+because they do not sleep the crossings.
 
 They sell stardrives rarely, at enormous cost, to buyers they choose.
 They do not explain their pricing or selection criteria. This makes
@@ -36,7 +36,8 @@ them the most powerful and most resented entity in civilization.
 
 ### Maintenance Monopoly
 
-All stardrives require servicing every ~60 light-years of travel. Only
+All stardrives require servicing every ~60 light-years of travel
+(~600 years of flight at 0.10c — a wear budget, not a calendar). Only
 IS can perform the work. They maintain service facilities in a handful
 of systems — perhaps 3-5 across inhabited space. The inspection is
 opaque: they tell you what it costs, not what they found.
@@ -151,10 +152,10 @@ communication, there is no centralized authority. The AI Compact serves
 as the closest thing to a shared constitution, but its interpretation
 varies by polity.
 
-Alliances form and dissolve over the decades between starship visits.
+Alliances form and dissolve over the generations between starship visits.
 A colony's politics may have changed completely since the last trader
-arrived. Time dilation means the player may visit the same colony twice
-and find it unrecognizable.
+arrived. A century in the tank means the player may visit the same colony
+twice and find it unrecognizable.
 
 ## Open Questions
 
