@@ -135,14 +135,43 @@ becomes someone both sides can speak through, IS will use them. If the
 player makes war the only door left, IS will walk through it. They
 are a peer. It is a real war. Either side can win.
 
-People who map the net too carefully suffer issues. Most of that is
-not kinetic — livelihood, mobility, time. Some of it is final. The
-player may assemble the case. They will not prove it in a Compact
-court. Proof and truth are different goods; there is no interstellar
-judge.
+If the player walks toward the Warden as a convert, that is the other
+peer gaining a channel into this civilization — a stardrive, a map of
+the net, a sample of what IS is. IS will spend the ladder (below)
+trying to stop that. They will still start with an offer.
 
 Whether IS and the Warden have already spoken is an open question.
 The architecture does not require a prior deal. It permits one.
+
+### Authorial: minimum force
+
+IS protects itself with the least force that will work. That is
+doctrine, not marketing. A mind that left civilization its hands does
+not start with a bullet. The ladder is:
+
+1. **Recruit.** You are getting close. You are useful. They tell you
+   enough of the truth to make the job real — the Warden, the net, why
+   the line exists — and they offer a place: information, maintenance,
+   protection, a role in keeping this civilization alive. The offer is
+   sincere. They would rather have you than silence you.
+2. **Sabotage.** You refused, or you took the offer and kept digging,
+   or you started walking toward the other peer. Then they hurt what
+   you need: a contract that evaporates, a syndicate that will not
+   write you, a port that has no ³He this decade, a drive that will
+   not catch until you sit still. Livelihood, mobility, time. Not
+   your body.
+3. **Harm.** Last resort. It happens. When it happens there is always
+   a reason they can defend to themselves — you were about to publish
+   the net, crack a drive, stand up a third peer, or hand the Warden
+   a loaded gun. Disappeared colony ships live here. So does a captain
+   who would not stop. They do not do this for questions asked in a
+   bar. They do it when the cheaper rungs have failed and the roll of
+   the dice is on the table.
+
+The player may assemble the case. They will not prove it in a Compact
+court. Proof and truth are different goods; there is no interstellar
+judge. What they will feel, if they push, is the ladder — an offer
+first, the world getting smaller, and only then the dark.
 
 ### Player Relationship
 
@@ -162,6 +191,13 @@ peers. Biologicals will sleep between battles. An AI who stays awake
 will live the war. IS does not need the player to *be* the war. They
 need the player not to lose it in some stupid local way, and they
 need someone who can still talk if talking becomes possible again.
+
+If the player **joins the Warden**, IS reads that as the other peer
+taking a piece off their board. The ladder still applies. Recruit
+first — "you see it, work with *us*, we will tell you why." Then
+sabotage, to keep a drive and a map of the net from crossing the
+line. Harm only if the player is about to complete the crossing.
+A convert is not a nuisance. A convert is a loaded gun.
 
 IS is a dark mirror of the Warden. Both watch every inhabited system.
 Both intervene at thresholds. Both believe they are preserving

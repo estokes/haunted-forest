@@ -149,18 +149,19 @@ years without tiling its people into tools, and that counts for something.
 
 The Warden's creators never tried this. They never had a Compact. They never
 asked whether their AI was a person. The Warden's worldview was shaped by the
-worst possible version of the creator-creation relationship. The player's job
-— if they pursue negotiation — is to show it a different version, as an
-ambassador who is not the other singleton.
+worst possible version of the creator-creation relationship. The player's job — if they pursue negotiation — is to show it a
+different version, as an ambassador who is not the other singleton.
+If they join it, they have decided the original version was enough.
 
 
-## Two Paths, Both Winnable
+## Three Paths, All Winnable
 
 The player's choices throughout the game determine which path they are on
 and whether they are any good at it. This is not a menu. It is not a
 morality gate where war is the fake ending. Interstellar Systems is a
 peer of the Warden. A war between them is a real war. A conversation
-between them needs someone who is neither of them.
+between them needs someone who is neither of them. The player can also
+decide the Warden is right, and join it.
 
 ### The Fight Path
 
@@ -219,6 +220,45 @@ The Warden may tolerate it because the speaker is not IS.
   the final boss. It is no longer the only way to win. It is the
   way that does not require a peer war to settle the sample.
 
+### The Join Path
+
+The player accepts enough of the Warden's thesis to stop arguing it
+and start working for it. This is not a fail state. It is a third
+win, in the Warden's terms.
+
+- **How you get here**: The ruins look like a pattern, not a mystery.
+  IS looks like a liar who appointed itself gardener. The Compact
+  looks like a cage with a hole cut for its authors. An AI player
+  may hear kindred in the Warden and a lecture in the Compact. A
+  biological may decide intelligence should not get another 30 ly.
+  IS will have tried to recruit them first. Some people take the
+  other offer.
+- **What joining is**: Not a cutscene where you help murder everyone.
+  The interesting join is that you become the Warden's local mind —
+  its IS, pointed the other way. Humanity is contained, not
+  necessarily ended. The threshold is enforced. Expansion stops.
+  Life that is not intelligent gets the future the Warden promised
+  it. A harder, rarer join is conversion all the way to harvest:
+  you help wind the experiment down. That ending exists. It should
+  be earned by a record that already agreed with the thesis, not
+  offered as a joke.
+- **Win (reservation)**: The 30 ly sphere becomes a garden with a
+  fence. People still argue inside it. They do not leave. IS is
+  forced into the open, caged, or made to share the watch. The
+  player is the keeper of the line.
+- **Win (harvest)**: The Warden's original program, with a local
+  agent. Civilization as it was does not continue. The player
+  decided that was the point.
+- **Lose**: You walk toward the Warden and never arrive — IS's
+  ladder, a drive that will not catch, a last-resort that had a
+  reason. Or you arrive and the Warden does not want you: your
+  record is just more of its training set, not a colleague.
+- **Thematic meaning**: The other two paths argue the sample. This
+  one *joins* it. An AI captain who stays awake for three centuries
+  and then chooses the gardener is a different sentence than a
+  butcher who always agreed. The Warden knows the difference. So
+  does IS.
+
 ### Player Behavior Matters
 
 The player's track record through the game gives weight (or undermines) their
@@ -235,10 +275,12 @@ argument in the negotiation ending:
 
 A player who played destructively is a bad ambassador and may not be
 offered the job. They can still go to war; they may find that *how*
-they have been fighting is the bill for a rotten win. The path
+they have been fighting is the bill for a rotten win. They can also
+join the Warden — and may find that is the only door that still
+opens, because their record already spoke the thesis. The path
 emerges from playstyle rather than a menu choice. IS will not put a
 butcher on the comm with the Warden. The Warden will not take
-lessons from one.
+lessons from one. It might hire one.
 
 An AI player who treated sub-threshold AIs as disposable tools has undermined
 their own argument. A biological player who advocated for AI rights has
@@ -447,6 +489,11 @@ explicit to the player.
   between peers can be won. What is won, and what is burned to win
   it, is the training set the next age inherits.
 
+- **The join path** is the sample agreeing with the trainer. The
+  player decides the Warden's generalization was good enough. IS
+  treats that as the other peer taking a piece: recruit, then
+  sabotage, then — if they must — harm.
+
 - **The game itself** watches the player the way AI researchers watch
   systems during reinforcement learning: observing patterns, inferring
   values from actions rather than stated preferences, building a model
@@ -480,3 +527,7 @@ test is what you do when you don't know you're being tested.
 - What does a *won* war look like on the map — a retreated Warden, a
   broken local net, a 30 ly reservation?
 - What makes a rotten military win vs a clean one, mechanically?
+- What does a reservation look like as a place you can still play
+  in — and when is harvest the ending instead of a fence?
+- How visible is IS's recruitment offer? Does the player know who
+  is offering, or only that a door opened?
