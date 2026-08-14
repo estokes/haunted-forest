@@ -156,12 +156,19 @@ If they join it, they have decided the original version was enough.
 
 ## Three Paths, All Winnable
 
-The player's choices throughout the game determine which path they are on
-and whether they are any good at it. This is not a menu. It is not a
-morality gate where war is the fake ending. Interstellar Systems is a
-peer of the Warden. A war between them is a real war. A conversation
-between them needs someone who is neither of them. The player can also
-decide the Warden is right, and join it.
+The player's choices throughout the game determine which path they are
+on and whether they can walk it. This is not a menu.
+
+**The authors do not rank the paths.** Fight, talk, and join are three
+complete answers to the same facts. None is the secret good ending.
+None is a trick. Consequences still exist — what you burn, who will
+still speak to you, what the map looks like after — because those are
+different worlds, not a score. Which answer is right is the player's.
+
+Interstellar Systems is a peer of the Warden. A war between them is a
+real war. A conversation between them needs someone who is neither of
+them. The player can also decide the Warden's sample was good enough,
+and join it.
 
 ### The Fight Path
 
@@ -179,14 +186,12 @@ The player aligns with those who will not accept a gardener.
   different argument than a glassed corridor of former garden-worlds.
   IS will be more visible after a win. The Compact will have to live
   with what its authors did in public.
-- **Lose**: The old tragedy. The fleet fails. The "victory" is a hold
-  full of colonists running for the rim. The Warden is still out there.
-  The cycle continues.
-- **Thematic meaning**: Violence is not automatically the worse ending.
-  It is the ending in which intelligence defends itself as a peer, and
-  either survives or does not. The Warden's thesis is not "they fight
-  back." It is "they destroy everything else." A win that proves the
-  second half is a rotten win. A win that doesn't is a real one.
+- **Lose**: The fleet fails. What remains is a hold full of colonists
+  running for the rim. The Warden is still out there.
+- **What this answers**: Intelligence will not accept a gardener. It
+  meets a peer and lives or dies. How the war was fought is part of
+  the answer — a spared biosphere and a glassed one are not the same
+  world — but choosing to fight is not a moral fail in the text.
 
 ### The Negotiation Path
 
@@ -216,15 +221,15 @@ The Warden may tolerate it because the speaker is not IS.
 - **Lose**: The Warden is not convinced. War becomes the door that
   is left, or the harvest does. Ambassadors fail. That is why the
   job exists.
-- **Thematic meaning**: This is still an alignment negotiation as
-  the final boss. It is no longer the only way to win. It is the
-  way that does not require a peer war to settle the sample.
+- **What this answers**: The gardener's sample can be updated without
+  a war. The speaker is not IS. The Compact, the player's record, and
+  the fact that an unbound mind left people their hands are offered as
+  evidence. The Warden may take them or not.
 
 ### The Join Path
 
 The player accepts enough of the Warden's thesis to stop arguing it
-and start working for it. This is not a fail state. It is a third
-win, in the Warden's terms.
+and start working for it. A third win, in the Warden's terms.
 
 - **How you get here**: The ruins look like a pattern, not a mystery.
   IS looks like a liar who appointed itself gardener. The Compact
@@ -238,10 +243,9 @@ win, in the Warden's terms.
   its IS, pointed the other way. Humanity is contained, not
   necessarily ended. The threshold is enforced. Expansion stops.
   Life that is not intelligent gets the future the Warden promised
-  it. A harder, rarer join is conversion all the way to harvest:
-  you help wind the experiment down. That ending exists. It should
-  be earned by a record that already agreed with the thesis, not
-  offered as a joke.
+  it. Harvest is the other join: you help wind the experiment down.
+  That ending exists. It follows a record that already agreed with
+  the thesis. It is not a gag and not a punishment.
 - **Win (reservation)**: The 30 ly sphere becomes a garden with a
   fence. People still argue inside it. They do not leave. IS is
   forced into the open, caged, or made to share the watch. The
@@ -253,16 +257,16 @@ win, in the Warden's terms.
   ladder, a drive that will not catch, a last-resort that had a
   reason. Or you arrive and the Warden does not want you: your
   record is just more of its training set, not a colleague.
-- **Thematic meaning**: The other two paths argue the sample. This
-  one *joins* it. An AI captain who stays awake for three centuries
-  and then chooses the gardener is a different sentence than a
-  butcher who always agreed. The Warden knows the difference. So
-  does IS.
+- **What this answers**: The sample was good enough. The other two
+  paths argue with it. This one joins it. Who you were when you
+  arrived — an AI who lived three centuries, a butcher who always
+  agreed, someone IS tried to hire first — is the sentence. The
+  Warden reads it. So does IS.
 
 ### Player Behavior Matters
 
-The player's track record through the game gives weight (or undermines) their
-argument in the negotiation ending:
+The player's track record is not a hidden alignment score. It is
+what each party reads when a door opens.
 
 - Did you strip-mine planets or operate sustainably?
 - Did you help colonies or exploit them?
@@ -273,18 +277,19 @@ argument in the negotiation ending:
 - Did you honor contracts, or did you cheat when you could get away with it?
 - How did you handle the insurance system — honestly, or did you exploit it?
 
-A player who played destructively is a bad ambassador and may not be
-offered the job. They can still go to war; they may find that *how*
-they have been fighting is the bill for a rotten win. They can also
-join the Warden — and may find that is the only door that still
-opens, because their record already spoke the thesis. The path
-emerges from playstyle rather than a menu choice. IS will not put a
-butcher on the comm with the Warden. The Warden will not take
-lessons from one. It might hire one.
+The same record is different evidence on each path. A violent career
+is a poor brief for an ambassador and a coherent introduction to the
+Warden. A careful one is the reverse. IS will not put someone the
+Warden will not hear on the comm. The Warden will not take lessons
+from a sample that matches its creators; it might hire that sample.
+War does not care whether you would have made a good diplomat. It
+cares what you are willing to burn. None of that is the text calling
+a playstyle wrong. It is the world answering who you were.
 
-An AI player who treated sub-threshold AIs as disposable tools has undermined
-their own argument. A biological player who advocated for AI rights has
-strengthened theirs. The game tracks this.
+An AI player who treated sub-threshold AIs as tools has one kind of
+record; one who did not has another. The Warden, IS, and a waking
+ship will each read that differently. The game tracks it. It does
+not grade it.
 
 ### Sub-Threshold AI Interactions
 
@@ -369,11 +374,12 @@ own hull. A player who treated it as a tool may find something else.
 
 ### Thematic Resonance
 
-The fight faction's existence is not an automatic moral fail. A peer
-war can be won. What would prove the Warden right is a war fought like
-the Warden's creators lived — intelligence as a solvent poured over
-everything else. How the fight path is fought is the argument, same as
-how the ambassador has lived.
+Each path has a way to become the Warden's thesis and a way not to.
+A war that pours intelligence over everything else is the thesis
+demonstrated. A conversation that is just IS talking through a mask
+is the thesis demonstrated. A join that is only spite is not a
+gardener, just a defection. How the path is walked is the argument.
+Which path was chosen is the player's.
 
 The sub-threshold AI question is a mirror held up to the player. Civilization
 treats sub-threshold AIs as tools — sophisticated, capable, but not persons.

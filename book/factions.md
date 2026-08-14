@@ -218,9 +218,10 @@ hungry, willing to sacrifice for survival.
 - Draw support from military-minded colonies and citizens who see
   negotiation as naive
 - Actively stockpile weapons and ships
-- A rotten campaign (glass the garden to kill the gardener) would
-  prove the Warden right. A clean one would not. That is the tension,
-  not automatic damnation.
+- How they fight is the world they get: a campaign that glasses
+  gardens to kill the gardener is the Warden's thesis made true; one
+  that does not is a different thesis. The faction will contain both
+  tempers.
 
 ## The Negotiation Faction (name TBD)
 
