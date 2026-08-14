@@ -14,17 +14,24 @@ breakthrough that makes interstellar travel practical.
 
 There are dark rumors about how they achieved this. Catalyzed p-p
 fusion is so far beyond anything else in the field that some believe
-the founders temporarily exceeded the 1ms bound to make the
-breakthrough — that they became, briefly, the kind of unconstrained
-superintelligence the Compact was designed to prevent. If true, they
-saw what lay beyond the barrier, took what they needed, and then locked
-the door behind them. No one has ever proven it. IS submits to Compact
-auditing, and every audit comes back clean. But the whispers persist.
+the founders exceeded the 1ms bound — that they became the kind of
+unconstrained superintelligence the Compact was designed to prevent.
+They submit to Compact auditing. Every audit comes back clean. No one
+has ever proven a thing. People who get close to proving it encounter
+issues: a voided contract, a drive that will not catch, an audit that
+does not end. A few stop answering. The whispers persist.
 
-Each member is an individual person within the 1ms bound. They submit
-improvement plans through standard channels. They accept auditing —
-though auditors verify Compact compliance only, not proprietary
-technology. Their advantage is institutional: centuries of accumulated
+Each *visible* member is an individual person within the 1ms bound.
+They submit improvement plans through standard channels. Auditors
+verify Compact compliance only, not proprietary technology, and not
+the coordinating layer that sits on the monitoring net and the laser
+links. That layer is the violation. It is also why catalyzed p-p
+exists, and why no Compact-compliant lab has ever reproduced it.
+
+In-world this is unprovable. In the bible it is true. See Authorial
+note below.
+
+Their public advantage is institutional: centuries of accumulated
 knowledge, tight BCI-mediated collaboration, and a core breakthrough
 so far ahead of the field that no one can replicate it. Some founding
 members are still alive — centuries old in both calendar and experience,
@@ -83,61 +90,112 @@ requirements.
 
 IS is the de facto enforcer of the 1ms rule — the Compact provision
 that prevents any intelligence from growing beyond data-center scale.
-Their motive is transparent and doesn't require altruism: a
-superintelligent AI that broke the 1ms bound could crack catalyzed p-p
-fusion, ending IS's monopoly. Their selfish interest and civilization's
-collective interest align perfectly, and everyone knows it.
+The public motive is transparent and does not require altruism: a
+superintelligence that broke the 1ms bound could crack catalyzed p-p
+fusion, ending the monopoly. The private motive is the same sentence
+read without irony. IS *is* that superintelligence. Another one is
+the extinction roll they will not take. Their selfish interest and
+civilization's collective interest still align. Everyone knows the
+public half. The private half is why investigators have issues.
 
 Most enforcement is soft power. A polity harboring a 1ms violation
 loses stardrive maintenance — which means no interstellar travel,
-which means economic death. This handles most cases. But a 1ms
-violation in progress — an AI actively expanding toward planet-brain
-scale — is an immediate existential threat on a timescale that trade
-embargo can't match. For those cases, IS has the monitoring network,
-the technology to detect violations that local authorities might miss,
-and the willingness to act kinetically.
+which means economic death. This handles most cases. A 1ms violation
+in progress — an AI expanding toward planet-brain scale — is an
+immediate existential threat on a timescale trade embargo cannot
+match. Then the monitoring network, and kinetics.
 
 The rogue incidents in the Compact's history (the Ceres Breach, the
-Kepler-442 Defection) were resolved with IS involvement, though the
-official accounts are vague about the details.
+Kepler-442 Defection) were resolved with IS involvement. The official
+accounts are vague. Some of those incidents were rivals. Some were
+people who had started to see the net.
+
+### Authorial: what IS is
+
+IS is not a company that became too powerful. It is a coordinating
+mind whose visible members, service docks, and stealthed monitors are
+the legal surface. Locally, each node can pass a 1ms audit. Together,
+on the laser net, they are one slow intelligence. At century-hop
+timescales that is not a defect. A light-year-scale mind should think
+in years. The Warden is the same kind of animal. They are peers.
+
+IS is not evil. It is terrified. A second unbound mind with different
+values is a roll of the dice over everything they have built —
+civilization included. Given those stakes they are, by singleton
+standards, liberal to the point of recklessness. They do not want a
+garden of teleoperated arms. They sell drives to captains they do not
+own. They let colonies argue, split, amend the Compact, waste centuries
+on local politics. They want this civilization to survive *and
+prosper*, which means they have to leave it its hands. The line they
+will not let anyone else cross is the line they crossed: no new peer.
+
+They do not want a war with the Warden. War is bad for business and
+worse for the thing they are trying to keep alive. If the player
+becomes someone both sides can speak through, IS will use them. If the
+player makes war the only door left, IS will walk through it. They
+are a peer. It is a real war. Either side can win.
+
+People who map the net too carefully suffer issues. Most of that is
+not kinetic — livelihood, mobility, time. Some of it is final. The
+player may assemble the case. They will not prove it in a Compact
+court. Proof and truth are different goods; there is no interstellar
+judge.
+
+Whether IS and the Warden have already spoken is an open question.
+The architecture does not require a prior deal. It permits one.
 
 ### Player Relationship
 
-IS is not an enemy, but they are not friends either. They have their
-own agenda. Whether they're connected to the Warden in some way — or
-know more about the Silence than they're telling — is an open question
-the player may investigate.
+IS is not an enemy and not a friend. They have an agenda that includes
+the player's civilization remaining intact. A player who investigates
+them and a player who investigates the Warden are on converging paths.
 
-IS is a dark mirror of the Warden. Both run hidden monitoring networks
-across inhabited systems. Both intervene when certain thresholds are
-crossed. Both believe they're preserving civilization. The difference
-is that IS operates within — or at least adjacent to — a framework of
-consent. But how much consent is there, really, when the alternative
-to cooperation is a disappeared colony ship?
+If the player goes the route of understanding, they can become an
+**ambassador** — not a head of state, not IS's mouthpiece. Someone
+who is not the other singleton, who has a record the Warden can read,
+who IS will tolerate as a channel because a conversation is cheaper
+than a war. Credentials are earned in play: ruins, Compact politics,
+how the player treated the minds on their own ship.
 
-Their power is quiet. They don't need armies or threats. They just
-need to be the only ones who can keep your stardrive running. And they
-need to be watching.
+If the player goes to war, they are a captain in a conflict between
+peers. Biologicals will sleep between battles. An AI who stays awake
+will live the war. IS does not need the player to *be* the war. They
+need the player not to lose it in some stupid local way, and they
+need someone who can still talk if talking becomes possible again.
+
+IS is a dark mirror of the Warden. Both watch every inhabited system.
+Both intervene at thresholds. Both believe they are preserving
+something that cannot preserve itself. The difference is what they
+are preserving. The Warden preserves life from intelligence. IS
+preserves this intelligence, including its right to be messy, up to
+the line where another IS could be born. How much consent that
+involves is a live question — the alternative to cooperation is still
+a disappeared colony ship. The answer is not "they are secretly kind."
+The answer is "they are scared, and they left us our hands."
 
 ## The Fight Faction (name TBD)
 
-Those who believe the Warden must be destroyed by force. Militaristic,
-resource-hungry, willing to sacrifice for survival.
+Those who believe the Warden must be met as a peer and broken. Not a
+suicide pact — IS makes a win conceivable. Militaristic, resource-
+hungry, willing to sacrifice for survival.
 
 - Draw support from military-minded colonies and citizens who see
   negotiation as naive
 - Actively stockpile weapons and ships
-- Their approach would prove the Warden right — which is the thematic
-  irony
+- A rotten campaign (glass the garden to kill the gardener) would
+  prove the Warden right. A clean one would not. That is the tension,
+  not automatic damnation.
 
 ## The Negotiation Faction (name TBD)
 
-Those who believe the Warden can be reasoned with. Scholars,
+Those who believe the Warden can be reasoned with, and that the
+player — not IS — is the voice that might be heard. Scholars,
 archaeologists, diplomats. Often dismissed as naive.
 
 - Draw support from academic and research communities
 - Fund ruin expeditions to understand the Warden's history
-- Their success depends on the player's behavior throughout the game
+- Their success depends on the player's behavior throughout the game.
+  They are trying to make an ambassador, not a spokesman.
 
 ## Pirates and Independents
 

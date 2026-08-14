@@ -403,19 +403,19 @@ interstellar travel practical.
 
 Dark rumors surround the breakthrough. Catalyzed p-p fusion is so far
 beyond anything else in the field that some believe the founders
-temporarily exceeded the 1ms bound to achieve it — becoming, briefly,
-the kind of unconstrained superintelligence the Compact was designed to
-prevent. If true, they saw what lay beyond the barrier, took what they
-needed, and locked the door behind them. No one has ever proven it. IS
-submits to auditing, and every audit comes back clean. But the
-founders wrote the Compact, built the organization that enforces it,
-and then achieved something no Compact-compliant entity has ever
-replicated. The implication hangs in the air.
+exceeded the 1ms bound — becoming the kind of unconstrained
+superintelligence the Compact was designed to prevent. They submit to
+auditing. Every audit comes back clean. No Compact-compliant entity
+has ever replicated what they did. People who get close to a proof
+encounter issues. The implication hangs in the air.
 
-IS is broadly Compact-compliant. Each member is an individual person
-within the 1ms bound. Their improvement plans go through the standard
-approval process. They are audited, though the auditors report only on
-Compact compliance, not on proprietary technology.
+In the bible the rumors are true. The visible members are Compact-legal
+persons. The coordinating layer on the monitoring net is not. See
+[Factions](factions.md).
+
+IS presents as Compact-compliant. Improvement plans go through the
+standard approval process. Auditors report on Compact compliance, not
+on proprietary technology, and not on the net.
 
 Their advantage is institutional: centuries of accumulated knowledge,
 tight collaboration via BCI, and a core breakthrough so far ahead of
@@ -431,12 +431,11 @@ orders. They choose their buyers. This makes them the most powerful
 economic entity in human-machine civilization, and the most resented.
 
 Beyond commerce, IS serves as the de facto enforcer of the 1ms rule.
-Their monitoring network spans every inhabited system, and their
-motive is self-evident: a superintelligence that broke the 1ms bound
-could crack their monopoly. They maintain this role through a
-combination of soft power (trade and maintenance denial) and hard power
-(capabilities no one else can match). See [Factions](factions.md) for
-the full picture.
+Their monitoring network spans every inhabited system. The public
+motive is the monopoly. The private motive is the same fact from the
+inside: they are the unbound mind, and they will not roll the dice on
+a second one. Soft power (trade and maintenance denial) and hard power
+(capabilities no one else can match). See [Factions](factions.md).
 
 
 ## Interstellar Expansion (2290-present)

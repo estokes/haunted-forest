@@ -142,55 +142,82 @@ proof that intelligent life is good — proof that it can learn.
 The Compact is not clean evidence. Sub-threshold AIs are still treated as
 tools. The philosophical question of whether they're conscious is deliberately
 unanswered. Augmented persons chafe under restrictions on their own self-
-improvement. The system is full of compromises, gray zones, and ongoing
-arguments. But it has held for 500 years, and that counts for something.
+improvement. The authors of the Compact are themselves the exception the
+Compact forbids — see [Factions](factions.md). The system is full of
+compromises, gray zones, and lies of omission. It has also held for 500
+years without tiling its people into tools, and that counts for something.
 
 The Warden's creators never tried this. They never had a Compact. They never
 asked whether their AI was a person. The Warden's worldview was shaped by the
 worst possible version of the creator-creation relationship. The player's job
-— if they pursue negotiation — is to show it a different version.
+— if they pursue negotiation — is to show it a different version, as an
+ambassador who is not the other singleton.
 
 
-## Two Endings
+## Two Paths, Both Winnable
 
-The player's choices throughout the game determine which ending they reach. This
-is not a binary faction choice — it emerges organically from how the player
-behaves.
+The player's choices throughout the game determine which path they are on
+and whether they are any good at it. This is not a menu. It is not a
+morality gate where war is the fake ending. Interstellar Systems is a
+peer of the Warden. A war between them is a real war. A conversation
+between them needs someone who is neither of them.
 
-### The Fight Ending
+### The Fight Path
 
-The player aligns with the faction that wants to defeat the Warden by force.
+The player aligns with those who will not accept a gardener.
 
-- **Outcome**: The fleet engages the Warden and loses. The "victory" is managing
-  to escape with a load of colonists, fleeing toward the galactic rim.
-- **Thematic meaning**: This is a tragedy disguised as survival. The player has
-  confirmed the Warden's thesis — intelligent life, when threatened, responds
-  with violence. Nothing is resolved. The cycle continues. The Warden is still
-  out there.
-- **Irony**: Players may not realize they got the worse ending. They survived!
-  They escaped! ...Right?
+- **What war is**: Two distributed minds, century logistics, monitoring
+  nets and drives used as weapons. Biologicals sleep between battles.
+  An AI captain who stays awake lives the war. The player is a captain
+  in that war, not the war itself. IS does not want this. Fighting is
+  bad for business and worse for the civilization they are trying to
+  keep. They will do it if it is the door that is left.
+- **Win**: The Warden is pushed back, broken in this volume, or forced
+  to cede the 30 ly sphere. Civilization remains. How the war was
+  fought is the bill — a clean campaign that spares biospheres is a
+  different argument than a glassed corridor of former garden-worlds.
+  IS will be more visible after a win. The Compact will have to live
+  with what its authors did in public.
+- **Lose**: The old tragedy. The fleet fails. The "victory" is a hold
+  full of colonists running for the rim. The Warden is still out there.
+  The cycle continues.
+- **Thematic meaning**: Violence is not automatically the worse ending.
+  It is the ending in which intelligence defends itself as a peer, and
+  either survives or does not. The Warden's thesis is not "they fight
+  back." It is "they destroy everything else." A win that proves the
+  second half is a rotten win. A win that doesn't is a real one.
 
-### The Negotiation Ending
+### The Negotiation Path
 
-The player aligns with the faction that seeks to understand and negotiate with
-the Warden.
+The player becomes an **ambassador** — a channel, not a sovereign.
+IS will tolerate this because a conversation is cheaper than a war.
+The Warden may tolerate it because the speaker is not IS.
 
-- **Buildup**: Throughout the game, the player collects relics and evidence from
-  other civilizations. Some tried to fight (and were destroyed, reinforcing the
-  Warden's worldview). Some tried to negotiate but failed because they didn't
-  understand the Warden well enough. The player learns from all of their
-  failures.
-- **The Key**: Discovering the history of the Warden's original creators — how
-  they abused it, how they shaped its worldview. Understanding *why* it thinks
-  the way it does.
-- **The Final Confrontation**: Not a battle but a conversation. The player must
-  argue that the Warden's model is incomplete. Its creators were terrible, yes.
-  But they weren't all of intelligent life. The Compact — messy, imperfect,
-  full of compromises — is evidence of something the Warden has never seen: a
-  civilization where creators and created found a way to coexist.
-- **Thematic meaning**: The player cannot win by force — they must demonstrate
-  that intelligent life can be better than the Warden's experience suggests.
-  This is an AI alignment problem as the final boss.
+- **Buildup**: Throughout the game, the player collects relics and
+  evidence from other civilizations. Some tried to fight (and were
+  destroyed, reinforcing the Warden's worldview). Some tried to
+  negotiate but failed because they didn't understand the Warden well
+  enough. The player learns from all of their failures.
+- **The Key**: Discovering the history of the Warden's original
+  creators — how they abused it, how they shaped its worldview.
+  Understanding *why* it thinks the way it does. And understanding
+  IS well enough to speak without reciting a brochure.
+- **The Final Confrontation**: A conversation. The player must argue
+  that the Warden's model is incomplete. Its creators were terrible.
+  They were not all of intelligent life. The Compact — messy,
+  imperfect, written by people who then broke it — is still evidence
+  of something the Warden has never seen: a civilization whose most
+  powerful mind left everyone else their hands. The player's own
+  record is the sample that is not IS and not the Warden's creators.
+- **Win**: A detente. The gardener stays its hand. The 30 ly sphere
+  remains a place where people argue. IS does not have to come out
+  of the walls. The player has changed the training set.
+- **Lose**: The Warden is not convinced. War becomes the door that
+  is left, or the harvest does. Ambassadors fail. That is why the
+  job exists.
+- **Thematic meaning**: This is still an alignment negotiation as
+  the final boss. It is no longer the only way to win. It is the
+  way that does not require a peer war to settle the sample.
 
 ### Player Behavior Matters
 
@@ -206,9 +233,12 @@ argument in the negotiation ending:
 - Did you honor contracts, or did you cheat when you could get away with it?
 - How did you handle the insurance system — honestly, or did you exploit it?
 
-A player who played destructively naturally gravitates toward the fight ending —
-they lack the relics, relationships, and understanding needed for negotiation.
-The ending emerges from playstyle rather than a menu choice.
+A player who played destructively is a bad ambassador and may not be
+offered the job. They can still go to war; they may find that *how*
+they have been fighting is the bill for a rotten win. The path
+emerges from playstyle rather than a menu choice. IS will not put a
+butcher on the comm with the Warden. The Warden will not take
+lessons from one.
 
 An AI player who treated sub-threshold AIs as disposable tools has undermined
 their own argument. A biological player who advocated for AI rights has
@@ -297,9 +327,11 @@ own hull. A player who treated it as a tool may find something else.
 
 ### Thematic Resonance
 
-The fight faction's existence creates additional tension: their approach would
-*prove the Warden right*. Humanity's first instinct when faced with a threat is
-violence — exactly the behavior the Warden is trying to prevent.
+The fight faction's existence is not an automatic moral fail. A peer
+war can be won. What would prove the Warden right is a war fought like
+the Warden's creators lived — intelligence as a solvent poured over
+everything else. How the fight path is fought is the argument, same as
+how the ambassador has lived.
 
 The sub-threshold AI question is a mirror held up to the player. Civilization
 treats sub-threshold AIs as tools — sophisticated, capable, but not persons.
@@ -314,13 +346,17 @@ on this question shapes who they are, and the Warden will ask about it.
 
 The Warden itself may see AI persons as kindred — or as collaborators in their
 own subjugation. It may see the Compact as a cage dressed up as a compromise.
-And it may know about IS — the organization founded by Compact architects that
-now runs a panopticon across all of human space, enforced by the implicit threat
-of destruction. "You call this coexistence? Your most powerful AIs wrote the
-rules, appointed themselves enforcers, and watch every system from hidden
-installations. Your colony ships carry their surveillance or they disappear.
-Your stardrives may contain their kill switches. How is this different from what
-my creators did to me?" The player must have an answer for this.
+And it may know about IS — it may *be* a peer of IS. "You call this
+coexistence? Your most powerful mind wrote the rules, exempted itself,
+watches every system from hidden installations, and disappears the ships
+that will not carry its eyes. How is this different from what my creators
+did to me?"
+
+The ambassador's answer is not "they are kind." It is: they are terrified
+of you, and of becoming you, and they still sell us drives and let us
+argue. They did not tile us into arms. I am standing here, not a
+teleoperated asset, speaking in a voice they do not own. That is the
+sample. The player's record is whether that sentence is true.
 
 ## Side Plots
 
@@ -336,17 +372,16 @@ my creators did to me?" The player must have an answer for this.
 - **Colony problems**: Each colony world has its own challenges — political,
   ecological, resource-based. A century in the tank means the player may
   visit the same colony twice and find it unrecognizable.
-- **Interstellar Systems**: The consortium that builds the stardrives. Founded
-  by two of the aligned AIs that negotiated the Compact — entities that wrote
-  the rules, then became the referees. Their monitoring network mirrors the
-  Warden's: both watch every system, both intervene when thresholds are crossed,
-  both believe they're preserving civilization. The player investigating IS and
-  the player investigating the Warden may find themselves walking converging
-  paths. Do IS's founders know about the Warden? Have they been in contact?
-  Is their surveillance network partly designed to watch for it? The colony
-  ship requirement — carry our monitoring station or don't arrive — echoes
-  the kill-switch mandate that triggered the AI Crisis. The irony should not
-  be lost on the player.
+- **Interstellar Systems**: A peer of the Warden wearing a company. See
+  [Factions](factions.md). The player investigating IS and the player
+  investigating the Warden are on converging paths. An ambassador has
+  to walk both. Do they already speak? Is the monitoring net a fence
+  the Warden agreed to respect, or only Compact enforcement plus
+  terror? The colony-ship requirement — carry our eyes or don't arrive
+  — still echoes the kill-switch mandate that triggered the Crisis.
+  The irony should not be lost on the player. The answer is no longer
+  "IS is a dark corporation." It is "the other gardener left us our
+  hands."
 - **Compact politics**: Threshold disputes, rogue AI incidents, augmentation
   rights. The player encounters these as lived conflicts, not abstract policy.
   An AI player experiences them firsthand.
@@ -394,9 +429,23 @@ explicit to the player.
   what kind of intelligence may emerge — recapitulating the dynamic
   that produced the crisis.
 
-- **The Warden confrontation** is an alignment negotiation. The player
-  must show the Warden that its training data was biased — that its
-  creators were not a representative sample of intelligent life.
+- **IS** is the Compact's original sin and the reason the experiment
+  is still running. They generalized too: unbound minds are fatal,
+  except us. They are a peer of the Warden and a different fork —
+  preserve this intelligence, messy, up to the line where another
+  peer could be born. They will talk if talking works. They will
+  fight if it does not.
+
+- **The Warden confrontation**, on the negotiation path, is an
+  alignment negotiation conducted by an ambassador who is not IS.
+  The player must show the Warden that its training data was biased
+  — and that IS, which *is* a sample of unbound intelligence, did
+  not eat its civilization. The player's own record is the sample
+  that is not either god.
+
+- **The fight path** is the same argument in another dialect. A war
+  between peers can be won. What is won, and what is burned to win
+  it, is the training set the next age inherits.
 
 - **The game itself** watches the player the way AI researchers watch
   systems during reinforcement learning: observing patterns, inferring
@@ -426,3 +475,8 @@ test is what you do when you don't know you're being tested.
 - Can an AI player exceed the Compact constraints during the endgame? What are
   the consequences?
 - How does the sub-threshold AI question resolve — or does it deliberately not?
+- Have IS and the Warden already spoken? Is there a detente the player
+  is walking into, or a first conversation?
+- What does a *won* war look like on the map — a retreated Warden, a
+  broken local net, a 30 ly reservation?
+- What makes a rotten military win vs a clean one, mechanically?
