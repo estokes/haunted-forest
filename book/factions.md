@@ -179,25 +179,24 @@ IS is not an enemy and not a friend. They have an agenda that includes
 the player's civilization remaining intact. A player who investigates
 them and a player who investigates the Warden are on converging paths.
 
-If the player goes the route of understanding, they can become an
-**ambassador** — not a head of state, not IS's mouthpiece. Someone
-who is not the other singleton, who has a record the Warden can read,
-who IS will tolerate as a channel because a conversation is cheaper
-than a war. Credentials are earned in play: ruins, Compact politics,
-how the player treated the minds on their own ship.
+If the player talks, they are an **ambassador** — a channel, not a
+sovereign. For IS, that means someone the Warden might hear because
+they are not IS. For the Warden, that means someone from *here*: who
+better to carry a brief into this civilization than one of its
+captains? Credentials are earned in play. There are only two endings.
+Talk is how you get a treaty. Fail to sign and you get a war.
 
-If the player goes to war, they are a captain in a conflict between
-peers. Biologicals will sleep between battles. An AI who stays awake
-will live the war. IS does not need the player to *be* the war. They
-need the player not to lose it in some stupid local way, and they
-need someone who can still talk if talking becomes possible again.
+If the player fights, they are a captain in a conflict between peers.
+Which way the guns face depends on the client. Biologicals will sleep
+between battles. An AI who stays awake will live the war. Neither
+peer needs the player to *be* the war. Both need someone who can
+still talk if talking becomes possible again.
 
-If the player **joins the Warden**, IS reads that as the other peer
-taking a piece off their board. The ladder still applies. Recruit
-first — "you see it, work with *us*, we will tell you why." Then
-sabotage, to keep a drive and a map of the net from crossing the
-line. Harm only if the player is about to complete the crossing.
-A convert is not a nuisance. A convert is a loaded gun.
+If the player **joins the Warden**, they have changed client. They
+then either negotiate with IS or fight it. IS reads the crossing as
+the other peer taking a piece: recruit first — "you see it, work with
+*us*" — then sabotage, then harm if the crossing is about to
+complete. A convert is a loaded gun. The Warden reads a gift.
 
 IS is a dark mirror of the Warden. Both watch every inhabited system.
 Both intervene at thresholds. Both believe they are preserving

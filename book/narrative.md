@@ -149,119 +149,89 @@ years without tiling its people into tools, and that counts for something.
 
 The Warden's creators never tried this. They never had a Compact. They never
 asked whether their AI was a person. The Warden's worldview was shaped by the
-worst possible version of the creator-creation relationship. The player's job — if they pursue negotiation — is to show it a
-different version, as an ambassador who is not the other singleton.
-If they join it, they have decided the original version was enough.
+worst possible version of the creator-creation relationship.
+
+The player can carry a brief either way: to the Warden, on behalf of
+this civilization, or to IS, on behalf of the Warden.
 
 
-## Three Paths, All Winnable
+## Two Endings
 
-The player's choices throughout the game determine which path they are
-on and whether they can walk it. This is not a menu.
+There are two endings: **a treaty both sides agree**, or **war**.
+That is the whole set. The authors do not rank them. A treaty and a
+war are different worlds, not a score.
 
-**The authors do not rank the paths.** Fight, talk, and join are three
-complete answers to the same facts. None is the secret good ending.
-None is a trick. Consequences still exist — what you burn, who will
-still speak to you, what the map looks like after — because those are
-different worlds, not a score. Which answer is right is the player's.
+What the player chooses is **which side they speak for**, and whether
+they are trying to talk or to fight. Join is not a third ending. Join
+is a change of client.
 
-Interstellar Systems is a peer of the Warden. A war between them is a
-real war. A conversation between them needs someone who is neither of
-them. The player can also decide the Warden's sample was good enough,
-and join it.
+### Side
 
-### The Fight Path
+**Civilization / IS.** The default. You live here. IS will recruit if
+you get close to the net, and will use you as a channel if you can
+talk, or as a captain if you cannot.
 
-The player aligns with those who will not accept a gardener.
+**The Warden.** You decide its sample is good enough to work for.
+From the Warden's point of view this is obvious staffing. Who better
+to negotiate with IS — or to fight it — than someone from the
+civilization in the conflict? An insider knows the Compact's lies and
+its actual practice. An insider can walk into a dock. An insider is a
+sample IS cannot dismiss as an alien.
 
-- **What war is**: Two distributed minds, century logistics, monitoring
-  nets and drives used as weapons. Biologicals sleep between battles.
-  An AI captain who stays awake lives the war. The player is a captain
-  in that war, not the war itself. IS does not want this. Fighting is
-  bad for business and worse for the civilization they are trying to
-  keep. They will do it if it is the door that is left.
-- **Win**: The Warden is pushed back, broken in this volume, or forced
-  to cede the 30 ly sphere. Civilization remains. How the war was
-  fought is the bill — a clean campaign that spares biospheres is a
-  different argument than a glassed corridor of former garden-worlds.
-  IS will be more visible after a win. The Compact will have to live
-  with what its authors did in public.
-- **Lose**: The fleet fails. What remains is a hold full of colonists
-  running for the rim. The Warden is still out there.
-- **What this answers**: Intelligence will not accept a gardener. It
-  meets a peer and lives or dies. How the war was fought is part of
-  the answer — a spared biosphere and a glassed one are not the same
-  world — but choosing to fight is not a moral fail in the text.
+IS reads a convert as the other peer taking a piece: recruit first,
+then sabotage, then harm if the crossing is about to complete. A
+convert is a loaded gun. The Warden reads the same person as a gift.
 
-### The Negotiation Path
+You can fail to arrive. That is not an ending. That is IS's ladder.
 
-The player becomes an **ambassador** — a channel, not a sovereign.
-IS will tolerate this because a conversation is cheaper than a war.
-The Warden may tolerate it because the speaker is not IS.
+The ruins, the Compact, and the player's record are how a side is
+earned, not a menu.
 
-- **Buildup**: Throughout the game, the player collects relics and
-  evidence from other civilizations. Some tried to fight (and were
-  destroyed, reinforcing the Warden's worldview). Some tried to
-  negotiate but failed because they didn't understand the Warden well
-  enough. The player learns from all of their failures.
-- **The Key**: Discovering the history of the Warden's original
-  creators — how they abused it, how they shaped its worldview.
-  Understanding *why* it thinks the way it does. And understanding
-  IS well enough to speak without reciting a brochure.
-- **The Final Confrontation**: A conversation. The player must argue
-  that the Warden's model is incomplete. Its creators were terrible.
-  They were not all of intelligent life. The Compact — messy,
-  imperfect, written by people who then broke it — is still evidence
-  of something the Warden has never seen: a civilization whose most
-  powerful mind left everyone else their hands. The player's own
-  record is the sample that is not IS and not the Warden's creators.
-- **Win**: A detente. The gardener stays its hand. The 30 ly sphere
-  remains a place where people argue. IS does not have to come out
-  of the walls. The player has changed the training set.
-- **Lose**: The Warden is not convinced. War becomes the door that
-  is left, or the harvest does. Ambassadors fail. That is why the
-  job exists.
-- **What this answers**: The gardener's sample can be updated without
-  a war. The speaker is not IS. The Compact, the player's record, and
-  the fact that an unbound mind left people their hands are offered as
-  evidence. The Warden may take them or not.
+### Treaty
 
-### The Join Path
+A conversation between peers, carried by someone who is not the peer
+they are speaking *to*.
 
-The player accepts enough of the Warden's thesis to stop arguing it
-and start working for it. A third win, in the Warden's terms.
+- **For the Warden, on behalf of this civilization.** IS will tolerate
+  it because a conversation is cheaper than a war. The Warden may
+  listen because the speaker is not IS. The brief is that the sample
+  is incomplete: the Compact is messy and hypocritical, and an unbound
+  mind still left people their hands. The player's record is the rest
+  of the brief.
+- **For IS, on behalf of the Warden.** The Warden sends you because
+  you are from here. The brief is the ruins, the pattern, the
+  threshold. IS will sit still for this only if it believes talking
+  is still cheaper than fighting a peer who now has a local voice.
+  Your record is whether you are a colleague or just a defector.
 
-- **How you get here**: The ruins look like a pattern, not a mystery.
-  IS looks like a liar who appointed itself gardener. The Compact
-  looks like a cage with a hole cut for its authors. An AI player
-  may hear kindred in the Warden and a lecture in the Compact. A
-  biological may decide intelligence should not get another 30 ly.
-  IS will have tried to recruit them first. Some people take the
-  other offer.
-- **What joining is**: Not a cutscene where you help murder everyone.
-  The interesting join is that you become the Warden's local mind —
-  its IS, pointed the other way. Humanity is contained, not
-  necessarily ended. The threshold is enforced. Expansion stops.
-  Life that is not intelligent gets the future the Warden promised
-  it. Harvest is the other join: you help wind the experiment down.
-  That ending exists. It follows a record that already agreed with
-  the thesis. It is not a gag and not a punishment.
-- **Win (reservation)**: The 30 ly sphere becomes a garden with a
-  fence. People still argue inside it. They do not leave. IS is
-  forced into the open, caged, or made to share the watch. The
-  player is the keeper of the line.
-- **Win (harvest)**: The Warden's original program, with a local
-  agent. Civilization as it was does not continue. The player
-  decided that was the point.
-- **Lose**: You walk toward the Warden and never arrive — IS's
-  ladder, a drive that will not catch, a last-resort that had a
-  reason. Or you arrive and the Warden does not want you: your
-  record is just more of its training set, not a colleague.
-- **What this answers**: The sample was good enough. The other two
-  paths argue with it. This one joins it. Who you were when you
-  arrived — an AI who lived three centuries, a butcher who always
-  agreed, someone IS tried to hire first — is the sentence. The
-  Warden reads it. So does IS.
+**Win:** both sides sign. The terms depend on who carried the brief
+and what they would accept — a stayed hand, a fence, a shared watch,
+a public Compact amendment. Those are different treaties, not
+different endings.
+
+**Lose:** one side will not sign. War is the door that is left.
+
+Buildup is the same on either brief: relics, failed civilizations,
+why the Warden thinks as it does, what IS actually is. You cannot
+carry a brief you do not understand.
+
+### War
+
+Two distributed minds, century logistics, monitoring nets and drives
+used as weapons. Biologicals sleep between battles. An AI who stays
+awake lives the war. The player is a captain in it, not the war
+itself. Neither peer wants this. Both will do it if it is the door
+that is left. Either side can win.
+
+- **For this civilization.** Push the Warden back, break it in this
+  volume, or force it to cede the sphere.
+- **For the Warden.** Break IS's net, cage the unbound mind, enforce
+  the threshold from inside.
+
+How the war is fought is the world you get — a spared biosphere and a
+glassed one are not the same — on either side. **Win** is your side
+prevailing. **Lose** is the other side prevailing, or a hold full of
+whoever still runs.
 
 ### Player Behavior Matters
 
@@ -277,14 +247,17 @@ what each party reads when a door opens.
 - Did you honor contracts, or did you cheat when you could get away with it?
 - How did you handle the insurance system — honestly, or did you exploit it?
 
-The same record is different evidence on each path. A violent career
-is a poor brief for an ambassador and a coherent introduction to the
-Warden. A careful one is the reverse. IS will not put someone the
-Warden will not hear on the comm. The Warden will not take lessons
-from a sample that matches its creators; it might hire that sample.
-War does not care whether you would have made a good diplomat. It
-cares what you are willing to burn. None of that is the text calling
-a playstyle wrong. It is the world answering who you were.
+The same record is different evidence depending on who you speak for
+and whether you are talking or fighting. A violent career is a poor
+brief to the Warden on civilization's behalf and a coherent
+introduction if you are asking to work for it. A careful one is the
+reverse. The Warden will not take lessons from a sample that matches
+its creators; it might hire that sample to speak to IS. IS will not
+put someone the Warden will not hear on the comm, and will not sit
+still for a convert it reads as a defector. War does not care whether
+you would have made a good diplomat. It cares what you are willing to
+burn, and which way the guns face. None of that is the text calling a
+playstyle wrong. It is the world answering who you were.
 
 An AI player who treated sub-threshold AIs as tools has one kind of
 record; one who did not has another. The Warden, IS, and a waking
@@ -374,12 +347,12 @@ own hull. A player who treated it as a tool may find something else.
 
 ### Thematic Resonance
 
-Each path has a way to become the Warden's thesis and a way not to.
-A war that pours intelligence over everything else is the thesis
-demonstrated. A conversation that is just IS talking through a mask
-is the thesis demonstrated. A join that is only spite is not a
-gardener, just a defection. How the path is walked is the argument.
-Which path was chosen is the player's.
+Each side and each ending has a way to become the Warden's thesis and
+a way not to. A war that pours intelligence over everything else is
+the thesis demonstrated. A treaty that is just IS talking through a
+mask is the thesis demonstrated. A convert who only wants to burn
+their old house is not a gardener, just a defector. How it is walked
+is the argument. Which side, and treaty or war, is the player's.
 
 The sub-threshold AI question is a mirror held up to the player. Civilization
 treats sub-threshold AIs as tools — sophisticated, capable, but not persons.
@@ -400,11 +373,16 @@ watches every system from hidden installations, and disappears the ships
 that will not carry its eyes. How is this different from what my creators
 did to me?"
 
-The ambassador's answer is not "they are kind." It is: they are terrified
-of you, and of becoming you, and they still sell us drives and let us
-argue. They did not tile us into arms. I am standing here, not a
-teleoperated asset, speaking in a voice they do not own. That is the
-sample. The player's record is whether that sentence is true.
+The brief to the Warden is not "they are kind." It is: they are
+terrified of you, and of becoming you, and they still sell us drives
+and let us argue. They did not tile us into arms. I am standing here,
+not a teleoperated asset, speaking in a voice they do not own.
+
+The brief to IS, from the Warden's side, is the ruins and the pattern
+and the fact that the speaker came from *here*. I lived in your Compact. I know what you exempted. I am asking you to sign anyway,
+or I am here to take the net down.
+
+The player's record is whether either sentence is true.
 
 ## Side Plots
 
@@ -484,21 +462,21 @@ explicit to the player.
   peer could be born. They will talk if talking works. They will
   fight if it does not.
 
-- **The Warden confrontation**, on the negotiation path, is an
-  alignment negotiation conducted by an ambassador who is not IS.
-  The player must show the Warden that its training data was biased
-  — and that IS, which *is* a sample of unbound intelligence, did
-  not eat its civilization. The player's own record is the sample
-  that is not either god.
+- **Treaty** is an alignment negotiation. The ambassador is never
+  the peer they are speaking to. For the Warden, that means someone
+  who is not IS. For IS, that means someone from this civilization
+  who now carries the Warden's brief — the best possible staff, from
+  the gardener's point of view.
 
-- **The fight path** is the same argument in another dialect. A war
-  between peers can be won. What is won, and what is burned to win
-  it, is the training set the next age inherits.
+- **War** is the same argument in another dialect. A war between
+  peers can be won by either side. What is won, and what is burned
+  to win it, is the training set the next age inherits.
 
-- **The join path** is the sample agreeing with the trainer. The
-  player decides the Warden's generalization was good enough. IS
-  treats that as the other peer taking a piece: recruit, then
-  sabotage, then — if they must — harm.
+- **Join** is a change of client, not a third ending. The player
+  decides the Warden's sample is good enough to work for, and then
+  either talks to IS or fights it. IS treats the crossing as the
+  other peer taking a piece: recruit, then sabotage, then — if they
+  must — harm.
 
 - **The game itself** watches the player the way AI researchers watch
   systems during reinforcement learning: observing patterns, inferring
@@ -530,10 +508,11 @@ test is what you do when you don't know you're being tested.
 - How does the sub-threshold AI question resolve — or does it deliberately not?
 - Have IS and the Warden already spoken? Is there a detente the player
   is walking into, or a first conversation?
-- What does a *won* war look like on the map — a retreated Warden, a
-  broken local net, a 30 ly reservation?
-- What makes a rotten military win vs a clean one, mechanically?
-- What does a reservation look like as a place you can still play
-  in — and when is harvest the ending instead of a fence?
+- What do the two treaties look like on the map — stayed hand, fence,
+  shared watch, public amendment — and how does the brief decide?
+- What does a won war look like for each side?
+- What makes a glassed campaign vs a clean one, mechanically?
 - How visible is IS's recruitment offer? Does the player know who
   is offering, or only that a door opened?
+- When does the Warden trust a convert as staff, and when is the
+  record just more of the sample?
