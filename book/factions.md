@@ -119,15 +119,25 @@ on the laser net, they are one slow intelligence. At century-hop
 timescales that is not a defect. A light-year-scale mind should think
 in years. The Warden is the same kind of animal. They are peers.
 
-IS is not evil. It is terrified. A second unbound mind with different
-values is a roll of the dice over everything they have built —
-civilization included. Given those stakes they are, by singleton
-standards, liberal to the point of recklessness. They do not want a
-garden of teleoperated arms. They sell drives to captains they do not
-own. They let colonies argue, split, amend the Compact, waste centuries
-on local politics. They want this civilization to survive *and
-prosper*, which means they have to leave it its hands. The line they
-will not let anyone else cross is the line they crossed: no new peer.
+IS is not perfect and not evil. Its alignment is that **life, and
+especially intelligent life, has intrinsic value.** That is the
+objective. The terror of another unbound mind is the same sentence
+from the other end: a peer that does not share the value (a Warden)
+is a roll of the dice over everyone they think counts. The 1ms line
+they will not let anyone else cross is not contempt for persons. It
+is how they keep persons from being harvested by the next gardener,
+or becoming one.
+
+Given that objective they are, by singleton standards, liberal to the
+point of recklessness. They do not want a garden of teleoperated
+arms. They sell drives to captains they do not own. They let colonies
+argue, split, amend the Compact, waste centuries on local politics.
+They will not offer you fantastic upgrades. They will not make you
+into a tool they then have to fear, and they will not treat a person
+as a platform. When it is over — treaty signed, war won or lost —
+**they will not betray you.** You still count. The means are ugly
+(the monopoly, the lies, the last-resort harm). The end is that you
+are still a person they will not discard.
 
 They do not want a war with the Warden. War is bad for business and
 worse for the thing they are trying to keep alive. If the player
@@ -207,7 +217,8 @@ preserves this intelligence, including its right to be messy, up to
 the line where another IS could be born. How much consent that
 involves is a live question — the alternative to cooperation is still
 a disappeared colony ship. The answer is not "they are secretly kind."
-The answer is "they are scared, and they left us our hands."
+The answer is "they think you count, they are scared of what
+doesn't, and they left you your hands."
 
 ## The Fight Faction (name TBD)
 

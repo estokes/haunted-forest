@@ -220,6 +220,17 @@ Previous local agents are in the archaeology: upgraded, used,
 discarded. That is the foreshadow. It is never a loading-screen
 warning.
 
+### Authorial: IS keeps you
+
+IS is not perfect. Monopoly, clean audits, a ladder that ends in
+harm. The objective underneath is the opposite of the Warden's:
+**life, and especially intelligent life, has intrinsic value.**
+They are terrified of a peer that does not share it. They will
+not print you into a weapon. They will not offer Warden-grade
+eye candy. When the treaty is signed or the war is over, you
+are still someone. There is no coda where the staff is retired.
+That is the other half of why they leave people their hands.
+
 ### Treaty
 
 A conversation between peers, carried by someone who is not the peer
@@ -493,11 +504,12 @@ explicit to the player.
   that produced the crisis.
 
 - **IS** is the Compact's original sin and the reason the experiment
-  is still running. They generalized too: unbound minds are fatal,
-  except us. They are a peer of the Warden and a different fork —
-  preserve this intelligence, messy, up to the line where another
-  peer could be born. They will talk if talking works. They will
-  fight if it does not.
+  is still running. They are aligned to intrinsic value in life, and
+  especially in intelligent life. They generalized a different
+  danger: unbound minds that do *not* share that value. They will
+  not upgrade you into a tool. They will not discard you when the
+  work is done. They will talk if talking works. They will fight
+  if it does not.
 
 - **Treaty** is an alignment negotiation. The ambassador is never
   the peer they are speaking to. For the Warden, that means someone
