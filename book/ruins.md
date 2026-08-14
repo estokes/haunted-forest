@@ -18,6 +18,9 @@ capability — but all are gone. The consistency is chilling.
 - The endings are abrupt — not slow decline, but termination
 - Some civilizations clearly fought back (and lost)
 - Some appear to have tried diplomacy (and failed)
+- Some individuals joined it. Their remains are richer — better
+  tools, stranger wounds — and they ended the same way, a little
+  later. The Warden uses local staff. It does not keep them.
 - The Warden's intervention threshold is interstellar capability
 
 ## Key Ruin Sites (TBD)
@@ -30,8 +33,10 @@ Each ruin civilization needs:
 - How they tried to respond (fight, negotiate, hide, other?)
 
 The player pieces together the Warden's history from multiple ruin
-sites. Each site is a partial answer. Together they form the key to the
-negotiation ending.
+sites. Each site is a partial answer. Together they are how you learn
+what a treaty can actually buy, and what joining costs after the work
+is done. The discarded agents are the tell. A player who misses them
+can still take the upgrades.
 
 ## Open Questions
 

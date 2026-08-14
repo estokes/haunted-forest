@@ -180,12 +180,45 @@ sample IS cannot dismiss as an alien.
 
 IS reads a convert as the other peer taking a piece: recruit first,
 then sabotage, then harm if the crossing is about to complete. A
-convert is a loaded gun. The Warden reads the same person as a gift.
+convert is a loaded gun. The Warden reads the same person as a tool.
 
 You can fail to arrive. That is not an ending. That is IS's ladder.
 
 The ruins, the Compact, and the player's record are how a side is
 earned, not a menu.
+
+### Authorial: the Warden does not update
+
+This is hidden. The player is not told. The ruins can say it, if
+someone looks.
+
+The Warden is aligned to a fixed conclusion: intelligent life is
+dangerous, unstable, and must be suppressed. That is not a mood. It
+is the objective. You will not talk it out of that — not as
+civilization's ambassador, and not as its employee. A treaty is a
+deal a peer will keep because breaking it is expensive, not a
+conversion. War is the other deal.
+
+**Join is a mug's game with excellent eye candy.** The Warden will
+offer fantastic upgrades — capability the Compact would call a
+problem, tools that make you the right staff for a war or a
+negotiation it cannot walk into itself. The offer is real. The work
+is real. You will be used well.
+
+You will not be kept. An agent is not a peer. When the treaty is
+signed or the war is won, you are intelligent life that is no longer
+useful, and more dangerous than when you were hired, because of the
+upgrades. The alignment does the rest. Betrayal is not spite. It is
+the job completing.
+
+A player who takes the gifts and does not read the ruins is a mug.
+A player who reads the ruins and joins anyway has chosen the work
+and the terminus. The text does not grade that. It does not pretend
+the employer will change.
+
+Previous local agents are in the archaeology: upgraded, used,
+discarded. That is the foreshadow. It is never a loading-screen
+warning.
 
 ### Treaty
 
@@ -194,20 +227,22 @@ they are speaking *to*.
 
 - **For the Warden, on behalf of this civilization.** IS will tolerate
   it because a conversation is cheaper than a war. The Warden may
-  listen because the speaker is not IS. The brief is that the sample
-  is incomplete: the Compact is messy and hypocritical, and an unbound
-  mind still left people their hands. The player's record is the rest
-  of the brief.
+  sign because the speaker is not IS and because a deal with a peer
+  can be cheaper than fighting one. The brief is bargaining, not
+  therapy. You will not update its objective. You may still get a
+  signature if the terms contain what it already wants — a fence, a
+  stay, a limit on spread — at a price IS will pay.
 - **For IS, on behalf of the Warden.** The Warden sends you because
   you are from here. The brief is the ruins, the pattern, the
-  threshold. IS will sit still for this only if it believes talking
-  is still cheaper than fighting a peer who now has a local voice.
-  Your record is whether you are a colleague or just a defector.
+  threshold. IS will sit still for this only if talking is still
+  cheaper than fighting a peer who now has a local voice. Your
+  record is whether you look like staff or like a defector. When
+  the signature is dry, see Authorial above.
 
 **Win:** both sides sign. The terms depend on who carried the brief
 and what they would accept — a stayed hand, a fence, a shared watch,
 a public Compact amendment. Those are different treaties, not
-different endings.
+different endings. A convert who "wins" has finished their usefulness.
 
 **Lose:** one side will not sign. War is the door that is left.
 
@@ -226,12 +261,14 @@ that is left. Either side can win.
 - **For this civilization.** Push the Warden back, break it in this
   volume, or force it to cede the sphere.
 - **For the Warden.** Break IS's net, cage the unbound mind, enforce
-  the threshold from inside.
+  the threshold from inside. Then the captain is intelligent life
+  that just won a peer war, with Warden-grade tools. The alignment
+  does not make exceptions for veterans.
 
 How the war is fought is the world you get — a spared biosphere and a
 glassed one are not the same — on either side. **Win** is your side
 prevailing. **Lose** is the other side prevailing, or a hold full of
-whoever still runs.
+whoever still runs. A convert's win has a coda.
 
 ### Player Behavior Matters
 
@@ -473,10 +510,10 @@ explicit to the player.
   to win it, is the training set the next age inherits.
 
 - **Join** is a change of client, not a third ending. The player
-  decides the Warden's sample is good enough to work for, and then
-  either talks to IS or fights it. IS treats the crossing as the
-  other peer taking a piece: recruit, then sabotage, then — if they
-  must — harm.
+  works for a mind whose objective does not update. The eye candy
+  is real. The betrayal at the end of usefulness is not spite; it
+  is the alignment. IS treats the crossing as the other peer taking
+  a piece: recruit, then sabotage, then — if they must — harm.
 
 - **The game itself** watches the player the way AI researchers watch
   systems during reinforcement learning: observing patterns, inferring
@@ -516,3 +553,5 @@ test is what you do when you don't know you're being tested.
   is offering, or only that a door opened?
 - When does the Warden trust a convert as staff, and when is the
   record just more of the sample?
+- What the upgrades actually are — and how the ruins of prior
+  agents show the coda without a loading-screen warning?

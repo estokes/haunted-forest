@@ -196,7 +196,8 @@ If the player **joins the Warden**, they have changed client. They
 then either negotiate with IS or fight it. IS reads the crossing as
 the other peer taking a piece: recruit first — "you see it, work with
 *us*" — then sabotage, then harm if the crossing is about to
-complete. A convert is a loaded gun. The Warden reads a gift.
+complete. A convert is a loaded gun. The Warden reads a tool. The gifts are real. The employment is not
+permanent. See [Narrative](narrative.md#authorial-the-warden-does-not-update).
 
 IS is a dark mirror of the Warden. Both watch every inhabited system.
 Both intervene at thresholds. Both believe they are preserving
