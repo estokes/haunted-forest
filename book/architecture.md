@@ -66,8 +66,9 @@ state and accepting control through netidx:
   priority allocation
 - **Life support**: Atmosphere, temperature, cold sleep pod status
 - **Weapons**: Targeting, capacitor charge, ammunition
-- **Sensors**: Passive and active, with range and resolution dependent
-  on power allocation
+- **Sensors**: Layered bow suite — THz sand-search, mm pebble-search,
+  cued LIDAR, optical cooker, passive IR. Fire-control floor 10 ms /
+  407 km at 0.10c.
 
 
 ## Layer 2: netidx — The Data Fabric

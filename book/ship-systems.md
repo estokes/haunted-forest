@@ -312,10 +312,10 @@ crammed into an 8° cone. The ranging suite stays in the band it was built for.
 
 The reaction budget, for a grain first pinged at light-distance \(T\), is
 \(T\cdot(1-\beta)/(\beta(1+\beta))\) — **8.2 seconds per light-second** of
-ping range. Detect at 150,000 km and the echo is back with the grain at
-~123,000 km and **~4 s to act.** Causality is no longer the bottleneck.
-Automation is. Sand still kills you if you miss (see Active Debris Defense);
-you just have time to take the shot.
+ping range. Causality is no longer the bottleneck. **Ten milliseconds of
+fire-control** is: you need the grain at ≥333 km when you shoot, so a
+radar detect at ≥407 km. 150,000 km of think-time is a pebble problem.
+Sand is a THz-and-cooker problem. See Active Debris Defense.
 
 ### The Master Tension
 
@@ -447,51 +447,119 @@ energy:
    interdicted are detected at long range and routed around. You do not vaporize
    a pebble carrying kilotons.
 
-### Detecting at Relativistic Closing Speed
+### The Fire-Control Clock
 
-The closing speed is 3.0×10⁷ m/s. A pulse to a grain at range R and back takes
-2R/(c+v); during that time the grain closes from R to **R·(c−v)/(c+v) — to 82%
-of the detection range at 0.10c, before the echo even returns.** Detect at
-150,000 km and you learn of it at ~123,000 km with **~4 s to act.** The
-close-in fraction is still there — ping at 30,000 km and you have under a
-second — but causality is not the enemy it would be at a few tenths of c.
-The forward sky is mildly aberrated and Doppler-shifted by
-√((1+β)/(1−β)) ≈ 1.11× (round-trip ~1.22×). The suite stays in-band.
+Track, aim, and fire is **10 ms**. That is a machine number, not a
+human one. Light still has to fly.
 
-The suite is multi-modal, layered by wavelength because no single band sees
-everything:
+At 0.10c the grain closes at \(3.0 \times 10^7\,\mathrm{m/s}\). After
+the computer is done, the FEL pulse still takes \(R/c\) to arrive. You
+need the grain far enough out that it does not beat its own death:
 
-- **Long-wave radar** for rare large bodies at long range — big cross-section,
-  enough resolution to flag a threat and start a course solution minutes to hours
-  out.
-- **mm- and sub-mm radar** for sand-grade grains close in — small targets need
-  short wavelengths; the Rayleigh-suppressed return is brutally weak, so this is a
-  high-power, short-range band.
-- **LIDAR** for precise track and aimpoint on grains already flagged — narrow
-  beam, must be cued, but pins the solution the laser needs.
-- **Multi-frequency coverage** so grains that are radar-dark in one band
-  (absorption features, size resonances) light up in another.
-- **Passive forward-staring IR/optical** — the only channel with no round-trip
-  penalty. Grains entering the bow wave (the scoop's compressed plasma and the
-  forward radiation field) flash-heat and ablate *before* arrival; their own
-  emission is one-way light, so the passive channel often sees a threat sooner
-  than the radar chasing it.
+> \(R_\mathrm{fire} / v \ge 10\,\mathrm{ms} + R_\mathrm{fire} / c\)
 
-### Interdiction — Spread It, Don't Destroy It
+> \(R_\mathrm{fire} \ge v \cdot 10\,\mathrm{ms} / (1 - \beta) = 333\,\mathrm{km}\)
 
-The interdictor is a **free-electron laser array** — tunable across wavelengths
-to match grain composition and punch through the bow plasma, with multiple
-independently-steered beam directors to engage many threats at once. The
-crucial, counterintuitive physics: **the laser cannot remove the grain's kinetic
-energy.** Momentum is conserved; 0.7 MJ of forward-directed energy is still
-0.7 MJ after vaporization. What it *can* do is spread it: a concentrated point
-impact drills through the Whipple, but the same energy arriving as a diffuse
-plasma cloud fanned across a square metre of carbon merely craters a scar. So the FEL's
-job is to detonate each grain at standoff and let the passive shield take the
-diffuse remnant — **converting an impactor into an ablation load.** Where range
-and time allow it does better: an asymmetric ablation jet gives the grain a
-sideways kick (the rocket effect off its own vaporizing face) and walks it clear
-of the hull — far cheaper than destroying it.
+A radar ping is worse. The echo takes \(2R/(c+v)\); the grain is at
+\(R \cdot (c-v)/(c+v) = 0.818\,R\) when you first hear it. That
+remaining range must still clear 333 km:
+
+> \(R_\mathrm{detect} \ge 407\,\mathrm{km}\)
+
+That is the **floor** — last-ditch, one target, no side-kick, no
+second shot. Everything the suite is for lives *outside* that number.
+Doppler is mild (\(D \approx 1.11\), round-trip \(\approx 1.22\)).
+Aberration is mild. The suite stays in-band.
+
+150,000 km of detect-and-think was a 0.5c number. At 0.10c it is 4 s
+of luxury, and you will not get it on a 100 µm grain with a search
+radar. The floor is four hundred kilometres. The design goal is
+thousands, on the grains that can actually return a photon.
+
+### The Radar — and the Cooker
+
+A 100 µm grain is a Rayleigh speck at centimetre waves. Cross-section
+falls as \(a^6/\lambda^4\). The radar equation then goes as \(1/R^4\).
+A 10 m dish at 100 GHz, looking for that speck at 150,000 km, wants
+more watts than the ship has ever heard of. That search is dead. Do
+not write it down as a requirement.
+
+What works:
+
+- **Get out of Rayleigh.** THz / sub-mm (\(\lambda \sim 0.3\,\mathrm{mm}\))
+  puts a 100 µm grain near \(ka \sim 1\). RCS climbs toward geometric
+  (\(\sim 10^{-8}\,\mathrm{m}^2\)). Same 10 m aperture, 400 km, is
+  **megawatts**, not hundreds of gigawatts. This is the sand band.
+- **Search for the bigger ones farther out.** A millimetre grain is a
+  different problem. Long-wave / mm radar flags 1 mm–pebble at
+  thousands to tens of thousands of kilometres — avoid vs shoot, with
+  time to think. You do not THz-search the whole sky for motes.
+- **Stare down a cone, not a sphere.** Threats are biased forward.
+  Power and aperture go on the bow, not a rotating air-search.
+- **LIDAR, cued.** Once something exists as a track, a narrow optical
+  beam pins the aimpoint the FEL needs. LIDAR does not search.
+- **Several frequencies.** Absorption features and size resonances
+  make grains dark in one band and loud in another.
+
+And the cheat, which is also a weapon-shaped object:
+
+**The cooker.** A high-power optical / near-IR illuminator — the same
+class of director as the FEL, run as a flood or a cued spot. A 100 µm
+silicate grain has a thermal mass of millijoules per thousand kelvin.
+A gigawatt into a diffraction-limited spot at a thousand kilometres
+warms it into the mid-IR in tens of milliseconds. It then *emits*,
+one way. The passive array sees a warm mote the search radar never
+could. In the near field the same beam would cook a chicken. Nobody
+walks in front of the array. The "radar range" is both a detection
+envelope and a place you do not stand.
+
+Passive IR/optical is the other one-way channel. Grains that hit the
+scoop's bow plasma and the cooker's flood flash *before* they arrive.
+Often the first you know of a 100 µm grain is that it got hot, not
+that it echoed.
+
+Design ranges (0.10c, 10 ms fire-control, order-of-magnitude):
+
+| Job | Band | Grain | Detect (goal) | Notes |
+|-----|------|-------|---------------|-------|
+| Avoid | long-wave / mm | ≳ 1 cm | light-seconds+ | course, not a shot |
+| Shoot / walk | mm | ~1 mm | 2,000–20,000 km | plenty of clock |
+| Shoot | THz / sub-mm | ~100 µm | 500–2,000 km | search cone only |
+| Last ditch | any cue + LIDAR | ~100 µm | ≥ 407 km | floor |
+| Cue the rest | cooker + passive IR | 100 µm–1 mm | past the THz search | one-way |
+
+The undetectable close-in fraction is now the last few hundred
+kilometres, not tens of thousands. Passive stare and a standing
+kill-zone cover some of it. The rest is an accepted Whipple hit rate.
+
+### Interdiction — Spread It, Don't Match It
+
+The interdictor is a **free-electron laser array** — tunable to grain
+and bow plasma, several independently-steered directors. **It cannot
+cancel the grain's kinetic energy.** 0.7 MJ forward is still 0.7 MJ
+after vaporization. It can spread that energy into a cloud the Whipple
+will eat, or, with time, ablate one face and walk the grain off the
+hull.
+
+Vaporizing the grain is cheap. A 1.6 mg silicate (the 1 mm line) wants
+tens of joules of heat, not 0.7 GJ. Coupling through the bow plasma is
+the real tax — \(10^{-3}\) to \(10^{-4}\) is a sour day — so you budget
+**tens to hundreds of kilojoules on the aperture** for a millimetre,
+millijoules-to-kilojoules for 100 µm. The 10 ms fire window then asks
+for **megawatts to tens of megawatts** on a single easy target.
+
+You still build a **gigawatt-class** machine, because you never get
+one easy target. Dirty air is a salvo: many grains, poor coupling,
+walk-not-just-pop, ionize-for-the-scoop. Average draw **~1 GW** off
+the 63 GW bus. Peak **10–30 GW for 10 ms** from capacitors (100–300 MJ
+a shot). Charge time at 1 GW is a fraction of a second. The plant can
+feed that. The tin loop sees the generation losses; the beam itself
+leaves the ship.
+
+A 1 cm pebble is still avoidance. You *can* vaporize 1.6 g for
+kilojoules-to-megajoules. You then have 0.7 TJ of plasma that has not
+had time to spread. Do not take that shot unless the alternative is
+worse.
 
 The array is, by temperament, **deeply anti-social.** As a sub-threshold ship
 intelligence (see [Narrative Design](narrative.md#sub-threshold-ai-interactions))
@@ -531,28 +599,26 @@ gamble that pays in propellant, if the FEL keeps up.
 
 ### Where It Couples
 
-The FEL is not free. It draws from the reactor's ~63 GW electrical bus, so a
-debris-heavy passage is a *power* event — beams up means less for everything
-else, and the generation losses land as waste heat on the same tin loop that
-cools the reactor, nudging the whole ship toward its thermal limit (see Thermal
-Management). Conversely, every beam that leaves the hull *exports* energy to
-space — the debris laser is one of the few loads that radiates its draw outward
-rather than dumping it inboard. And detection coverage is finite: the crew (or
-the AI) allocates sensor power and standoff across the forward cone, and the
-route planner weighs known dust density against schedule — because the cheapest
-defense against a pebble is to never fly at it.
+The FEL and the cooker both drink from the 63 GW bus and the same
+capacitor farm. A dirty passage is a power event and a thermal event:
+generation losses land on the tin loop, and the cooker is a bow-facing
+beacon as loud as a lit radiator zone. Every joule that leaves as beam
+does *not* land inboard. Coverage is finite — you point THz and cooker
+down the cone you can afford. The cheapest defense against a pebble is
+still to never fly at it.
 
 ### Open Tensions
 
-- **The undetectable close-in fraction.** Round-trip ranging is thin inside
-  the last few tens of thousands of km; the passive forward-stare and a
-  standoff kill-zone cover some of it, and the residual is an accepted
-  Whipple-absorbed hit rate. How high that runs in a dirty filament is a
-  real operational risk.
-- **The pebble you can't dodge.** At 0.1 G and a few thousand km/s of in-system
-  Δv, evading a body spotted light-minutes out is marginal. Avoidance is mostly a
-  *navigation*-layer problem — route around dense regions — not a last-second
-  maneuver.
+- **The last 400 km.** Below the fire-control floor, the shot is late
+  by construction. Passive stare and a standing kill-zone eat some of
+  it. The rest is Whipple. How high that rate runs in a dirty filament
+  is the operational risk.
+- **The pebble you can't dodge.** At 0.1 G and a few thousand km/s of
+  in-system Δv, a body spotted light-minutes out is a navigation
+  problem, not a last-second one.
+- **Cooker vs stealth.** Flooding the bow with optical gigawatts finds
+  sand and announces you. Zoning the aft radiators does not hide a
+  cooker.
 
 
 ## Mass Budget
