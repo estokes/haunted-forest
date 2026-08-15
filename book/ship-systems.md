@@ -502,12 +502,12 @@ the way you'd read a bored predator.
 ### Ionize and Scoop — the Threat as Fuel
 
 There's a better outcome than spreading a grain onto the hull, and it falls out of
-a system the ship already carries. The bussard scoop funnels **charged** matter
-into the collector — that is its day job. So if the FEL doesn't merely vaporize a
-grain but *ionizes the plume*, the resulting plasma is charged, and the same field
-that deflects ISM ions bends the debris plasma off the hull and **into the
-collector throat.** The impactor isn't neutralized, it's *eaten* — redirected into
-the reaction-mass and fuel stream. This is deflection in the truest sense: the
+a system the ship already carries. The scoop funnels **charged** matter into the tanks — that is its day
+job. So if the FEL doesn't merely vaporize a grain but *ionizes the
+plume*, the resulting plasma is charged, and the same field that
+deflects ISM ions bends the debris plasma off the hull and **into the
+tanks.** The impactor isn't neutralized, it's *eaten* — redirected
+into the LH₂ the torch will drink. This is deflection in the truest sense: the
 grain never reaches the hull, and its mass is on the books.
 
 The physics constrains it. A solid grain, however charged, has far too little
@@ -515,9 +515,10 @@ charge-to-mass ratio for the field to bend — its gyroradius dwarfs the scoop. 
 must vaporize it to a plasma first, so the field acts on individual ions (high
 q/m) rather than a massive solid. And heavy debris ions (silicon, iron) carry
 lower q/m than the hydrogen the scoop is tuned for, so they funnel less cleanly: a
-fraction makes the collector, the rest still ends up as a diffuse ablation load on
-the hull. As fuel it's second-rate — the stardrive fuses hydrogen, not metal — but
-any mass is reaction mass, and the hydrogen/helium fraction is real fuel. So the
+fraction makes the tanks, the rest still ends up as a diffuse ablation load on
+the hull. As torch-fuel it's second-rate — the box fuses hydrogen, not
+metal — but any mass is remass, and the hydrogen/helium fraction is
+real fuel. So the
 interdiction hierarchy is: **ionize-and-scoop where the geometry allows (threat →
 fuel), vaporize-and-spread as the fallback (threat → ablation), avoid what's too
 large for either.**
