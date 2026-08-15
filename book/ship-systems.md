@@ -93,17 +93,25 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
      [ Ship reactor / engineering                        ]
      [ Aft radiating hull (8 zoned gores)                ]  ← always in the wake
 
-  Stardrive nacelles ride on booms alongside the aft hull, each a
+  Stardrive nacelles sit on 45° A-frames that pierce the hull and
+  land on a torque box (two CNT belt rings + longerons). Each is a
   lockable turret: nozzle aft to accelerate, nozzle forward to
-  decelerate. The booms stand the plumes off the radiating skin.
+  decelerate. The stand-off keeps the plumes off the radiating skin.
 ```
 
 The ship is **directionally specialized and never flips**: the nose
 always meets the ISM, the tail always radiates into the wake, and the
 hotel reactor sits aft beside the radiators. The stardrive modules —
-IS black boxes — ride in nacelles on booms so their waste heat and
-radiation stay off the hull; each nacelle is a lockable two-position
-turret. There is no second engine at the tail. The **collectors** are
+IS black boxes — ride in nacelles so their waste heat and radiation
+stay off the hull; each nacelle is a lockable two-position turret.
+The pylons are not cantilevers. Four 45° struts per nacelle pierce
+the barrel and land on a torque box: two heavy CNT belt rings
+through the engineering hull, longerons between them, a box around
+the core. Thrust is axial in the struts — one pair in compression,
+one in tension — and the rings spread it as hoop so the skin never
+sees a point load. A 25 kt pod at 9 g is 2.2 GN; a radial boom
+would have to take that as a 40 m bending moment. The A-frame
+refuses the moment. There is no second engine at the tail. The **collectors** are
 a separate system, not IS's: superconducting coils on the bow, always
 facing the ISM. To decelerate at midcourse the scoop field reshapes
 from funnel to parachute and the ship bleeds speed on magnetic drag;
@@ -953,7 +961,7 @@ to shine.
 
 The torch plume is a separate, much louder announcement. Zoning
 the hotel plant does not hide a 3 G burn. It hides a ship that is
-*not* burning, or is burning away from you. The booms stand the
+*not* burning, or is burning away from you. The A-frames stand the
 nozzles ~50 m off the skin so a collimated plume misses the
 gores; at combat divergence the aft-most gores valve off because
 the plume is already heating them.

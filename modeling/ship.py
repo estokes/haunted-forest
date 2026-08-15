@@ -21,9 +21,9 @@
 # 315 m of full-section tank, which leaves 365 m of hold — shorter than the
 # old 600 m but fatter, ten tracks, more tonnes. Habitat sits midships
 # between the tank bands. Hotel plant is a 70 m tandem mirror aft. No tail
-# ICF: the torch is two IS black-box nacelles. Hotel waste leaves through
-# the aft hull skin (reactor + tail), eight valveable gores — no wake disk,
-# the torches would eat it. Collectors are bow coils.
+# ICF: the torch is two IS black-box nacelles on 45° A-frames that pierce
+# the hull and land on a torque box (belt rings + longerons). Hotel waste
+# leaves through the aft hull skin. Collectors are bow coils.
 
 import time
 
@@ -61,6 +61,8 @@ C_RAD_ZONES = (
 C_DRIVE = (0.72, 0.76, 0.84)
 C_NAC = (0.18, 0.18, 0.20)
 C_NAC_RAD = (0.85, 0.45, 0.20)
+C_BELT = (0.72, 0.68, 0.58)
+C_BOX = (0.50, 0.48, 0.42)
 C_SCOOP = (0.30, 0.78, 0.62)
 C_FEL = (0.95, 0.90, 0.35)
 C_RADAR = (0.45, 0.72, 0.88)
@@ -116,12 +118,14 @@ SPEC = {
     "radiator": {
         "n_zones": 8, "standoff": 0.35, "gap_frac": 0.05,
     },
-    # IS black boxes. LH2 in, torch out. Lockable two-position turrets,
-    # drawn in accelerate-lock (nozzle aft). Their own dump-panels; plume
-    # is the real radiator. Not collectors.
+    # IS black boxes on 45° A-frames that pierce the hull and land on a
+    # torque box (two CNT belt rings + longerons). Thrust is axial in the
+    # struts. Turrets drawn in accelerate-lock (nozzle aft).
     "nacelle": {
-        "count": 2, "pod_r": 11.0, "pod_len": 58.0, "boom_len": 40.0,
-        "boom_t": 5.0, "nozzle_len": 14.0, "turret_r": 6.0, "turret_minor": 1.6,
+        "count": 2, "pod_r": 11.0, "pod_len": 58.0, "stand_off": 40.0,
+        "nozzle_len": 14.0, "turret_r": 12.0, "turret_minor": 2.2,
+        "strut_t": 3.6, "splay": 0.32, "ring_minor": 2.3, "belt_minor": 1.6,
+        "longeron_t": 2.2, "box_r": 9.0,
         "rad_n": 4, "rad_span": 10.0, "rad_len": 22.0, "rad_thick": 0.35,
     },
     # Superconducting scoop coils. Yards build these. Field is 14,000 km;
@@ -630,16 +634,42 @@ def build_radiator(coll, spec, zones):
 def build_nacelles(coll, spec, zones):
     nc = spec["nacelle"]
     R = spec["radius_outer"]
+    inner = R - spec["barrel_thickness"]
     z_reac0, z_reac1, _, _ = zones["reactor"]
     zc = (z_reac0 + z_reac1) / 2
+    axis_r = R + nc["stand_off"] + nc["pod_r"]
+    dz = axis_r - inner
+    z_fore, z_aft = zc + dz, zc - dz
     half = nc["pod_len"] / 2
+    splay = nc["splay"]
+
+    _cyl_surface("pylon_box", nc["box_r"], z_aft, z_fore, coll, C_BOX, verts=28)
+    for tag, z in (("fore", z_fore), ("aft", z_aft)):
+        _torus(f"belt_inner_{tag}", inner, nc["ring_minor"], z, coll, C_BELT, nu=40, nv=12)
+        _torus(f"belt_outer_{tag}", R + 0.4, nc["belt_minor"], z, coll, C_BELT, nu=40, nv=12)
+    for k in range(4):
+        a = TAU * k / 4
+        _beam(f"longeron_{k}", P(inner, a, z_aft), P(inner, a, z_fore), nc["longeron_t"], coll, C_BELT)
+        _beam(f"box_spoke_fore_{k}", P(nc["box_r"], a, z_fore), P(inner, a, z_fore),
+              nc["longeron_t"] * 0.7, coll, C_BOX)
+        _beam(f"box_spoke_aft_{k}", P(nc["box_r"], a, z_aft), P(inner, a, z_aft),
+              nc["longeron_t"] * 0.7, coll, C_BOX)
+
     for s in range(nc["count"]):
         th = TAU * s / nc["count"]
-        px, py = P(R + nc["boom_len"] + nc["pod_r"], th, 0)[:2]
-        _beam(f"boom_{s}", P(R, th, zc), P(R + nc["boom_len"], th, zc), nc["boom_t"], coll, C_STRUT)
-        jx, jy = P(R + nc["boom_len"], th, 0)[:2]
-        turret = _torus(f"turret_{s}", nc["turret_r"], nc["turret_minor"], 0.0, coll, C_DRIVE, nu=20, nv=10)
-        turret.location = (jx, jy, zc)
+        px, py = P(axis_r, th, 0)[:2]
+        turret_pt = P(axis_r, th, zc)
+        lands = []
+        for sz in (1.0, -1.0):
+            for sy in (1.0, -1.0):
+                land = P(inner, th + sy * splay, zc + sz * dz)
+                lands.append(land)
+                _beam(f"strut_{s}_{int(sz)}_{int(sy)}", turret_pt, land, nc["strut_t"], coll, C_STRUT)
+        for a, b in ((0, 1), (2, 3), (0, 2), (1, 3)):
+            _beam(f"hardpoint_{s}_{a}{b}", lands[a], lands[b], nc["longeron_t"] * 0.8, coll, C_BELT)
+        turret = _torus(f"turret_{s}", nc["turret_r"], nc["turret_minor"], 0.0, coll, C_DRIVE, nu=24, nv=10)
+        turret.location = (px, py, zc)
+        turret.rotation_euler = (0.0, math.pi / 2, th)
         pod = _cyl_surface(f"nacelle_{s}", nc["pod_r"], -half, half, coll, C_NAC,
                            verts=28, caps=True)
         pod.location = (px, py, zc)
@@ -654,7 +684,8 @@ def build_nacelles(coll, spec, zones):
                   py + 0.65 * nc["pod_r"] * math.sin(a), zc),
                  coll, C_NAC_RAD, rotz=a)
     return {"nacelles": nc["count"], "z_center": round(zc, 1),
-            "axis_r": round(R + nc["boom_len"] + nc["pod_r"], 1)}
+            "axis_r": round(axis_r, 1), "ring_sep_m": round(2 * dz, 1),
+            "strut_len_m": round(math.hypot(dz, dz), 1)}
 
 
 def build_collectors(coll, spec):
