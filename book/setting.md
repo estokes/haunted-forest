@@ -7,10 +7,11 @@ understanding, but engineering has advanced fantastically.
 
 - **No FTL.** The light barrier is never broken by humans, augmented humans,
   or AIs.
-- **Stardrives**: A consortium called Interstellar Systems builds ram
-  engines that fuse scooped interstellar hydrogen, including protium.
-  Cruise is **0.10c**; the drive's conservation-law wall is **0.12c**.
-  They sell rarely, to buyers they choose. See [Factions](factions.md)
+- **Stardrives**: Interstellar Systems sells a black box. Liquid
+  hydrogen in, fusion torch out. They do not sell the scoop that
+  fills the tanks — any yard can build a collector. Cruise is
+  **0.10c**; the torch's conservation-law wall is **0.12c**. They
+  sell rarely, to buyers they choose. See [Factions](factions.md)
   and [Ship Systems](ship-systems.md).
 - **Nanofabrication**: Manufacturing any object from raw materials is trivial
   given a design. This creates post-scarcity for most goods.

@@ -57,12 +57,11 @@ state and accepting control through netidx:
 
 - **Thermal management**: Tin coolant loops, endcap radiator
   temperatures, waste heat balance
-- **Conventional propulsion**: ICF pulse drive — deuterium pellet
-  ignition, magnetic-nozzle thrust vectoring, fuel consumption
-- **Stardrive**: Black-boxed but with observable externals — scoop
-  collection rate, thrust, fuel flow
-- **Navigation**: Position, velocity, course plotting, stardrive
-  catch calculations
+- **Collectors**: Scoop field, tank fill rate, parachute/funnel mode
+- **Stardrive**: IS black box — LH₂ feed, torch thrust, fuse-fraction,
+  nozzle overdraw. Observable externals only.
+- **Navigation**: Position, velocity, course plotting, scoop-on
+  climb vs tanked burn
 - **Power distribution**: Load balancing across ship systems,
   priority allocation
 - **Life support**: Atmosphere, temperature, cold sleep pod status

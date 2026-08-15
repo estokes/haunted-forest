@@ -90,14 +90,15 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
 
 The ship is **directionally specialized and never flips**: the nose always
 meets the ISM, the tail always radiates into the wake, and the reactor sits
-aft beside the radiator and the conventional engines. The stardrive modules
-ride in nacelles offset from the hull on structural booms, which isolates
-their waste heat and radiation; each nacelle is a lockable two-position
-turret (see The Stardrive). To decelerate at midcourse the scoop field
-reshapes from funnel to parachute and the ship bleeds speed on magnetic
-drag; once well below the 0.12c wall the nacelles slew 180° and the drive
-relights facing the other way to finish the descent to the 900 km/s
-handoff. The ship never turns over.
+aft beside the radiator and the tail torch nozzles. The stardrive
+modules — IS black boxes — ride in nacelles on booms so their waste
+heat and radiation stay off the hull; each nacelle is a lockable
+two-position turret. The **collectors** are a separate system, not
+IS's, and they always face the ISM. To decelerate at midcourse the
+scoop field reshapes from funnel to parachute and the ship bleeds
+speed on magnetic drag; once well below the 0.12c wall the nacelles
+slew 180° and the torch finishes the descent on tanked hydrogen. The
+ship never turns over.
 
 Because the *ship* never turns over, **thrust-gravity reverses at
 midcourse**. On the outbound half the drive pushes the ship forward, so
@@ -227,10 +228,11 @@ See [Narrative](narrative.md) and [History](history.md).
 
 ### Why a Tenth Is Worth Having
 
-Onboard ICF is a few thousand km/s of \(\Delta v\) — \(0.01c\), a port-call
-engine. Ten light-years at that speed is a millennium. The ram is the only
-thing that makes a 30-light-year civilization possible, and a tenth of \(c\)
-is as fast as the ram goes.
+On tankage alone the torch is a few thousand km/s of \(\Delta v\) —
+enough for a port, not for a star. Ten light-years as a pure rocket
+is a millennium. The collector is what makes a 30-light-year
+civilization possible: it puts the ISM in the tanks so the torch can
+keep burning. A tenth of \(c\) is as fast as that loop goes.
 
 Flight time in the Local Bubble, accel and decel included (see below):
 
@@ -267,7 +269,7 @@ Bubble:
 
 | Ship velocity | Collection | Accel (500 kt) | Accel (250 kt) |
 |---------------|------------|----------------|----------------|
-| 0.003c (900 km/s) — catch | 0.93 kg/s | 0.0066 G | 0.013 G |
+| 0.003c (900 km/s) | 0.93 kg/s | 0.0066 G | 0.013 G |
 | 0.03c | 9.3 kg/s | 0.051 G | 0.10 G |
 | 0.06c — peak | 19 kg/s | 0.068 G | 0.14 G |
 | 0.08c | 25 kg/s | 0.060 G | 0.12 G |
@@ -275,16 +277,18 @@ Bubble:
 | 0.11c | 34 kg/s | 0.021 G | 0.042 G |
 | 0.12c — wall | 37 kg/s | 0 | 0 |
 
-In the Local Bubble, divide collection and accel by ten. Catch is 0.00066 G on
-a loaded hull. Peak is 0.007 G. Cruise thrust is 0.004 G — station-keeping
-against a clump, not a surge. Leaving Sol is a long climb in light air; the
-ICF boost to the 900 km/s catch is the whole game for the first year.
+In the Local Bubble, divide collection and accel by ten. At 900 km/s
+scoop-fed thrust is 0.00066 G on a loaded hull. Peak is 0.007 G.
+Cruise thrust is 0.004 G — station-keeping against a clump, not a
+surge. Leaving Sol is a long climb in light air.
 
-Time 0.003c → 0.10c at 500 kt: **~2.3 years** and **~0.09 ly** in a dense cloud;
-**~23 years** and **~0.9 ly** in the Bubble. The rest of any long hop is
-cruise. The critical phase is still the conventional boost from 0 to 900 km/s,
-where the ram barely bites. Every km/s of ICF \(\Delta v\) spent in-system is
-fuel you might need for that transition.
+Time 0.003c → 0.10c at 500 kt, scoop-fed: **~2.3 years** and **~0.09 ly**
+in a dense cloud; **~23 years** and **~0.9 ly** in the Bubble. The rest
+of any long hop is cruise. Below a few thousand km/s the scoop's income
+is a trickle. You climb that first bit on **tanked** LH₂ with the scoop
+off or idling. Every kilogram burned in-system is a kilogram you might
+want for that climb. A ship that fights itself dry and then departs
+into the Bubble is a rocket with a long walk to income.
 
 ### The Forward Environment at Cruise
 
@@ -562,15 +566,16 @@ systems:
 | Internal structure (decks, bulkheads, framing) | 20,000 t |
 | Ship reactor + direct conversion (~500 GW fusion) | 25,000 t |
 | Thermal management (tin loops, tail radiator) | 8,000 t |
-| ICF drive: igniter banks, reaction chamber, magnetic nozzles, neutron shield (~25 TW) | 20,000 t |
-| Stardrive nacelles (black-boxed, incl. structure) | 50,000 t |
+| Collectors (scoop coils, not IS) | 12,000 t |
+| Torch nozzles, feeds, tail cluster | 8,000 t |
+| Stardrive modules (IS boxes, nacelles, structure) | 50,000 t |
 | Weapons systems | 10,000 t |
 | Sensors, communications, computing | 5,000 t |
 | Life support (sized for ~10 crew) | 500 t |
 | Hangar structures and launch systems | 3,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-### Operating Mass (~350,000 tonnes)
+### Operating Mass (~305,000 tonnes)
 
 Ready to fly — fueled, shielded, crewed, but no cargo:
 
@@ -578,8 +583,7 @@ Ready to fly — fueled, shielded, crewed, but no cargo:
 |-----------|------|
 | Empty mass | 165,000 t |
 | Whipple shield water (barrel: radiation + impact stuffing) | 30,000 t |
-| Reaction mass (LH₂ — drive fuel + supplementary shield) | 100,000 t |
-| Drive fuel (deuterium, distributed tanks) | 45,000 t |
+| LH₂ (torch fuel, remass, supplementary shield) | 100,000 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (crew areas only) | 500 t |
 | Water and consumables | 100 t |
@@ -588,18 +592,18 @@ Ready to fly — fueled, shielded, crewed, but no cargo:
 
 ### Loaded Mass (up to ~500,000 tonnes)
 
-Operating mass plus cargo. **Cargo capacity: ~150,000 tonnes.**
+Operating mass plus cargo. **Cargo capacity: ~195,000 tonnes.**
 
-The ICF drive's deuterium fuel is a real slice of the mass budget — the
-price of fusion's modest energy density, and the reason cargo capacity sits
-where it does. The designers took the trade gladly: the ship carries cheap,
-inert fuel instead of anything that has to be *contained*.
+There is no separate drive-fuel bunker. The torch drinks the same LH₂
+the scoop puts in the tanks. The 45,000 t that used to be deuterium
+pellets is cargo. A hull breach still spills cold hydrogen. Nothing
+here has to be *contained*.
 
 Cargo includes: cold sleep pods with passengers, black-boxed technology,
 trade goods, raw materials, colonization equipment — whatever the mission
 requires. Actual loaded mass varies:
 
-- Trade run: ~420,000 t
+- Trade run: ~450,000 t
 - Military patrol: ~370,000 t (light load)
 - Colony expedition: ~500,000 t (maximum)
 
@@ -628,9 +632,9 @@ The reactor powers:
 - Sensors and communications
 - Computing (AI systems)
 
-The reactor is **not** involved in propulsion. The ICF drive has its own
-dedicated drive reactors (~25 TW total) feeding its igniter banks. The
-stardrive is an entirely separate black-boxed system.
+The reactor is **not** involved in propulsion. The torch is an
+Interstellar Systems box: LH₂ in, fusion out. The collectors that
+fill the tanks are not IS's.
 
 315 GW is enormously overprovisioned for 10 crew — modern human
 civilization uses ~18 TW for 8 billion people. The surplus covers weapons
@@ -790,7 +794,7 @@ endcap radiator panels, and returns. No thermal cycle extracts work from
 this loop — the heat is dumped directly.
 
 With the ship directionally specialized, the reactor sits aft alongside the
-tail radiator and the conventional engines, so the tin loop is **short** —
+tail radiator and the torch nozzles, so the tin loop is **short** —
 reactor to radiator is a few decks, not a kilometer of ~1800 K piping down
 the hull. That long run was a real cost of the old flip design (radiators at
 both ends, reactor amidships); specializing the ship retires it. The loop
@@ -850,44 +854,37 @@ ship reactor:
   stardrive package.
 
 
-## Conventional Propulsion
+## Propulsion
 
-For in-system operations — maneuvering, combat, docking, and boosting to
-stardrive catch speed — the ship uses an **inertial-confinement fusion
-(ICF) pulse drive**.
+Two systems. They do not share a vendor.
 
-Dedicated drive reactors (~25 TW) power the igniter banks — lasers and ion
-beams that compress and light **deuterium fuel pellets** hundreds of times
-a second. Each microdetonation is caught and turned by a magnetic nozzle.
-The drive doesn't hum; it hammers. Inert LH₂ injected into each pulse
-augments and cools the exhaust — which is how thrust and exhaust velocity
-are traded against each other.
+**The stardrive** is an Interstellar Systems black box. You pipe liquid
+hydrogen in. A fusion torch comes out. That is the entire published
+interface. Catalyzed p-p — the secret — is inside. There is no ram,
+no pellet, no onboard igniter farm. Full stop.
 
-Deuterium is the fuel because it's cheap and everywhere. Helium-3 is far
-too scarce to feed a drive — the reactor alone nearly exhausts the scoop's
-³He — so the drive burns plain deuterium and pays for it in neutrons: the
-D-D reactions make the drive the ship's neutron source. The nacelle throat
-is shielded, activates over its service life, and dumps its neutron heat
-into the thermal system.
+**The collectors** are not IS's. They are a magnetic scoop any decent
+yard can build and maintain: ionize, funnel, tank. They fill the LH₂
+the torch drinks. They also glance dust and, reshaped, parachute
+against the ISM. See The Collector.
 
-Nothing here is to be feared in a hull breach. A hit to a fuel tank spills
-cold deuterium and hydrogen. The worst the drive itself can do is stop, or
-burn through a nozzle — bad, but survivable.
+The torch does not care whether the hydrogen came from a dock, a
+comet, or a century of scooping. In-system and interstellar are the
+same engine on a different budget.
 
 ### Two Knobs, and Combat Lives Between Them
 
-**Exhaust velocity (Isp).** At fixed power, throwing reaction mass *slower*
-buys *more thrust* — the fundamental thrust-versus-range trade. Cruise runs
-lean: high exhaust velocity, gentle thrust, best range. A fight runs rich:
-low exhaust velocity, hard thrust, ruinous range.
+**Exhaust velocity (Isp).** Fuel and remass are the same fluid. Fuse a
+larger fraction and \(v_e\) climbs (lean, long, gentle). Fuse a little
+and throw a lot of cold hydrogen with it (rich, hard, short). Cruise
+runs lean. A fight runs rich.
 
 **Power (overdraw).** The nozzles are rated for **3.2 PW** continuously.
-You can run them hotter — bigger pulses, higher rep rate — at rising risk:
-a **soft redline at 2× (6.4 PW)**, sustainable for minutes, and a **hard
-limit at 3.5× (11 PW)**, good for seconds. Past that the exhaust plasma
-overwhelms the nozzle field and burns through the physical throat, or the
-nozzle coils quench. Overdraw buys thrust *without* spending your range —
-you pay in nozzle life instead.
+You can run them hotter at rising risk: a **soft redline at 2× (6.4 PW)**,
+sustainable for minutes, and a **hard limit at 3.5× (11 PW)**, good for
+seconds. Past that the exhaust plasma overwhelms the nozzle field and
+burns through the throat, or the coils quench. Overdraw buys thrust
+*without* spending your range — you pay in nozzle life instead.
 
 Acceleration is **a = 2·P / (m·v_e)**. At the same 3.2 PW that cruises a
 loaded hull at 0.1 G:
@@ -935,59 +932,66 @@ on the same drive tech. The capital ship punches; the fighters knife-fight.
 In-system transits still take days; the ship is a kilometer long and masses
 hundreds of thousands of tonnes. The drive changed; the heft did not.
 
-### Port Call Δv Budget
+### Port Call — the Tank Is a Reserve
 
-Every port call costs Δv:
+Interstellar climb and braking are scoop-fed. The 100,000 t tank is
+what you spend when the scoop is off: in-system, near traffic, in a
+fight, and on the first bit of a departure into thin air.
 
-| Phase | Δv cost |
-|-------|---------|
-| Final deceleration (stardrive hands off at ~900 km/s) | 900 km/s |
-| In-system maneuver and docking | 200 km/s |
-| Departure maneuver | 100 km/s |
-| Boost back to stardrive catch speed (~900 km/s) | 900 km/s |
-| Reserve | 200 km/s |
-| **Total per port call** | **~2,300 km/s** |
+A clean port call — approach, dock, depart, light the scoop — barely
+dents it. The old 2,300 km/s "catch tax" is gone; there is no second
+engine to hand off to. Combat, or a long scoop-off burn, is what
+empties the reserve. At max cargo the tank is still ~2,900 km/s if
+you spend it lean, ~58 km/s if you spend it at 5 G. Same table as
+above. Same wince.
 
-At maximum cargo (~490 kt, ~2,900 km/s available), this leaves only ~600
-km/s of margin — enough for a clean port call, but combat or unexpected
-maneuvering eats into it fast. At lighter loads the margin is comfortable.
-
-**The trade tension**: Arrive loaded with cargo, sell it, depart light. You
-have plenty of Δv to leave. But if you want to depart loaded — having
-bought cargo to fill the hold — you either refuel at the station or trust
-your margin. Deuterium and reaction mass are cheap and available at most
-ports, but topping up still costs time and money, and a lean departure is a
-gamble.
+**The trade tension** is no longer "buy deuterium or gamble." Hydrogen
+is everywhere. The tension is **whether the tank is full when you
+light the scoop.** Arrive from a crossing and you are full. A clean
+port call barely touches the reserve. A fight can empty it. Depart
+combat-dry into the Bubble and you are a rocket until income
+catches the burn — a long, slow, embarrassing climb. Linger in a
+filament, buy LH₂ at the dock, or leave light. Deuterium is a
+reactor story. It is not a drive story.
 
 
 ## The Stardrive
 
-The stardrive is a black-boxed module built by Interstellar Systems. Its
-internal mechanisms are proprietary, with multiple layers of tamper
-protection preventing reverse engineering.
+The stardrive is a black-boxed module built by Interstellar Systems.
+Its internals are proprietary, with multiple layers of tamper
+protection. IS does not sell the scoop. IS does not maintain the
+scoop. IS sells the box.
 
-What is known: the stardrive implements a Ram-Augmented Interstellar
-Rocket (RAIR). It uses a bussard ramscoop to collect interstellar hydrogen
-and a proprietary process to fuse it — including plain protium via the
-proton-proton chain, which conventional physics considers far too slow for
-engineering use. The stardrive builders solved this. How they solved it is
-the most closely guarded secret in human civilization.
+What is known: you connect an LH₂ feed. The box produces a fusion
+torch. The process fuses plain protium via the proton-proton chain,
+which conventional physics considers far too slow for engineering
+use. How they solved the rate is the most closely guarded secret in
+human civilization.
+
+That is the whole machine. It is not a ramjet. Collection is
+someone else's hardware. Insert hydrogen, extract thrust.
 
 ### Why This Matters
 
-Normal D-D or D-³He fusion can only burn deuterium or helium-3 — trace
-elements in the interstellar medium (deuterium is ~20 parts per million of
-ISM hydrogen). The stardrive can fuse **all** collected hydrogen, turning
-the entire ISM into both fuel and reaction mass. This is the difference
-between a ship limited to a few thousand km/s of Δv and one that can cruise
-at a tenth of lightspeed — the only thing that makes a 30-light-year
-civilization possible.
+Normal D-D or D-³He fusion can only burn deuterium or helium-3 —
+trace in the ISM (deuterium is ~20 ppm of the hydrogen). The torch
+fuses **protium**, so every kilogram the collector tanks is fuel
+and remass. That is the difference between a ship limited to a
+tank of Δv and one that can cruise at a tenth of lightspeed.
 
-The secret is the *rate*. Catalyzed p-p does not increase the yield. The
-energy per nucleon is still ~6.7 MeV, \(v_e \approx 0.12c\), and the wall
-is still \(v = v_e\). A static magnetic field does no work; the scoop
-steers, it does not add energy. There is no field geometry that retires
-the asymptote.
+The secret is the *rate*. Catalyzed p-p does not increase the
+yield. The energy per nucleon is still ~6.7 MeV, \(v_e \approx
+0.12c\) when you fuse what you throw. A static magnetic field does
+no work. The collector steers mass into the tanks and, when you
+leave it on while you burn, you still pay \(\dot{m} v\) of drag
+for the privilege. Net thrust with scoop and torch in steady state
+is \(\dot{m}(v_e - v)\). The wall is still \(v = v_e\). There is
+no field geometry that retires it.
+
+With the scoop **off**, the torch is a pure rocket. No ram drag,
+no income. \(\Delta v = v_e \ln(m_0/m_f)\). The 100,000 t tank on
+a 500 kt hull is ~8,000 km/s at the theoretical ceiling — a
+generous port, a lost star. You need the collector to climb.
 
 ### Acceleration Profile
 
@@ -999,7 +1003,7 @@ divide collection and accel by ten. See Speed and the Forward Environment.
 
 | Ship velocity | Collection (disk) | Accel (500 kt) | Accel (250 kt) |
 |---------------|-------------------|----------------|----------------|
-| 0.003c (900 km/s) — catch | 0.93 kg/s | 0.0066 G | 0.013 G |
+| 0.003c (900 km/s) | 0.93 kg/s | 0.0066 G | 0.013 G |
 | 0.03c | 9.3 kg/s | 0.051 G | 0.10 G |
 | 0.06c — peak | 19 kg/s | 0.068 G | 0.14 G |
 | 0.08c | 25 kg/s | 0.060 G | 0.12 G |
@@ -1007,37 +1011,35 @@ divide collection and accel by ten. See Speed and the Forward Environment.
 | 0.11c | 34 kg/s | 0.021 G | 0.042 G |
 | 0.12c — wall | 37 kg/s | 0 | 0 |
 
-Sluggish at catch, a modest shove in the middle, nothing at the wall. The
-critical phase is the conventional boost from 0 to 900 km/s, where the ram
-barely bites — especially in the Bubble, where catch is 0.00066 G on a
-loaded hull. Every km/s of ICF Δv spent on in-system maneuvering is fuel
-you might need for that transition.
+Sluggish at the bottom, a modest shove in the middle, nothing at the
+wall. The first few thousand km/s are tanked, scoop off. Then you
+live on income. A dry tank at the bottom of a Bubble climb is the
+new "missed the catch."
 
-### Deceleration — Parachute, then Flip, then Handoff
+### Deceleration — Parachute, then Torch
 
-Near cruise, \(v \approx v_e\): a reverse burn has almost nothing to give,
-and firing the exhaust forward into the scoop field is a good way to
-thrash the magnetosphere. So the first brake is the scoop itself. The
-same coils reshape from **funnel to parachute** — a magnetic sail. Incoming
-ISM reflects off the magnetosphere instead of being swallowed; the ship
-takes the recoil. Drag scales as \(\dot{m}\,v \propto v^2\). From 0.10c
-the sail has leverage the rocket has just lost.
+Near cruise, \(v \approx v_e\): a reverse burn has almost nothing to
+give, and firing the exhaust into the scoop field is a good way to
+thrash the magnetosphere. So the first brake is the **collector**.
+The coils reshape from funnel to parachute. Incoming ISM reflects;
+the ship takes the recoil. Drag scales as \(\dot{m}\,v \propto v^2\).
+From 0.10c the sail has leverage the rocket has just lost.
 
-Once speed is well below the asymptote the nacelles slew — each is a
-**lockable two-position turret**, nozzle aft to accelerate, nozzle forward
-to decelerate — and the drive relights to finish the descent to ~900 km/s,
-where the ICF engines take the port-call. The ship never turns over. The
-nose stays on the ISM; the tail stays a radiator.
+Once speed is well below the asymptote the nacelles slew — each IS
+box is a **lockable two-position turret**, nozzle aft to accelerate,
+nozzle forward to decelerate — and the torch finishes the descent
+on tankage. The collectors stay pointed at the ISM. The ship never
+turns over. The nose stays a shield; the tail stays a radiator.
 
-A jammed turret no longer means "you cannot stop." The sail still dumps
-speed. It does mean you may arrive into the system too hot for a clean
-handoff — still tens of thousands of km/s, still a bad day — and that the
-last of the burn has to be improvised. See Maintenance.
+A jammed turret no longer means "you cannot stop." The sail still
+dumps speed. It does mean the last burn is improvised, and you may
+arrive hot. See Maintenance. The collectors are not on that
+interval. A yard that cannot touch an IS box can still patch a coil.
 
 ### Maintenance
 
-The stardrive requires servicing by Interstellar Systems every ~60
-light-years of travel. The inspection and maintenance process is
+The **box** requires servicing by Interstellar Systems every ~60
+light-years of travel. The collectors do not. The inspection is
 opaque — IS tells you what needs doing and what it costs, never the
 details of what they found. The cost varies unpredictably.
 
@@ -1082,22 +1084,23 @@ takes to fill, is a density question. Numbers below are **Local Bubble**
   to bank. **³He is a port commodity** — gas-giant atmosphere mining —
   and a long cruise in thin air spends the tank you bought at the last
   dock.
-- **Drive deuterium**: The scoop can't skim deuterium at drive scale —
-  ~2 t/year in the Bubble, enough for the reactor, not for the ICF banks.
-  The drive loads the bulk at destination, extracted from local water or
-  gas-giant hydrogen. Deuterium is cheap and available almost everywhere.
-  Topping up is a routine part of every port call.
+- **Torch hydrogen**: the same LH₂ the remass tanks already are.
+  The scoop *is* the refuel. There is no deuterium bunker for the
+  drive. Reactor D is a separate, small account (~20 ppm skim,
+  plus whatever you buy).
 
 The crew is in cold sleep during transit. Ship AI handles navigation,
 scoop-field shaping, and resource management autonomously. An AI captain
 who stays awake lives the crossing.
 
 
-## The Bussard Collector
+## The Collector
 
-The ramscoop is a magnetic field extending ~14,000 km from the ship,
-generated by superconducting coils in the stardrive nacelles. It ionizes
-and funnels interstellar hydrogen into the stardrive's reaction chamber.
+The scoop is **not** an Interstellar Systems product. Superconducting
+coils on the ship — yards build them, crews patch them, no 60 ly
+pilgrimage — throw a magnetic field ~14,000 km ahead. It ionizes
+interstellar hydrogen and funnels it into the **tanks**. The torch
+never sees the ISM. It sees LH₂.
 
 ### Collection Rate
 
@@ -1118,11 +1121,13 @@ that number by a factor of a few. Spiral-arm densities are not on this
 map. Density sets time-to-cruise, dust load, and ³He skim — not the
 0.12c wall.
 
-The same coils do three jobs: **funnel** (collect and fuse), **glance**
-(deflect what you do not want, cheaply), and **parachute** (reflect the
-ISM and brake). They are not a radiation shield for the crew; 4.7 MeV
-protons stop in the Whipple. They are not an accelerator; a static B
-field does no work.
+The same coils do three jobs: **funnel** (into the tanks), **glance**
+(deflect what you do not want, cheaply), and **parachute** (reflect
+the ISM and brake). They are not a radiation shield for the crew;
+4.7 MeV protons stop in the Whipple. They are not an accelerator; a
+static B field does no work. They are not a drive. Lose the scoop
+and you still have a torch and whatever is in the tank. Lose the
+box and you have a very expensive balloon of hydrogen.
 
 
 ## Small Craft

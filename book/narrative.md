@@ -464,7 +464,7 @@ The player's record is whether either sentence is true.
   diving the water-filled hull to patch a Whipple layer (see [Ship
   Systems](ship-systems.md)). Suited work is possible through most of an
   interstellar crossing — cruise thrust is milligees in the Bubble — but
-  an ICF burn turns the hold into a 9 g trap, and after turnaround "down"
+  a hard torch burn turns the hold into a 9 g trap, and after turnaround "down"
   points the other way. Done on a radiation dose clock, and always a
   standing bet that no maneuver is forced while you're three hundred
   metres out along the rack. A misbehaving container runs from the mundane (a stuck rail motor, a

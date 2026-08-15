@@ -37,7 +37,8 @@ so far ahead of the field that no one can replicate it. Some founding
 members are still alive — centuries old in both calendar and experience,
 because they do not sleep the crossings.
 
-They sell stardrives rarely, at enormous cost, to buyers they choose.
+They sell stardrives — the box: LH₂ in, torch out — rarely, at
+enormous cost, to buyers they choose. They do not sell collectors.
 They do not explain their pricing or selection criteria. This makes
 them the most powerful and most resented entity in civilization.
 
@@ -45,7 +46,8 @@ them the most powerful and most resented entity in civilization.
 
 All stardrives require servicing every ~60 light-years of travel
 (~600 years of flight at 0.10c — a wear budget, not a calendar). Only
-IS can perform the work. They maintain service facilities in a handful
+IS can perform the work. Collectors are local industry. A dead coil
+is a yard job. A dead box is a pilgrimage. They maintain service facilities in a handful
 of systems — perhaps 3-5 across inhabited space. The inspection is
 opaque: they tell you what it costs, not what they found.
 
