@@ -16,6 +16,14 @@
 # along Z and REVERSES at midcourse; a clamp holds both signs, so the flip just
 # changes the sign of loads the members already carry. All geometry is DERIVED
 # from container size + clearances + structurally-sized members (structural_sizing).
+#
+# The hull is 1.5 km because 100 kt of LH2 is 1.41e6 m3 at 70.8 kg/m3 — half of
+# a 1 km x 30 m cylinder. Frontal area is sacred (0.10c); length is cheap.
+# Dedicated tank bands around the crew hold the hydrogen; the two 300 m cargo
+# bays stay full-radius. The hotel plant is a 70 m tandem mirror aft. There is
+# no tail ICF cluster: the torch is two IS black-box nacelles. Waste heat leaves
+# through 8 wake petals (~500,000 m2) plus the aft barrel. Collectors are bow
+# coils, not IS, not in the pods.
 
 import bpy
 import math
@@ -41,10 +49,20 @@ C_CHOKE = (0.20, 0.85, 0.92)
 C_PLUG = (0.96, 0.80, 0.25)
 C_CONV = (0.55, 0.85, 0.55)
 C_FUEL = (0.36, 0.62, 0.92)
+C_LH2 = (0.22, 0.58, 0.88)
 C_ENG = (0.88, 0.56, 0.30)
 C_RAD = (0.93, 0.42, 0.18)
+C_RAD_ZONES = (
+    (0.95, 0.38, 0.14), (0.92, 0.50, 0.16), (0.88, 0.36, 0.22), (0.96, 0.44, 0.10),
+    (0.90, 0.32, 0.18), (0.94, 0.48, 0.20), (0.86, 0.40, 0.14), (0.98, 0.42, 0.24),
+)
 C_DRIVE = (0.72, 0.76, 0.84)
-C_NAC = (0.24, 0.25, 0.30)
+C_NAC = (0.18, 0.18, 0.20)
+C_NAC_RAD = (0.85, 0.45, 0.20)
+C_SCOOP = (0.30, 0.78, 0.62)
+C_FEL = (0.95, 0.90, 0.35)
+C_RADAR = (0.45, 0.72, 0.88)
+C_HAB = (0.90, 0.28, 0.38)
 
 
 def arange(lo, hi, step):
@@ -55,59 +73,105 @@ def arange(lo, hi, step):
 
 
 SPEC = {
-    "length": 1000.0, "radius_outer": 30.0, "barrel_thickness": 2.0,
-    "core_radius": 4.0, "nose_cap_len": 70.0, "tail_len": 30.0,
+    "length": 1500.0, "radius_outer": 30.0, "barrel_thickness": 2.0,
+    "core_radius": 4.0, "nose_cap_len": 80.0, "tail_len": 16.0,
     "container": {"L": 12.0, "W": 2.5, "H": 2.5}, "container_mass_t": 20.0,
     "clearance": 0.15,
     "n_sectors": 8,
-    # --- structural inputs ---
     "max_accel_G": 9.0, "lateral_G": 2.0,
-    "material_E_Pa": 500.0e9,        # CNT-composite modulus (assumed)
-    "material_strength_Pa": 50.0e9,  # bible: 50-100 GPa tensile
+    "material_E_Pa": 500.0e9,
+    "material_strength_Pa": 50.0e9,
     "material_density": 1400.0,
     "safety_factor": 2.0,
-    "cargo_bay_len": 300.0,          # for the full-column sizing case
+    "cargo_bay_len": 300.0,
+    "lh2_density": 70.8,
     "zones": [
-        ("nose_whipple",  40.0,  (0.35, 0.55, 0.85)),
-        ("cargo_fore",   300.0,  (0.90, 0.65, 0.15)),
-        ("lh2_fore",      90.0,  (0.20, 0.75, 0.90)),
-        ("crew_core",     40.0,  (0.90, 0.25, 0.35)),
-        ("lh2_aft",       90.0,  (0.20, 0.75, 0.90)),
-        ("cargo_aft",    300.0,  (0.90, 0.65, 0.15)),
-        ("reactor",       90.0,  (0.70, 0.30, 0.90)),
-        ("radiator_tail", 50.0,  (0.90, 0.40, 0.20)),
+        ("nose_whipple",   50.0,  (0.35, 0.55, 0.85)),
+        ("cargo_fore",    300.0,  (0.90, 0.65, 0.15)),
+        ("lh2_fore",      290.0,  (0.20, 0.70, 0.90)),
+        ("crew_core",      40.0,  (0.90, 0.25, 0.35)),
+        ("lh2_aft",       290.0,  (0.20, 0.70, 0.90)),
+        ("cargo_aft",     300.0,  (0.90, 0.65, 0.15)),
+        ("reactor",       140.0,  (0.70, 0.30, 0.90)),
+        ("radiator_aft",   90.0,  (0.90, 0.40, 0.20)),
     ],
-    # REACTOR: one D-3He tandem mirror on the spine (closed-cycle power plant).
-    # The 354 m burning column runs down the axis; the main-drive deuterium fuel
-    # farm fills the annulus around it (feeds the reactor's own D need too, and
-    # neutron-shields everything outboard). Terminates fore at a fuel-shielded
-    # engineering deck carrying the manual fuel shutoff.
+    # Hotel plant: 70 m x 3 m D-3He tandem mirror. Sits entirely in the
+    # reactor zone. Throttle is burning length (coil groups). No drive-fuel
+    # farm — the 2 kt D-3He load is two tanks in the annulus.
     "reactor": {
-        "aft_choke_z": -420.0, "burn_len": 354.0,
-        "plasma_r": 3.0, "chamber_r": 5.0,
-        "coil_r": 7.0, "coil_minor": 0.9, "coil_pitch": 15.0,
-        "choke_r": 8.5, "choke_minor": 1.8,
-        "plug_len": 12.0, "plug_r": 3.0, "plug_coil_r": 5.0, "plug_coil_minor": 1.1,
-        "conv_len": 18.0, "conv_r": 12.0,
-        "fuel_r_in": 9.0, "fuel_r_out": 24.0, "eng_deck_len": 10.0,
+        "burn_len": 70.0,
+        "plasma_r": 3.0, "chamber_r": 4.5,
+        "coil_r": 6.2, "coil_minor": 0.7, "coil_pitch": 7.0,
+        "choke_r": 7.5, "choke_minor": 1.4,
+        "plug_len": 8.0, "plug_r": 2.8, "plug_coil_r": 4.5, "plug_coil_minor": 0.9,
+        "conv_len": 12.0, "conv_r": 11.0,
+        "eng_deck_len": 10.0, "shield_len": 4.0,
+        "dhe3_tank_r": 6.0, "dhe3_tank_len": 55.0, "dhe3_tank_off": 17.0,
     },
-    # TAIL RADIATOR: ~283,000 m2 of fixed radiating fin fanning out at the wake
-    # face (no moving parts). Rejects the ~185 GW reactor waste at 1800-2000 K.
-    "radiator": {"n_fins": 32, "r_in": 6.0, "r_out": 61.0, "len": 80.0,
-                 "z_center": -490.0, "thick": 0.4},
-    # ICF PULSE DRIVE: cluster of magnetic nozzles at the tail centre; fires
-    # deuterium pellets, exhaust out the back through the radiator fan's core.
-    "icf_drive": {"n_ring": 6, "cluster_r": 9.0, "bell_r": 5.0,
-                  "z_base": -540.0, "z_throat": -524.0, "body_r": 12.0, "body_len": 14.0},
-    # STARDRIVE NACELLES: two black-boxed RAIR pods on lateral booms (each a
-    # lockable turret; shown in accelerate-lock, nozzle aft).
-    "nacelle": {"count": 2, "pod_r": 9.0, "pod_len": 92.0, "boom_len": 20.0,
-                "boom_t": 3.0, "z_center": -150.0, "nozzle_len": 18.0},
+    # 8 independently valveable wake petals + the aft barrel. Geometric area
+    # is ~501,000 m2 of petal (both faces) plus ~17,000 m2 of aft hull.
+    # Inner hole clears the nacelle plumes. Gaps sit on the nacelle bearings.
+    "radiator": {
+        "n_petals": 8, "r_in": 80.0, "r_out": 305.0, "thick": 0.6,
+        "gap_frac": 0.08, "hub_r": 18.0, "hub_len": 14.0, "spar_t": 2.2,
+        "z_aft_of_tail": 10.0,
+    },
+    # IS black boxes. LH2 in, torch out. Lockable two-position turrets,
+    # drawn in accelerate-lock (nozzle aft). Their own dump-panels; plume
+    # is the real radiator. Not collectors.
+    "nacelle": {
+        "count": 2, "pod_r": 11.0, "pod_len": 58.0, "boom_len": 28.0,
+        "boom_t": 4.0, "nozzle_len": 14.0, "turret_r": 6.0, "turret_minor": 1.6,
+        "rad_n": 4, "rad_span": 10.0, "rad_len": 22.0, "rad_thick": 0.35,
+    },
+    # Superconducting scoop coils. Yards build these. Field is 14,000 km;
+    # what you can see is the hardware on the bow.
+    "collector": {
+        "coils": (
+            {"z_from_nose": 8.0, "R": 32.5, "r": 2.4},
+            {"z_from_nose": 32.0, "R": 31.5, "r": 1.8},
+            {"z_from_nose": 62.0, "R": 31.2, "r": 1.5},
+        ),
+        "throat_r": 3.2, "throat_len": 16.0,
+    },
+    # Layered bow suite: THz/mm search tiles + independently steered FEL
+    # directors. Cooker is the same class of director run as a flood.
+    "sensors": {
+        "n_fel": 4, "fel_r": 1.1, "fel_len": 9.0, "fel_along": 0.35,
+        "n_radar": 8, "radar_w": 5.0, "radar_h": 3.2, "radar_thick": 0.4,
+        "radar_along": 0.18,
+    },
 }
 
 
 def _beam_mass(side, length, count, rho):
     return side * side * length * count * rho
+
+
+def track_layout(spec, a_rail, a_arc, a_strut):
+    inner = spec["radius_outer"] - spec["barrel_thickness"]
+    core = spec["core_radius"]
+    ns = spec["n_sectors"]
+    cw, cl = spec["container"]["W"], spec["clearance"]
+    rail_off = a_arc / 2 + cl + a_rail / 2
+    ring_gap = 2 * rail_off + a_rail
+    ring_pitch = cw + ring_gap
+    rings = arange(core + 1.0, inner - 0.25, ring_pitch)
+    n_lines = 0
+    per_track = []
+    for i in range(len(rings) - 1):
+        ri, ro = rings[i], rings[i + 1]
+        rc = (ri + ro) / 2
+        margin = (cw / 2 + a_strut / 2 + 2 * cl) / rc
+        span = TAU / ns - 2 * margin
+        per = max(1, int(span * rc / (cw + cl)))
+        n_lines += per * ns
+        per_track.append({"r_mid": round(rc, 1), "per_sector": per,
+                          "r_in": round(ri, 2), "r_out": round(ro, 2)})
+    return {
+        "rings": rings, "rail_off": rail_off, "ring_gap": ring_gap,
+        "ring_pitch": ring_pitch, "n_lines": n_lines, "per_track": per_track,
+    }
 
 
 def structural_sizing(spec):
@@ -117,62 +181,39 @@ def structural_sizing(spec):
     sf = spec["safety_factor"]; sig = spec["material_strength_Pa"] / sf
     cw, cl = spec["container"]["W"], spec["clearance"]
     zp = spec["container"]["L"] + 0.5
-    R = spec["radius_outer"] - spec["barrel_thickness"]   # inner-hull skin radius
+    R = spec["radius_outer"] - spec["barrel_thickness"]
     core = spec["core_radius"]; ns = spec["n_sectors"]; bay = spec["cargo_bay_len"]
     F_axial = m * spec["max_accel_G"] * g
     F_lat = m * spec["lateral_G"] * g
 
-    # STRINGER (rail): sized by LOCAL column buckling of ONE box's axial load.
-    # Shear-tied to the skin each frame so it never accumulates the column. The
-    # CAGE (mid-bay frame rings + meridional boundary diagonals) braces it at
-    # L_eff = zp/2 -> the design value; L_eff = zp is the un-braced reference.
     def rail_for(leff):
         return max(0.08, (12 * F_axial * sf * leff ** 2 / (math.pi ** 2 * E)) ** 0.25)
-    a_rail = rail_for(zp / 2)                        # braced: the design
-    a_rail_unbraced = rail_for(zp)                  # reference (no cage)
+    a_rail = rail_for(zp / 2)
+    a_rail_unbraced = rail_for(zp)
 
-    # FRAME (radial strut / hoop / diagonal): lateral 2 G + stabilisation. The
-    # triangulated cage carries lateral as axial spar force, so this is modest --
-    # a small bending beam over a radial cell, floored to stay stiffer than the
-    # stringer.
     M_lat = (2 * F_lat) * (cw + 1.0) / 4.0
     a_strut = max((6 * M_lat / sig) ** (1 / 3.0), 1.2 * a_rail)
     a_arc = a_rail
     a_conn = max(0.06, 0.8 * a_rail)
 
-    # DERIVED radial packing (mirrors build_cargo) -> cargo count per bay.
-    rail_off = a_arc / 2 + cl + a_rail / 2
-    ring_gap = 2 * rail_off + a_rail
-    ring_pitch = cw + ring_gap
-    rings = arange(core + 1.5, R - 0.4, ring_pitch)
-    n_lines = 0
-    for i in range(len(rings) - 1):
-        ri, ro = rings[i], rings[i + 1]; rc = (ri + ro) / 2
-        margin = (cw / 2 + a_strut / 2 + 2 * cl) / rc
-        span = TAU / ns - 2 * margin
-        n_lines += max(1, int(span * rc / (cw + cl))) * ns
+    lay = track_layout(spec, a_rail, a_arc, a_strut)
+    n_lines = lay["n_lines"]
     n_z = int(bay / zp)
     n_boxes = n_lines * n_z
-    P_bay = n_boxes * F_axial                       # total axial into the skin
+    P_bay = n_boxes * F_axial
 
-    # SKIN (inner hull): axial-compression shell buckling sets it. sigma_cr =
-    # gamma*0.6*E*t/R, sigma_app*sf = P_bay*sf/(2*pi*R*t). R cancels ->
-    # t = sqrt(P_bay*sf / (2*pi*gamma*0.6*E)); gamma = 0.5 knockdown.
     gamma = 0.5
     t_skin = math.sqrt(P_bay * sf / (2 * math.pi * gamma * 0.6 * E))
 
-    # masses per bay (t) for the braced-cage geometry actually drawn: arcs +
-    # connectors at zp/2 (mid-bay bracing), radial struts + hoops at zp, one
-    # meridional diagonal per boundary strut-bay, skin on a linear taper (0.5).
     n_arc_st = 2 * n_z + 1
     n_str_st = n_z + 1
     hyp = math.hypot(R - core, zp)
     m_rail = _beam_mass(a_rail, bay, 2 * n_lines, rho)
     m_strut = _beam_mass(a_strut, R - core, ns * n_str_st, rho)
     m_hoop = _beam_mass(a_strut, TAU * R, n_str_st, rho)
-    m_diag = _beam_mass(a_strut, hyp, 2 * ns * (n_str_st - 1), rho)  # X cross-brace
-    m_arc = _beam_mass(a_arc, n_arc_st * TAU * sum(rings), 1, rho)
-    m_conn = _beam_mass(a_conn, rail_off, 2 * n_lines * n_arc_st, rho)
+    m_diag = _beam_mass(a_strut, hyp, 2 * ns * (n_str_st - 1), rho)
+    m_arc = _beam_mass(a_arc, n_arc_st * TAU * sum(lay["rings"]), 1, rho)
+    m_conn = _beam_mass(a_conn, lay["rail_off"], 2 * n_lines * n_arc_st, rho)
     scaf = (m_rail + m_strut + m_hoop + m_diag + m_arc + m_conn) / 1e3
     m_skin = 2 * math.pi * R * t_skin * bay * rho * 0.5 / 1e3
 
@@ -186,10 +227,11 @@ def structural_sizing(spec):
         "strut_side_m": round(a_strut, 3),
         "conn_side_m": round(a_conn, 3),
         "skin_t_m": round(t_skin, 3),
-        "tracks_per_sector": len(rings) - 1,
+        "tracks_per_sector": len(lay["rings"]) - 1,
         "rail_lines_per_bay": n_lines,
         "boxes_per_bay": n_boxes,
         "capacity_both_bays": n_boxes * 2,
+        "capacity_t": n_boxes * 2 * spec["container_mass_t"],
         "P_bay_GN": round(P_bay / 1e9, 2),
         "mass_t": {
             "rails": round(m_rail / 1e3),
@@ -207,7 +249,7 @@ def _fresh_scene():
         bpy.data.objects.remove(obj, do_unlink=True)
     for coll in list(bpy.data.collections):
         bpy.data.collections.remove(coll)
-    for block in (bpy.data.meshes, bpy.data.curves, bpy.data.cameras):
+    for block in (bpy.data.meshes, bpy.data.curves, bpy.data.cameras, bpy.data.lights):
         for b in list(block):
             if b.users == 0:
                 block.remove(b)
@@ -219,9 +261,9 @@ def _collection(name):
     return c
 
 
-def _add(obj, coll, color):
+def _add(obj, coll, color, alpha=1.0):
     coll.objects.link(obj)
-    obj.color = (color[0], color[1], color[2], 1.0)
+    obj.color = (color[0], color[1], color[2], alpha)
     return obj
 
 
@@ -234,7 +276,7 @@ def _box_mesh(name, dx, dy, dz):
     return m
 
 
-def _cyl_surface(name, radius, z0, z1, coll, color, verts=72, caps=False):
+def _cyl_surface(name, radius, z0, z1, coll, color, verts=72, caps=False, alpha=1.0):
     mesh = bpy.data.meshes.new(name)
     vs, faces = [], []
     for z in (z0, z1):
@@ -250,7 +292,7 @@ def _cyl_surface(name, radius, z0, z1, coll, color, verts=72, caps=False):
             b = (i + 1) % verts
             faces.append((c0, b, i)); faces.append((c1, verts + i, verts + b))
     mesh.from_pydata(vs, [], faces); mesh.update()
-    return _add(bpy.data.objects.new(name, mesh), coll, color)
+    return _add(bpy.data.objects.new(name, mesh), coll, color, alpha)
 
 
 def _cone(name, radius, z_base, z_apex, coll, color, verts=64):
@@ -276,6 +318,35 @@ def _torus(name, R, r, z, coll, color, nu=28, nv=12):
         for j in range(nv):
             j2 = (j + 1) % nv
             faces.append((i * nv + j, i2 * nv + j, i2 * nv + j2, i * nv + j2))
+    mesh.from_pydata(vs, [], faces); mesh.update()
+    return _add(bpy.data.objects.new(name, mesh), coll, color)
+
+
+def _sector_plate(name, r_in, r_out, a0, a1, z, thick, coll, color, segs=18):
+    mesh = bpy.data.meshes.new(name)
+    vs, faces = [], []
+    hz = thick / 2
+
+    def ring(r, zz):
+        idx = []
+        for i in range(segs + 1):
+            a = a0 + (a1 - a0) * i / segs
+            vs.append((r * math.cos(a), r * math.sin(a), zz))
+            idx.append(len(vs) - 1)
+        return idx
+
+    i0 = ring(r_in, z - hz)
+    o0 = ring(r_out, z - hz)
+    i1 = ring(r_in, z + hz)
+    o1 = ring(r_out, z + hz)
+    n = segs + 1
+    for i in range(segs):
+        faces.append((o0[i], o0[i + 1], o1[i + 1], o1[i]))
+        faces.append((i0[i + 1], i0[i], i1[i], i1[i + 1]))
+        faces.append((o0[i], i0[i], i0[i + 1], o0[i + 1]))
+        faces.append((o1[i + 1], i1[i + 1], i1[i], o1[i]))
+    faces.append((i0[0], o0[0], o1[0], i1[0]))
+    faces.append((o0[n - 1], i0[n - 1], i1[n - 1], o1[n - 1]))
     mesh.from_pydata(vs, [], faces); mesh.update()
     return _add(bpy.data.objects.new(name, mesh), coll, color)
 
@@ -309,6 +380,25 @@ def _arc(name, r, a0, a1, z, t, coll, color, segs=3):
               P(r, a0 + (a1 - a0) * (i + 1) / segs, z), t, coll, color)
 
 
+def zone_map(spec):
+    L = spec["length"]
+    z_top = L / 2
+    out = {}
+    for name, length, color in spec["zones"]:
+        z0 = z_top - length
+        out[name] = (z0, z_top, color, length)
+        z_top = z0
+    return out
+
+
+def lh2_volume_m3(spec):
+    inner = spec["radius_outer"] - spec["barrel_thickness"]
+    core = spec["core_radius"]
+    area = math.pi * (inner ** 2 - core ** 2)
+    length = sum(z[1] for z in spec["zones"] if z[0].startswith("lh2_"))
+    return area * length, length
+
+
 def build_cargo(z0, z1, colls, spec, sz):
     c_sup, c_arc, c_rail, c_cargo, c_hot, c_door, c_skin = colls
     inner = spec["radius_outer"] - spec["barrel_thickness"]
@@ -317,59 +407,35 @@ def build_cargo(z0, z1, colls, spec, sz):
     cw = spec["container"]["W"]; cl = spec["clearance"]
     t_rail, t_arc, t_conn, t_strut = sz["rail_side_m"], sz["arc_side_m"], sz["conn_side_m"], sz["strut_side_m"]
     zp = sz["z_pitch"]
-    r_out = inner                                    # struts bond to the inner hull
-    # DERIVED radial layout: container band (cw) + a ring gap that exactly fits
-    # [arc + 2 rails + clearances] between tracks.
-    rail_off = t_arc / 2 + cl + t_rail / 2            # rail offset from its arc
-    ring_gap = 2 * rail_off + t_rail                  # radial room a ring needs
-    ring_pitch = cw + ring_gap
-    rings = arange(core + 1.5, inner - 0.4, ring_pitch)   # out to just inside the inner hull
-    # LOADING END: the door sits forward (+Z) of the racks and opens into a clear
-    # staging segment one door-height deep. The loader brings boxes in/out there
-    # and indexes them aft onto the rails. Cargo + frame stop at cz1; the segment
-    # [cz1, z1] is the empty staging concourse.
+    r_out = inner
+    lay = track_layout(spec, t_rail, t_arc, t_strut)
+    rings, rail_off, ring_gap = lay["rings"], lay["rail_off"], lay["ring_gap"]
     door_h = spec["container"]["L"] + 2.0
-    cz1 = z1 - door_h                                 # fore end of cargo / staging boundary
-    z_lo = z0 + 5.0                                   # aft pad
-    nz = max(1, round((cz1 - z_lo) / zp))             # layers that fill [z_lo, cz1] exactly
-    bp = (cz1 - z_lo) / nz                            # actual bay pitch (~zp, no slack)
-    zsts = [z_lo + bp * (k + 0.5) for k in range(nz)]        # container centres
-    frame_z = [z_lo + bp * k for k in range(nz + 1)]        # struts + diagonals
-    arc_z = [z_lo + bp * k / 2 for k in range(2 * nz + 1)]  # arcs + ties @ mid-bay brace
+    cz1 = z1 - door_h
+    z_lo = z0 + 5.0
+    nz = max(1, round((cz1 - z_lo) / zp))
+    bp = (cz1 - z_lo) / nz
+    zsts = [z_lo + bp * (k + 0.5) for k in range(nz)]
+    frame_z = [z_lo + bp * k for k in range(nz + 1)]
+    arc_z = [z_lo + bp * k / 2 for k in range(2 * nz + 1)]
     zc_door = (cz1 + z1) / 2
 
-    # RADIAL SUPPORTS carry the load, bonded to the hull. Struts sit ONLY at the
-    # frame stations (= container fore/aft faces), so a box slides out between
-    # them. No end-cap struts — those landed in the empty bay mouths fore/aft of
-    # the cargo and braced nothing.
     strut_zs = list(frame_z)
     for s in range(ns):
         a = TAU * s / ns
-        # struts bond DIRECTLY to both the core and the inner hull (no chords)
         for z in strut_zs:
             _beam(f"strut_{s}_{int(z)}", P(core, a, z), P(r_out, a, z), t_strut, c_sup, C_STRUT)
-        # CAGE: full X cross-brace in every bay of the sector-boundary plane, so
-        # EVERY strut node is triangulated at BOTH the core and hull ends. A
-        # single zig-zag diagonal leaves alternate nodes braced at only one end,
-        # forcing them to resist racking in bending. The X also suits the
-        # midcourse gravity REVERSAL: whichever diagonal is in tension carries
-        # the shear either way. It lives in the boundary plane, so it never
-        # crosses a container lane.
         for k in range(len(strut_zs) - 1):
             za, zb = strut_zs[k], strut_zs[k + 1]
             _beam(f"diagA_{s}_{int(za)}", P(core, a, za), P(r_out, a, zb), t_strut, c_sup, C_DIAG)
             _beam(f"diagB_{s}_{int(za)}", P(r_out, a, za), P(core, a, zb), t_strut, c_sup, C_DIAG)
-    # INNER-HULL frames: hoops at r=inner that the struts land on, plus the
-    # structural SKIN at r=inner that actually carries the accumulating axial
-    # column as membrane compression. The ~2 m out to the outer hull
-    # (radius_outer) is the water-Whipple barrel — the double hull.
-    for z in strut_zs + [z1]:                          # + fore end-ring at the staging mouth
+    for z in strut_zs + [z1]:
         _arc(f"innerhull_{int(z)}", inner, 0.0, TAU, z, t_strut, c_sup, C_STRUT, segs=48)
     _cyl_surface("inner_hull_skin", inner, z0, z1, c_skin, C_SKIN, verts=96)
 
     n = mass = mom_x = mom_y = 0
     per_track = []
-    for s in range(ns):                               # cargo now fills ALL sectors
+    for s in range(ns):
         f = 1.0
         a0, a1 = TAU * s / ns, TAU * (s + 1) / ns
         for rr in rings:
@@ -378,7 +444,6 @@ def build_cargo(z0, z1, colls, spec, sz):
         for i in range(len(rings) - 1):
             ri, ro = rings[i], rings[i + 1]
             rc = (ri + ro) / 2
-            # keep containers clear of the boundary struts (an aisle each edge)
             margin = (cw / 2 + t_strut / 2 + 2 * cl) / rc
             lo, hi = a0 + margin, a1 - margin
             ncont = max(1, int((hi - lo) * rc / (cw + cl)))
@@ -390,8 +455,6 @@ def build_cargo(z0, z1, colls, spec, sz):
                 for (rr, arc_r) in ((r_inner_rail, ri), (r_outer_rail, ro)):
                     _beam(f"rail_{s}_{i}_{j}_{int(rr)}", P(rr, th, z0 + 4), P(rr, th, cz1),
                           t_rail, c_rail, C_RAIL)
-                    # connectors bond each rail to its arc at every frame; seat
-                    # them into the arc (past its centre) so they positively meet
                     ext = arc_r + math.copysign(t_arc / 2, arc_r - rr)
                     for zf in arc_z:
                         _beam(f"conn_{s}_{i}_{j}_{int(rr)}_{int(zf)}", P(rr, th, zf),
@@ -405,105 +468,236 @@ def build_cargo(z0, z1, colls, spec, sz):
                     x, y, _ = P(rc, th, 0)
                     n += 1; mass += mm; mom_x += mm * x; mom_y += mm * y
 
-    # a container mid-load, sitting in the staging concourse just inside the door
     _box("loading_container", (cw, cw, spec["container"]["L"]),
          (0, -(inner - 6.0), zc_door), colls[3], (0.20, 0.95, 0.35))
-
-    # DOOR forward of the racks, opening into the staging segment; the loader
-    # works this concourse (radial + tangential) then indexes boxes aft.
     _box("bay_door", (6, 1, door_h), (0, -(inner - 0.3), zc_door), c_door, C_DOOR)
     _box("loader", (3.2, 9, 3.2), (0, -(inner - 5.5), zc_door), c_door, C_LOAD)
     tps = sum(t["per_sector"] for t in per_track)
     return {"containers_shown": n, "tracks": len(per_track), "per_track": per_track,
-            "ring_pitch_m": round(ring_pitch, 2), "per_sector_layer": tps,
+            "ring_pitch_m": round(lay["ring_pitch"], 2), "per_sector_layer": tps,
             "full_bay_capacity_est": tps * ns * int(spec["cargo_bay_len"] / zp)}
 
 
-def build_reactor(coll, fuel_coll, spec):
+def build_tanks(coll, spec, zones):
+    inner = spec["radius_outer"] - spec["barrel_thickness"]
+    core = spec["core_radius"]
+    vol = 0.0
+    for name in ("lh2_fore", "lh2_aft"):
+        z0, z1, _, _ = zones[name]
+        _cyl_surface(f"{name}_inner", core + 0.4, z0, z1, coll, C_LH2, verts=48, alpha=0.45)
+        _cyl_surface(f"{name}_outer", inner - 0.3, z0, z1, coll, C_LH2, verts=64, alpha=0.45)
+        vol += math.pi * (inner ** 2 - core ** 2) * (z1 - z0)
+    mass_kt = vol * spec["lh2_density"] / 1e6
+    return {"volume_m3": round(vol), "mass_kt": round(mass_kt, 1)}
+
+
+def build_crew(coll, spec, zones):
+    z0, z1, _, _ = zones["crew_core"]
+    _cyl_surface("hab_pressure", 6.5, z0 + 2.0, z1 - 2.0, coll, C_HAB, verts=36, caps=True)
+    _cyl_surface("bridge_blister", 4.0, z1 - 8.0, z1 + 4.0, coll, C_HAB, verts=24, caps=True)
+    return {"hab_len_m": round((z1 - z0) - 4.0, 1)}
+
+
+def build_reactor(coll, fuel_coll, spec, zones):
     rc = spec["reactor"]
-    z_aft = rc["aft_choke_z"]
-    z_fore = z_aft + rc["burn_len"]                  # fore choke, at the engineering deck
-    chr_ = rc["chamber_r"]
-    # burning plasma column + vacuum vessel / first wall
-    _cyl_surface("reactor_plasma", rc["plasma_r"], z_aft, z_fore, coll, C_PLASMA, verts=32)
-    _cyl_surface("reactor_chamber", chr_, z_aft, z_fore, coll, C_CHAMBER, verts=48)
-    # central-cell coils along the burning length (energize more/fewer -> throttle)
-    for z in arange(z_aft + rc["coil_pitch"], z_fore - rc["coil_pitch"] + 1e-6, rc["coil_pitch"]):
-        _torus(f"cc_coil_{int(z)}", rc["coil_r"], rc["coil_minor"], z, coll, C_COIL)
-    # end chokes (high-field mirror coils, ~27 T): a pair at each end
-    for zc in (z_fore, z_aft):
-        for dz in (-2.5, 2.5):
-            _torus(f"choke_{int(zc)}_{int(zc + dz)}", rc["choke_r"], rc["choke_minor"], zc + dz, coll, C_CHOKE)
-    # plug cells + direct-converter expanders beyond each choke; leaked plasma
-    # streams into the converters (confinement geometry == conversion geometry)
-    for sgn, zc in ((1.0, z_fore), (-1.0, z_aft)):
-        zp0 = zc + sgn * 3.0
-        zp1 = zp0 + sgn * rc["plug_len"]
-        _cyl_surface(f"plug_bore_{int(zc)}", rc["plug_r"], min(zp0, zp1), max(zp0, zp1), coll, C_CHAMBER, verts=24)
+    z0, z1, _, zlen = zones["reactor"]
+    # Stack, aft -> fore, packed against the aft end of the zone so the
+    # engineering deck sits at the forward (crew-side) bulkhead.
+    z = z0 + 1.0
+    z_aft_conv0 = z
+    z_aft_conv1 = z + rc["conv_len"]; z = z_aft_conv1
+    z_aft_plug0 = z
+    z_aft_plug1 = z + rc["plug_len"]; z = z_aft_plug1
+    z_aft_choke = z + 2.5; z = z_aft_choke + 2.5
+    z_plasma0 = z
+    z_plasma1 = z + rc["burn_len"]; z = z_plasma1
+    z_fore_choke = z + 2.5; z = z_fore_choke + 2.5
+    z_fore_plug0 = z
+    z_fore_plug1 = z + rc["plug_len"]; z = z_fore_plug1
+    z_fore_conv0 = z
+    z_fore_conv1 = z + rc["conv_len"]; z = z_fore_conv1
+    z_shield0 = z
+    z_shield1 = z + rc["shield_len"]; z = z_shield1
+    z_eng0 = z
+    z_eng1 = z + rc["eng_deck_len"]
+    if z_eng1 > z1 - 0.5:
+        raise RuntimeError(f"reactor stack {z_eng1 - z0:.1f} m exceeds zone {zlen:.1f} m")
+
+    _cyl_surface("reactor_plasma", rc["plasma_r"], z_plasma0, z_plasma1, coll, C_PLASMA, verts=32)
+    _cyl_surface("reactor_chamber", rc["chamber_r"], z_plasma0, z_plasma1, coll, C_CHAMBER, verts=48)
+    for zc in arange(z_plasma0 + rc["coil_pitch"], z_plasma1 - rc["coil_pitch"] + 1e-6, rc["coil_pitch"]):
+        _torus(f"cc_coil_{int(zc)}", rc["coil_r"], rc["coil_minor"], zc, coll, C_COIL)
+    for zc in (z_aft_choke, z_fore_choke):
+        for dz in (-2.0, 2.0):
+            _torus(f"choke_{int(zc)}_{int(dz)}", rc["choke_r"], rc["choke_minor"], zc + dz, coll, C_CHOKE)
+    for tag, zp0, zp1 in (("aft", z_aft_plug0, z_aft_plug1), ("fore", z_fore_plug0, z_fore_plug1)):
+        _cyl_surface(f"plug_bore_{tag}", rc["plug_r"], zp0, zp1, coll, C_CHAMBER, verts=24)
         for frac in (0.35, 0.65):
-            zp = zp0 + sgn * rc["plug_len"] * frac
-            _torus(f"plugcoil_{int(zc)}_{int(zp)}", rc["plug_coil_r"], rc["plug_coil_minor"], zp, coll, C_PLUG)
-        _cone(f"converter_{int(zc)}", rc["conv_r"], zp1 + sgn * rc["conv_len"], zp1, coll, C_CONV)
-    # main-drive DEUTERIUM fuel farm: annular tankage wrapping the column -- also
-    # the reactor's own D supply and a neutron shield for everything outboard
-    _cyl_surface("drive_fuel_inner", rc["fuel_r_in"], z_aft, z_fore, fuel_coll, C_FUEL, verts=48)
-    _cyl_surface("drive_fuel_outer", rc["fuel_r_out"], z_aft, z_fore, fuel_coll, C_FUEL, verts=64)
-    # engineering deck forward of the fore converter, behind a fuel-tank shield;
-    # the manual fuel shutoff lives here, shielded from the reactor by its fuel
-    z_shield = z_fore + 3.0 + rc["plug_len"] + rc["conv_len"]
-    _cyl_surface("reactor_fuel_shield", rc["conv_r"], z_shield, z_shield + 4.0, fuel_coll, C_FUEL, verts=32, caps=True)
-    z_ed = z_shield + 4.0
-    _cyl_surface("eng_deck", rc["conv_r"] * 0.8, z_ed, z_ed + rc["eng_deck_len"], coll, C_ENG, verts=32, caps=True)
-    return {"burn_len_m": rc["burn_len"], "column_z": [round(z_aft, 1), round(z_fore, 1)],
-            "eng_deck_z": round(z_ed + rc["eng_deck_len"] / 2, 1),
-            "fuel_annulus_r": [rc["fuel_r_in"], rc["fuel_r_out"]],
+            zp = zp0 + (zp1 - zp0) * frac
+            _torus(f"plugcoil_{tag}_{int(zp)}", rc["plug_coil_r"], rc["plug_coil_minor"], zp, coll, C_PLUG)
+    _cone("converter_aft", rc["conv_r"], z_aft_conv0, z_aft_conv1, coll, C_CONV)
+    _cone("converter_fore", rc["conv_r"], z_fore_conv1, z_fore_conv0, coll, C_CONV)
+    _cyl_surface("reactor_fuel_shield", rc["conv_r"], z_shield0, z_shield1, fuel_coll, C_FUEL, verts=32, caps=True)
+    _cyl_surface("eng_deck", rc["conv_r"] * 0.8, z_eng0, z_eng1, coll, C_ENG, verts=32, caps=True)
+
+    # 2 kt D-3He — two tanks in the annulus, not a spine farm.
+    for s, tag in ((0.0, "port"), (math.pi, "stbd")):
+        x, y, _ = P(rc["dhe3_tank_off"], s, 0)
+        zc = (z_plasma0 + z_plasma1) / 2
+        half = rc["dhe3_tank_len"] / 2
+        tank = _cyl_surface(f"dhe3_{tag}", rc["dhe3_tank_r"], zc - half, zc + half,
+                            fuel_coll, C_FUEL, verts=24, caps=True)
+        tank.location = (x, y, 0.0)
+
+    return {"burn_len_m": rc["burn_len"],
+            "column_z": [round(z_plasma0, 1), round(z_plasma1, 1)],
+            "stack_len_m": round(z_eng1 - z_aft_conv0, 1),
+            "eng_deck_z": round((z_eng0 + z_eng1) / 2, 1),
             "objects": len(coll.objects) + len(fuel_coll.objects)}
 
 
-def build_radiator(coll, spec):
+def build_radiator(coll, spec, zones):
     r = spec["radiator"]
-    depth = r["r_out"] - r["r_in"]; rc = (r["r_in"] + r["r_out"]) / 2
-    for i in range(r["n_fins"]):
-        th = TAU * i / r["n_fins"]
-        _box(f"radfin_{i}", (depth, r["thick"], r["len"]), P(rc, th, r["z_center"]), coll, C_RAD, rotz=th)
-    return {"fin_area_m2": round(2 * depth * r["len"] * r["n_fins"]), "r_out": r["r_out"]}
+    L = spec["length"]
+    z_tail = -L / 2
+    z_petals = z_tail - r["z_aft_of_tail"]
+    z_rad0, z_rad1, _, _ = zones["radiator_aft"]
+    n = r["n_petals"]
+    sector = TAU / n
+    gap = sector * r["gap_frac"]
+    live = sector - gap
+    area = 0.0
+    for i in range(n):
+        # Gaps on the axes so nacelle plumes (θ = 0, π) pass between petals.
+        a0 = i * sector + gap / 2
+        a1 = a0 + live
+        col = C_RAD_ZONES[i % len(C_RAD_ZONES)]
+        _sector_plate(f"petal_{i}", r["r_in"], r["r_out"], a0, a1, z_petals, r["thick"],
+                      coll, col, segs=20)
+        amid = 0.5 * (a0 + a1)
+        rm = 0.5 * (r["r_in"] + r["r_out"])
+        _beam(f"rad_spar_{i}", P(spec["radius_outer"] - 1.0, amid, z_tail),
+              P(r["r_out"] - 4.0, amid, z_petals), r["spar_t"], coll, C_STRUT)
+        _beam(f"tin_riser_{i}", P(6.0, amid, (z_rad0 + z_rad1) / 2),
+              P(spec["radius_outer"], amid, z_tail + 4.0), 0.9, coll, C_RAD)
+        area += (r["r_out"] ** 2 - r["r_in"] ** 2) * live / 2
+    _cyl_surface("rad_hub", r["hub_r"], z_petals - r["hub_len"] / 2, z_petals + r["hub_len"] / 2,
+                 coll, C_RAD, verts=32, caps=True)
+    hull_area = TAU * spec["radius_outer"] * (z_rad1 - z_rad0)
+    return {"petal_area_m2": round(2 * area), "hull_area_m2": round(hull_area),
+            "total_area_m2": round(2 * area + hull_area), "n_zones": n,
+            "r_out": r["r_out"]}
 
 
-def build_drive(coll, spec):
-    d = spec["icf_drive"]
-    pos = [(0.0, 0.0)] + [(d["cluster_r"] * math.cos(TAU * i / d["n_ring"]),
-                           d["cluster_r"] * math.sin(TAU * i / d["n_ring"])) for i in range(d["n_ring"])]
-    for j, (x, y) in enumerate(pos):
-        o = _cone(f"nozzle_{j}", d["bell_r"], d["z_base"], d["z_throat"], coll, C_DRIVE)
-        o.location = (x, y, 0.0)
-    _cyl_surface("drive_body", d["body_r"], d["z_throat"], d["z_throat"] + d["body_len"], coll, C_NAC, verts=32, caps=True)
-    return {"nozzles": len(pos)}
-
-
-def build_nacelles(coll, spec):
-    nc = spec["nacelle"]; R = spec["radius_outer"]
+def build_nacelles(coll, spec, zones):
+    nc = spec["nacelle"]
+    R = spec["radius_outer"]
+    z_reac0, z_reac1, _, _ = zones["reactor"]
+    zc = (z_reac0 + z_reac1) / 2
+    half = nc["pod_len"] / 2
     for s in range(nc["count"]):
         th = TAU * s / nc["count"]
-        zc = nc["z_center"]; half = nc["pod_len"] / 2
         px, py = P(R + nc["boom_len"] + nc["pod_r"], th, 0)[:2]
         _beam(f"boom_{s}", P(R, th, zc), P(R + nc["boom_len"], th, zc), nc["boom_t"], coll, C_STRUT)
-        pod = _cyl_surface(f"nacelle_{s}", nc["pod_r"], zc - half, zc + half, coll, C_NAC, verts=28, caps=True)
-        pod.location = (px, py, 0.0)
-        noz = _cone(f"nac_nozzle_{s}", nc["pod_r"] * 0.9, zc - half - nc["nozzle_len"], zc - half, coll, C_DRIVE)
-        noz.location = (px, py, 0.0)
-    return {"nacelles": nc["count"]}
+        jx, jy = P(R + nc["boom_len"], th, 0)[:2]
+        turret = _torus(f"turret_{s}", nc["turret_r"], nc["turret_minor"], 0.0, coll, C_DRIVE, nu=20, nv=10)
+        turret.location = (jx, jy, zc)
+        pod = _cyl_surface(f"nacelle_{s}", nc["pod_r"], -half, half, coll, C_NAC,
+                           verts=28, caps=True)
+        pod.location = (px, py, zc)
+        noz = _cone(f"nac_nozzle_{s}", nc["pod_r"] * 0.95, -half - nc["nozzle_len"],
+                    -half, coll, C_DRIVE)
+        noz.location = (px, py, zc)
+        for k in range(nc["rad_n"]):
+            a = th + TAU * (k + 0.5) / nc["rad_n"]
+            _box(f"nac_rad_{s}_{k}",
+                 (nc["rad_span"], nc["rad_thick"], nc["rad_len"]),
+                 (px + 0.65 * nc["pod_r"] * math.cos(a),
+                  py + 0.65 * nc["pod_r"] * math.sin(a), zc),
+                 coll, C_NAC_RAD, rotz=a)
+    return {"nacelles": nc["count"], "z_center": round(zc, 1),
+            "axis_r": round(R + nc["boom_len"] + nc["pod_r"], 1)}
 
 
-def _set_viewport_object_color():
+def build_collectors(coll, spec):
+    L = spec["length"]
+    z_nose = L / 2
+    for i, c in enumerate(spec["collector"]["coils"]):
+        _torus(f"scoop_coil_{i}", c["R"], c["r"], z_nose - c["z_from_nose"],
+               coll, C_SCOOP, nu=36, nv=14)
+    th = spec["collector"]
+    _cyl_surface("scoop_throat", th["throat_r"], z_nose - th["throat_len"], z_nose + 4.0,
+                 coll, C_SCOOP, verts=24, caps=True)
+    return {"coils": len(spec["collector"]["coils"])}
+
+
+def build_sensors(coll, spec):
+    L = spec["length"]
+    z_nose = L / 2
+    s = spec["sensors"]
+    cap = spec["nose_cap_len"]
+    R = spec["radius_outer"]
+
+    def cone_r(along):
+        return R * (1.0 - along)
+
+    for i in range(s["n_fel"]):
+        th = TAU * i / s["n_fel"] + TAU / 16
+        along = s["fel_along"]
+        rr = cone_r(along) + 1.2
+        z0 = z_nose + cap * along
+        x, y = P(rr, th, 0)[:2]
+        fel = _cyl_surface(f"fel_{i}", s["fel_r"], 0.0, s["fel_len"], coll, C_FEL,
+                           verts=16, caps=True)
+        fel.location = (x, y, z0)
+    for i in range(s["n_radar"]):
+        th = TAU * i / s["n_radar"]
+        along = s["radar_along"]
+        rr = cone_r(along) + 0.6
+        zc = z_nose + cap * along
+        _box(f"radar_{i}", (s["radar_w"], s["radar_thick"], s["radar_h"]),
+             P(rr, th, zc), coll, C_RADAR, rotz=th)
+    return {"fel": s["n_fel"], "radar_tiles": s["n_radar"]}
+
+
+def build_hangar(coll, spec, zones):
+    R = spec["radius_outer"]
+    z0, z1, _, _ = zones["cargo_aft"]
+    zc = (z0 + z1) / 2
+    _box("hangar_door", (18.0, 1.2, 28.0), (0.0, -(R - 0.4), zc), coll, C_DOOR)
+    return {"z": round(zc, 1)}
+
+
+def _set_viewport():
     try:
         for area in bpy.context.screen.areas:
             if area.type == 'VIEW_3D':
                 for sp in area.spaces:
                     if sp.type == 'VIEW_3D':
-                        sp.shading.type = 'SOLID'; sp.shading.color_type = 'OBJECT'
+                        sp.shading.type = 'SOLID'
+                        sp.shading.color_type = 'OBJECT'
                         sp.shading.show_object_outline = True
+                        sp.clip_end = 12000.0
     except Exception:
         pass
+
+
+def _frame_camera(spec):
+    L = spec["length"]
+    cam_data = bpy.data.cameras.new("Camera")
+    cam_data.clip_end = 12000.0
+    cam_data.lens = 35.0
+    cam = bpy.data.objects.new("Camera", cam_data)
+    bpy.context.scene.collection.objects.link(cam)
+    cam.location = (420.0, -2200.0, 80.0)
+    direction = mathutils.Vector((0.0, 0.0, 0.0)) - cam.location
+    cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
+    bpy.context.scene.camera = cam
+    sun_data = bpy.data.lights.new("Sun", 'SUN')
+    sun_data.energy = 4.0
+    sun = bpy.data.objects.new("Sun", sun_data)
+    sun.rotation_euler = (math.radians(50), 0.0, math.radians(30))
+    bpy.context.scene.collection.objects.link(sun)
 
 
 def build():
@@ -511,32 +705,45 @@ def build():
     bpy.context.scene.unit_settings.system = "METRIC"
     R = SPEC["radius_outer"]; L = SPEC["length"]
     sz = structural_sizing(SPEC)
+    zones = zone_map(SPEC)
     hull = _collection("SHIP_hull_zones"); struct = _collection("SHIP_structure")
     colls = (_collection("SHIP_cargo_support"), _collection("SHIP_cargo_arc"),
              _collection("SHIP_cargo_rail"), _collection("SHIP_cargo"),
              _collection("SHIP_cargo_heavy"), _collection("SHIP_cargo_door"),
              _collection("SHIP_inner_hull"))
     _cyl_surface("Core", SPEC["core_radius"], -L / 2, L / 2, struct, C_CORE, caps=True)
-    z_top = L / 2; zone_z = {}
-    for name, length, color in SPEC["zones"]:
-        z0 = z_top - length
-        _cyl_surface(f"zone_{name}", R, z0, z_top, hull, color); zone_z[name] = (z0, z_top); z_top = z0
+    for name, (z0, z1, color, _) in zones.items():
+        _cyl_surface(f"zone_{name}", R, z0, z1, hull, color)
     _cone("Nose_cap", R, L / 2, L / 2 + SPEC["nose_cap_len"], struct, (0.40, 0.60, 0.90))
     _cyl_surface("Tail_cap", R, -L / 2 - SPEC["tail_len"], -L / 2, struct, (0.90, 0.45, 0.25), caps=True)
-    z0f, _ = zone_z["cargo_fore"]
+
+    z0f, z1f, _, _ = zones["cargo_fore"]
+    # 80 m sample of the forward bay — a full 300 m hold is tens of thousands
+    # of objects and does not change the argument.
     sec = build_cargo(z0f + 15, z0f + 95, colls, SPEC, sz)
-    rsec = build_reactor(_collection("SHIP_reactor"), _collection("SHIP_reactor_fuel"), SPEC)
-    radsec = build_radiator(_collection("SHIP_radiator"), SPEC)
-    drvsec = build_drive(_collection("SHIP_drive"), SPEC)
-    nacsec = build_nacelles(_collection("SHIP_nacelle"), SPEC)
-    _set_viewport_object_color()
+    tanksec = build_tanks(_collection("SHIP_lh2"), SPEC, zones)
+    crewsec = build_crew(_collection("SHIP_crew"), SPEC, zones)
+    rsec = build_reactor(_collection("SHIP_reactor"), _collection("SHIP_reactor_fuel"), SPEC, zones)
+    radsec = build_radiator(_collection("SHIP_radiator"), SPEC, zones)
+    nacsec = build_nacelles(_collection("SHIP_nacelle"), SPEC, zones)
+    colsec = build_collectors(_collection("SHIP_collector"), SPEC)
+    sensec = build_sensors(_collection("SHIP_sensors"), SPEC)
+    hansec = build_hangar(_collection("SHIP_hangar"), SPEC, zones)
+    _frame_camera(SPEC)
+    _set_viewport()
     try:
         bpy.ops.ed.undo_push(message="haunted-forest: build ship")
     except Exception:
         pass
-    return {"radius_m": R, "length_m": L, "objects": len(bpy.data.objects),
-            "sizing": sz, "section": sec, "reactor": rsec,
-            "radiator": radsec, "drive": drvsec, "nacelles": nacsec}
+    vol, tank_len = lh2_volume_m3(SPEC)
+    return {
+        "radius_m": R, "length_m": L, "objects": len(bpy.data.objects),
+        "sizing": sz, "section": sec, "lh2": tanksec, "crew": crewsec,
+        "reactor": rsec, "radiator": radsec, "nacelles": nacsec,
+        "collectors": colsec, "sensors": sensec, "hangar": hansec,
+        "lh2_check": {"volume_m3": round(vol), "mass_kt": round(vol * SPEC["lh2_density"] / 1e6, 1),
+                      "tank_len_m": tank_len},
+    }
 
 
 result = build()

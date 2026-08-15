@@ -2,18 +2,26 @@
 
 ## Hull and Structure
 
-The ship is a slender cylinder — roughly 1 km long and 30 m in radius (a
-60 m diameter, a ~17:1 needle). Facing the interstellar medium head-on at a
-fraction of light speed, a small frontal cross-section is worth far more
-than interior convenience, so the hull is long and narrow. It is
-constructed from carbon nanotube composites and graphene sheets — materials
-with tensile strengths of 50-100 GPa at densities of ~1,400 kg/m³.
+The ship is a slender cylinder — roughly **1.5 km** long and 30 m in
+radius (a 60 m diameter, a 25:1 needle). Facing the interstellar medium
+head-on at a fraction of light speed, a small frontal cross-section is
+worth far more than interior convenience, so the hull grows along its
+axis, never its face. It is constructed from carbon nanotube composites
+and graphene sheets — materials with tensile strengths of 50-100 GPa at
+densities of ~1,400 kg/m³.
 
-For perspective: the structural stress at the base of a 1 km column under
-1G, at the ship's average density (~120 kg/m³ at operating mass), is about
-1.2 MPa. CNT handles 50 GPa. The structure could withstand tens of thousands
-of G before failing; the drive's 9G redline is nothing to the frame — the
-limits are the crew and the nozzles, not the structure.
+A hundred thousand tonnes of LH₂ is 1.4 million cubic metres. That is
+half of a 1 km × 30 m cylinder, so the hull is a kilometre and a half:
+the two cargo bays stay full-radius and 300 m each, and the hydrogen
+lives in dedicated tank bands around the crew. Length is cheap.
+Frontal area is not.
+
+For perspective: the structural stress at the base of a 1.5 km column
+under 1G, at the ship's average density (~75 kg/m³ at operating mass),
+is about 1.1 MPa. CNT handles 50 GPa. The structure could withstand
+tens of thousands of G before failing; the drive's 9G redline is
+nothing to the frame — the limits are the crew and the nozzles, not
+the structure.
 
 The load-bearing structure — a carbon-nanosheet inner hull plus the ship's
 longitudinal frame — is a small fraction of the mass. The heavy part of the
@@ -75,31 +83,32 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
 ```
                   ↑ direction of travel — always
 
-     [ Water-Whipple nose cap ]      ← always faces the ISM
-     [ Cargo bays / hangars    ]
-     [ LH₂ tanks               ]
-     [ Crew / sensitive cargo  ]
-     [ LH₂ tanks               ]
-     [ Cargo bays / hangars    ]
-     [ Ship reactor / engineering ]
-     [ Radiator tail           ]      ← always in the wake → cold space
-     [ Conventional engines    ]
+     [ Water-Whipple nose + collector coils + bow suite ]
+     [ Cargo bay / hangars                               ]
+     [ LH₂ tanks                                         ]
+     [ Crew / sensitive cargo                            ]
+     [ LH₂ tanks                                         ]
+     [ Cargo bay / hangars                               ]
+     [ Ship reactor / engineering                        ]
+     [ Aft radiating hull                                ]
+     [ Wake petals (8 zones)                             ]  ← always in the wake
 
-  Stardrive nacelles ride on booms alongside the hull, each a lockable
-  turret: nozzle aft to accelerate, nozzle forward to decelerate.
+  Stardrive nacelles ride on booms alongside the aft hull, each a
+  lockable turret: nozzle aft to accelerate, nozzle forward to
+  decelerate. Their plumes pass through the petal disk's inner hole.
 ```
 
-The ship is **directionally specialized and never flips**: the nose always
-meets the ISM, the tail always radiates into the wake, and the reactor sits
-aft beside the radiator and the tail torch nozzles. The stardrive
-modules — IS black boxes — ride in nacelles on booms so their waste
-heat and radiation stay off the hull; each nacelle is a lockable
-two-position turret. The **collectors** are a separate system, not
-IS's, and they always face the ISM. To decelerate at midcourse the
-scoop field reshapes from funnel to parachute and the ship bleeds
-speed on magnetic drag; once well below the 0.12c wall the nacelles
-slew 180° and the torch finishes the descent on tanked hydrogen. The
-ship never turns over.
+The ship is **directionally specialized and never flips**: the nose
+always meets the ISM, the tail always radiates into the wake, and the
+hotel reactor sits aft beside the radiators. The stardrive modules —
+IS black boxes — ride in nacelles on booms so their waste heat and
+radiation stay off the hull; each nacelle is a lockable two-position
+turret. There is no second engine at the tail. The **collectors** are
+a separate system, not IS's: superconducting coils on the bow, always
+facing the ISM. To decelerate at midcourse the scoop field reshapes
+from funnel to parachute and the ship bleeds speed on magnetic drag;
+once well below the 0.12c wall the nacelles slew 180° and the torch
+finishes the descent on tanked hydrogen. The ship never turns over.
 
 Because the *ship* never turns over, **thrust-gravity reverses at
 midcourse**. On the outbound half the drive pushes the ship forward, so
@@ -120,8 +129,9 @@ laid out for the outbound floor now hanging overhead on the way home.
 
 This is what the ship is *for*. Strip away the drive, the shield, the reactor,
 and their only job is to carry the hold between stars. Two cargo bays — one
-forward of the crew core, one aft — run about 300 m each and together are
-roughly **60% of the ship's length**. Everything else is in service of them.
+forward of the crew core, one aft — run **300 m** each. The hydrogen tanks
+take a comparable length (LH₂ is fluffy; see Hull and Structure), but the
+bays stay full-radius: every tonne of cargo the rack can take, it takes.
 
 ### The Standard Container
 
@@ -129,8 +139,8 @@ Cargo is fully containerized in a single standard box: **12 × 2.5 × 2.5 m**,
 about 75 m³, ~20 t loaded — a deliberate descendant of the twentieth-century
 intermodal container, because a standard that already worked for four hundred
 years isn't worth reinventing. One size means one set of rails, one handling
-system, one lock. A full hold is on the order of **7,500 containers** (~150,000
-t of cargo); the rack is sized for a little more, to leave slack for trim.
+system, one lock. The rack holds **8,448 containers** (~169,000 t) if every
+slot is filled; the loadmaster leaves empty slots for trim.
 
 ### The Rack — a Hard Disk Stood on Its Axis
 
@@ -153,16 +163,27 @@ rings, so no box ever has to be dug out from behind another.
 
 ### What Actually Holds It Up
 
-Under a 9 g combat burn a 20 t container weighs **1.77 MN** — and there are
-thousands. If each box hung from its own rails, every rail would carry a whole
-fore-and-aft column, buckling would force them absurdly thick, and the rack
-alone would out-mass the entire hull. So the boxes **stack against the bay-end
-bulkheads** under thrust, the way cargo has always ridden down onto a floor,
-and the bulkheads carry that load into the ship's spine. The rails don't hold
-the weight — they hold *position*: lateral restraint plus a positive lock so
-nothing drifts during the weightless coast when the ship flips. The
-unglamorous **bay-end bulkheads, not the elegant rack, are the primary
-structure of the hold.**
+Under a 9 g combat burn a 20 t container weighs **1.77 MN** — and there
+are thousands. If each box hung from a rail that ran the whole bay,
+every rail would carry a whole fore-and-aft column, buckling would
+force them absurdly thick, and the rack would out-mass the hull. If
+the boxes simply stacked onto the bay-end bulkhead, the bottom box
+would have to be a structural column: twenty-four neighbours, 9 g,
+and a 2.5 m face. The containers are cargo, not spars.
+
+So the hold is a **semi-monocoque cylinder**. Each box clamps to a
+pair of fore/aft rails (stringers) that are shear-tied to the
+inner-hull skin at every frame. A box sheds only its *own* axial load
+into the skin locally — no box carries the column, no rail carries
+the column. The skin carries the accumulating axial load as membrane
+compression, tapering thin→thick fore→aft, the way a rocket airframe
+already does. A mutually-braced frame cage (radial struts, hoops, and
+meridional X-braces in the sector-boundary planes) keeps the
+stringers from wracking and takes the lateral and midcourse-flip
+loads as axial spar forces. Gravity reverses at midcourse; a clamp
+holds both signs, so the flip just changes the sign of loads the
+members already carry. The **inner-hull skin, not the bulkheads and
+not the rails, is the primary structure of the hold.**
 
 ### Loading and Trim
 
@@ -668,34 +689,33 @@ still to never fly at it.
 
 ## Mass Budget
 
-### Empty Mass (~152,000 tonnes)
+### Empty Mass (~168,000 tonnes)
 
 The ship with nothing in it — hull, structure, permanently installed
 systems:
 
 | Component | Mass |
 |-----------|------|
-| Hull (multi-layer carbon-nanosheet Whipple armor) | 20,000 t |
-| Internal structure (decks, bulkheads, framing) | 20,000 t |
+| Hull (multi-layer carbon-nanosheet Whipple armor) | 30,000 t |
+| Internal structure (decks, bulkheads, framing) | 26,000 t |
 | Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
-| Thermal management (tin loops, zoned aft radiators) | 12,000 t |
+| Thermal management (tin loops, zoned wake petals) | 12,000 t |
 | Collectors (scoop coils, not IS) | 12,000 t |
-| Torch nozzles, feeds, tail cluster | 8,000 t |
-| Stardrive modules (IS boxes, nacelles, structure) | 50,000 t |
+| Stardrive modules (IS boxes, nacelles, feeds) | 58,000 t |
 | Weapons systems | 10,000 t |
 | Sensors, communications, computing | 5,000 t |
 | Life support (sized for ~10 crew) | 500 t |
 | Hangar structures and launch systems | 3,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-### Operating Mass (~309,000 tonnes)
+### Operating Mass (~320,000 tonnes)
 
 Ready to fly — fueled, shielded, crewed, but no cargo:
 
 | Component | Mass |
 |-----------|------|
-| Empty mass | 152,000 t |
-| Whipple shield water (barrel: radiation + impact stuffing) | 30,000 t |
+| Empty mass | 168,000 t |
+| Whipple shield water (barrel: radiation + impact stuffing) | 45,000 t |
 | LH₂ (torch fuel, remass, supplementary shield) | 100,000 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (hab air + reserves) | 20 t |
@@ -703,22 +723,21 @@ Ready to fly — fueled, shielded, crewed, but no cargo:
 | Small craft (shuttles, fighters, transports) | 5,000 t |
 | Crew (~10 people) | ~1 t |
 
-### Loaded Mass (up to ~500,000 tonnes)
+### Loaded Mass (up to ~490,000 tonnes)
 
-Operating mass plus cargo. **Cargo capacity: ~191,000 tonnes.**
+Operating mass plus cargo. **Cargo capacity: ~169,000 tonnes.**
 
 There is no separate drive-fuel bunker. The torch drinks the same LH₂
-the scoop puts in the tanks. The 45,000 t that used to be deuterium
-pellets is cargo. A hull breach still spills cold hydrogen. Nothing
-here has to be *contained*.
+the scoop puts in the tanks. A hull breach still spills cold hydrogen.
+Nothing here has to be *contained*.
 
 Cargo includes: cold sleep pods with passengers, black-boxed technology,
 trade goods, raw materials, colonization equipment — whatever the mission
 requires. Actual loaded mass varies:
 
-- Trade run: ~450,000 t
+- Trade run: ~440,000 t
 - Military patrol: ~370,000 t (light load)
-- Colony expedition: ~500,000 t (maximum)
+- Colony expedition: ~490,000 t (maximum)
 
 
 ## Power: The Fusion Reactor
@@ -901,14 +920,20 @@ The loop does not have a single design temperature. Cruise can sit
 near 800–1000 K. Rated load is hotter. A zoned-down combat posture,
 half the area shut, runs hotter still. Tin does not care.
 
-### Aft Radiators — Hull and Vanes, Zoned
+### Aft Radiators — Hull and Wake Petals, Zoned
 
-There are no engines occupying the tail. The **aft hull is a radiator**,
-plus fixed longitudinal vanes in the wake. Nose and forward barrel stay
-Whipple and water; they never have to do this job.
+There are no engines occupying the tail. The **aft hull is a
+radiator**, plus a disk of eight fixed petals in the wake. Nose and
+forward barrel stay Whipple and water; they never have to do this
+job.
 
-Roughly **~500,000 m²** of radiating surface (aft barrel + tail +
-vanes, ε ≈ 0.9). That is deliberate over-area:
+A 30 m hull cannot grow 500,000 m² of well-viewed area from
+longitudinal vanes — neighbouring vanes stare at each other long
+before the area is there. The area lives in the wake: eight petals
+forming an annulus, inner radius ~80 m (the nacelle plumes pass
+through the hole), outer radius ~305 m, both faces radiating. The
+aft barrel adds a little more. Geometric area is **~500,000 m²**
+(ε ≈ 0.9). That is deliberate over-area:
 
 | Load | All zones lit | Character |
 |------|----------------|-----------|
@@ -921,18 +946,19 @@ Err on the side of area. T⁴ is a brutal way to buy watts. Cooler
 cruise is free once the vanes exist, and a cooler ship is a quieter
 ship.
 
-**Zones.** The vanes and the aft barrel are grouped — port, starboard,
-dorsal, ventral, tail, and the individual vanes. Each zone can be
-drained or bypassed. Shut the ones that face a contact and you stop
-painting them with your waste heat. The remaining area runs hotter, or
-you throttle. That is a combat choice: watts versus who can see you.
+**Zones.** Each petal is a zone, and the aft-hull gore of the same
+bearing rides the same tin path — eight valves, matching the plant
+sim. Shut the petals that face a contact and you stop painting them
+with your waste heat. The remaining area runs hotter, or you
+throttle. That is a combat choice: watts versus who can see you.
 
 The torch plume is a separate, much louder announcement. Zoning the
 hotel plant does not hide a 3 G burn. It hides a ship that is *not*
 burning, or is burning away from you.
 
-No deployables. The vanes do not fold. Zoning is valves and which
-tin path is live, not origami.
+No deployables. The petals do not fold. Zoning is valves and which
+tin path is live, not origami. The spars that hold the disk take
+9 g as columns, the same way the cargo cage does.
 
 ### Midcourse Turnaround
 
@@ -1038,8 +1064,9 @@ on the same drive tech. The capital ship punches; the fighters knife-fight.
 | ~400,000 t | ~3,700 km/s | ~24 days |
 | ~330,000 t (light) | ~5,200 km/s | ~18 days |
 
-In-system transits still take days; the ship is a kilometer long and masses
-hundreds of thousands of tonnes. The drive changed; the heft did not.
+In-system transits still take days; the ship is a kilometre and a half
+long and masses hundreds of thousands of tonnes. The drive changed; the
+heft did not.
 
 ### Port Call — the Tank Is a Reserve
 
@@ -1206,10 +1233,12 @@ who stays awake lives the crossing.
 ## The Collector
 
 The scoop is **not** an Interstellar Systems product. Superconducting
-coils on the ship — yards build them, crews patch them, no 60 ly
-pilgrimage — throw a magnetic field ~14,000 km ahead. It ionizes
-interstellar hydrogen and funnels it into the **tanks**. The torch
-never sees the ISM. It sees LH₂.
+coils on the bow — yards build them, crews patch them, no 60 ly
+pilgrimage — throw a magnetic field ~14,000 km ahead. The field is
+the size of a planet; the hardware you can see is three rings around
+the nose and a throat on the axis. It ionizes interstellar hydrogen
+and funnels it into the **tanks**. The torch never sees the ISM. It
+sees LH₂.
 
 ### Collection Rate
 
