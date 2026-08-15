@@ -531,7 +531,7 @@ gamble that pays in propellant, if the FEL keeps up.
 
 ### Where It Couples
 
-The FEL is not free. It draws from the reactor's ~315 GW electrical bus, so a
+The FEL is not free. It draws from the reactor's ~63 GW electrical bus, so a
 debris-heavy passage is a *power* event — beams up means less for everything
 else, and the generation losses land as waste heat on the same tin loop that
 cools the reactor, nudging the whole ship toward its thermal limit (see Thermal
@@ -557,7 +557,7 @@ defense against a pebble is to never fly at it.
 
 ## Mass Budget
 
-### Empty Mass (~165,000 tonnes)
+### Empty Mass (~152,000 tonnes)
 
 The ship with nothing in it — hull, structure, permanently installed
 systems:
@@ -566,8 +566,8 @@ systems:
 |-----------|------|
 | Hull (multi-layer carbon-nanosheet Whipple armor) | 20,000 t |
 | Internal structure (decks, bulkheads, framing) | 20,000 t |
-| Ship reactor + direct conversion (~500 GW fusion) | 25,000 t |
-| Thermal management (tin loops, tail radiator) | 8,000 t |
+| Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
+| Thermal management (tin loops, zoned aft radiators) | 12,000 t |
 | Collectors (scoop coils, not IS) | 12,000 t |
 | Torch nozzles, feeds, tail cluster | 8,000 t |
 | Stardrive modules (IS boxes, nacelles, structure) | 50,000 t |
@@ -577,13 +577,13 @@ systems:
 | Hangar structures and launch systems | 3,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-### Operating Mass (~305,000 tonnes)
+### Operating Mass (~309,000 tonnes)
 
 Ready to fly — fueled, shielded, crewed, but no cargo:
 
 | Component | Mass |
 |-----------|------|
-| Empty mass | 165,000 t |
+| Empty mass | 152,000 t |
 | Whipple shield water (barrel: radiation + impact stuffing) | 30,000 t |
 | LH₂ (torch fuel, remass, supplementary shield) | 100,000 t |
 | D-³He reactor fuel | 2,000 t |
@@ -594,7 +594,7 @@ Ready to fly — fueled, shielded, crewed, but no cargo:
 
 ### Loaded Mass (up to ~500,000 tonnes)
 
-Operating mass plus cargo. **Cargo capacity: ~195,000 tonnes.**
+Operating mass plus cargo. **Cargo capacity: ~191,000 tonnes.**
 
 There is no separate drive-fuel bunker. The torch drinks the same LH₂
 the scoop puts in the tanks. The 45,000 t that used to be deuterium
@@ -613,7 +613,10 @@ requires. Actual loaded mass varies:
 ## Power: The Fusion Reactor
 
 The ship's power plant is a D-³He (deuterium-helium-3) fusion reactor
-producing ~500 GW of fusion power. This is what we simulate in-game.
+rated at **~100 GW** fusion. It is not the drive. The torch handles
+propulsion and dumps almost all of its waste into the plume. This
+plant is hotel, scoop cryo, fabrication, sensors, and the FEL/weapons
+bus.
 
 D-³He fusion is nearly aneutronic — the primary reaction products are
 charged particles (14.7 MeV protons + 3.6 MeV alphas). ~90% of fusion
@@ -622,25 +625,28 @@ energy from unavoidable D-D side reactions.
 
 The charged particle fraction is directly converted to electricity via
 magnetic decelerators — no thermal cycle, no working fluid, no turbines.
-At ~70% conversion efficiency, the reactor delivers **~315 GW
-electrical** from ~450 GW of charged particle energy. The ~50 GW neutron
-fraction and ~135 GW of direct conversion losses are rejected as waste
-heat (see Thermal Management below).
+At ~70% conversion efficiency, the reactor delivers **~63 GW
+electrical** from ~90 GW of charged particle energy. The ~10 GW neutron
+fraction and ~27 GW of direct conversion losses are rejected as waste
+heat (**~37 GW** at rated; see Thermal Management).
 
-The reactor powers:
-- Life support and environmental systems
-- Fabrication and repair equipment
-- Weapons systems
-- Sensors and communications
-- Computing (AI systems)
+That is enough. Hotel, plugs, tin pumps, and compute are a few GW.
+The scoop's superconducting coils, once charged, want cryo, not a
+power station. The FEL is GW-class at 0.10c — a 1-second, 1 GW pulse
+is a gigajoule, and a sand grain is ~0.7 GJ. Weapons charge
+capacitors off the same bus. Fabrication can draw hard for a while.
+A 500 GW plant was a leftover from when someone thought the drive
+needed a hotel that large. It did not. Keep a capacitor farm if you
+want a bright, short shout. Do not haul a power station to feed it.
 
-The reactor is **not** involved in propulsion. The torch is an
-Interstellar Systems box: LH₂ in, fusion out. The collectors that
-fill the tanks are not IS's.
+The **light show is the point, in combat.** Even 37 GW of waste, if
+you light every zone, is a beacon. Run cool and dark at cruise. Light
+panels when you need the watts. Shut the ones that face a contact.
 
-315 GW is enormously overprovisioned for 10 crew — modern human
-civilization uses ~18 TW for 8 billion people. The surplus covers weapons
-charge, fabrication, cryogenics, and the ship's hotel load.
+³He at rated is ~5.4 t/year. The 2,000 t tank is now centuries at
+redline, forever at cruise. The skim still matters because cruise in
+the Bubble is break-even at a few percent. The tank is insurance, not
+the weekly shop.
 
 
 ## Confinement and Throttle
@@ -648,17 +654,17 @@ charge, fabrication, cryogenics, and the ship's hotel load.
 ### The Tandem Mirror
 
 The reactor confines its plasma in a **tandem magnetic mirror**: a straight
-magnetic bottle roughly **350 m** long running down the ship's spine, with the
+magnetic bottle roughly **70 m** long sitting aft by the radiators, with the
 field intensified at each end into a magnetic "choke" that reflects escaping
 particles back toward the middle. The burning plasma is a thin column about
-**3 m** in radius — some **10,000 m³** at full length — held at **9 T** in the
+**3 m** in radius — some **2,000 m³** at full length — held at **9 T** in the
 central cell, rising to ~27 T at the end chokes (mirror ratio ≈ 3).
 
 D-³He forces this choice. Because the fuel is nearly aneutronic, its fusion
 power density is low and bremsstrahlung is always trying to outrun it, so the
 plasma must run at high pressure relative to its confining field — high **beta**
 (β, the ratio of plasma pressure to magnetic pressure). The mirror is a
-naturally high-β machine; at the 500 GW operating point it runs **β ≈ 0.57**,
+naturally high-β machine; at the 100 GW operating point it runs **β ≈ 0.57**,
 against a soft limit of 0.75 and a hard (disruption) limit of 0.90. A tokamak,
 capped near β ≈ 0.04, would be strangled by bremsstrahlung on this fuel.
 
@@ -688,7 +694,7 @@ lengthens or shortens the burning column while leaving its density and
 temperature untouched. Every meter that is lit is fully, happily ignited; the
 reactor simply lights more or fewer meters.
 
-> P_fusion ≈ 500 GW × (L_active / 354 m)
+> P_fusion ≈ 100 GW × (L_active / 70 m)
 
 Because density and temperature never move, the plasma never approaches the
 collapse cliff — there is just less of it. This is the throttle: **power
@@ -705,11 +711,11 @@ the field. Operators trim it for the regime, not for throttling.
 
 | Regime | Fusion power | Burning length | Character |
 |--------|--------------|----------------|-----------|
-| Redline | 500 GW | ~354 m (full) | Combat / peak. β riding toward 0.75; radiators saturated. Two guards lit. |
-| Self-sustaining | 10–500 GW (2–100%) | ~7–354 m | Everyday range. Ignited at constant density across the whole span; overhead turns marginal below ~5% (25 GW). |
-| Aux-driven / lean | 3–10 GW (0.6–2%) | at the ~7 m geometric floor | Deepest idle and the deep-cruise minimum. The column can't shorten further, so density is dropped with aux heating holding temperature. Delicate. |
+| Redline | 100 GW | ~70 m (full) | Combat / peak FEL. β riding toward 0.75; every radiator zone lit, or fewer zones running hotter. |
+| Self-sustaining | 10–100 GW (10–100%) | ~7–70 m | Everyday range. Ignited at constant density; overhead turns marginal below ~10 GW. |
+| Aux-driven / lean | 3–10 GW | at the ~7 m geometric floor | Deep-cruise minimum. Density dropped, aux heating holds temperature. Delicate. |
 | Shutdown | < ~3 GW | cold | Overhead exceeds output — cold-and-dark, cold-start to relight. |
-| Overdraw | 500–700 GW | ~354 m (full) | Combat surge past rated: length maxed, density pushed up, β climbing toward the disruption limit. Thermally brutal. |
+| Overdraw | 100–140 GW | ~70 m (full) | Surge past rated: density pushed up, β climbing. Thermally loud. You are a lighthouse. |
 
 The **top** is a hard wall with two independent guards: the plasma's own
 stability (beta past 0.90 → flute/interchange disruption) and thermal rejection
@@ -723,9 +729,9 @@ shorter than the plug and transition regions.)
 
 Cruising lean is what makes a voyage possible. At a few percent power the reactor
 sips a small fraction of its rated fuel, stretching the **2,000 t** D-³He load
-across interstellar transit times. At the 500 GW redline the same tank is
-**~45 years** of mixed fuel (~27 t/year of ³He) — not months. Still too
-fast if you never throttle: a career of ports at redline would spend it.
+across interstellar transit times. At the 100 GW redline the same tank is
+**centuries** (~5.4 t/year of ³He). The skim still sets the cruise
+budget in the Bubble, not the bunker.
 
 The **risk lives in the transitions, not the setpoints.** Changing the burning
 length re-energizes superconducting coil groups, moving large amounts of stored
@@ -758,75 +764,64 @@ overheats before cooling catches up. A good engineer throttles gently.
 
 ### The Problem
 
-500 GW of fusion power produces ~185 GW of waste heat that must be
-rejected to space. There is no convection, no conduction to the
-environment — radiation is the only option.
+100 GW of fusion produces **~37 GW** of waste heat that must be rejected
+to space. Radiation is the only option. The torch is not in this
+budget — its waste leaves in the plume.
 
 ### Why Not a Thermal Cycle?
 
-A conventional power plant would run the thermal energy through a Brayton
-or Rankine cycle to extract electricity, then radiate the low-temperature
-waste heat. D-³He doesn't need this — 90% of fusion energy is already in
-charged particles handled by direct conversion. The remaining 10%
-(~50 GW) is neutron energy deposited in the reactor blanket.
+D-³He does not need one. 90% of the yield is already charged particles
+in the direct converters. The leftover ~10 GW of neutron heat, run
+through a Brayton between 2500 K and 2000 K, is ~20% — 2 GW. Not worth
+the mass next to 63 GW already in hand.
 
-To extract work from that 50 GW thermally, you'd need a heat engine
-operating between the blanket temperature and the radiator temperature.
-A Brayton cycle between 2500 K and 2000 K achieves only ~20% efficiency
-— about 10 GW electrical. Not worth the mass and complexity when direct
-conversion already provides 315 GW.
+A heat pump from a cold radiator up to a hot one spends roughly as
+much work as heat moved. Design the loop to reject at radiator
+temperature from the start. Tin's liquid range (505–2875 K) is why
+that is easy.
 
-A heat pump to boost low-temperature waste heat to high-temperature
-radiators is even worse: the Carnot COP from 800 K to 2000 K is 1.67,
-and real systems achieve maybe 60% of Carnot. You'd spend nearly as much
-electrical power pumping as heat you're trying to reject.
+### Reactor Blanket: Liquid Tin
 
-The answer is simpler: design the reactor to produce waste heat at
-radiator temperature from the start.
+SiC first wall and blanket, liquid tin coolant. The loop is **short**:
+reactor, converters, and radiators all live aft. No kilometer of 1800 K
+pipe through the hab. Pump power is a fraction of a GW at this scale.
 
-### Reactor Blanket: Liquid Tin at 1800-2000 K
+The loop does not have a single design temperature. Cruise can sit
+near 800–1000 K. Rated load is hotter. A zoned-down combat posture,
+half the area shut, runs hotter still. Tin does not care.
 
-The reactor's first wall and neutron blanket use high-temperature
-ceramics (SiC composites) cooled by liquid tin (Sn). Tin is liquid from
-505 K to 2875 K — an enormous operating range with comfortable margins
-at the design point of ~1800 K.
+### Aft Radiators — Hull and Vanes, Zoned
 
-The tin loop absorbs neutron energy in the blanket and direct conversion
-losses in the collector structures, carries the combined ~185 GW to the
-endcap radiator panels, and returns. No thermal cycle extracts work from
-this loop — the heat is dumped directly.
+There are no engines occupying the tail. The **aft hull is a radiator**,
+plus fixed longitudinal vanes in the wake. Nose and forward barrel stay
+Whipple and water; they never have to do this job.
 
-With the ship directionally specialized, the reactor sits aft alongside the
-tail radiator and the torch nozzles, so the tin loop is **short** —
-reactor to radiator is a few decks, not a kilometer of ~1800 K piping down
-the hull. That long run was a real cost of the old flip design (radiators at
-both ends, reactor amidships); specializing the ship retires it. The loop
-still wants good insulation and the ~1 GW tin pump, but it no longer
-threatens to bake the habitable volume along its length.
+Roughly **~500,000 m²** of radiating surface (aft barrel + tail +
+vanes, ε ≈ 0.9). That is deliberate over-area:
 
-### The Tail Radiator
+| Load | All zones lit | Character |
+|------|----------------|-----------|
+| Cruise waste ~8–12 GW | ~750–850 K | Dim. The ship is not a star. |
+| Rated 37 GW | ~1100 K | Bright in IR. Everyone with a telescope knows. |
+| Overdraw ~50 GW | ~1200 K | A lighthouse. |
+| Rated, half the zones shut | ~1300 K | Dark on one bearing, loud on the others. |
 
-The ship radiates its waste heat from the **tail** — a radiating endcap of
-~283,000 m² that always faces the ship's wake. At 1800 K it radiates:
+Err on the side of area. T⁴ is a brutal way to buy watts. Cooler
+cruise is free once the vanes exist, and a cooler ship is a quieter
+ship.
 
-> P = ε × σ × A × T⁴ = 0.9 × 5.67×10⁻⁸ × 283,000 × 1800⁴ ≈ **152 GW**
+**Zones.** The vanes and the aft barrel are grouped — port, starboard,
+dorsal, ventral, tail, and the individual vanes. Each zone can be
+drained or bypassed. Shut the ones that face a contact and you stop
+painting them with your waste heat. The remaining area runs hotter, or
+you throttle. That is a combat choice: watts versus who can see you.
 
-That's short of the 185 GW rated load, so the tail runs a little hotter —
-~1900 K clears 185 GW, and at 2000 K it reaches 231 GW. Because the ship is
-directionally specialized, the nose is a *shield*, not a second radiator, so
-this single tail face does all the rejecting. That is the price of not
-flipping: where the old two-endcap design had ~460 GW of in-system capacity,
-the tail alone is the ceiling — and **peak heat rejection, not a spare
-endcap, is what saturates first under combat overdraw**, feeding straight
-into the reactor's thermal-cascade guard.
+The torch plume is a separate, much louder announcement. Zoning the
+hotel plant does not hide a 3 G burn. It hides a ship that is *not*
+burning, or is burning away from you.
 
-**Wake placement**: the tail always faces cold space behind the direction
-of travel, so it radiates freely on every phase of the trip. No shadow
-choreography, no role-swapping — the nose shields and the tail radiates,
-always, even across the midcourse turnaround (the nacelles flip, not the
-ship).
-
-No deployable mechanisms. No moving parts on the radiator itself.
+No deployables. The vanes do not fold. Zoning is valves and which
+tin path is live, not origami.
 
 ### Midcourse Turnaround
 
