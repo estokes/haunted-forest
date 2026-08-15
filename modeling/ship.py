@@ -17,13 +17,12 @@
 # changes the sign of loads the members already carry. All geometry is DERIVED
 # from container size + clearances + structurally-sized members (structural_sizing).
 #
-# The hull is 1.5 km because 100 kt of LH2 is 1.41e6 m3 at 70.8 kg/m3 — half of
-# a 1 km x 30 m cylinder. Frontal area is sacred (0.10c); length is cheap.
-# Dedicated tank bands around the crew hold the hydrogen; the two 300 m cargo
-# bays stay full-radius. The hotel plant is a 70 m tandem mirror aft. There is
-# no tail ICF cluster: the torch is two IS black-box nacelles. Waste heat leaves
-# through 8 wake petals (~500,000 m2) plus the aft barrel. Collectors are bow
-# coils, not IS, not in the pods.
+# 1 km x 40 m (12.5:1). 100 kt of LH2 is 1.41e6 m3; at this radius that is
+# 315 m of full-section tank, which leaves 365 m of hold — shorter than the
+# old 600 m but fatter, ten tracks, more tonnes. Habitat sits midships
+# between the tank bands. Hotel plant is a 70 m tandem mirror aft. No tail
+# ICF: the torch is two IS black-box nacelles. Waste heat leaves through 8
+# wake petals (~500,000 m2) plus the aft barrel. Collectors are bow coils.
 
 import time
 
@@ -75,8 +74,8 @@ def arange(lo, hi, step):
 
 
 SPEC = {
-    "length": 1500.0, "radius_outer": 30.0, "barrel_thickness": 2.0,
-    "core_radius": 4.0, "nose_cap_len": 80.0, "tail_len": 16.0,
+    "length": 1000.0, "radius_outer": 40.0, "barrel_thickness": 2.0,
+    "core_radius": 4.0, "nose_cap_len": 105.0, "tail_len": 16.0,
     "container": {"L": 12.0, "W": 2.5, "H": 2.5}, "container_mass_t": 20.0,
     "clearance": 0.15,
     "n_sectors": 8,
@@ -85,15 +84,16 @@ SPEC = {
     "material_strength_Pa": 50.0e9,
     "material_density": 1400.0,
     "safety_factor": 2.0,
-    "cargo_bay_len": 300.0,
+    "cargo_bay_len": 185.0,
+    "cargo_bays": (180.0, 185.0),
     "lh2_density": 70.8,
     "zones": [
         ("nose_whipple",   50.0,  (0.35, 0.55, 0.85)),
-        ("cargo_fore",    300.0,  (0.90, 0.65, 0.15)),
-        ("lh2_fore",      290.0,  (0.20, 0.70, 0.90)),
+        ("cargo_fore",    180.0,  (0.90, 0.65, 0.15)),
+        ("lh2_fore",      160.0,  (0.20, 0.70, 0.90)),
         ("crew_core",      40.0,  (0.90, 0.25, 0.35)),
-        ("lh2_aft",       290.0,  (0.20, 0.70, 0.90)),
-        ("cargo_aft",     300.0,  (0.90, 0.65, 0.15)),
+        ("lh2_aft",       155.0,  (0.20, 0.70, 0.90)),
+        ("cargo_aft",     185.0,  (0.90, 0.65, 0.15)),
         ("reactor",       140.0,  (0.70, 0.30, 0.90)),
         ("radiator_aft",   90.0,  (0.90, 0.40, 0.20)),
     ],
@@ -108,13 +108,12 @@ SPEC = {
         "plug_len": 8.0, "plug_r": 2.8, "plug_coil_r": 4.5, "plug_coil_minor": 0.9,
         "conv_len": 12.0, "conv_r": 11.0,
         "eng_deck_len": 10.0, "shield_len": 4.0,
-        "dhe3_tank_r": 6.0, "dhe3_tank_len": 55.0, "dhe3_tank_off": 17.0,
+        "dhe3_tank_r": 6.0, "dhe3_tank_len": 55.0, "dhe3_tank_off": 22.0,
     },
-    # 8 independently valveable wake petals + the aft barrel. Geometric area
-    # is ~501,000 m2 of petal (both faces) plus ~17,000 m2 of aft hull.
-    # Inner hole clears the nacelle plumes. Gaps sit on the nacelle bearings.
+    # 8 independently valveable wake petals + the aft barrel. Inner hole
+    # clears the nacelle plumes (axis at r ≈ 79). Gaps sit on the bearings.
     "radiator": {
-        "n_petals": 8, "r_in": 80.0, "r_out": 305.0, "thick": 0.6,
+        "n_petals": 8, "r_in": 90.0, "r_out": 308.0, "thick": 0.6,
         "gap_frac": 0.08, "hub_r": 18.0, "hub_len": 14.0, "spar_t": 2.2,
         "z_aft_of_tail": 10.0,
     },
@@ -130,9 +129,9 @@ SPEC = {
     # what you can see is the hardware on the bow.
     "collector": {
         "coils": (
-            {"z_from_nose": 8.0, "R": 32.5, "r": 2.4},
-            {"z_from_nose": 32.0, "R": 31.5, "r": 1.8},
-            {"z_from_nose": 62.0, "R": 31.2, "r": 1.5},
+            {"z_from_nose": 8.0, "R": 42.8, "r": 2.6},
+            {"z_from_nose": 32.0, "R": 41.6, "r": 2.0},
+            {"z_from_nose": 62.0, "R": 41.3, "r": 1.6},
         ),
         "throat_r": 3.2, "throat_len": 16.0,
     },
@@ -232,8 +231,11 @@ def structural_sizing(spec):
         "tracks_per_sector": len(lay["rings"]) - 1,
         "rail_lines_per_bay": n_lines,
         "boxes_per_bay": n_boxes,
-        "capacity_both_bays": n_boxes * 2,
-        "capacity_t": n_boxes * 2 * spec["container_mass_t"],
+        "capacity_both_bays": n_lines * sum(
+            int(b / zp) for b in spec.get("cargo_bays", (spec["cargo_bay_len"], spec["cargo_bay_len"]))),
+        "capacity_t": n_lines * sum(
+            int(b / zp) for b in spec.get("cargo_bays", (spec["cargo_bay_len"], spec["cargo_bay_len"])))
+        * spec["container_mass_t"],
         "P_bay_GN": round(P_bay / 1e9, 2),
         "mass_t": {
             "rails": round(m_rail / 1e3),
@@ -749,7 +751,7 @@ def _frame_camera(spec):
     cam_data.lens = 35.0
     cam = bpy.data.objects.new("Camera", cam_data)
     bpy.context.scene.collection.objects.link(cam)
-    cam.location = (420.0, -2200.0, 80.0)
+    cam.location = (380.0, -1600.0, 60.0)
     direction = mathutils.Vector((0.0, 0.0, 0.0)) - cam.location
     cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
     bpy.context.scene.camera = cam

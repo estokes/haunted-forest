@@ -2,26 +2,27 @@
 
 ## Hull and Structure
 
-The ship is a slender cylinder — roughly **1.5 km** long and 30 m in
-radius (a 60 m diameter, a 25:1 needle). Facing the interstellar medium
-head-on at a fraction of light speed, a small frontal cross-section is
-worth far more than interior convenience, so the hull grows along its
-axis, never its face. It is constructed from carbon nanotube composites
-and graphene sheets — materials with tensile strengths of 50-100 GPa at
-densities of ~1,400 kg/m³.
+The ship is a slender cylinder — **1 km** long and **40 m** in radius
+(an 80 m diameter, a 12.5:1 needle). Facing the interstellar medium
+head-on at a fraction of light speed, frontal area still matters, so
+this is only a third fatter than a 30 m hull, not a sausage. It is
+constructed from carbon nanotube composites and graphene sheets —
+materials with tensile strengths of 50-100 GPa at densities of
+~1,400 kg/m³.
 
-A hundred thousand tonnes of LH₂ is 1.4 million cubic metres. That is
-half of a 1 km × 30 m cylinder, so the hull is a kilometre and a half:
-the two cargo bays stay full-radius and 300 m each, and the hydrogen
-lives in dedicated tank bands around the crew. Length is cheap.
-Frontal area is not.
+A hundred thousand tonnes of LH₂ is 1.4 million cubic metres. At 40 m
+radius that is **315 m** of full-section tank — two bands around the
+midships habitat — and leaves **365 m** of hold. The bays are shorter
+than they were at 30 m; they are also fatter, ten tracks instead of
+seven, and they carry more. The face grew by 1.8×. Dust and FEL time
+scale with that.
 
-For perspective: the structural stress at the base of a 1.5 km column
-under 1G, at the ship's average density (~75 kg/m³ at operating mass),
-is about 1.1 MPa. CNT handles 50 GPa. The structure could withstand
-tens of thousands of G before failing; the drive's 9G redline is
-nothing to the frame — the limits are the crew and the nozzles, not
-the structure.
+For perspective: the structural stress at the base of a 1 km column
+under 1G, at the ship's average density (~100 kg/m³ at operating
+mass), is about 1.0 MPa. CNT handles 50 GPa. The structure could
+withstand tens of thousands of G before failing; the drive's 9G
+redline is nothing to the frame — the limits are the crew and the
+nozzles, not the structure.
 
 The load-bearing structure — a carbon-nanosheet inner hull plus the ship's
 longitudinal frame — is a small fraction of the mass. The heavy part of the
@@ -129,9 +130,9 @@ laid out for the outbound floor now hanging overhead on the way home.
 
 This is what the ship is *for*. Strip away the drive, the shield, the reactor,
 and their only job is to carry the hold between stars. Two cargo bays — one
-forward of the crew core, one aft — run **300 m** each. The hydrogen tanks
-take a comparable length (LH₂ is fluffy; see Hull and Structure), but the
-bays stay full-radius: every tonne of cargo the rack can take, it takes.
+forward of the crew core, one aft — run about **180 m** and **185 m**. The
+hydrogen takes 315 m next to them (LH₂ is fluffy; see Hull and Structure).
+The bays are full-radius: every tonne of cargo the rack can take, it takes.
 
 ### The Standard Container
 
@@ -139,7 +140,7 @@ Cargo is fully containerized in a single standard box: **12 × 2.5 × 2.5 m**,
 about 75 m³, ~20 t loaded — a deliberate descendant of the twentieth-century
 intermodal container, because a standard that already worked for four hundred
 years isn't worth reinventing. One size means one set of rails, one handling
-system, one lock. The rack holds **8,448 containers** (~169,000 t) if every
+system, one lock. The rack holds **10,304 containers** (~206,000 t) if every
 slot is filled; the loadmaster leaves empty slots for trim.
 
 ### The Rack — a Hard Disk Stood on Its Axis
@@ -153,9 +154,9 @@ them.
 Those rails hang on a polar skeleton that, seen down the ship's axis, looks
 like a hard disk: **radial support trusses** split each bay into eight
 **sectors** (the spokes), **concentric arc rings** mark the boundary of each
-**track**, and the rails run between the rings. Seven tracks nest from the core
+**track**, and the rails run between the rings. Ten tracks nest from the core
 out to the inner hull; because the outer tracks have more circumference they
-hold more boxes — one or two per sector at the cramped inner rings, six at the
+hold more boxes — one or two per sector at the cramped inner rings, nine at the
 outermost. The trusses bond directly to the central core and to the inner hull,
 grown from the same carbon-nanotube stock and fused to both. It's all open
 framework: a container slides straight along its rails and out through the open
@@ -320,7 +321,7 @@ power on the nose, disk-average:
 
 > \(n\,c\,(mc^2)\,\gamma(\gamma-1)\beta \approx 23\,\mathrm{W/m}^2\)
 
-About 64 kW over the ~2,800 m² nose. In the Bubble, 2.3 W/m² — a rounding
+About 116 kW over the ~5,000 m² nose. In the Bubble, 2.3 W/m² — a rounding
 error next to sunlight. The hull does not have a heat problem. Unshielded, the
 *dose* is still promptly lethal (MeV protons stop in the first millimetre of
 tissue at tens of gray per second), so the Whipple water is the radiation
@@ -689,18 +690,18 @@ still to never fly at it.
 
 ## Mass Budget
 
-### Empty Mass (~168,000 tonnes)
+### Empty Mass (~169,000 tonnes)
 
 The ship with nothing in it — hull, structure, permanently installed
 systems:
 
 | Component | Mass |
 |-----------|------|
-| Hull (multi-layer carbon-nanosheet Whipple armor) | 30,000 t |
-| Internal structure (decks, bulkheads, framing) | 26,000 t |
+| Hull (multi-layer carbon-nanosheet Whipple armor) | 27,000 t |
+| Internal structure (decks, bulkheads, framing) | 28,000 t |
 | Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
 | Thermal management (tin loops, zoned wake petals) | 12,000 t |
-| Collectors (scoop coils, not IS) | 12,000 t |
+| Collectors (scoop coils, not IS) | 14,000 t |
 | Stardrive modules (IS boxes, nacelles, feeds) | 58,000 t |
 | Weapons systems | 10,000 t |
 | Sensors, communications, computing | 5,000 t |
@@ -708,14 +709,14 @@ systems:
 | Hangar structures and launch systems | 3,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-### Operating Mass (~320,000 tonnes)
+### Operating Mass (~316,000 tonnes)
 
 Ready to fly — fueled, shielded, crewed, but no cargo:
 
 | Component | Mass |
 |-----------|------|
-| Empty mass | 168,000 t |
-| Whipple shield water (barrel: radiation + impact stuffing) | 45,000 t |
+| Empty mass | 169,000 t |
+| Whipple shield water (barrel: radiation + impact stuffing) | 40,000 t |
 | LH₂ (torch fuel, remass, supplementary shield) | 100,000 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (hab air + reserves) | 20 t |
@@ -723,9 +724,9 @@ Ready to fly — fueled, shielded, crewed, but no cargo:
 | Small craft (shuttles, fighters, transports) | 5,000 t |
 | Crew (~10 people) | ~1 t |
 
-### Loaded Mass (up to ~490,000 tonnes)
+### Loaded Mass (up to ~520,000 tonnes)
 
-Operating mass plus cargo. **Cargo capacity: ~169,000 tonnes.**
+Operating mass plus cargo. **Cargo capacity: ~206,000 tonnes.**
 
 There is no separate drive-fuel bunker. The torch drinks the same LH₂
 the scoop puts in the tanks. A hull breach still spills cold hydrogen.
@@ -735,9 +736,9 @@ Cargo includes: cold sleep pods with passengers, black-boxed technology,
 trade goods, raw materials, colonization equipment — whatever the mission
 requires. Actual loaded mass varies:
 
-- Trade run: ~440,000 t
-- Military patrol: ~370,000 t (light load)
-- Colony expedition: ~490,000 t (maximum)
+- Trade run: ~470,000 t
+- Military patrol: ~380,000 t (light load)
+- Colony expedition: ~520,000 t (maximum)
 
 
 ## Power: The Fusion Reactor
@@ -927,11 +928,11 @@ radiator**, plus a disk of eight fixed petals in the wake. Nose and
 forward barrel stay Whipple and water; they never have to do this
 job.
 
-A 30 m hull cannot grow 500,000 m² of well-viewed area from
+A 40 m hull cannot grow 500,000 m² of well-viewed area from
 longitudinal vanes — neighbouring vanes stare at each other long
 before the area is there. The area lives in the wake: eight petals
-forming an annulus, inner radius ~80 m (the nacelle plumes pass
-through the hole), outer radius ~305 m, both faces radiating. The
+forming an annulus, inner radius ~90 m (the nacelle plumes pass
+through the hole), outer radius ~308 m, both faces radiating. The
 aft barrel adds a little more. Geometric area is **~500,000 m²**
 (ε ≈ 0.9). That is deliberate over-area:
 
@@ -1060,13 +1061,13 @@ on the same drive tech. The capital ship punches; the fighters knife-fight.
 
 | Loaded mass | Available Δv | 0.1G endurance |
 |-------------|-------------|----------------|
-| ~490,000 t (max cargo) | ~2,900 km/s | ~30 days |
+| ~520,000 t (max cargo) | ~2,800 km/s | ~31 days |
 | ~400,000 t | ~3,700 km/s | ~24 days |
 | ~330,000 t (light) | ~5,200 km/s | ~18 days |
 
-In-system transits still take days; the ship is a kilometre and a half
-long and masses hundreds of thousands of tonnes. The drive changed; the
-heft did not.
+In-system transits still take days; the ship is a kilometre long and
+masses hundreds of thousands of tonnes. The drive changed; the heft
+did not.
 
 ### Port Call — the Tank Is a Reserve
 
