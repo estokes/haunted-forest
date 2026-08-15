@@ -37,11 +37,11 @@ pub const TIN_LIQUIDUS_K: f64 = 505.0;
 /// Liquid tin: boiling point [K].
 pub const TIN_BOILING_K: f64 = 2875.0;
 /// Tin loop design temperature at rated load, all zones lit [K].
-pub const TIN_DESIGN_K: f64 = 1200.0;
+pub const TIN_DESIGN_K: f64 = 1900.0;
 
-/// Total aft radiating area, all zones live [m^2].
-pub const RADIATOR_AREA_M2: f64 = 500_000.0;
-/// Independently valveable radiator zones (aft faces + vanes).
+/// Total aft radiating area, all zones live — engineering hull + tail [m^2].
+pub const RADIATOR_AREA_M2: f64 = 63_000.0;
+/// Independently valveable radiator zones (aft-hull gores).
 pub const N_RADIATOR_ZONES: usize = 8;
 /// Radiator emissivity.
 pub const RADIATOR_EMISSIVITY: f64 = 0.9;

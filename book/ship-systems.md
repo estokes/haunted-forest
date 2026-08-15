@@ -91,12 +91,11 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
      [ LH₂ tanks                                         ]
      [ Cargo bay / hangars                               ]
      [ Ship reactor / engineering                        ]
-     [ Aft radiating hull                                ]
-     [ Wake petals (8 zones)                             ]  ← always in the wake
+     [ Aft radiating hull (8 zoned gores)                ]  ← always in the wake
 
   Stardrive nacelles ride on booms alongside the aft hull, each a
   lockable turret: nozzle aft to accelerate, nozzle forward to
-  decelerate. Their plumes pass through the petal disk's inner hole.
+  decelerate. The booms stand the plumes off the radiating skin.
 ```
 
 The ship is **directionally specialized and never flips**: the nose
@@ -690,7 +689,7 @@ still to never fly at it.
 
 ## Mass Budget
 
-### Empty Mass (~169,000 tonnes)
+### Empty Mass (~165,000 tonnes)
 
 The ship with nothing in it — hull, structure, permanently installed
 systems:
@@ -700,7 +699,7 @@ systems:
 | Hull (multi-layer carbon-nanosheet Whipple armor) | 27,000 t |
 | Internal structure (decks, bulkheads, framing) | 28,000 t |
 | Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
-| Thermal management (tin loops, zoned wake petals) | 12,000 t |
+| Thermal management (tin loops, headers) | 8,000 t |
 | Collectors (scoop coils, not IS) | 14,000 t |
 | Stardrive modules (IS boxes, nacelles, feeds) | 58,000 t |
 | Weapons systems | 10,000 t |
@@ -709,13 +708,13 @@ systems:
 | Hangar structures and launch systems | 3,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-### Operating Mass (~316,000 tonnes)
+### Operating Mass (~312,000 tonnes)
 
 Ready to fly — fueled, shielded, crewed, but no cargo:
 
 | Component | Mass |
 |-----------|------|
-| Empty mass | 169,000 t |
+| Empty mass | 165,000 t |
 | Whipple shield water (barrel: radiation + impact stuffing) | 40,000 t |
 | LH₂ (torch fuel, remass, supplementary shield) | 100,000 t |
 | D-³He reactor fuel | 2,000 t |
@@ -917,49 +916,51 @@ SiC first wall and blanket, liquid tin coolant. The loop is **short**:
 reactor, converters, and radiators all live aft. No kilometer of 1800 K
 pipe through the hab. Pump power is a fraction of a GW at this scale.
 
-The loop does not have a single design temperature. Cruise can sit
-near 800–1000 K. Rated load is hotter. A zoned-down combat posture,
-half the area shut, runs hotter still. Tin does not care.
+The loop does not have a single design temperature. Cruise sits near
+1300 K. Rated load is hotter. A zoned-down combat posture, half the
+area shut, runs hotter still. Tin does not care.
 
-### Aft Radiators — Hull and Wake Petals, Zoned
+### Aft Radiators — The Hull, Zoned
 
-There are no engines occupying the tail. The **aft hull is a
-radiator**, plus a disk of eight fixed petals in the wake. Nose and
-forward barrel stay Whipple and water; they never have to do this
-job.
+There is no wake disk. A petal fan behind the ship sits in the
+torch plume and dies, and a 300 m cantilever at 9 g is a combat
+target we never paid for. The **aft hull is the radiator.**
 
-A 40 m hull cannot grow 500,000 m² of well-viewed area from
-longitudinal vanes — neighbouring vanes stare at each other long
-before the area is there. The area lives in the wake: eight petals
-forming an annulus, inner radius ~90 m (the nacelle plumes pass
-through the hole), outer radius ~308 m, both faces radiating. The
-aft barrel adds a little more. Geometric area is **~500,000 m²**
-(ε ≈ 0.9). That is deliberate over-area:
+Only the engineering end radiates: the reactor barrel, the tail
+barrel, and the tail face — about **63,000 m²** (ε ≈ 0.9). Nose,
+holds, tanks, and habitat stay Whipple and water, or insulated
+cryogen. You do not run 1800 K skin over LH₂ or over a sleeper
+container. The 2 m barrel that was water on those stations is
+vacuum and MLI next to the hot gores.
+
+Eight azimuthal gores, eight valves, matching the plant sim. Shut
+the ones that face a contact. The remaining skin runs hotter, or
+you throttle.
 
 | Load | All zones lit | Character |
 |------|----------------|-----------|
-| Cruise waste ~8–12 GW | ~750–850 K | Dim. The ship is not a star. |
-| Rated 37 GW | ~1100 K | Bright in IR. Everyone with a telescope knows. |
-| Overdraw ~50 GW | ~1200 K | A lighthouse. |
-| Rated, half the zones shut | ~1300 K | Dark on one bearing, loud on the others. |
+| Cruise waste ~8–12 GW | ~1260–1390 K | Glow in the wake. The nose is still cold. |
+| Rated 37 GW | ~1850 K | A lantern from astern. Graphite/C-C skin. |
+| Overdraw ~50 GW | ~2000 K | You are a lighthouse aft. |
+| Rated, half the zones shut | ~2200 K | Soft limit. Throttle or open the dark gores. |
 
-Err on the side of area. T⁴ is a brutal way to buy watts. Cooler
-cruise is free once the vanes exist, and a cooler ship is a quieter
-ship.
+That is hotter than a 500,000 m² fan would have been. The fan
+would also have been in the exhaust. T⁴ buys the watts back; tin
+boils at 2875 K. Cruise is no longer dim — not from behind. From
+ahead the ship is still a cold Whipple needle. Directional
+specialization again: the face that never sees the ISM is allowed
+to shine.
 
-**Zones.** Each petal is a zone, and the aft-hull gore of the same
-bearing rides the same tin path — eight valves, matching the plant
-sim. Shut the petals that face a contact and you stop painting them
-with your waste heat. The remaining area runs hotter, or you
-throttle. That is a combat choice: watts versus who can see you.
+The torch plume is a separate, much louder announcement. Zoning
+the hotel plant does not hide a 3 G burn. It hides a ship that is
+*not* burning, or is burning away from you. The booms stand the
+nozzles ~50 m off the skin so a collimated plume misses the
+gores; at combat divergence the aft-most gores valve off because
+the plume is already heating them.
 
-The torch plume is a separate, much louder announcement. Zoning the
-hotel plant does not hide a 3 G burn. It hides a ship that is *not*
-burning, or is burning away from you.
-
-No deployables. The petals do not fold. Zoning is valves and which
-tin path is live, not origami. The spars that hold the disk take
-9 g as columns, the same way the cargo cage does.
+No deployables. Zoning is valves. The radiating skin is the hull.
+Its mass is already on the hull line; the thermal budget is the
+tin loop and the headers.
 
 ### Midcourse Turnaround
 

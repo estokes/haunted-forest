@@ -21,8 +21,9 @@
 # 315 m of full-section tank, which leaves 365 m of hold — shorter than the
 # old 600 m but fatter, ten tracks, more tonnes. Habitat sits midships
 # between the tank bands. Hotel plant is a 70 m tandem mirror aft. No tail
-# ICF: the torch is two IS black-box nacelles. Waste heat leaves through 8
-# wake petals (~500,000 m2) plus the aft barrel. Collectors are bow coils.
+# ICF: the torch is two IS black-box nacelles. Hotel waste leaves through
+# the aft hull skin (reactor + tail), eight valveable gores — no wake disk,
+# the torches would eat it. Collectors are bow coils.
 
 import time
 
@@ -110,19 +111,17 @@ SPEC = {
         "eng_deck_len": 10.0, "shield_len": 4.0,
         "dhe3_tank_r": 6.0, "dhe3_tank_len": 55.0, "dhe3_tank_off": 22.0,
     },
-    # 8 independently valveable wake petals + the aft barrel. Inner hole
-    # clears the nacelle plumes (axis at r ≈ 79). Gaps sit on the bearings.
+    # Aft hull skin, eight azimuthal gores. Covers the reactor zone and the
+    # tail barrel — not the tanks, not the hold. No wake structure.
     "radiator": {
-        "n_petals": 8, "r_in": 90.0, "r_out": 308.0, "thick": 0.6,
-        "gap_frac": 0.08, "hub_r": 18.0, "hub_len": 14.0, "spar_t": 2.2,
-        "z_aft_of_tail": 10.0,
+        "n_zones": 8, "standoff": 0.35, "gap_frac": 0.05,
     },
     # IS black boxes. LH2 in, torch out. Lockable two-position turrets,
     # drawn in accelerate-lock (nozzle aft). Their own dump-panels; plume
     # is the real radiator. Not collectors.
     "nacelle": {
-        "count": 2, "pod_r": 11.0, "pod_len": 58.0, "boom_len": 28.0,
-        "boom_t": 4.0, "nozzle_len": 14.0, "turret_r": 6.0, "turret_minor": 1.6,
+        "count": 2, "pod_r": 11.0, "pod_len": 58.0, "boom_len": 40.0,
+        "boom_t": 5.0, "nozzle_len": 14.0, "turret_r": 6.0, "turret_minor": 1.6,
         "rad_n": 4, "rad_span": 10.0, "rad_len": 22.0, "rad_thick": 0.35,
     },
     # Superconducting scoop coils. Yards build these. Field is 14,000 km;
@@ -385,31 +384,16 @@ def _torus(name, R, r, z, coll, color, nu=28, nv=12):
     return _add(bpy.data.objects.new(name, mesh), coll, color)
 
 
-def _sector_plate(name, r_in, r_out, a0, a1, z, thick, coll, color, segs=18):
+def _cyl_panel(name, r, z0, z1, a0, a1, coll, color, segs=14):
     mesh = bpy.data.meshes.new(name)
     vs, faces = [], []
-    hz = thick / 2
-
-    def ring(r, zz):
-        idx = []
-        for i in range(segs + 1):
-            a = a0 + (a1 - a0) * i / segs
-            vs.append((r * math.cos(a), r * math.sin(a), zz))
-            idx.append(len(vs) - 1)
-        return idx
-
-    i0 = ring(r_in, z - hz)
-    o0 = ring(r_out, z - hz)
-    i1 = ring(r_in, z + hz)
-    o1 = ring(r_out, z + hz)
     n = segs + 1
+    for z in (z0, z1):
+        for i in range(n):
+            a = a0 + (a1 - a0) * i / segs
+            vs.append((r * math.cos(a), r * math.sin(a), z))
     for i in range(segs):
-        faces.append((o0[i], o0[i + 1], o1[i + 1], o1[i]))
-        faces.append((i0[i + 1], i0[i], i1[i], i1[i + 1]))
-        faces.append((o0[i], i0[i], i0[i + 1], o0[i + 1]))
-        faces.append((o1[i + 1], i1[i + 1], i1[i], o1[i]))
-    faces.append((i0[0], o0[0], o1[0], i1[0]))
-    faces.append((o0[n - 1], i0[n - 1], i1[n - 1], o1[n - 1]))
+        faces.append((i, i + 1, n + i + 1, n + i))
     mesh.from_pydata(vs, [], faces); mesh.update()
     return _add(bpy.data.objects.new(name, mesh), coll, color)
 
@@ -620,35 +604,27 @@ def build_reactor(coll, fuel_coll, spec, zones):
 
 def build_radiator(coll, spec, zones):
     r = spec["radiator"]
-    L = spec["length"]
-    z_tail = -L / 2
-    z_petals = z_tail - r["z_aft_of_tail"]
-    z_rad0, z_rad1, _, _ = zones["radiator_aft"]
-    n = r["n_petals"]
+    R = spec["radius_outer"]
+    z_aft, _, _, _ = zones["radiator_aft"]
+    _, z_fore, _, _ = zones["reactor"]
+    n = r["n_zones"]
     sector = TAU / n
     gap = sector * r["gap_frac"]
     live = sector - gap
-    area = 0.0
+    rr = R + r["standoff"]
     for i in range(n):
-        # Gaps on the axes so nacelle plumes (θ = 0, π) pass between petals.
         a0 = i * sector + gap / 2
         a1 = a0 + live
         col = C_RAD_ZONES[i % len(C_RAD_ZONES)]
-        _sector_plate(f"petal_{i}", r["r_in"], r["r_out"], a0, a1, z_petals, r["thick"],
-                      coll, col, segs=20)
+        _cyl_panel(f"rad_gore_{i}", rr, z_aft, z_fore, a0, a1, coll, col, segs=16)
         amid = 0.5 * (a0 + a1)
-        rm = 0.5 * (r["r_in"] + r["r_out"])
-        _beam(f"rad_spar_{i}", P(spec["radius_outer"] - 1.0, amid, z_tail),
-              P(r["r_out"] - 4.0, amid, z_petals), r["spar_t"], coll, C_STRUT)
-        _beam(f"tin_riser_{i}", P(6.0, amid, (z_rad0 + z_rad1) / 2),
-              P(spec["radius_outer"], amid, z_tail + 4.0), 0.9, coll, C_RAD)
-        area += (r["r_out"] ** 2 - r["r_in"] ** 2) * live / 2
-    _cyl_surface("rad_hub", r["hub_r"], z_petals - r["hub_len"] / 2, z_petals + r["hub_len"] / 2,
-                 coll, C_RAD, verts=32, caps=True)
-    hull_area = TAU * spec["radius_outer"] * (z_rad1 - z_rad0)
-    return {"petal_area_m2": round(2 * area), "hull_area_m2": round(hull_area),
-            "total_area_m2": round(2 * area + hull_area), "n_zones": n,
-            "r_out": r["r_out"]}
+        zc = 0.5 * (z_aft + z_fore)
+        _beam(f"tin_riser_{i}", P(6.0, amid, zc), P(R, amid, zc), 0.9, coll, C_RAD)
+    barrel = TAU * R * (z_fore - z_aft)
+    tail = math.pi * R * R
+    return {"barrel_area_m2": round(barrel), "tail_area_m2": round(tail),
+            "total_area_m2": round(barrel + tail), "n_zones": n,
+            "length_m": round(z_fore - z_aft)}
 
 
 def build_nacelles(coll, spec, zones):

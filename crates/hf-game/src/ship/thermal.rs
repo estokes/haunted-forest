@@ -30,11 +30,11 @@ const C_WALL: f64 = 1.6e8; // blanket heat capacity [J/K]
 const C_TIN: f64 = 1.5e8; // tin loop heat capacity [J/K]
 const C_RAD_LIVE: f64 = 4.0e8; // live zone heat capacity [J/K]
 const C_RAD_DEAD: f64 = 3.8e8; // bypassed zone [J/K]
-const T_WALL_WARN: f64 = 1500.0;
-const T_WALL_HARD: f64 = 1900.0;
-const T_TIN_WARN: f64 = 1600.0;
+const T_WALL_WARN: f64 = 2200.0;
+const T_WALL_HARD: f64 = 2600.0;
+const T_TIN_WARN: f64 = 2200.0;
 const T_TIN_FREEZE_WARN: f64 = 560.0;
-const CAPACITY_REF_K: f64 = 1100.0; // rated rejection with all zones lit
+const CAPACITY_REF_K: f64 = 1850.0; // rated rejection with all zones lit
 
 str_enum! {
     pub enum ThermalStatus {
@@ -67,9 +67,9 @@ pub struct Thermal {
 impl Default for Thermal {
     fn default() -> Self {
         Self {
-            t_wall: 1300.0,
-            t_tin: 1200.0,
-            zones: [Zone { t_rad: 1100.0, live: true }; N_RADIATOR_ZONES],
+            t_wall: 2000.0,
+            t_tin: 1900.0,
+            zones: [Zone { t_rad: 1850.0, live: true }; N_RADIATOR_ZONES],
             flow_fraction: 1.0,
             heat_load: 0.0,
             rejected: 0.0,
