@@ -13,7 +13,7 @@ let pressure    = cast<f64>(net::subscribe("/ship/reactor/plasma/pressure")$)$;
 let power       = cast<f64>(net::subscribe("/ship/reactor/output/power")$)$;
 let efficiency  = cast<f64>(net::subscribe("/ship/reactor/output/efficiency")$)$;
 let containment = cast<f64>(net::subscribe("/ship/reactor/plasma/containment")$)$;
-let target_power_p = "/ship/reactor/control/target_power";
+let target_power_p = "/ship/reactor/control/target_power_gw";
 let target_power = cast<f64>(net::subscribe(target_power_p)$)$;
 
 let label_color = gui::color(#r: 0.63, #g: 0.63, #b: 0.71)$;
@@ -54,14 +54,14 @@ let controls_col = column(
       #spacing: &12.0,
       &[
         button(
-          #on_press: |c| net::write(target_power_p, c ~ target_power - 50.0)$,
+          #on_press: |c| net::write(target_power_p, c ~ target_power - 10.0)$,
           #padding: &`Axis({x: 10.0, y: 4.0}),
-          &text(#size: &10.0, &"- 50")
+          &text(#size: &10.0, &"- 10")
         ),
         button(
-          #on_press: |c| net::write(target_power_p, c ~ target_power + 50.0)$,
+          #on_press: |c| net::write(target_power_p, c ~ target_power + 10.0)$,
           #padding: &`Axis({x: 10.0, y: 4.0}),
-          &text(#size: &10.0, &"+ 50")
+          &text(#size: &10.0, &"+ 10")
         )
       ]
     )

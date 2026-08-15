@@ -55,8 +55,8 @@ first implemented system:
 Each system follows the same pattern — physics simulation exposing
 state and accepting control through netidx:
 
-- **Thermal management**: Tin coolant loops, endcap radiator
-  temperatures, waste heat balance
+- **Thermal management**: Tin loop, zoned aft radiators, waste heat
+  (implemented; 100 GW plant)
 - **Collectors**: Scoop field, tank fill rate, parachute/funnel mode
 - **Stardrive**: IS black box — LH₂ feed, torch thrust, fuse-fraction,
   nozzle overdraw. Observable externals only.
@@ -671,7 +671,7 @@ system with their own.
 |-----------|--------|
 | Bevy ECS framework | Running |
 | NetBridge (publish, subscribe, writable, write) | Implemented |
-| Reactor physics simulation | Implemented |
+| Reactor physics simulation | Implemented (100 GW / 70 m; bible-aligned) |
 | Reactor auto-control (PID loop) | Implemented |
 | Reactor keyboard controls (test) | Implemented |
 | HUD (Rust, transitional) | Implemented |

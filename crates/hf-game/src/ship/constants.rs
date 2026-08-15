@@ -18,43 +18,44 @@ pub const Q_DHE3_J: f64 = 18.35e6 * EV_J;
 pub const HE3_MASS_KG: f64 = 3.016 * ATOMIC_MASS_KG;
 
 /// Reactor rating: fusion power at the redline operating point [W].
-pub const RATED_FUSION_W: f64 = 500.0e9;
+pub const RATED_FUSION_W: f64 = 100.0e9;
 /// Reactor rating: direct-converted electrical output at the redline [W].
-pub const RATED_ELECTRICAL_W: f64 = 315.0e9;
+pub const RATED_ELECTRICAL_W: f64 = 63.0e9;
 /// Reactor rating: waste heat to the tin loop at the redline [W].
-pub const RATED_WASTE_HEAT_W: f64 = 185.0e9;
+pub const RATED_WASTE_HEAT_W: f64 = 37.0e9;
 
-/// Cruise electrical demand — the ship loafing along on hab and cryo load,
-/// life support, compute, and sensors. The reactor is demand-driven and idles
-/// here; 500 GW is the redline it reaches only under combat or AI surge load.
-pub const CRUISE_DEMAND_W: f64 = 18.0e9;
+/// Cruise electrical demand — hab, cryo, compute, sensors. The reactor is
+/// demand-driven and idles here; 100 GW fusion is combat/FEL redline.
+pub const CRUISE_DEMAND_W: f64 = 6.0e9;
 
 /// Soft ceiling the auto-controller drives toward at full thermal headroom.
-/// Raised from 540 GW so the thermal cascade engages (warn band near 649 GW
-/// fusion) before the reactor's own cap binds.
-pub const P_REACTOR_CEILING: f64 = 700.0e9;
+/// 1.4× rated so a zoned-down radiator can saturate before the cap binds.
+pub const P_REACTOR_CEILING: f64 = 140.0e9;
 
 /// Liquid tin: melting point [K].
 pub const TIN_LIQUIDUS_K: f64 = 505.0;
 /// Liquid tin: boiling point [K].
 pub const TIN_BOILING_K: f64 = 2875.0;
-/// Tin loop design temperature [K].
-pub const TIN_DESIGN_K: f64 = 1800.0;
+/// Tin loop design temperature at rated load, all zones lit [K].
+pub const TIN_DESIGN_K: f64 = 1200.0;
 
-/// Area of one endcap radiator panel [m^2].
-pub const RADIATOR_AREA_M2: f64 = 283_000.0;
+/// Total aft radiating area, all zones live [m^2].
+pub const RADIATOR_AREA_M2: f64 = 500_000.0;
+/// Independently valveable radiator zones (aft faces + vanes).
+pub const N_RADIATOR_ZONES: usize = 8;
 /// Radiator emissivity.
 pub const RADIATOR_EMISSIVITY: f64 = 0.9;
 
-/// Radiative rejection capacity of `n` active endcaps at temperature `t_k` [W].
-pub fn radiator_capacity_w(t_k: f64, n: u8) -> f64 {
-    RADIATOR_EMISSIVITY * SIGMA_SB * RADIATOR_AREA_M2 * t_k.powi(4) * n as f64
+/// Radiative rejection capacity of `n_live` zones at temperature `t_k` [W].
+pub fn radiator_capacity_w(t_k: f64, n_live: u8) -> f64 {
+    let frac = n_live as f64 / N_RADIATOR_ZONES as f64;
+    RADIATOR_EMISSIVITY * SIGMA_SB * RADIATOR_AREA_M2 * frac * t_k.powi(4)
 }
 
 /// Aneutronic CEILING on He3 consumption: attributes *all* fusion power to the
-/// D-He3 channel (the book's ~27 t/yr figure). The true burn is lower because
-/// D-D side reactions carry some of the power; for fuel accounting publish the
-/// reactor's actual `R_DHe3 * HE3_MASS_KG` instead of this.
+/// D-He3 channel (the book's ~5.4 t/yr figure at 100 GW). The true burn is
+/// lower because D-D side reactions carry some of the power; for fuel
+/// accounting publish the reactor's actual `R_DHe3 * HE3_MASS_KG` instead.
 pub fn he3_burn_ceiling_kg_s(fusion_w: f64) -> f64 {
     (fusion_w / Q_DHE3_J) * HE3_MASS_KG
 }

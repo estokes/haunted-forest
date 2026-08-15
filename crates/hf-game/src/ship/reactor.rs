@@ -3,9 +3,9 @@
 //! The plasma burns D + ³He (18.35 MeV, all charged) with unavoidable D-D side
 //! reactions carrying the ~10% neutron fraction. Charged products are
 //! direct-converted to electricity; the neutron power, bremsstrahlung, and
-//! conversion losses become the ~185 GW (at the 500 GW redline) of waste heat the
+//! conversion losses become the ~37 GW (at the 100 GW redline) of waste heat the
 //! thermal loop must reject. The reactor is *demand-driven*: it idles at the
-//! cruise hotel load and only approaches its 500 GW rating under real draw.
+//! cruise hotel load and only approaches its 100 GW rating under real draw.
 //!
 //! The core learnable envelope is hot-ion mode: keep T_i above T_e, because
 //! bremsstrahlung (∝ n_e²·√T_e) quietly eats output as the electrons heat up.
@@ -30,10 +30,10 @@ use crate::ship::value_enum::str_enum;
 // down to the geometric floor. See book/ship-systems.md "Confinement and Throttle".
 const R_PLASMA: f64 = 3.0; // burning-column radius [m]
 const A_CC: f64 = std::f64::consts::PI * R_PLASMA * R_PLASMA; // central-cell cross-section [m^2]
-const L_MAX: f64 = 354.0; // full burning-column length [m] (A_CC·L_MAX ≈ 10,000 m^3)
+const L_MAX: f64 = 70.0; // full burning-column length [m] (A_CC·L_MAX ≈ 2,000 m^3)
 const V_MAX: f64 = A_CC * L_MAX; // full burning volume [m^3]
 const L_MIN_GEO: f64 = 7.0; // geometric floor (plug/transition length) [m] (~10 GW at rated density)
-const L_SLEW: f64 = 35.0; // max coil re-energize (throttle slew) rate [m/s]
+const L_SLEW: f64 = 7.0; // max coil re-energize (throttle slew) rate [m/s]
 const KEV_J: f64 = 1.602176634e-16; // keV in joules
 const MEV_J: f64 = 1.602176634e-13; // MeV in joules
 const MU0: f64 = 1.25663706212e-6; // vacuum permeability [H/m]
@@ -53,9 +53,9 @@ const K_DENS: f64 = 2.0; // density-hold controller gain [1/s]
 const P_LIT_MIN: f64 = 3.0e9; // aux-driven floor: below this the burn is banked [W]
 // Balance-of-plant overhead: fixed loads that don't shrink with the burning
 // column, so at low power they dominate gross output (the cruise floor).
-const P_PLUG_DRIVE: f64 = 2.0e9; // electrostatic-plug drive power [W]
-const P_CRYO: f64 = 0.5e9; // cryoplant load [W]
-const P_TIN_PUMP: f64 = 1.0e9; // coolant pump load [W]
+const P_PLUG_DRIVE: f64 = 0.5e9; // electrostatic-plug drive power [W]
+const P_CRYO: f64 = 0.2e9; // cryoplant load [W]
+const P_TIN_PUMP: f64 = 0.2e9; // coolant pump load [W]
 
 const M_D: f64 = 3.3445e-27; // deuteron mass [kg]
 const M_HE3: f64 = 5.0082e-27; // helium-3 mass [kg]
@@ -222,9 +222,9 @@ pub struct Reactor {
 
 impl Default for Reactor {
     fn default() -> Self {
-        // The verified 500 GW operating point (D:³He = 2:1, hot-ion 80/64 keV).
-        // The reactor boots here and the demand-driven controller settles it to
-        // the cruise hotel load.
+        // The verified 100 GW operating point (D:³He = 2:1, hot-ion 80/64 keV,
+        // 70 m column at the same plasma condition as the old 354 m / 500 GW
+        // machine). The demand-driven controller settles it to the cruise hotel.
         let n_d = 4.66e20;
         let n_he3 = 2.33e20;
         let n_i = n_d + n_he3;
@@ -708,7 +708,7 @@ pub fn reactor_keyboard_controls(
     bridge: Res<NetBridge>,
 ) {
     let base = "/ship/reactor/control";
-    let step = 50.0e9;
+    let step = 10.0e9;
     if keys.just_pressed(KeyCode::ArrowUp) {
         let v = (reactor.target_power + step).min(P_REACTOR_CEILING) / 1e9;
         bridge.write(Path::from(format!("{base}/target_power_gw")), Value::from(v));
@@ -768,14 +768,14 @@ mod tests {
 
     #[test]
     fn operating_point_power_chain() {
-        // The default state is the verified 500 GW operating point.
+        // The default state is the verified 100 GW operating point.
         let mut r = Reactor::default();
         let mut ic = Interconnect::default();
         r.step(&mut ic, DT);
         let (pf, pe, pw) = (r.fusion_power() / 1e9, r.p_electrical() / 1e9, r.p_waste() / 1e9);
-        assert!((400.0..600.0).contains(&pf), "P_fusion = {pf:.0} GW (want ~500)");
-        assert!((270.0..360.0).contains(&pe), "P_electrical = {pe:.0} GW (want ~315)");
-        assert!((150.0..220.0).contains(&pw), "P_waste = {pw:.0} GW (want ~185)");
+        assert!((80.0..120.0).contains(&pf), "P_fusion = {pf:.0} GW (want ~100)");
+        assert!((45.0..80.0).contains(&pe), "P_electrical = {pe:.0} GW (want ~63)");
+        assert!((20.0..55.0).contains(&pw), "P_waste = {pw:.0} GW (want ~37)");
     }
 
     #[test]
@@ -793,7 +793,7 @@ mod tests {
         }
         let pf = r.fusion_power() / 1e9;
         assert!(r.status != ReactorStatus::Offline, "reactor failed to ignite");
-        assert!((400.0..680.0).contains(&pf), "not at rated power: P_fusion = {pf:.0} GW");
+        assert!((80.0..140.0).contains(&pf), "not at rated power: P_fusion = {pf:.0} GW");
     }
 
     #[test]
@@ -803,7 +803,9 @@ mod tests {
         let mut r = Reactor::default();
         let mut t = Thermal::default();
         let mut ic = Interconnect::default();
-        r.target_power = 450.0e9; // demands ~700 GW fusion, past one-endcap capacity
+        // Two of eight zones live: area too small for overdraw waste.
+        t.set_zone_mask(0b0000_0011);
+        r.target_power = 90.0e9; // demands ~140 GW fusion
         let mut max_tin = t.tin_temp();
         let mut min_headroom: f64 = 1.0;
         for _ in 0..(120 * 64) {
@@ -814,7 +816,7 @@ mod tests {
                 break;
             }
         }
-        assert!(max_tin > 2050.0, "tin never reached the warn band: max {max_tin:.0} K");
+        assert!(max_tin > 1550.0, "tin never reached the warn band: max {max_tin:.0} K");
         assert!(
             min_headroom < 0.9,
             "thermal throttle never engaged: min headroom {min_headroom:.2}"
@@ -838,7 +840,7 @@ mod tests {
         for _ in 0..(2 * 64) {
             tick(&mut r, &mut t, &mut ic);
         }
-        assert!(r.l_active > 350.0, "did not boot at full length: {:.0} m", r.l_active);
+        assert!(r.l_active > 65.0, "did not boot at full length: {:.0} m", r.l_active);
         let n_d0 = r.n_d;
 
         r.target_power = 0.25 * RATED_ELECTRICAL_W; // command a deep throttle-down
