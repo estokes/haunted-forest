@@ -63,11 +63,11 @@ at a profit.
 
 | Element | Why it matters | Where it comes from |
 |---------|---------------|-------------------|
-| Iridium (Ir) | Densest stable element. Extreme hardness, corrosion resistance. High-performance structural applications. | Rare everywhere. Concentrated in asteroid impacts and differentiated bodies. |
+| Iridium (Ir) | Nearly as dense as osmium. Extreme hardness, corrosion resistance. High-performance structural applications. | Rare everywhere. Concentrated in asteroid impacts and differentiated bodies. |
 | Rhodium (Rh) | Rarer than platinum. Irreplaceable catalytic properties. | Same as iridium — asteroid-rich systems. |
 | Lithium (Li) | Reactor coolant loops, batteries, pharmaceuticals. Light, reactive, versatile. | Unevenly distributed in planetary crusts. Some worlds are lithium-rich; others have almost none. |
 | Tungsten (W) | Highest melting point of any element (3,695 K). Everything built for extreme temperatures needs it. | Concentrated in specific geological formations. A system without tungsten-bearing ores imports it. |
-| Neodymium (Nd) | Permanent magnets, superconductors. Every reactor, every stardrive, every ship. | Rare earth — concentrated in specific mineral deposits. Not every system has accessible sources. |
+| Neodymium (Nd) | NdFeB permanent magnets. Every motor, every actuator that has to stay a magnet when it is not a coil. | Rare earth — concentrated in specific mineral deposits. Not every system has accessible sources. |
 | Dysprosium (Dy) | Stabilizes neodymium magnets at high temperature. Critical for anything that runs hot and magnetic. | Same as neodymium, even rarer. |
 
 **Tier 3 — Bulk commodities, valuable only where locally scarce:**

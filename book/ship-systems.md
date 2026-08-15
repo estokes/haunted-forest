@@ -23,10 +23,11 @@ and carries thrust.
 
 Most of the interior volume is **unpressurized**: cargo bays, hangars,
 engineering spaces, fuel tankage. Pressurized habitable space for the crew
-of ~10 is a tiny fraction of the total — a few hundred cubic meters of
-quarters, a bridge, a workshop. The ship is essentially a massive
-automated cargo and exploration vessel with a small human crew making
-decisions.
+of ~10 is a tiny fraction of the total — a few hundred cubic metres of
+quarters, a bridge, a workshop. That volume holds about a tonne of air.
+Reserve tanks and the life-support plant are separate (see Mass Budget).
+The ship is essentially a massive automated cargo and exploration vessel
+with a small human crew making decisions.
 
 
 ## Ship Architecture
@@ -586,7 +587,7 @@ Ready to fly — fueled, shielded, crewed, but no cargo:
 | Whipple shield water (barrel: radiation + impact stuffing) | 30,000 t |
 | LH₂ (torch fuel, remass, supplementary shield) | 100,000 t |
 | D-³He reactor fuel | 2,000 t |
-| Atmosphere (crew areas only) | 500 t |
+| Atmosphere (hab air + reserves) | 20 t |
 | Water and consumables | 100 t |
 | Small craft (shuttles, fighters, transports) | 5,000 t |
 | Crew (~10 people) | ~1 t |
@@ -722,8 +723,9 @@ shorter than the plug and transition regions.)
 
 Cruising lean is what makes a voyage possible. At a few percent power the reactor
 sips a small fraction of its rated fuel, stretching the **2,000 t** D-³He load
-across interstellar transit times. A ship that could only run at its 500 GW
-rating would drink its fuel in months.
+across interstellar transit times. At the 500 GW redline the same tank is
+**~45 years** of mixed fuel (~27 t/year of ³He) — not months. Still too
+fast if you never throttle: a career of ports at redline would spend it.
 
 The **risk lives in the transitions, not the setpoints.** Changing the burning
 length re-energizes superconducting coil groups, moving large amounts of stored
