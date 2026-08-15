@@ -111,7 +111,9 @@ the core. Thrust is axial in the struts — one pair in compression,
 one in tension — and the rings spread it as hoop so the skin never
 sees a point load. A 25 kt pod at 9 g is 2.2 GN; a radial boom
 would have to take that as a 40 m bending moment. The A-frame
-refuses the moment. There is no second engine at the tail. The **collectors** are
+refuses the moment. Sized as tubes — Euler owns the 75 m
+compression legs, ~22 cm wall in a 3.6 m strut — the mounts are
+**~6,000 t**. There is no second engine at the tail. The **collectors** are
 a separate system, not IS's: superconducting coils on the bow, always
 facing the ISM. To decelerate at midcourse the scoop field reshapes
 from funnel to parachute and the ship bleeds speed on magnetic drag;
@@ -709,7 +711,8 @@ systems:
 | Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
 | Thermal management (tin loops, headers) | 8,000 t |
 | Collectors (scoop coils, not IS) | 14,000 t |
-| Stardrive modules (IS boxes, nacelles, feeds) | 58,000 t |
+| Stardrive modules (IS boxes, feeds) | 52,000 t |
+| Drive mounts (A-frames, belt rings, torque box) | 6,000 t |
 | Weapons systems | 10,000 t |
 | Sensors, communications, computing | 5,000 t |
 | Life support (sized for ~10 crew) | 500 t |

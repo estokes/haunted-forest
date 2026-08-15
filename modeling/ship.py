@@ -83,6 +83,7 @@ SPEC = {
     "clearance": 0.15,
     "n_sectors": 8,
     "max_accel_G": 9.0, "lateral_G": 2.0,
+    "nacelle_mass_t": 25_000.0,
     "material_E_Pa": 500.0e9,
     "material_strength_Pa": 50.0e9,
     "material_density": 1400.0,
@@ -150,6 +151,56 @@ SPEC = {
 
 def _beam_mass(side, length, count, rho):
     return side * side * length * count * rho
+
+
+def _box_wall_area(a, b, tw):
+    return 2.0 * (a + b) * tw
+
+
+def drive_mount_mass(spec):
+    """Tube-and-belt mass for the 45° A-frames and torque box. Greybox
+    members are drawn solid for visibility; this is the sized structure."""
+    nc = spec["nacelle"]
+    rho = spec["material_density"]
+    E = spec["material_E_Pa"]
+    sf = spec["safety_factor"]
+    R = spec["radius_outer"]
+    inner = R - spec["barrel_thickness"]
+    axis_r = R + nc["stand_off"] + nc["pod_r"]
+    dz = axis_r - inner
+    L_strut = math.hypot(dz, dz) * 1.06
+    F = spec.get("nacelle_mass_t", 25_000.0) * spec["max_accel_G"] * 9.81 * 1000.0
+    P = F / math.sqrt(2.0)
+    I = sf * P * L_strut ** 2 / (math.pi ** 2 * E)
+    r_od = nc["strut_t"] / 2.0
+    t_wall = I / (math.pi * r_od ** 3)
+    A_strut = 2.0 * math.pi * r_od * t_wall
+
+    def kg(area, length, n=1.0):
+        return area * length * n * rho / 1e3
+
+    rings = (kg(_box_wall_area(3.0, 1.5, 0.15), TAU * inner, 2)
+             + kg(_box_wall_area(2.2, 1.2, 0.12), TAU * (R + 0.4), 2))
+    longerons = kg(_box_wall_area(2.2, 2.2, 0.10), 2.0 * dz, 4)
+    box = kg(TAU * nc["box_r"] * 0.04, 2.0 * dz)
+    spokes = kg(_box_wall_area(1.5, 1.5, 0.08), inner - nc["box_r"], 8)
+    hardpoints = kg(_box_wall_area(1.8, 1.8, 0.08), 2.0 * inner * nc["splay"], 8)
+    turrets = kg(_box_wall_area(0.9, 0.9, 0.12), TAU * nc["turret_r"], 2)
+    struts = kg(A_strut, L_strut, 8)
+    parts = {
+        "struts": round(struts),
+        "belt_rings": round(rings),
+        "longerons": round(longerons),
+        "box_skin": round(box),
+        "spokes": round(spokes),
+        "hardpoints": round(hardpoints),
+        "turrets": round(turrets),
+    }
+    sub = sum(parts.values())
+    parts["fittings"] = round(0.2 * sub)
+    parts["total"] = sub + parts["fittings"]
+    parts["strut_wall_m"] = round(t_wall, 3)
+    return parts
 
 
 def track_layout(spec, a_rail, a_arc, a_strut):
@@ -811,6 +862,7 @@ def build():
         "build_s": round(time.perf_counter() - t0, 2),
         "sizing": sz, "section": sec, "lh2": tanksec, "crew": crewsec,
         "reactor": rsec, "radiator": radsec, "nacelles": nacsec,
+        "mount_mass_t": drive_mount_mass(SPEC),
         "collectors": colsec, "sensors": sensec, "hangar": hansec,
         "lh2_check": {"volume_m3": round(vol), "mass_kt": round(vol * SPEC["lh2_density"] / 1e6, 1),
                       "tank_len_m": tank_len},
