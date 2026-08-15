@@ -520,13 +520,58 @@ that it echoed.
 
 Design ranges (0.10c, 10 ms fire-control, order-of-magnitude):
 
-| Job | Band | Grain | Detect (goal) | Notes |
-|-----|------|-------|---------------|-------|
-| Avoid | long-wave / mm | ≳ 1 cm | light-seconds+ | course, not a shot |
+| Job | Band | Grain | Detect (honest) | Notes |
+|-----|------|-------|-----------------|-------|
+| Course | long-wave | ≳ 1 m rock | 10⁴–10⁵ km | the only thing microwave sees at a light-second |
+| Pebble search | cm / mm radar | 1 cm | **2,000–15,000 km** | see below |
+| Pebble, emitting | passive IR / cooker | 1 cm | **3×10⁴–1.5×10⁵ km** | one-way; needs it warm |
 | Shoot / walk | mm | ~1 mm | 2,000–20,000 km | plenty of clock |
 | Shoot | THz / sub-mm | ~100 µm | 500–2,000 km | search cone only |
 | Last ditch | any cue + LIDAR | ~100 µm | ≥ 407 km | floor |
-| Cue the rest | cooker + passive IR | 100 µm–1 mm | past the THz search | one-way |
+
+### How Far Is a Centimetre?
+
+A 1 cm pebble is not Rayleigh at centimetre waves. \(ka \sim 1\). RCS
+is about geometric: \(\sigma \sim \pi a^2 \sim 8 \times 10^{-5}\,\mathrm{m}^2\)
+— ten thousand times a THz 100 µm mote, not ten million. The radar
+equation is still \(1/R^4\).
+
+Worked monostatic, 10 m aperture, \(\lambda = 3\,\mathrm{cm}\),
+\(P_t = 1\,\mathrm{MW}\), \(T_\mathrm{sys} = 50\,\mathrm{K}\),
+10 kHz noise bandwidth, SNR 13 dB: **~600 km**. That is already
+past the fire-control floor (20 ms of close) and not a dodge.
+
+Scale the things we actually have:
+
+| Setup | Detect ~ |
+|-------|----------|
+| 1 MW, 10 m, short pulse | 600 km |
+| 10 MW, 15 m, 1 kHz effective | ~3,000 km (100 ms of close) |
+| 100 MW, 20 m, 0.1 s CPI | ~10,000–15,000 km (0.3–0.5 s) |
+| 1 GW optical LIDAR, 1 m class, cued | ~5×10⁴–10⁵ km |
+| Passive IR, pebble sunlit or cooker-warm, 10 m stare | ~10⁵ km, if it emits |
+
+A light-second (300,000 km) on a **centimetre** with microwave search
+is a lie. \(R \propto (P A^2 \sigma)^{1/4}\). To go from 600 km to
+300,000 km is a factor of 500 in range, \(500^4 \approx 6 \times 10^{10}\)
+in the numerator. That is a **rock**, tens of metres, not a pebble.
+The long-wave array's job at a light-second is "is there an asteroid
+in this cone," not "is there gravel."
+
+What you *do* get at 3,000–15,000 km is time to **shoot**, not time
+to **turn**. Lateral miss of 30 m at 0.1 G wants \(t \approx \sqrt{2s/a}
+\approx 8\,\mathrm{s}\) → detect at ~240,000 km. Microwave will not
+give you that on a centimetre. Passive IR or a cued optical might.
+If they do not, the pebble is an interdiction problem with a longer
+fuse: vaporize at 10,000 km and the cloud has a third of a second
+to spread (kilometres, if the vapor is doing km/s). Vaporize at
+600 km and you have 20 ms of expansion — a ship-width of plasma,
+which is why the table said do not take that shot unless you have to.
+
+So: yes, long-wave sees a centimetre **quite a ways** compared to
+sand. Thousands of kilometres, not four hundred. Not a light-second.
+Light-seconds are for things you steer around. Centimetres you
+detect-and-shoot if the IR suite has not already given you a lane.
 
 The undetectable close-in fraction is now the last few hundred
 kilometres, not tens of thousands. Passive stare and a standing
