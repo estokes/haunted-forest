@@ -25,6 +25,8 @@
 # through 8 wake petals (~500,000 m2) plus the aft barrel. Collectors are bow
 # coils, not IS, not in the pods.
 
+import time
+
 import bpy
 import math
 import mathutils
@@ -245,14 +247,14 @@ def structural_sizing(spec):
 
 
 def _fresh_scene():
-    for obj in list(bpy.data.objects):
-        bpy.data.objects.remove(obj, do_unlink=True)
+    if bpy.data.objects:
+        bpy.data.batch_remove(tuple(bpy.data.objects))
     for coll in list(bpy.data.collections):
         bpy.data.collections.remove(coll)
     for block in (bpy.data.meshes, bpy.data.curves, bpy.data.cameras, bpy.data.lights):
-        for b in list(block):
-            if b.users == 0:
-                block.remove(b)
+        orphans = [b for b in block if b.users == 0]
+        if orphans:
+            bpy.data.batch_remove(orphans)
 
 
 def _collection(name):
@@ -267,13 +269,72 @@ def _add(obj, coll, color, alpha=1.0):
     return obj
 
 
+_BOX_FACES = (
+    (0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1),
+    (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3),
+)
+
+
 def _box_mesh(name, dx, dy, dz):
     m = bpy.data.meshes.new(name)
     hx, hy, hz = dx / 2, dy / 2, dz / 2
     vs = [(x, y, z) for x in (-hx, hx) for y in (-hy, hy) for z in (-hz, hz)]
-    f = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)]
-    m.from_pydata(vs, [], f); m.update()
+    m.from_pydata(vs, [], _BOX_FACES); m.update()
     return m
+
+
+class Batch:
+    """World-space boxes glued into one mesh. Cargo used to be ~12k objects."""
+
+    def __init__(self):
+        self.vs = []
+        self.faces = []
+
+    def add_box(self, dims, loc, rotz=0.0):
+        hx, hy, hz = dims[0] / 2, dims[1] / 2, dims[2] / 2
+        lx, ly, lz = loc
+        if rotz:
+            c, s = math.cos(rotz), math.sin(rotz)
+            def xform(x, y, z):
+                return (lx + c * x - s * y, ly + s * x + c * y, lz + z)
+        else:
+            def xform(x, y, z):
+                return (lx + x, ly + y, lz + z)
+        base = len(self.vs)
+        for x in (-hx, hx):
+            for y in (-hy, hy):
+                for z in (-hz, hz):
+                    self.vs.append(xform(x, y, z))
+        self.faces.extend((base + a, base + b, base + c, base + d) for a, b, c, d in _BOX_FACES)
+
+    def add_beam(self, p0, p1, t):
+        p0v, p1v = mathutils.Vector(p0), mathutils.Vector(p1)
+        d = p1v - p0v
+        if d.length < 1e-6:
+            return
+        mid = (p0v + p1v) * 0.5
+        rot = d.to_track_quat('Z', 'Y').to_matrix()
+        hx = hy = t * 0.5
+        hz = d.length * 0.5
+        base = len(self.vs)
+        for x in (-hx, hx):
+            for y in (-hy, hy):
+                for z in (-hz, hz):
+                    self.vs.append(tuple(mid + rot @ mathutils.Vector((x, y, z))))
+        self.faces.extend((base + a, base + b, base + c, base + d) for a, b, c, d in _BOX_FACES)
+
+    def add_arc(self, r, a0, a1, z, t, segs=3):
+        for i in range(segs):
+            self.add_beam(P(r, a0 + (a1 - a0) * i / segs, z),
+                          P(r, a0 + (a1 - a0) * (i + 1) / segs, z), t)
+
+    def emit(self, name, coll, color):
+        if not self.vs:
+            return None
+        mesh = bpy.data.meshes.new(name)
+        mesh.from_pydata(self.vs, [], self.faces)
+        mesh.update()
+        return _add(bpy.data.objects.new(name, mesh), coll, color)
 
 
 def _cyl_surface(name, radius, z0, z1, coll, color, verts=72, caps=False, alpha=1.0):
@@ -374,12 +435,6 @@ def _box(name, dims, loc, coll, color, rotz=0.0):
     return _add(o, coll, color)
 
 
-def _arc(name, r, a0, a1, z, t, coll, color, segs=3):
-    for i in range(segs):
-        _beam(f"{name}_{i}", P(r, a0 + (a1 - a0) * i / segs, z),
-              P(r, a0 + (a1 - a0) * (i + 1) / segs, z), t, coll, color)
-
-
 def zone_map(spec):
     L = spec["length"]
     z_top = L / 2
@@ -421,26 +476,26 @@ def build_cargo(z0, z1, colls, spec, sz):
     zc_door = (cz1 + z1) / 2
 
     strut_zs = list(frame_z)
+    cage, diags, arcs, conns, rails, boxes, hot = (Batch() for _ in range(7))
     for s in range(ns):
         a = TAU * s / ns
         for z in strut_zs:
-            _beam(f"strut_{s}_{int(z)}", P(core, a, z), P(r_out, a, z), t_strut, c_sup, C_STRUT)
+            cage.add_beam(P(core, a, z), P(r_out, a, z), t_strut)
         for k in range(len(strut_zs) - 1):
             za, zb = strut_zs[k], strut_zs[k + 1]
-            _beam(f"diagA_{s}_{int(za)}", P(core, a, za), P(r_out, a, zb), t_strut, c_sup, C_DIAG)
-            _beam(f"diagB_{s}_{int(za)}", P(r_out, a, za), P(core, a, zb), t_strut, c_sup, C_DIAG)
+            diags.add_beam(P(core, a, za), P(r_out, a, zb), t_strut)
+            diags.add_beam(P(r_out, a, za), P(core, a, zb), t_strut)
     for z in strut_zs + [z1]:
-        _arc(f"innerhull_{int(z)}", inner, 0.0, TAU, z, t_strut, c_sup, C_STRUT, segs=48)
+        cage.add_arc(inner, 0.0, TAU, z, t_strut, segs=32)
     _cyl_surface("inner_hull_skin", inner, z0, z1, c_skin, C_SKIN, verts=96)
 
     n = mass = mom_x = mom_y = 0
     per_track = []
     for s in range(ns):
-        f = 1.0
         a0, a1 = TAU * s / ns, TAU * (s + 1) / ns
         for rr in rings:
             for zf in arc_z:
-                _arc(f"arc_{s}_{int(rr)}_{int(zf)}", rr, a0, a1, zf, t_arc, c_arc, C_ARC, segs=10)
+                arcs.add_arc(rr, a0, a1, zf, t_arc, segs=8)
         for i in range(len(rings) - 1):
             ri, ro = rings[i], rings[i + 1]
             rc = (ri + ro) / 2
@@ -453,21 +508,26 @@ def build_cargo(z0, z1, colls, spec, sz):
             for j in range(ncont):
                 th = lo + (j + 0.5) * (hi - lo) / ncont
                 for (rr, arc_r) in ((r_inner_rail, ri), (r_outer_rail, ro)):
-                    _beam(f"rail_{s}_{i}_{j}_{int(rr)}", P(rr, th, z0 + 4), P(rr, th, cz1),
-                          t_rail, c_rail, C_RAIL)
+                    rails.add_beam(P(rr, th, z0 + 4), P(rr, th, cz1), t_rail)
                     ext = arc_r + math.copysign(t_arc / 2, arc_r - rr)
                     for zf in arc_z:
-                        _beam(f"conn_{s}_{i}_{j}_{int(rr)}_{int(zf)}", P(rr, th, zf),
-                              P(ext, th, zf), t_conn, c_arc, C_CONN)
-                for k in range(max(1, round(nz * f))):
-                    hot = (s == 0 and i == 2 and j == 0)
-                    _box(f"c_{s}_{i}_{j}_{k}", (ro - ri - ring_gap, cw, spec["container"]["L"]),
-                         P(rc, th, zsts[k]), c_hot if hot else c_cargo,
-                         C_HOT if hot else C_CARGO, rotz=th)
-                    mm = spec["container_mass_t"] * (1.9 if hot else 1.0)
+                        conns.add_beam(P(rr, th, zf), P(ext, th, zf), t_conn)
+                for k in range(nz):
+                    is_hot = (s == 0 and i == 2 and j == 0)
+                    dest = hot if is_hot else boxes
+                    dest.add_box((ro - ri - ring_gap, cw, spec["container"]["L"]),
+                                 P(rc, th, zsts[k]), rotz=th)
+                    mm = spec["container_mass_t"] * (1.9 if is_hot else 1.0)
                     x, y, _ = P(rc, th, 0)
                     n += 1; mass += mm; mom_x += mm * x; mom_y += mm * y
 
+    cage.emit("cargo_cage", c_sup, C_STRUT)
+    diags.emit("cargo_diags", c_sup, C_DIAG)
+    arcs.emit("cargo_arcs", c_arc, C_ARC)
+    conns.emit("cargo_conns", c_arc, C_CONN)
+    rails.emit("cargo_rails", c_rail, C_RAIL)
+    boxes.emit("cargo_boxes", c_cargo, C_CARGO)
+    hot.emit("cargo_heavy", c_hot, C_HOT)
     _box("loading_container", (cw, cw, spec["container"]["L"]),
          (0, -(inner - 6.0), zc_door), colls[3], (0.20, 0.95, 0.35))
     _box("bay_door", (6, 1, door_h), (0, -(inner - 0.3), zc_door), c_door, C_DOOR)
@@ -701,6 +761,7 @@ def _frame_camera(spec):
 
 
 def build():
+    t0 = time.perf_counter()
     _fresh_scene()
     bpy.context.scene.unit_settings.system = "METRIC"
     R = SPEC["radius_outer"]; L = SPEC["length"]
@@ -738,6 +799,7 @@ def build():
     vol, tank_len = lh2_volume_m3(SPEC)
     return {
         "radius_m": R, "length_m": L, "objects": len(bpy.data.objects),
+        "build_s": round(time.perf_counter() - t0, 2),
         "sizing": sz, "section": sec, "lh2": tanksec, "crew": crewsec,
         "reactor": rsec, "radiator": radsec, "nacelles": nacsec,
         "collectors": colsec, "sensors": sensec, "hangar": hansec,
