@@ -23,7 +23,8 @@
 # between the tank bands. Hotel plant is a 70 m tandem mirror aft. No tail
 # ICF: the torch is two IS black-box nacelles on 45° A-frames that pierce
 # the hull and land on a torque box (belt rings + longerons). Hotel waste
-# leaves through the aft hull skin. Collectors are bow coils.
+# leaves through the aft hull skin. Collectors are bow coils. Debris
+# suite is two packages on the nacelle shoulders, not the nose.
 
 import time
 
@@ -65,7 +66,9 @@ C_BELT = (0.72, 0.68, 0.58)
 C_BOX = (0.50, 0.48, 0.42)
 C_SCOOP = (0.30, 0.78, 0.62)
 C_FEL = (0.95, 0.90, 0.35)
+C_FEL_MACH = (0.75, 0.70, 0.28)
 C_RADAR = (0.45, 0.72, 0.88)
+C_SHUT = (0.22, 0.24, 0.26)
 C_HAB = (0.90, 0.28, 0.38)
 
 
@@ -139,12 +142,15 @@ SPEC = {
         ),
         "throat_r": 3.2, "throat_len": 16.0,
     },
-    # Layered bow suite: THz/mm search tiles + independently steered FEL
-    # directors. Cooker is the same class of director run as a flood.
+    # Debris suite on the nacelle shoulders, not the nose. Two 10 m AESAs
+    # and two FEL directors looking +Z. Machines live in the torque box.
+    # Shutters stowed (open) in the cruise pose.
     "sensors": {
-        "n_fel": 4, "fel_r": 1.1, "fel_len": 9.0, "fel_along": 0.35,
-        "n_radar": 8, "radar_w": 5.0, "radar_h": 3.2, "radar_thick": 0.4,
-        "radar_along": 0.18,
+        "aesa_m": 10.0, "aesa_thick": 0.55,
+        "fel_r": 1.15, "fel_len": 8.0,
+        "thz_m": 3.2, "thz_thick": 0.4,
+        "shutter_thick": 0.28,
+        "machine_r": 3.2, "machine_len": 28.0,
     },
 }
 
@@ -754,33 +760,47 @@ def build_collectors(coll, spec):
     return {"coils": len(spec["collector"]["coils"])}
 
 
-def build_sensors(coll, spec):
-    L = spec["length"]
-    z_nose = L / 2
+def build_sensors(coll, spec, zones):
     s = spec["sensors"]
-    cap = spec["nose_cap_len"]
+    nc = spec["nacelle"]
     R = spec["radius_outer"]
+    z_reac0, z_reac1, _, _ = zones["reactor"]
+    zc = (z_reac0 + z_reac1) / 2
+    axis_r = R + nc["stand_off"] + nc["pod_r"]
+    half = nc["pod_len"] / 2
+    aesa = s["aesa_m"]
+    off_y = nc["pod_r"] + aesa / 2 + 0.8
+    z_face = zc + 10.0
 
-    def cone_r(along):
-        return R * (1.0 - along)
+    for side, th in enumerate((0.0, math.pi)):
+        px, py = P(axis_r, th, 0)[:2]
+        # Both packages sit on world +Y so the faces look +Z and clear the bells.
+        _box(f"aesa_{side}", (aesa, aesa, s["aesa_thick"]),
+             (px, py + off_y, z_face), coll, C_RADAR)
+        _box(f"thz_{side}", (s["thz_m"], s["thz_m"], s["thz_thick"]),
+             (px, py + off_y, z_face + aesa / 2 + s["thz_m"] / 2 + 0.4),
+             coll, C_RADAR)
+        fel = _cyl_surface(f"fel_dir_{side}", s["fel_r"], 0.0, s["fel_len"],
+                           coll, C_FEL, verts=16, caps=True)
+        fel.location = (px, py + off_y + aesa / 2 + s["fel_r"] + 0.6,
+                        z_face + 2.0)
+        # Visor parked along the pod, not covering the face — cruise is look.
+        _box(f"shutter_{side}", (aesa + 0.4, s["shutter_thick"], aesa + 0.4),
+             (px, py + off_y + aesa / 2 + 0.5, zc - 4.0), coll, C_SHUT)
 
-    for i in range(s["n_fel"]):
-        th = TAU * i / s["n_fel"] + TAU / 16
-        along = s["fel_along"]
-        rr = cone_r(along) + 1.2
-        z0 = z_nose + cap * along
-        x, y = P(rr, th, 0)[:2]
-        fel = _cyl_surface(f"fel_{i}", s["fel_r"], 0.0, s["fel_len"], coll, C_FEL,
-                           verts=16, caps=True)
-        fel.location = (x, y, z0)
-    for i in range(s["n_radar"]):
-        th = TAU * i / s["n_radar"]
-        along = s["radar_along"]
-        rr = cone_r(along) + 0.6
-        zc = z_nose + cap * along
-        _box(f"radar_{i}", (s["radar_w"], s["radar_thick"], s["radar_h"]),
-             P(rr, th, zc), coll, C_RADAR, rotz=th)
-    return {"fel": s["n_fel"], "radar_tiles": s["n_radar"]}
+    # FEL machines in the torque box. The A-frame tubes are the beam path.
+    for side, th in enumerate((0.0, math.pi)):
+        px, py = P(axis_r, th, 0)[:2]
+        mach = _cyl_surface(f"fel_machine_{side}", s["machine_r"],
+                            -s["machine_len"] / 2, s["machine_len"] / 2,
+                            coll, C_FEL_MACH, verts=20, caps=True)
+        mach.location = (math.copysign(spec["core_radius"] + s["machine_r"] + 1.2, px),
+                         0.0, zc)
+        _beam(f"fel_feed_{side}",
+              (math.copysign(nc["box_r"], px), 0.0, zc),
+              (px, py + off_y, z_face),
+              0.7, coll, C_FEL)
+    return {"aesa": 2, "fel_directors": 2, "fel_machines": 2, "aperture_m": aesa}
 
 
 def build_hangar(coll, spec, zones):
@@ -851,7 +871,7 @@ def build():
     radsec = build_radiator(_collection("SHIP_radiator"), SPEC, zones)
     nacsec = build_nacelles(_collection("SHIP_nacelle"), SPEC, zones)
     colsec = build_collectors(_collection("SHIP_collector"), SPEC)
-    sensec = build_sensors(_collection("SHIP_sensors"), SPEC)
+    sensec = build_sensors(_collection("SHIP_sensors"), SPEC, zones)
     hansec = build_hangar(_collection("SHIP_hangar"), SPEC, zones)
     _frame_camera(SPEC)
     _set_viewport()

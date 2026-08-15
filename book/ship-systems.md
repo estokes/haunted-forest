@@ -84,7 +84,7 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
 ```
                   ↑ direction of travel — always
 
-     [ Water-Whipple nose + collector coils + bow suite ]
+     [ Water-Whipple nose + collector coils              ]
      [ Cargo bay / hangars                               ]
      [ LH₂ tanks                                         ]
      [ Crew / sensitive cargo                            ]
@@ -530,7 +530,8 @@ What works:
   thousands to tens of thousands of kilometres — avoid vs shoot, with
   time to think. You do not THz-search the whole sky for motes.
 - **Stare down a cone, not a sphere.** Threats are biased forward.
-  Power and aperture go on the bow, not a rotating air-search.
+  Power and aperture go on two forward-looking faces on the
+  *nacelles*, not a rotating air-search and not the nose.
 - **LIDAR, cued.** Once something exists as a track, a narrow optical
   beam pins the aimpoint the FEL needs. LIDAR does not search.
 - **Several frequencies.** Absorption features and size resonances
@@ -612,11 +613,44 @@ The undetectable close-in fraction is now the last few hundred
 kilometres, not tens of thousands. Passive stare and a standing
 kill-zone cover some of it. The rest is an accepted Whipple hit rate.
 
+### Where the Suite Sits
+
+Not on the nose. The nose is a stuffed Whipple. Structural CNT is a
+conductor; water is a microwave oven. You cannot look through it. The
+rake that glances dust points the cone's face mostly *out* (~69° off
+the velocity vector), so a conformal AESA on the bumper cannot stare
+dead ahead anyway. Flattening the tip would fix the angle and put a
+10–20 m disk on the single most-hit surface on the ship. One array.
+One hit.
+
+The suite is **two packages, one on each nacelle shoulder**, ship
+hardware on the pod shell, not inside the IS box:
+
+- A **10 m AESA** looking +Z (cm / mm pebble search). Two independent
+  10 m faces at 10 MW are ~2,400 km each on a centimetre.
+- A **THz head** on the same pallet (sand cone).
+- A **metre-class FEL director** (interdiction and cooker). The
+  machines — GW-class linacs — live in the torque box and shoot
+  through the 3.6 m A-frame tubes.
+- A **shutter** that parks over the face when that box fires
+  forward. Cruise is look. Reverse is lids.
+
+From the node at r ≈ 91 m, a line to a grain thousands of kilometres
+dead ahead clears the 40 m hull by ~50 m. The fire-control floor is
+407 km; on-axis is not blind where it matters. Inside a few hundred
+metres of the nose the hull occults — that volume is already
+Whipple's. A 182 m baseline is a ranging gift a bow dish never had.
+
+A nose hit does not take the suite. A nacelle hit takes one engine
+and one eye; the other side still stares down the pipe. The nose
+stays a dumb, wet, raked Whipple.
+
 ### Interdiction — Spread It, Don't Match It
 
-The interdictor is a **free-electron laser array** — tunable to grain
-and bow plasma, several independently-steered directors. **It cannot
-cancel the grain's kinetic energy.** 0.7 MJ forward is still 0.7 MJ
+The interdictor is a **free-electron laser** — tunable to grain
+and bow plasma, two independently-steered directors on the nacelles.
+**It cannot cancel the grain's kinetic energy.** 0.7 MJ forward is
+still 0.7 MJ
 after vaporization. It can spread that energy into a cloud the Whipple
 will eat, or, with time, ablate one face and walk the grain off the
 hull.
@@ -681,8 +715,9 @@ gamble that pays in propellant, if the FEL keeps up.
 
 The FEL and the cooker both drink from the 63 GW bus and the same
 capacitor farm. A dirty passage is a power event and a thermal event:
-generation losses land on the tin loop, and the cooker is a bow-facing
-beacon as loud as a lit radiator zone. Every joule that leaves as beam
+generation losses land on the tin loop, and the cooker is a
+forward-facing beacon as loud as a lit radiator zone. Every joule that
+leaves as beam
 does *not* land inboard. Coverage is finite — you point THz and cooker
 down the cone you can afford. The cheapest defense against a pebble is
 still to never fly at it.

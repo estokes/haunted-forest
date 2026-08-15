@@ -66,8 +66,9 @@ state and accepting control through netidx:
   priority allocation
 - **Life support**: Atmosphere, temperature, cold sleep pod status
 - **Weapons**: Targeting, capacitor charge, ammunition
-- **Sensors**: Layered bow suite — THz sand-search, mm pebble-search,
-  cued LIDAR, optical cooker, passive IR. Fire-control floor 10 ms /
+- **Sensors**: Two nacelle-shoulder packages — THz sand-search, mm
+  pebble-search, cued LIDAR, optical cooker, passive IR. FEL machines
+  in the torque box. Fire-control floor 10 ms /
   407 km at 0.10c.
 
 
