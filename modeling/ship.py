@@ -121,10 +121,10 @@ SPEC = {
     },
     # IS black boxes on 45° A-frames that pierce the hull and land on a
     # torque box (two CNT belt rings + longerons). Thrust is axial in the
-    # struts. Turrets drawn in accelerate-lock (nozzle aft).
+    # struts. The box fires either way; nozzles at both ends, no slew.
     "nacelle": {
         "count": 2, "pod_r": 11.0, "pod_len": 58.0, "stand_off": 40.0,
-        "nozzle_len": 14.0, "turret_r": 12.0, "turret_minor": 2.2,
+        "nozzle_len": 14.0, "node_r": 8.0, "node_minor": 1.6,
         "strut_t": 3.6, "splay": 0.32, "ring_minor": 2.3, "belt_minor": 1.6,
         "longeron_t": 2.2, "box_r": 9.0,
         "rad_n": 4, "rad_span": 10.0, "rad_len": 22.0, "rad_thick": 0.35,
@@ -185,7 +185,7 @@ def drive_mount_mass(spec):
     box = kg(TAU * nc["box_r"] * 0.04, 2.0 * dz)
     spokes = kg(_box_wall_area(1.5, 1.5, 0.08), inner - nc["box_r"], 8)
     hardpoints = kg(_box_wall_area(1.8, 1.8, 0.08), 2.0 * inner * nc["splay"], 8)
-    turrets = kg(_box_wall_area(0.9, 0.9, 0.12), TAU * nc["turret_r"], 2)
+    nodes = kg(_box_wall_area(0.9, 0.9, 0.12), TAU * nc["node_r"], 2)
     struts = kg(A_strut, L_strut, 8)
     parts = {
         "struts": round(struts),
@@ -194,7 +194,7 @@ def drive_mount_mass(spec):
         "box_skin": round(box),
         "spokes": round(spokes),
         "hardpoints": round(hardpoints),
-        "turrets": round(turrets),
+        "nodes": round(nodes),
     }
     sub = sum(parts.values())
     parts["fittings"] = round(0.2 * sub)
@@ -709,24 +709,27 @@ def build_nacelles(coll, spec, zones):
     for s in range(nc["count"]):
         th = TAU * s / nc["count"]
         px, py = P(axis_r, th, 0)[:2]
-        turret_pt = P(axis_r, th, zc)
+        node_pt = P(axis_r, th, zc)
         lands = []
         for sz in (1.0, -1.0):
             for sy in (1.0, -1.0):
                 land = P(inner, th + sy * splay, zc + sz * dz)
                 lands.append(land)
-                _beam(f"strut_{s}_{int(sz)}_{int(sy)}", turret_pt, land, nc["strut_t"], coll, C_STRUT)
+                _beam(f"strut_{s}_{int(sz)}_{int(sy)}", node_pt, land, nc["strut_t"], coll, C_STRUT)
         for a, b in ((0, 1), (2, 3), (0, 2), (1, 3)):
             _beam(f"hardpoint_{s}_{a}{b}", lands[a], lands[b], nc["longeron_t"] * 0.8, coll, C_BELT)
-        turret = _torus(f"turret_{s}", nc["turret_r"], nc["turret_minor"], 0.0, coll, C_DRIVE, nu=24, nv=10)
-        turret.location = (px, py, zc)
-        turret.rotation_euler = (0.0, math.pi / 2, th)
+        node = _torus(f"node_{s}", nc["node_r"], nc["node_minor"], 0.0, coll, C_DRIVE, nu=20, nv=10)
+        node.location = (px, py, zc)
+        node.rotation_euler = (0.0, math.pi / 2, th)
         pod = _cyl_surface(f"nacelle_{s}", nc["pod_r"], -half, half, coll, C_NAC,
                            verts=28, caps=True)
         pod.location = (px, py, zc)
-        noz = _cone(f"nac_nozzle_{s}", nc["pod_r"] * 0.95, -half - nc["nozzle_len"],
-                    -half, coll, C_DRIVE)
-        noz.location = (px, py, zc)
+        noz_aft = _cone(f"nac_noz_aft_{s}", nc["pod_r"] * 0.95, -half - nc["nozzle_len"],
+                        -half, coll, C_DRIVE)
+        noz_aft.location = (px, py, zc)
+        noz_fore = _cone(f"nac_noz_fore_{s}", nc["pod_r"] * 0.95, half + nc["nozzle_len"],
+                         half, coll, C_DRIVE)
+        noz_fore.location = (px, py, zc)
         for k in range(nc["rad_n"]):
             a = th + TAU * (k + 0.5) / nc["rad_n"]
             _box(f"nac_rad_{s}_{k}",

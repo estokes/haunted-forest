@@ -94,17 +94,19 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
      [ Aft radiating hull (8 zoned gores)                ]  ← always in the wake
 
   Stardrive nacelles sit on 45° A-frames that pierce the hull and
-  land on a torque box (two CNT belt rings + longerons). Each is a
-  lockable turret: nozzle aft to accelerate, nozzle forward to
-  decelerate. The stand-off keeps the plumes off the radiating skin.
+  land on a torque box (two CNT belt rings + longerons). The boxes
+  fire either way by internal reconfiguration — nothing on the
+  pylon moves. The stand-off keeps the plumes off the radiating skin.
 ```
 
 The ship is **directionally specialized and never flips**: the nose
 always meets the ISM, the tail always radiates into the wake, and the
 hotel reactor sits aft beside the radiators. The stardrive modules —
 IS black boxes — ride in nacelles so their waste heat and radiation
-stay off the hull; each nacelle is a lockable two-position turret.
-The pylons are not cantilevers. Four 45° struts per nacelle pierce
+stay off the hull. The pylons do not slew. Each IS box fires
+fore or aft by reconfiguring internally on command — hours, not
+seconds; IS does not publish the procedure. A fight is a one-way
+burn. Midcourse you have years. The pylons are not cantilevers. Four 45° struts per nacelle pierce
 the barrel and land on a torque box: two heavy CNT belt rings
 through the engineering hull, longerons between them, a box around
 the core. Thrust is axial in the struts — one pair in compression,
@@ -117,16 +119,18 @@ compression legs, ~22 cm wall in a 3.6 m strut — the mounts are
 a separate system, not IS's: superconducting coils on the bow, always
 facing the ISM. To decelerate at midcourse the scoop field reshapes
 from funnel to parachute and the ship bleeds speed on magnetic drag;
-once well below the 0.12c wall the nacelles slew 180° and the torch
-finishes the descent on tanked hydrogen. The ship never turns over.
+once well below the 0.12c wall the boxes are told to reverse and the
+torch finishes the descent on tanked hydrogen. The ship never turns
+over. Nothing on the pylon moves.
 
 Because the *ship* never turns over, **thrust-gravity reverses at
 midcourse**. On the outbound half the drive pushes the ship forward, so
 "down" is toward the **tail**; when the scoop becomes a parachute,
 "down" is toward the **nose**, and it stays there through the reverse
 burn. Cruise itself is milligees in the Bubble — almost free-fall. The
-only true weightless moment is the nacelle slew. **The floor becomes
-the ceiling halfway through the trip.** The crew rides interstellar
+only true weightless moment is the handoff: sail idle, boxes
+reconfiguring, torch not yet lit. **The floor becomes the ceiling
+halfway through the trip.** The crew rides interstellar
 cruise in cold sleep, so no one walks the decks during the swap, and the
 pods, tankage, and fluid systems are built to work under thrust from
 either direction. But anyone awake — an in-flight emergency, a
@@ -978,11 +982,11 @@ tin loop and the headers.
 The ship never flips, so there is no flip thermal sequence — the old
 multi-day cool-the-radiator, rebuild-the-shield ordeal is simply gone. At
 midcourse the scoop becomes a magnetic parachute and the ship brakes for
-years on ISM drag; the nacelles slew 180° only when it is time to burn
-the last of the speed off (see The Stardrive). The tail radiates
-throughout; the nose shields throughout. Nothing structural on the ship
-itself moves, and there is no vulnerable window — the armor is permanent,
-not a coating that has to be regrown.
+years on ISM drag; the boxes reconfigure to fire forward only when it
+is time to burn the last of the speed off (see The Stardrive). The tail
+radiates throughout; the nose shields throughout. Nothing structural
+on the ship itself moves, and there is no vulnerable window — the
+armor is permanent, not a coating that has to be regrown.
 
 The one thing the crew would feel, if any were awake, is that
 thrust-gravity reverses: "down" points sternward on the accelerating half
@@ -1174,16 +1178,17 @@ The coils reshape from funnel to parachute. Incoming ISM reflects;
 the ship takes the recoil. Drag scales as \(\dot{m}\,v \propto v^2\).
 From 0.10c the sail has leverage the rocket has just lost.
 
-Once speed is well below the asymptote the nacelles slew — each IS
-box is a **lockable two-position turret**, nozzle aft to accelerate,
-nozzle forward to decelerate — and the torch finishes the descent
-on tankage. The collectors stay pointed at the ISM. The ship never
-turns over. The nose stays a shield; the tail stays a radiator.
+Once speed is well below the asymptote you command the boxes to
+reverse — internally, on IS's schedule, hours — and the torch
+finishes the descent on tankage. The collectors stay pointed at the
+ISM. The ship never turns over. The nose stays a shield; the tail
+stays a radiator. The A-frames do not move.
 
-A jammed turret no longer means "you cannot stop." The sail still
-dumps speed. It does mean the last burn is improvised, and you may
-arrive hot. See Maintenance. The collectors are not on that
-interval. A yard that cannot touch an IS box can still patch a coil.
+A box that will not reverse no longer means "you cannot stop." The
+sail still dumps speed. It does mean the last burn is improvised,
+and you may arrive hot. See Maintenance. The collectors are not on
+that interval. A yard that cannot touch an IS box can still patch
+a coil.
 
 ### Maintenance
 
