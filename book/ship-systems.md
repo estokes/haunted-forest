@@ -157,8 +157,9 @@ slot is filled; the loadmaster leaves empty slots for trim.
 
 IS sells metal in two shapes: band cells that fill the tank annulus,
 and **box cells** — standard containers with **~50 t** of metallic
-hydrogen inside. A box cell rides the same rails, clamps to the same
-pair, and feeds the drive through the same rail bus. Every slot in
+hydrogen inside, as slugs. A box cell rides the same rails and clamps
+to the same pair; the handler docks it to a feed port at the bay's
+staging concourse when its turn comes (see Fuel Handling). Every slot in
 the hold is a choice between 20 t of cargo and 50 t of fuel. A hold
 of nothing but fuel is ~515,000 t more metal on top of the bands. See
 Speed Is Bought With Slots.
@@ -166,7 +167,8 @@ Speed Is Bought With Slots.
 A box cell weighs 2.5× a cargo box. The clamp is rated for a 20 t box
 at 9 G (1.77 MN), so a hold carrying fuel boxes is limited to ~3.6 G
 until they are burned or double-clamped. A fueled ship cannot pull
-much more than that anyway (see Mass Budget).
+much more than that anyway (see Mass Budget). Box cells burn first:
+every one emptied lifts the clamp limit and frees a slot.
 
 ### The Rack — a Hard Disk Stood on Its Axis
 
@@ -1043,7 +1045,7 @@ less cargo.
 ### The Combat Redline
 
 Maximum acceleration is **~9 G**, reached with overdraw and a rich mixture
-together — and it is a *convergent* redline. Three independent systems hit
+together — and it is a *convergent* redline. Four independent systems hit
 their limit at the same number:
 
 - **Crew** — in immersion couches with pharmacological support (the same
@@ -1051,11 +1053,13 @@ their limit at the same number:
   Bare, it's ~5 G.
 - **Nozzle** — the 3.5× overdraw burn-through / quench limit.
 - **Reaction mass** — the reserve empties in minutes at these rates.
+- **Feed** — the slug train is sized for it, ~175 slugs/s (see Fuel
+  Handling).
 
 A fueled ship never gets there: the mounts' 46 GN is ~3.4 G on a
 departing freighter. 9 G is an arrival-weight number.
 
-Below 9 G you have margin on all three; at 9 G you have margin on none, and
+Below 9 G you have margin on all four; at 9 G you have margin on none, and
 battle damage lowers whichever gives first. Combat is a three-resource
 economy — **nozzle life, Δv-efficiency, reaction mass** — traded live. The
 ship handles like a supertanker that can throw one hard punch: it lunges at
@@ -1179,8 +1183,9 @@ predicted since the 1970s that it might *stay* metal when the pressure
 comes off, the way diamond stays diamond. Nobody in our century showed
 it; the best experiments watched it revert as the load came off.
 **Interstellar Systems can.** That is the setting's second gimme, stated
-plainly: metastable metallic hydrogen at zero pressure, made by IS and
-kept stable inside IS cells.
+plainly: metastable metallic hydrogen at zero pressure, and only IS knows
+how to make it. Once made it stays metal on its own, the way diamond
+does. The secret is the making, not the keeping.
 
 ### What It Is
 
@@ -1188,10 +1193,17 @@ kept stable inside IS cells.
   ~987,000 t. A box cell holds ~50 t.
 - **It is still hydrogen.** The box fuses it like any other protium. It
   shields like hydrogen, at ten times the density per metre.
-- **Only IS makes it.** Cells are black boxes like the drive: sealed,
-  tamper-protected, and opening one ends it. Two formats: **band cells**
-  shaped to the tank annulus, installed at a depot, and **box cells** in
-  the standard container (see Fuel Boxes).
+- **It is a solid.** Nothing pumps it. IS ships it as **slugs** — 1 m
+  cylinders, ~550 kg each — and the ship moves slugs, not fluid.
+- **It superconducts.** Metallic hydrogen was predicted in 1968 to be a
+  high-temperature superconductor. IS metal is, well above the
+  temperature it is stored at. That is what makes it movable (see Fuel
+  Handling).
+- **Only IS makes it.** Slugs come packed in sealed, tamper-evident
+  cells — not because the metal needs them, but because IS wants to know
+  where its metal goes. Two formats: **band cells**, slug racks shaped
+  to the tank annulus and installed at a depot, and **box cells**, slug
+  magazines in the standard container (see Fuel Boxes).
 
 ### What It Costs to Carry
 
@@ -1211,9 +1223,49 @@ neighbour's. Everything hot lives aft, behind the hold, away from the
 bands. In combat a hit on the bands is the worst hit there is. Box cells
 can go out the bay doors, slowly. Band cells do not jettison.
 
-This is not antimatter. Metal is stable until it is heated or breached,
-it pumps and stores, a gram that fails is a firecracker and not a
-crater, and the gimme stays inside an IS cell.
+This is not antimatter. Metal is stable until it is heated or shocked,
+it stacks and stores, a gram that fails is a firecracker and not a
+crater, and the gimme stays in IS's factories.
+
+### Fuel Handling — the Slug Train
+
+You cannot revert the metal to gas and pipe it. Reversion is 216 MJ/kg
+of heat inside the ship: a gigawatt at lean flow, terawatts in a fight.
+So the metal reaches the box as metal, and the box reverts and fuses it,
+where 216 MJ/kg is noise.
+
+The feed has to carry what the torch can drink:
+
+| Burn | Flow (both boxes) | Slugs/s |
+|------|-------------------|---------|
+| Lean crossing burn | ~5 kg/s | one every ~2 min |
+| 0.1 G, arriving | ~28 kg/s | ~0.05 |
+| 1 G, arriving / departing | ~2.8 / ~29 t/s | ~5 / ~52 |
+| 3 G, arriving | ~25 t/s | ~45 |
+| 9 G (46 GN at 11 PW) | ~96 t/s | ~175 |
+
+Nine G sizes the line. The feed is a **maglev tube**. A superconductor
+is pushed out of a magnetic field, so a slug floats in a coil-lined bore
+and never touches the wall: no friction, no wear, no hot spot. The route
+is ~500 m — band racks inward to the core spine, aft along the core to
+the torque box, out one bore in each A-frame, into the box. At 9 G each
+nacelle draws ~87 slugs/s; at 1.5 m pitch the train runs ~130 m/s. On a
+crossing burn it is one slug every couple of minutes. Box cells dock to
+feed ports at the bay concourses and feed the same spine.
+
+Slugs are stored cold and shaded. They cross the engineering hull, the
+one hot place on the ship, in seconds, inside a shielded bore in the
+core.
+
+The cost is the train itself. One slug is ~28 t of TNT. At 9 G each
+nacelle's train holds ~330 slugs in flight, ~9 kt, strung through its
+pylon. The tube is
+segmented with blast gates; a slug that reverts vents its segment and
+the gates stop the train either side. A hit on a feed bore takes that
+nacelle off the line until the train is rerouted or the bore is cleared.
+The A-frame tube already carries the FEL beam line; now it carries the
+fuel too. It was the most valuable structure on the ship. It is now
+also the most dangerous.
 
 ### The Fuel Leash
 
