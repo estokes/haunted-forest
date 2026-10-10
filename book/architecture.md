@@ -57,11 +57,12 @@ state and accepting control through netidx:
 
 - **Thermal management**: Tin loop, zoned aft radiators, waste heat
   (implemented; 100 GW plant)
-- **Collectors**: Scoop field, tank fill rate, parachute/funnel mode
-- **Stardrive**: IS black box — LH₂ feed, torch thrust, fuse-fraction,
-  nozzle overdraw. Observable externals only.
-- **Navigation**: Position, velocity, course plotting, scoop-on
-  climb vs tanked burn
+- **Fuel**: IS cell inventory (bands and box cells), feed, cell
+  temperatures, reversion alarms
+- **Stardrive**: IS black box — metal feed, torch thrust, fuse-fraction,
+  nozzle overdraw, reverse state. Observable externals only.
+- **Navigation**: Position, velocity, course plotting, Δv budget
+  (burn up, coast, burn down, reserve)
 - **Power distribution**: Load balancing across ship systems,
   priority allocation
 - **Life support**: Atmosphere, temperature, cold sleep pod status

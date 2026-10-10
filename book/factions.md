@@ -37,8 +37,9 @@ so far ahead of the field that no one can replicate it. Some founding
 members are still alive — centuries old in both calendar and experience,
 because they do not sleep the crossings.
 
-They sell stardrives — the box: LH₂ in, torch out — rarely, at
-enormous cost, to buyers they choose. They do not sell collectors.
+They sell stardrives — the box: metal in, torch out — rarely, at
+enormous cost, to buyers they choose. They are also the only source
+of the metal: metastable metallic hydrogen, the box's only fuel.
 They do not explain their pricing or selection criteria. This makes
 them the most powerful and most resented entity in civilization.
 
@@ -46,8 +47,7 @@ them the most powerful and most resented entity in civilization.
 
 All stardrives require servicing every ~60 light-years of travel
 (~600 years of flight at 0.10c — a wear budget, not a calendar). Only
-IS can perform the work. Collectors are local industry. A dead coil
-is a yard job. A dead box is a pilgrimage. They maintain service facilities in a handful
+IS can perform the work. A dead box is a pilgrimage. They maintain service facilities in a handful
 of systems — perhaps 3-5 across inhabited space. The inspection is
 opaque: they tell you what it costs, not what they found.
 
@@ -57,6 +57,16 @@ turn back. IS chooses where to build facilities, and therefore chooses
 the shape of the frontier. Systems with IS facilities become mandatory
 waypoints, trade hubs, and political powers — simply because every
 captain must dock there eventually.
+
+### Fuel Monopoly
+
+A ship's bands hold one crossing, and only IS can refill them. IS
+sells metal at its service facilities and at depots it stocks with its
+own tankers — more depots than facilities, fewer than inhabited
+systems. IS sets the price. A system without a depot is a slow-boat
+destination: ships going there must carry their way home, at half a
+freighter's speed. The maintenance monopoly decides where civilization can
+reach. The fuel monopoly decides how often anyone bothers.
 
 There are rumors that stardrives contain systems their owners don't
 fully understand — including remote self-destruct mechanisms. IS

@@ -314,7 +314,7 @@ Interstellar Systems performs all maintenance. They have service
 facilities in perhaps 3-5 systems across inhabited space. The
 inspection is opaque — they tell you what needs doing and what it
 costs, never why. You pay, because the alternative is a stardrive
-failure, and a drive that throws 500,000 tonnes at a tenth of \(c\)
+failure, and a drive that throws a million tonnes at a tenth of \(c\)
 does not fail quietly.
 
 This gives IS control over the topology of human expansion:
@@ -337,6 +337,16 @@ need maintenance it can't get. The drive will fail. This is a one-way
 trip — permanent settlement with no return. Some colonies were founded
 this way. Whether any survived is an open question.
 
+**The fuel leash.** The drive burns only metallic hydrogen, and only
+IS makes it. A full set of bands is one crossing. IS sells metal at
+its facilities and at depots it stocks itself; it sets the price,
+which is the largest line in any freight budget, and it decides which
+systems get a depot. A system without one is not closed. It is slow:
+ships must carry the fuel home, and out-and-back on one fill is
+0.035c with a full hold — half a freighter's speed, twice the
+crossing. Pulling a depot is
+IS's quiet embargo.
+
 **Strategic refusal.** If IS declines to build a facility in a
 particular direction, that direction is closed. Why they refuse — if
 they ever do — is one of the most consequential questions in
@@ -350,6 +360,10 @@ what's out there?
 - Has IS ever refused to service a ship? Under what circumstances?
 - What's the spot price of ³He at different systems? Does it vary
   enough to be a meaningful trade opportunity?
+- How many IS fuel depots, and where? What does metal cost, and does
+  IS price it by system?
+- Is there a resale market in IS cells — a partly full band set, box
+  cells traded between ships? Does IS allow it?
 - Are there black-market stardrive mechanics? (Almost certainly not —
   the technology is too far beyond anyone else. But rumors persist.)
 - How does piracy interact with the futures market? Intercepting a ship

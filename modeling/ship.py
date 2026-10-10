@@ -17,13 +17,13 @@
 # changes the sign of loads the members already carry. All geometry is DERIVED
 # from container size + clearances + structurally-sized members (structural_sizing).
 #
-# 1 km x 40 m (12.5:1). 100 kt of LH2 is 1.41e6 m3; at this radius that is
-# 315 m of full-section tank, which leaves 365 m of hold — shorter than the
-# old 600 m but fatter, ten tracks, more tonnes. Habitat sits midships
-# between the tank bands. Hotel plant is a 70 m tandem mirror aft. No tail
+# 1 km x 40 m (12.5:1). The fuel bands are 315 m of full-section tank,
+# 1.41e6 m3 of IS metallic-hydrogen cells at 0.7 g/cm3 (~990 kt), which
+# leaves 365 m of hold — shorter than the old 600 m but fatter, ten tracks,
+# more tonnes. Habitat sits midships between the fuel bands. Hotel plant is a 70 m tandem mirror aft. No tail
 # ICF: the torch is two IS black-box nacelles on 45° A-frames that pierce
 # the hull and land on a torque box (belt rings + longerons). Hotel waste
-# leaves through the aft hull skin. Collectors are bow coils. Debris
+# leaves through the aft hull skin. Nothing on the bow but Whipple. Debris
 # suite is two packages on the nacelle shoulders, not the nose.
 
 import time
@@ -52,7 +52,7 @@ C_CHOKE = (0.20, 0.85, 0.92)
 C_PLUG = (0.96, 0.80, 0.25)
 C_CONV = (0.55, 0.85, 0.55)
 C_FUEL = (0.36, 0.62, 0.92)
-C_LH2 = (0.22, 0.58, 0.88)
+C_METAL = (0.22, 0.58, 0.88)
 C_ENG = (0.88, 0.56, 0.30)
 C_RAD = (0.93, 0.42, 0.18)
 C_RAD_ZONES = (
@@ -64,7 +64,6 @@ C_NAC = (0.18, 0.18, 0.20)
 C_NAC_RAD = (0.85, 0.45, 0.20)
 C_BELT = (0.72, 0.68, 0.58)
 C_BOX = (0.50, 0.48, 0.42)
-C_SCOOP = (0.30, 0.78, 0.62)
 C_FEL = (0.95, 0.90, 0.35)
 C_FEL_MACH = (0.75, 0.70, 0.28)
 C_RADAR = (0.45, 0.72, 0.88)
@@ -93,13 +92,13 @@ SPEC = {
     "safety_factor": 2.0,
     "cargo_bay_len": 185.0,
     "cargo_bays": (180.0, 185.0),
-    "lh2_density": 70.8,
+    "metal_density": 700.0,
     "zones": [
         ("nose_whipple",   50.0,  (0.35, 0.55, 0.85)),
         ("cargo_fore",    180.0,  (0.90, 0.65, 0.15)),
-        ("lh2_fore",      160.0,  (0.20, 0.70, 0.90)),
+        ("fuel_fore",     160.0,  (0.20, 0.70, 0.90)),
         ("crew_core",      40.0,  (0.90, 0.25, 0.35)),
-        ("lh2_aft",       155.0,  (0.20, 0.70, 0.90)),
+        ("fuel_aft",      155.0,  (0.20, 0.70, 0.90)),
         ("cargo_aft",     185.0,  (0.90, 0.65, 0.15)),
         ("reactor",       140.0,  (0.70, 0.30, 0.90)),
         ("radiator_aft",   90.0,  (0.90, 0.40, 0.20)),
@@ -131,16 +130,6 @@ SPEC = {
         "strut_t": 3.6, "splay": 0.32, "ring_minor": 2.3, "belt_minor": 1.6,
         "longeron_t": 2.2, "box_r": 9.0,
         "rad_n": 4, "rad_span": 10.0, "rad_len": 22.0, "rad_thick": 0.35,
-    },
-    # Superconducting scoop coils. Yards build these. Field is 14,000 km;
-    # what you can see is the hardware on the bow.
-    "collector": {
-        "coils": (
-            {"z_from_nose": 8.0, "R": 42.8, "r": 2.6},
-            {"z_from_nose": 32.0, "R": 41.6, "r": 2.0},
-            {"z_from_nose": 62.0, "R": 41.3, "r": 1.6},
-        ),
-        "throat_r": 3.2, "throat_len": 16.0,
     },
     # Debris suite on the nacelle shoulders, not the nose. Two 10 m AESAs
     # and two FEL directors looking +Z. Machines live in the torque box.
@@ -493,11 +482,11 @@ def zone_map(spec):
     return out
 
 
-def lh2_volume_m3(spec):
+def fuel_volume_m3(spec):
     inner = spec["radius_outer"] - spec["barrel_thickness"]
     core = spec["core_radius"]
     area = math.pi * (inner ** 2 - core ** 2)
-    length = sum(z[1] for z in spec["zones"] if z[0].startswith("lh2_"))
+    length = sum(z[1] for z in spec["zones"] if z[0].startswith("fuel_"))
     return area * length, length
 
 
@@ -588,14 +577,13 @@ def build_cargo(z0, z1, colls, spec, sz):
 def build_tanks(coll, spec, zones):
     inner = spec["radius_outer"] - spec["barrel_thickness"]
     core = spec["core_radius"]
-    vol = 0.0
-    for name in ("lh2_fore", "lh2_aft"):
+    for name in ("fuel_fore", "fuel_aft"):
         z0, z1, _, _ = zones[name]
-        _cyl_surface(f"{name}_inner", core + 0.4, z0, z1, coll, C_LH2, verts=48, alpha=0.45)
-        _cyl_surface(f"{name}_outer", inner - 0.3, z0, z1, coll, C_LH2, verts=64, alpha=0.45)
-        vol += math.pi * (inner ** 2 - core ** 2) * (z1 - z0)
-    mass_kt = vol * spec["lh2_density"] / 1e6
-    return {"volume_m3": round(vol), "mass_kt": round(mass_kt, 1)}
+        _cyl_surface(f"{name}_inner", core + 0.4, z0, z1, coll, C_METAL, verts=48, alpha=0.45)
+        _cyl_surface(f"{name}_outer", inner - 0.3, z0, z1, coll, C_METAL, verts=64, alpha=0.45)
+    vol, length = fuel_volume_m3(spec)
+    return {"volume_m3": round(vol), "mass_kt": round(vol * spec["metal_density"] / 1e6, 1),
+            "tank_len_m": length}
 
 
 def build_crew(coll, spec, zones):
@@ -748,18 +736,6 @@ def build_nacelles(coll, spec, zones):
             "strut_len_m": round(math.hypot(dz, dz), 1)}
 
 
-def build_collectors(coll, spec):
-    L = spec["length"]
-    z_nose = L / 2
-    for i, c in enumerate(spec["collector"]["coils"]):
-        _torus(f"scoop_coil_{i}", c["R"], c["r"], z_nose - c["z_from_nose"],
-               coll, C_SCOOP, nu=36, nv=14)
-    th = spec["collector"]
-    _cyl_surface("scoop_throat", th["throat_r"], z_nose - th["throat_len"], z_nose + 4.0,
-                 coll, C_SCOOP, verts=24, caps=True)
-    return {"coils": len(spec["collector"]["coils"])}
-
-
 def build_sensors(coll, spec, zones):
     s = spec["sensors"]
     nc = spec["nacelle"]
@@ -865,12 +841,11 @@ def build():
     # 80 m sample of the forward bay — a full 300 m hold is tens of thousands
     # of objects and does not change the argument.
     sec = build_cargo(z0f + 15, z0f + 95, colls, SPEC, sz)
-    tanksec = build_tanks(_collection("SHIP_lh2"), SPEC, zones)
+    tanksec = build_tanks(_collection("SHIP_fuel"), SPEC, zones)
     crewsec = build_crew(_collection("SHIP_crew"), SPEC, zones)
     rsec = build_reactor(_collection("SHIP_reactor"), _collection("SHIP_reactor_fuel"), SPEC, zones)
     radsec = build_radiator(_collection("SHIP_radiator"), SPEC, zones)
     nacsec = build_nacelles(_collection("SHIP_nacelle"), SPEC, zones)
-    colsec = build_collectors(_collection("SHIP_collector"), SPEC)
     sensec = build_sensors(_collection("SHIP_sensors"), SPEC, zones)
     hansec = build_hangar(_collection("SHIP_hangar"), SPEC, zones)
     _frame_camera(SPEC)
@@ -879,16 +854,13 @@ def build():
         bpy.ops.ed.undo_push(message="haunted-forest: build ship")
     except Exception:
         pass
-    vol, tank_len = lh2_volume_m3(SPEC)
     return {
         "radius_m": R, "length_m": L, "objects": len(bpy.data.objects),
         "build_s": round(time.perf_counter() - t0, 2),
-        "sizing": sz, "section": sec, "lh2": tanksec, "crew": crewsec,
+        "sizing": sz, "section": sec, "fuel": tanksec, "crew": crewsec,
         "reactor": rsec, "radiator": radsec, "nacelles": nacsec,
         "mount_mass_t": drive_mount_mass(SPEC),
-        "collectors": colsec, "sensors": sensec, "hangar": hansec,
-        "lh2_check": {"volume_m3": round(vol), "mass_kt": round(vol * SPEC["lh2_density"] / 1e6, 1),
-                      "tank_len_m": tank_len},
+        "sensors": sensec, "hangar": hansec,
     }
 
 

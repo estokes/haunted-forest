@@ -7,12 +7,13 @@ understanding, but engineering has advanced fantastically.
 
 - **No FTL.** The light barrier is never broken by humans, augmented humans,
   or AIs.
-- **Stardrives**: Interstellar Systems sells a black box. Liquid
-  hydrogen in, fusion torch out. They do not sell the scoop that
-  fills the tanks — any yard can build a collector. Cruise is
-  **0.10c**; the torch's conservation-law wall is **0.12c**. They
-  sell rarely, to buyers they choose. See [Factions](factions.md)
-  and [Ship Systems](ship-systems.md).
+- **Stardrives**: Interstellar Systems sells a black box, and the
+  only fuel it burns: metastable metallic hydrogen, in sealed cells
+  nobody else can make. Metal in, fusion torch out. There is no speed
+  wall, only the rocket equation: a full hold cruises at **0.07c**,
+  and **0.10c** costs two-thirds of the hold in fuel. Every refuel is
+  an IS transaction. They sell drives rarely, to buyers they choose.
+  See [Factions](factions.md) and [Ship Systems](ship-systems.md).
 - **Nanofabrication**: Manufacturing any object from raw materials is trivial
   given a design. This creates post-scarcity for most goods.
 - **Black-boxed tech**: Some items (powerful weapons, stardrives, etc.) have

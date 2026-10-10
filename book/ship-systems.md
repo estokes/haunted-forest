@@ -10,16 +10,18 @@ constructed from carbon nanotube composites and graphene sheets —
 materials with tensile strengths of 50-100 GPa at densities of
 ~1,400 kg/m³.
 
-A hundred thousand tonnes of LH₂ is 1.4 million cubic metres. At 40 m
-radius that is **315 m** of full-section tank — two bands around the
-midships habitat — and leaves **365 m** of hold. The bays are shorter
-than they were at 30 m; they are also fatter, ten tracks instead of
+The fuel takes **315 m** of full-section tank — two bands around the
+midships habitat — and leaves **365 m** of hold. It is not liquid
+hydrogen. It is **metallic hydrogen** in Interstellar Systems cells,
+ten times denser: the bands hold **~990,000 t** (see The Fuel). As
+LH₂ the same bands held 100,000 t, and that does not reach a star.
+The bays are shorter than they were at 30 m; they are also fatter, ten tracks instead of
 seven, and they carry more. The face grew by 1.8×. Dust and FEL time
 scale with that.
 
 For perspective: the structural stress at the base of a 1 km column
-under 1G, at the ship's average density (~100 kg/m³ at operating
-mass), is about 1.0 MPa. CNT handles 50 GPa. The structure could
+under 1G, at the ship's average density (~240 kg/m³ fueled), is
+about 2.4 MPa. CNT handles 50 GPa. The structure could
 withstand tens of thousands of G before failing; the drive's 9G
 redline is nothing to the frame — the limits are the crew and the
 nozzles, not the structure.
@@ -52,11 +54,11 @@ sensitive cargo from radiation coming from any direction:
      Inner hull (carbon nanosheet, structural)
      ─────────────────────────────────────
      Unpressurized bays (cargo, hangars)
-     LH₂ reaction mass tanks (distributed)
+     Metallic-hydrogen fuel bands (IS cells)
      ─────────────────────────────────────
      Crew / sensitive cargo core (pressurized)
      ─────────────────────────────────────
-     LH₂ reaction mass tanks (distributed)
+     Metallic-hydrogen fuel bands (IS cells)
      Unpressurized bays (cargo, hangars)
      ─────────────────────────────────────
      Inner hull / water stuffing / carbon Whipple bumpers
@@ -67,8 +69,8 @@ bumper layers with water in the gaps. The carbon shrugs off the
 interstellar gas and shatters micrometeoroids; the water disperses the
 debris cloud and is the primary radiation shield for the crew's flanks.
 Water and hydrogen are the best radiation shielding per unit mass, and the
-water — unlike the reaction mass — is never burned, so the shield doesn't
-thin as you spend fuel. The LH₂ tanks are distributed around the crew on
+water — unlike the fuel — is never burned, so the shield doesn't
+thin as you spend it. The fuel bands are distributed around the crew on
 all sides — cosmic rays are isotropic, so the crew needs shielding from
 every direction — adding to the water barrel and covering fore and aft. The
 ship is **directionally specialized**: it never flips (the drive reverses
@@ -84,11 +86,11 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
 ```
                   ↑ direction of travel — always
 
-     [ Water-Whipple nose + collector coils              ]
+     [ Water-Whipple nose                                ]
      [ Cargo bay / hangars                               ]
-     [ LH₂ tanks                                         ]
+     [ Fuel bands (metallic hydrogen)                    ]
      [ Crew / sensitive cargo                            ]
-     [ LH₂ tanks                                         ]
+     [ Fuel bands (metallic hydrogen)                    ]
      [ Cargo bay / hangars                               ]
      [ Ship reactor / engineering                        ]
      [ Aft radiating hull (8 zoned gores)                ]  ← always in the wake
@@ -115,27 +117,22 @@ sees a point load. A 25 kt pod at 9 g is 2.2 GN; a radial boom
 would have to take that as a 40 m bending moment. The A-frame
 refuses the moment. Sized as tubes — Euler owns the 75 m
 compression legs, ~22 cm wall in a 3.6 m strut — the mounts are
-**~6,000 t**. There is no second engine at the tail. The **collectors** are
-a separate system, not IS's: superconducting coils on the bow, always
-facing the ISM. To decelerate at midcourse the scoop field reshapes
-from funnel to parachute and the ship bleeds speed on magnetic drag;
-once well below the 0.12c wall the boxes are told to reverse and the
-torch finishes the descent on tanked hydrogen. The ship never turns
-over. Nothing on the pylon moves.
+**~6,000 t**. There is no second engine at the tail and nothing on
+the bow but armor. To decelerate, the boxes are told to reverse and
+the torch takes the speed off the way it put it on. The ship never
+turns over. Nothing on the pylon moves.
 
-Because the *ship* never turns over, **thrust-gravity reverses at
-midcourse**. On the outbound half the drive pushes the ship forward, so
-"down" is toward the **tail**; when the scoop becomes a parachute,
-"down" is toward the **nose**, and it stays there through the reverse
-burn. Cruise itself is milligees in the Bubble — almost free-fall. The
-only true weightless moment is the handoff: sail idle, boxes
-reconfiguring, torch not yet lit. **The floor becomes the ceiling
-halfway through the trip.** The crew rides interstellar
+Because the *ship* never turns over, **thrust-gravity reverses between
+the burns**. On the departure burn the drive pushes the ship forward, so
+"down" is toward the **tail**; when the boxes reverse for the braking
+burn, "down" is toward the **nose**. Between the burns is the cruise:
+decades of free fall. **The floor becomes the ceiling for the last
+leg of the trip.** The crew rides interstellar
 cruise in cold sleep, so no one walks the decks during the swap, and the
 pods, tankage, and fluid systems are built to work under thrust from
 either direction. But anyone awake — an in-flight emergency, a
 mid-cruise wake-up, an AI captain who never slept — finds the ship's
-usable "down" set by which half of the voyage they're in, with a space
+usable "down" set by which burn the voyage last made, with a space
 laid out for the outbound floor now hanging overhead on the way home.
 
 
@@ -144,8 +141,8 @@ laid out for the outbound floor now hanging overhead on the way home.
 This is what the ship is *for*. Strip away the drive, the shield, the reactor,
 and their only job is to carry the hold between stars. Two cargo bays — one
 forward of the crew core, one aft — run about **180 m** and **185 m**. The
-hydrogen takes 315 m next to them (LH₂ is fluffy; see Hull and Structure).
-The bays are full-radius: every tonne of cargo the rack can take, it takes.
+fuel bands take 315 m next to them (see Hull and Structure). The bays
+are full-radius, and every slot in them is either cargo or speed.
 
 ### The Standard Container
 
@@ -156,10 +153,25 @@ years isn't worth reinventing. One size means one set of rails, one handling
 system, one lock. The rack holds **10,304 containers** (~206,000 t) if every
 slot is filled; the loadmaster leaves empty slots for trim.
 
+### Fuel Boxes
+
+IS sells metal in two shapes: band cells that fill the tank annulus,
+and **box cells** — standard containers with **~50 t** of metallic
+hydrogen inside. A box cell rides the same rails, clamps to the same
+pair, and feeds the drive through the same rail bus. Every slot in
+the hold is a choice between 20 t of cargo and 50 t of fuel. A hold
+of nothing but fuel is ~515,000 t more metal on top of the bands. See
+Speed Is Bought With Slots.
+
+A box cell weighs 2.5× a cargo box. The clamp is rated for a 20 t box
+at 9 G (1.77 MN), so a hold carrying fuel boxes is limited to ~3.6 G
+until they are burned or double-clamped. A fueled ship cannot pull
+much more than that anyway (see Mass Budget).
+
 ### The Rack — a Hard Disk Stood on Its Axis
 
 Gravity aboard runs *along* the long axis (the drive thrusts that way) and
-**reverses at midcourse** — see Longitudinal Layout. That single fact shapes
+**reverses for the braking burn** — see Longitudinal Layout. That single fact shapes
 the whole rack. The cargo rails run fore-and-aft, parallel to gravity; each
 container clamps to an **inner and an outer rail** and rides the gap between
 them.
@@ -193,8 +205,8 @@ the column. The skin carries the accumulating axial load as membrane
 compression, tapering thin→thick fore→aft, the way a rocket airframe
 already does. A mutually-braced frame cage (radial struts, hoops, and
 meridional X-braces in the sector-boundary planes) keeps the
-stringers from wracking and takes the lateral and midcourse-flip
-loads as axial spar forces. Gravity reverses at midcourse; a clamp
+stringers from wracking and takes the lateral and braking-flip
+loads as axial spar forces. Gravity reverses for the braking burn; a clamp
 holds both signs, so the flip just changes the sign of loads the
 members already carry. The **inner-hull skin, not the bulkheads and
 not the rails, is the primary structure of the hold.**
@@ -246,40 +258,44 @@ monitored, and for the same reason.
 
 ## Speed and the Forward Environment
 
-The ship **cruises at 0.10c** (30,000 km/s). The stardrive's hard limit is
-**0.12c**. That is not an engineering redline. It is a conservation-law wall.
+There is no speed wall. The torch is a rocket, and the ship flies at
+whatever speed its fuel buys:
 
-The drive fuses the hydrogen it scoops. The p-p mass defect is ~0.007 \(mc^2\),
-which buys an exhaust velocity \(v_e \approx 0.12c\) and no more. Catalysis —
-Interstellar Systems' secret — makes the reaction *fast enough to run*. It does
-not pay more energy per nucleon. Net thrust on a ram that swallows what it
-fuses is \(\dot{m}(v_e - v)\). As \(v\) approaches \(v_e\), thrust dies. **0.12c
-is the asymptote.** Captains hold **0.10c** so there is still something to push
-with: midcourse corrections, a density clump, the first bite of turnaround.
+> \(\Delta v = v_e \ln(m_0 / m_f)\), with \(v_e \approx 0.12c\)
 
-Time dilation is not in this bargain. \(\gamma(0.10c) \approx 1.005\). A century
-in flight is a century at home. The crew buys time with **cold sleep**, not
-with \(\gamma\). An AI captain who stays awake pays the century in lived years.
-See [Narrative](narrative.md) and [History](history.md).
+Catalysis fuses all of the hydrogen and the box puts nearly all of the
+p-p mass defect (~0.007 \(mc^2\)) into the exhaust. A crossing is one
+burn up, a coast, and one burn down, so the tank pays for cruise speed
+twice. Going to **0.10c and stopping** takes a mass ratio of **5.3**.
+That is why the ship is mostly fuel when it leaves, and why every slot
+in the hold is a speed decision.
 
-### Why a Tenth Is Worth Having
+Time dilation is not in this bargain. \(\gamma(0.10c) \approx 1.005\).
+Reaching 0.5c would cost \((\gamma - 1)Mc^2\): 65 years at full nozzle
+power for a 470 kt hull, before you ask where the fuel fits. A century
+in flight is a century at home. The crew buys time with **cold sleep**,
+not with \(\gamma\). An AI captain who stays awake pays the century in
+lived years. See [Narrative](narrative.md) and [History](history.md).
 
-On tankage alone the torch is a few thousand km/s of \(\Delta v\) —
-enough for a port, not for a star. Ten light-years as a pure rocket
-is a millennium. The collector is what makes a 30-light-year
-civilization possible: it puts the ISM in the tanks so the torch can
-keep burning. A tenth of \(c\) is as fast as that loop goes.
+### Speed Is Bought With Slots
 
-Flight time in the Local Bubble, accel and decel included (see below):
+The bands hold ~990 kt of metal. The hold has 10,304 slots, each a
+20 t cargo box or a ~50 t fuel box. Keep **25 kt** in reserve for the
+arrival system, and the loadout sets the cruise:
 
-| Hop | Distance | Galaxy / sleeper-skip |
-|-----|----------|------------------------|
-| α Cen | 4.4 ly | ~70 yr |
-| Typical trade leg | 10 ly | ~125 yr |
-| Far edge of inhabited space | 30 ly | ~330 yr |
+| Cruise | Cargo | Fuel | Departs | Arrives | α Cen (4.4 ly) | 10 ly | 30 ly |
+|--------|-------|------|---------|---------|----------------|-------|-------|
+| 0.05c | 206 kt | 580 kt (bands part full) | 0.99 Mt | 430 kt | ~90 yr | ~200 yr | ~600 yr |
+| 0.06c | 206 kt | 760 kt | 1.17 Mt | 430 kt | ~76 yr | ~170 yr | ~500 yr |
+| **0.07c — freighter** | **206 kt** | **980 kt (bands full)** | **1.38 Mt** | **430 kt** | **~66 yr** | **~146 yr** | **~430 yr** |
+| 0.08c | 161 kt | 1.10 Mt | 1.46 Mt | 385 kt | ~59 yr | ~129 yr | ~380 yr |
+| 0.09c | 116 kt | 1.21 Mt | 1.53 Mt | 340 kt | ~53 yr | ~115 yr | ~337 yr |
+| **0.10c — express** | **75 kt** | **1.31 Mt** | **1.59 Mt** | **300 kt** | **~48 yr** | **~104 yr** | **~304 yr** |
+| 0.12c — empty hold | 0 | 1.50 Mt | 1.70 Mt | 225 kt | ~41 yr | ~88 yr | ~253 yr |
 
-The minimum interstellar crossing is a human career. A campaign of ports is
-centuries of galactic time. Sleepers skip it. Anyone who stays up lives it.
+Times include both burns. A full hold cruises at **0.07c**; that is a
+freighter. **0.10c is the express**: two-thirds of the hold is fuel. An
+empty hold buys 0.12c, and nobody pays a crossing to carry nothing.
 
 ### The Local Bubble — the Map Is Inside It
 
@@ -289,42 +305,21 @@ air:** ~0.1 atoms/cm³, not the galactic-disk average of ~1. Spiral-arm densitie
 (5–50 cm⁻³) are not on this map. Route knowledge is local clouds and filaments
 — a factor of a few, not three orders of magnitude.
 
-Density does not change the speed limit. \(v_e\) is set by the mass defect, not
-by how much hydrogen is out there. Density changes **how fast you reach cruise,
-how hard the dust hits, and how much ³He you skim.** A fat filament is a gust:
-you punch up to 0.10c faster, and you eat more sand. A clean lane is light air.
+Density no longer touches speed or fuel. Nothing aboard collects the
+medium. Density sets **how hard the dust hits and how much FEL time you
+spend.** A clean lane is kind to the hull. A dirty one is a gauntlet.
 
-### The Acceleration Hump
+### The Burn Profile
 
-Collection \(\dot{m} = \pi r^2 \rho v\) grows with speed, but net thrust is
-\(\dot{m}(v_e - v)\). Acceleration is a **hump**, not a snowball: it peaks near
-\(v_e/2 = 0.06c\) and falls to zero at the wall.
+At the 3.2 PW nozzle rating and \(v_e = 0.12c\) the torch eats ~5 kg/s
+and pushes ~180 MN. On a 1.38 Mt freighter that is **0.013 G**, rising
+as the bands empty: **3.9 years** to 0.07c, covering 0.12 ly. Braking
+is lighter work on a lighter ship: **2.2 years**, 0.08 ly. The express
+takes 5.8 years up and 2.5 down. Everything between is a coast.
 
-At 500,000 t, disk-average ISM (1 atom/cm³) — a dense local cloud, not the
-Bubble:
-
-| Ship velocity | Collection | Accel (500 kt) | Accel (250 kt) |
-|---------------|------------|----------------|----------------|
-| 0.003c (900 km/s) | 0.93 kg/s | 0.0066 G | 0.013 G |
-| 0.03c | 9.3 kg/s | 0.051 G | 0.10 G |
-| 0.06c — peak | 19 kg/s | 0.068 G | 0.14 G |
-| 0.08c | 25 kg/s | 0.060 G | 0.12 G |
-| **0.10c — cruise** | **31 kg/s** | **0.038 G** | **0.076 G** |
-| 0.11c | 34 kg/s | 0.021 G | 0.042 G |
-| 0.12c — wall | 37 kg/s | 0 | 0 |
-
-In the Local Bubble, divide collection and accel by ten. At 900 km/s
-scoop-fed thrust is 0.00066 G on a loaded hull. Peak is 0.007 G.
-Cruise thrust is 0.004 G — station-keeping against a clump, not a
-surge. Leaving Sol is a long climb in light air.
-
-Time 0.003c → 0.10c at 500 kt, scoop-fed: **~2.3 years** and **~0.09 ly**
-in a dense cloud; **~23 years** and **~0.9 ly** in the Bubble. The rest
-of any long hop is cruise. Below a few thousand km/s the scoop's income
-is a trickle. You climb that first bit on **tanked** LH₂ with the scoop
-off or idling. Every kilogram burned in-system is a kilogram you might
-want for that climb. A ship that fights itself dry and then departs
-into the Bubble is a rocket with a long walk to income.
+Overdraw does not help here; 2× is good for minutes. Neither does a rich
+mixture: every kilogram thrown below full burn is cruise speed lost.
+Leaving Sol is years of a feather on the floor.
 
 ### The Forward Environment at Cruise
 
@@ -338,8 +333,10 @@ About 116 kW over the ~5,000 m² nose. In the Bubble, 2.3 W/m² — a rounding
 error next to sunlight. The hull does not have a heat problem. Unshielded, the
 *dose* is still promptly lethal (MeV protons stop in the first millimetre of
 tissue at tens of gray per second), so the Whipple water is the radiation
-shield that matters. The scoop's job at this speed is **fuel and pre-filter**,
-not keeping the crew alive; 4.7 MeV protons do not punch a water-stuffed metre.
+shield that matters. Nothing magnetic stands in front of the ship, and
+nothing needs to: 4.7 MeV protons do not punch a water-stuffed metre. The
+figures here are for the 0.10c express; a 0.07c freighter sees half the
+energy per particle and per grain.
 
 Aberration and blueshift are mild: \(D = \sqrt{(1+\beta)/(1-\beta)} \approx 1.11\),
 round-trip \(D^2 \approx 1.22\). Threats are still biased forward. They are not
@@ -354,12 +351,12 @@ Sand is a THz-and-cooker problem. See Active Debris Defense.
 
 ### The Master Tension
 
-The ship does not fly at the speed a captain wants. It flies at **0.10c**
-because that is the last tenth the ram can still push, and it flies the lane
-the navigator will sign because density is accel and dust, not a higher wall.
-A clean lane is slow to cruise and kind to the hull. A dirty one is a gust
-that pays in ³He and in FEL time. Sleepers do not care how long the crossing
-is. The cargo, the insurance clock, and anyone awake do.
+The ship does not fly at the speed a captain wants. It flies at the
+speed its loadout bought: every slot of cargo is a slot of fuel it is
+not. A full hold is 0.07c. The express gives up two-thirds of the hold
+for 0.10c and a crossing forty years shorter. The lane matters for dust
+and FEL time, not speed. Sleepers do not care how long the crossing is.
+The cargo, the insurance clock, and anyone awake do.
 
 
 ## Hull Armor and Radiation Protection
@@ -370,22 +367,14 @@ At 0.10c cruise, each ISM hydrogen atom carries \((\gamma-1)mc^2 \approx
 4.7\,\mathrm{MeV}\). The raw particle flux on the forward face is about
 23 W/m² at disk-average density, ~2 W/m² in the Local Bubble — thermally
 nothing. Unshielded, the *dose* is still promptly lethal: MeV protons stop
-in the first millimetre of tissue. The ISM is also ~1% dust, and a neutral
-grain the magnetic field can't touch arrives as a hypervelocity impactor
+in the first millimetre of tissue. The ISM is also ~1% dust, and a grain
+arrives as a hypervelocity impactor
 (see Active Debris Defense). Galactic cosmic rays (GeV, roughly isotropic
 at this \(\beta\)) are the penetrating radiation problem; the ram is not.
 
-### The Solution (three layers)
+### The Solution (two layers)
 
-1. **Magnetic deflection**: The bussard scoop's magnetic field extends
-   thousands of kilometers ahead of the ship, funneling ionized ISM into
-   the collector and glancing the rest aside — and most
-   photoelectrically-charged dust with it — before they reach the hull.
-   At 0.10c this is a fuel system and a sputtering pre-filter, not the
-   crew's radiation shield; 4.7 MeV protons stop in the first millimetre
-   of the Whipple.
-
-2. **Stuffed carbon-Whipple hull**: The outer hull is not a coating but a
+1. **Stuffed carbon-Whipple hull**: The outer hull is not a coating but a
    **Whipple shield** — spaced carbon-nanosheet bumper layers with water in
    the gaps — doing two jobs at once:
    - *Gas erosion*: carbon is bound ~700× more tightly than the hydrogen
@@ -393,17 +382,17 @@ at this \(\beta\)) are the penetrating radiation problem; the ram is not.
      the relativistic ISM gas barely touches it. Where the old ice eroded
      at ~85 kg/s and had to be continuously regrown, a carbon hull outlasts
      the ship by orders of magnitude against the gas — no ablation, no
-     cryo, no scoop-fed replenishment.
+     cryo, no in-flight replenishment.
    - *Micrometeoroids*: the outer bumper shatters and vaporizes a
      penetrating grain into a spreading debris cloud; the standoff gap lets
      it fan out; the water disperses it as a diffuse impulse instead of a
      hole-punch. Gas bladders in the water manage the pressure pulse and
      water's 9% freeze-expansion.
 
-3. **Water + LH₂ radiation shield**: The barrel's water stuffing is the
-   primary radiation barrier for the crew's flanks; the distributed LH₂
-   reaction-mass tanks add more and cover fore and aft. Water and hydrogen
-   are the best radiation shielding per unit mass. And because the water is
+2. **Water + fuel radiation shield**: The barrel's water stuffing is the
+   primary radiation barrier for the crew's flanks; the fuel bands add
+   more and cover fore and aft. Metallic hydrogen is still hydrogen, the
+   best shielding per unit mass, at ten times the density. And because the water is
    never burned as propellant, the shield doesn't thin out as you spend
    fuel — a robustness the old LH₂-only barrier never had.
 
@@ -421,8 +410,8 @@ at this \(\beta\)) are the penetrating radiation problem; the ram is not.
   shedding the medium grains.
 - **Tail**: a pure radiator (see Thermal Management). It never meets the
   ISM, so it carries no shield duty — no bumper compromise, no
-  drained-coolant dance, just a radiator built to radiate. The LH₂ tanks
-  behind the crew carry the fore/aft radiation shielding.
+  drained-coolant dance, just a radiator built to radiate. The fuel bands
+  around the crew carry the fore/aft radiation shielding.
 - **Erosion**: negligible against the ISM *gas*. Practical lifetime is set
   by the rare large grain active defense misses and slow dust
   micro-cratering — patched at drydock, not self-healed. A raked, conical
@@ -433,22 +422,20 @@ at this \(\beta\)) are the penetrating radiation problem; the ram is not.
   inspect bumper layers and patch battle damage or micrometeoroid
   punctures from the inside, the water pumped down locally to work a
   section dry.
-- **No scoop dependence**: the hull needs no in-flight replenishment. Water
-  is topped up at any icy body; carbon is patched at service intervals.
-  Lose the scoop and the *shield is fine* — only the fuel supply suffers.
+- **No in-flight replenishment**: water is topped up at any icy body;
+  carbon is patched at service intervals.
 
 
 ## Active Debris Defense
 
 ### The Threat the Passive Shield Misses
 
-The magnetic scoop and the carbon-Whipple hull handle the *interstellar medium* —
+The carbon-Whipple hull handles the *interstellar medium* —
 individual atoms and ions, ~4.7 MeV apiece at 0.10c (see Hull Armor), and the hull's
 bumper layers shatter the smallest grains. But a **grain** with real mass is another
 matter. The ISM is ~1% dust by mass: silicate and carbonaceous
 motes from sub-micron up through the rare sand- and pebble-sized debris of
-shattered worlds. A neutral grain isn't deflected by the scoop's field, and above
-a few tens of micrometres no passive hull can absorb a concentrated impactor.
+shattered worlds. Above a few tens of micrometres no passive hull can absorb a concentrated impactor.
 At 0.10c the kinetic energy is KE ≈ (γ−1)mc² with γ ≈ 1.005
 (masses below are 1.6 g/cm³ cubes of the stated size — order-of-magnitude):
 
@@ -470,15 +457,12 @@ let them arrive intact.
 No single mechanism spans twelve orders of magnitude, so defense is binned by
 energy:
 
-1. **Magnetic deflection** (scoop, existing): sweeps aside ionized matter *and*
-   charged dust — most ISM grains are photoelectrically charged — thousands of
-   km out.
-2. **Whipple hull** (carbon + water, existing): shatters and absorbs the small
-   *neutral* grains (≲ a few µm) that slip through.
-3. **Active detection** (new): finds the medium grains the first two layers miss,
-   far enough out to act.
-4. **Active interdiction** (new): vaporizes or deflects them at standoff.
-5. **Navigational avoidance** (new): the rare large bodies that can't be
+1. **Whipple hull** (carbon + water): shatters and absorbs the small grains
+   (≲ a few µm).
+2. **Active detection**: finds the medium grains the hull can't take, far
+   enough out to act.
+3. **Active interdiction**: vaporizes or deflects them at standoff.
+4. **Navigational avoidance**: the rare large bodies that can't be
    interdicted are detected at long range and routed around. You do not vaporize
    a pebble carrying kilotons.
 
@@ -549,8 +533,8 @@ could. In the near field the same beam would cook a chicken. Nobody
 walks in front of the array. The "radar range" is both a detection
 envelope and a place you do not stand.
 
-Passive IR/optical is the other one-way channel. Grains that hit the
-scoop's bow plasma and the cooker's flood flash *before* they arrive.
+Passive IR/optical is the other one-way channel. Grains that cross the
+cooker's flood flash *before* they arrive.
 Often the first you know of a 100 µm grain is that it got hot, not
 that it echoed.
 
@@ -664,7 +648,7 @@ for **megawatts to tens of megawatts** on a single easy target.
 
 You still build a **gigawatt-class** machine, because you never get
 one easy target. Dirty air is a salvo: many grains, poor coupling,
-walk-not-just-pop, ionize-for-the-scoop. Average draw **~1 GW** off
+walk-not-just-pop. Average draw **~1 GW** off
 the 63 GW bus. Peak **10–30 GW for 10 ms** from capacitors (100–300 MJ
 a shot). Charge time at 1 GW is a fraction of a second. The plant can
 feed that. The tin loop sees the generation losses; the beam itself
@@ -681,35 +665,6 @@ it has settled into a personality defined almost entirely by ordnance: its sense
 of a quarter well spent correlates directly with tonnage vaporized, and it does
 not love long clean stretches of empty medium. The crew learns to read its mood
 the way you'd read a bored predator.
-
-### Ionize and Scoop — the Threat as Fuel
-
-There's a better outcome than spreading a grain onto the hull, and it falls out of
-a system the ship already carries. The scoop funnels **charged** matter into the tanks — that is its day
-job. So if the FEL doesn't merely vaporize a grain but *ionizes the
-plume*, the resulting plasma is charged, and the same field that
-deflects ISM ions bends the debris plasma off the hull and **into the
-tanks.** The impactor isn't neutralized, it's *eaten* — redirected
-into the LH₂ the torch will drink. This is deflection in the truest sense: the
-grain never reaches the hull, and its mass is on the books.
-
-The physics constrains it. A solid grain, however charged, has far too little
-charge-to-mass ratio for the field to bend — its gyroradius dwarfs the scoop. You
-must vaporize it to a plasma first, so the field acts on individual ions (high
-q/m) rather than a massive solid. And heavy debris ions (silicon, iron) carry
-lower q/m than the hydrogen the scoop is tuned for, so they funnel less cleanly: a
-fraction makes the tanks, the rest still ends up as a diffuse ablation load on
-the hull. As torch-fuel it's second-rate — the box fuses hydrogen, not
-metal — but any mass is remass, and the hydrogen/helium fraction is
-real fuel. So the
-interdiction hierarchy is: **ionize-and-scoop where the geometry allows (threat →
-fuel), vaporize-and-spread as the fallback (threat → ablation), avoid what's too
-large for either.**
-
-This sharpens the route tension: a dirty region is more dangerous *and* more
-fuel-rich. More grains means more impacts to interdict and more power on the laser
-bus — but also more mass funneled into the tanks. Flying the dusty lane is a
-gamble that pays in propellant, if the FEL keeps up.
 
 ### Where It Couples
 
@@ -738,7 +693,7 @@ still to never fly at it.
 
 ## Mass Budget
 
-### Empty Mass (~165,000 tonnes)
+### Empty Mass (~151,000 tonnes)
 
 The ship with nothing in it — hull, structure, permanently installed
 systems:
@@ -746,10 +701,9 @@ systems:
 | Component | Mass |
 |-----------|------|
 | Hull (multi-layer carbon-nanosheet Whipple armor) | 27,000 t |
-| Internal structure (decks, bulkheads, framing) | 28,000 t |
+| Internal structure (decks, bulkheads, framing, fuel-band racks) | 28,000 t |
 | Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
 | Thermal management (tin loops, headers) | 8,000 t |
-| Collectors (scoop coils, not IS) | 14,000 t |
 | Stardrive modules (IS boxes, feeds) | 52,000 t |
 | Drive mounts (A-frames, belt rings, torque box) | 6,000 t |
 | Weapons systems | 10,000 t |
@@ -758,36 +712,42 @@ systems:
 | Hangar structures and launch systems | 3,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-### Operating Mass (~312,000 tonnes)
+### Operating Mass (~1,185,000 tonnes)
 
-Ready to fly — fueled, shielded, crewed, but no cargo:
+Ready to fly — bands full, shielded, crewed, hold empty:
 
 | Component | Mass |
 |-----------|------|
-| Empty mass | 165,000 t |
+| Empty mass | 151,000 t |
 | Whipple shield water (barrel: radiation + impact stuffing) | 40,000 t |
-| LH₂ (torch fuel, remass, supplementary shield) | 100,000 t |
+| Metallic hydrogen, fuel bands (IS band cells, full) | ~987,000 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (hab air + reserves) | 20 t |
 | Water and consumables | 100 t |
 | Small craft (shuttles, fighters, transports) | 5,000 t |
 | Crew (~10 people) | ~1 t |
 
-### Loaded Mass (up to ~520,000 tonnes)
+### Loaded Mass (~1.0–1.7 Mt departing, ~0.23–0.43 Mt arriving)
 
-Operating mass plus cargo. **Cargo capacity: ~206,000 tonnes.**
+Operating mass plus the hold: 10,304 slots of 20 t cargo boxes or
+~50 t fuel boxes. **Cargo capacity: ~206,000 tonnes**, or ~515,000 t of
+extra fuel, or any split between. The split is the cruise speed — see
+Speed Is Bought With Slots.
 
-There is no separate drive-fuel bunker. The torch drinks the same LH₂
-the scoop puts in the tanks. A hull breach still spills cold hydrogen.
-Nothing here has to be *contained*.
+| Loadout | Departs | Arrives | Cruise |
+|---------|---------|---------|--------|
+| Freighter, full hold | ~1.38 Mt | ~430 kt | 0.07c |
+| Express, 75 kt cargo | ~1.59 Mt | ~300 kt | 0.10c |
+| Colony expedition, heavy, slow | ~1.2 Mt | ~430 kt | 0.06c |
+| Out-and-back, no fuel at the far end | ~1.39 Mt | ~430 kt | 0.035c each way |
 
-Cargo includes: cold sleep pods with passengers, black-boxed technology,
-trade goods, raw materials, colonization equipment — whatever the mission
-requires. Actual loaded mass varies:
+The drive mounts are rated for **46 GN** — 9 G at 520 kt. A fueled ship
+is limited by mass, not crew: **~3.4 G** at a freighter's departure, the
+full 9 G only once the bands are low.
 
-- Trade run: ~470,000 t
-- Military patrol: ~380,000 t (light load)
-- Colony expedition: ~520,000 t (maximum)
+Fuel is one account: the torch drinks bands and boxes alike. A hull
+breach no longer spills cold hydrogen. It exposes a cell, which is worse
+(see The Fuel).
 
 
 ## Power: The Fusion Reactor
@@ -795,8 +755,7 @@ requires. Actual loaded mass varies:
 The ship's power plant is a D-³He (deuterium-helium-3) fusion reactor
 rated at **~100 GW** fusion. It is not the drive. The torch handles
 propulsion and dumps almost all of its waste into the plume. This
-plant is hotel, scoop cryo, fabrication, sensors, and the FEL/weapons
-bus.
+plant is hotel, fabrication, sensors, and the FEL/weapons bus.
 
 D-³He fusion is nearly aneutronic — the primary reaction products are
 charged particles (14.7 MeV protons + 3.6 MeV alphas). ~90% of fusion
@@ -811,8 +770,7 @@ fraction and ~27 GW of direct conversion losses are rejected as waste
 heat (**~37 GW** at rated; see Thermal Management).
 
 That is enough. Hotel, plugs, tin pumps, and compute are a few GW.
-The scoop's superconducting coils, once charged, want cryo, not a
-power station. The FEL is GW-class at 0.10c — a 1-second, 1 GW pulse
+The FEL is GW-class at 0.10c — a 1-second, 1 GW pulse
 is a gigajoule, and a sand grain is ~0.7 GJ. Weapons charge
 capacitors off the same bus. Fabrication can draw hard for a while.
 A 500 GW plant was a leftover from when someone thought the drive
@@ -823,10 +781,9 @@ The **light show is the point, in combat.** Even 37 GW of waste, if
 you light every zone, is a beacon. Run cool and dark at cruise. Light
 panels when you need the watts. Shut the ones that face a contact.
 
-³He at rated is ~5.4 t/year. The 2,000 t tank is now centuries at
-redline, forever at cruise. The skim still matters because cruise in
-the Bubble is break-even at a few percent. The tank is insurance, not
-the weekly shop.
+³He at rated is ~5.4 t/year. The 2,000 t tank is centuries at
+redline, forever at cruise. Nothing aboard collects ³He; it is bought
+at ports. The tank is insurance, not the weekly shop.
 
 
 ## Confinement and Throttle
@@ -910,8 +867,7 @@ shorter than the plug and transition regions.)
 Cruising lean is what makes a voyage possible. At a few percent power the reactor
 sips a small fraction of its rated fuel, stretching the **2,000 t** D-³He load
 across interstellar transit times. At the 100 GW redline the same tank is
-**centuries** (~5.4 t/year of ³He). The skim still sets the cruise
-budget in the Bubble, not the bunker.
+**centuries** (~5.4 t/year of ³He).
 
 The **risk lives in the transitions, not the setpoints.** Changing the burning
 length re-energizes superconducting coil groups, moving large amounts of stored
@@ -978,8 +934,8 @@ target we never paid for. The **aft hull is the radiator.**
 
 Only the engineering end radiates: the reactor barrel, the tail
 barrel, and the tail face — about **63,000 m²** (ε ≈ 0.9). Nose,
-holds, tanks, and habitat stay Whipple and water, or insulated
-cryogen. You do not run 1800 K skin over LH₂ or over a sleeper
+holds, fuel bands, and habitat stay Whipple and water. You do not run
+1800 K skin over metal — it reverts near 1000 K — or over a sleeper
 container. The 2 m barrel that was water on those stations is
 vacuum and MLI next to the hot gores.
 
@@ -1015,17 +971,16 @@ tin loop and the headers.
 ### Midcourse Turnaround
 
 The ship never flips, so there is no flip thermal sequence — the old
-multi-day cool-the-radiator, rebuild-the-shield ordeal is simply gone. At
-midcourse the scoop becomes a magnetic parachute and the ship brakes for
-years on ISM drag; the boxes reconfigure to fire forward only when it
-is time to burn the last of the speed off (see The Stardrive). The tail
+multi-day cool-the-radiator, rebuild-the-shield ordeal is simply gone. The
+ship coasts. When it is time to brake, the boxes reconfigure to fire
+forward — hours — and the torch burns the speed off (see The Stardrive). The tail
 radiates throughout; the nose shields throughout. Nothing structural
 on the ship itself moves, and there is no vulnerable window — the
 armor is permanent, not a coating that has to be regrown.
 
 The one thing the crew would feel, if any were awake, is that
 thrust-gravity reverses: "down" points sternward on the accelerating half
-and bow-ward on the decelerating half, with a brief weightless coast
+and bow-ward on the braking burn, with decades of weightless coast
 between. The floor becomes the ceiling. See Longitudinal Layout.
 
 ### Stardrive Thermal Management
@@ -1043,28 +998,22 @@ ship reactor:
 
 ## Propulsion
 
-Two systems. They do not share a vendor.
+One vendor, two products. **The stardrive** is an Interstellar Systems
+black box: feed it metal, a fusion torch comes out. Catalyzed p-p — the
+secret — is inside. There is no ram, no pellet, no onboard igniter
+farm. **The fuel** is IS's too: metastable metallic hydrogen in sealed
+cells that nobody else can make. See The Fuel.
 
-**The stardrive** is an Interstellar Systems black box. You pipe liquid
-hydrogen in. A fusion torch comes out. That is the entire published
-interface. Catalyzed p-p — the secret — is inside. There is no ram,
-no pellet, no onboard igniter farm. Full stop.
-
-**The collectors** are not IS's. They are a magnetic scoop any decent
-yard can build and maintain: ionize, funnel, tank. They fill the LH₂
-the torch drinks. They also glance dust and, reshaped, parachute
-against the ISM. See The Collector.
-
-The torch does not care whether the hydrogen came from a dock, a
-comet, or a century of scooping. In-system and interstellar are the
-same engine on a different budget.
+Nothing aboard collects anything. In-system and interstellar are the
+same engine on a different budget, and the budget is the rocket
+equation.
 
 ### Two Knobs, and Combat Lives Between Them
 
-**Exhaust velocity (Isp).** Fuel and remass are the same fluid. Fuse a
-larger fraction and \(v_e\) climbs (lean, long, gentle). Fuse a little
-and throw a lot of cold hydrogen with it (rich, hard, short). Cruise
-runs lean. A fight runs rich.
+**Exhaust velocity (Isp).** Fuel and remass are the same fluid. Fuse all
+of it and \(v_e\) is ~0.12c (lean, long, gentle). Fuse a little and throw
+the rest unburned (rich, hard, short). Crossings run lean. A fight runs
+rich.
 
 **Power (overdraw).** The nozzles are rated for **3.2 PW** continuously.
 You can run them hotter at rising risk: a **soft redline at 2× (6.4 PW)**,
@@ -1073,20 +1022,23 @@ seconds. Past that the exhaust plasma overwhelms the nozzle field and
 burns through the throat, or the coils quench. Overdraw buys thrust
 *without* spending your range — you pay in nozzle life instead.
 
-Acceleration is **a = 2·P / (m·v_e)**. At the same 3.2 PW that cruises a
-loaded hull at 0.1 G:
+Acceleration is **a = 2·P / (m·v_e)**. At 3.2 PW, on a freighter that
+has just braked into a system (~430 kt) with its 25 kt reserve:
 
-| Mode | Exhaust vel | Accel (~490 kt) | Full-tank endurance | Δv from whole tank |
-|------|------------:|----------------:|--------------------:|-------------------:|
-| Cruise (lean) | 13,100 km/s | 0.1 G | ~30 days | ~2,900 km/s |
-| Hard maneuver | 1,300 km/s | 1 G | ~7 hours | ~290 km/s |
-| Combat | 435 km/s | 3 G | ~50 min | ~97 km/s |
-| Violent | 260 km/s | 5 G | ~18 min | ~58 km/s |
+| Mode | Exhaust vel | Accel | Reserve lasts | Δv from reserve |
+|------|------------:|------:|--------------:|----------------:|
+| Lean (full burn) | 36,000 km/s | 0.04 G | ~59 days | ~2,200 km/s |
+| Cruise | 15,200 km/s | 0.1 G | ~10 days | ~900 km/s |
+| Hard maneuver | 1,500 km/s | 1 G | ~2.5 hours | ~90 km/s |
+| Combat | 510 km/s | 3 G | ~17 min | ~30 km/s |
+| Violent | 300 km/s | 5 G | ~6 min | ~18 km/s |
 
 Read the last column and wince: hard acceleration is **Δv-catastrophic**.
-Empty the whole tank at 5 G and you've changed velocity by 58 km/s; spend
-it gently and the same mass buys 2,900. Every combat jink is Δv you needed
-to get home.
+Empty the reserve at 5 G and you've changed velocity by 18 km/s; spend
+it lean and the same mass buys 2,200. And the reserve is all there is.
+At departure a fight spends cruise speed. On arrival it spends the
+margin you meant to dock on. More reserve is more fuel boxes, which is
+less cargo.
 
 ### The Combat Redline
 
@@ -1098,7 +1050,10 @@ their limit at the same number:
   tech as the cold-sleep pods), the crew take ~9 G briefly, ~5 G sustained.
   Bare, it's ~5 G.
 - **Nozzle** — the 3.5× overdraw burn-through / quench limit.
-- **Reaction mass** — the tanks empty in minutes at these rates.
+- **Reaction mass** — the reserve empties in minutes at these rates.
+
+A fueled ship never gets there: the mounts' 46 GN is ~3.4 G on a
+departing freighter. 9 G is an arrival-weight number.
 
 Below 9 G you have margin on all three; at 9 G you have margin on none, and
 battle damage lowers whichever gives first. Combat is a three-resource
@@ -1108,135 +1063,82 @@ several G, but each lunge spends stamina it needs to get home. The agile
 work belongs to the fighters (100 t, ~5,000× lighter), which pull tens of G
 on the same drive tech. The capital ship punches; the fighters knife-fight.
 
-### Performance Envelope
+### Port Call — the Tank Is the Voyage
 
-| Loaded mass | Available Δv | 0.1G endurance |
-|-------------|-------------|----------------|
-| ~520,000 t (max cargo) | ~2,800 km/s | ~31 days |
-| ~400,000 t | ~3,700 km/s | ~24 days |
-| ~330,000 t (light) | ~5,200 km/s | ~18 days |
+The bands hold one crossing. You cannot top them up from a comet or a
+gas giant: hydrogen is everywhere, metal is not. Refuelling is an IS
+transaction at an IS depot — swap the spent band cells, load box cells,
+pay what IS asks (see The Fuel).
 
-In-system transits still take days; the ship is a kilometre long and
-masses hundreds of thousands of tonnes. The drive changed; the heft
-did not.
+A clean port call — approach, dock, swap cells, depart — barely touches
+the reserve. A fight can empty it.
 
-### Port Call — the Tank Is a Reserve
-
-Interstellar climb and braking are scoop-fed. The 100,000 t tank is
-what you spend when the scoop is off: in-system, near traffic, in a
-fight, and on the first bit of a departure into thin air.
-
-A clean port call — approach, dock, depart, light the scoop — barely
-dents it. The old 2,300 km/s "catch tax" is gone; there is no second
-engine to hand off to. Combat, or a long scoop-off burn, is what
-empties the reserve. At max cargo the tank is still ~2,900 km/s if
-you spend it lean, ~58 km/s if you spend it at 5 G. Same table as
-above. Same wince.
-
-**The trade tension** is no longer "buy deuterium or gamble." Hydrogen
-is everywhere. The tension is **whether the tank is full when you
-light the scoop.** Arrive from a crossing and you are full. A clean
-port call barely touches the reserve. A fight can empty it. Depart
-combat-dry into the Bubble and you are a rocket until income
-catches the burn — a long, slow, embarrassing climb. Linger in a
-filament, buy LH₂ at the dock, or leave light. Deuterium is a
-reactor story. It is not a drive story.
+**The trade tension** is what goes in each slot, and whether the next
+system stocks metal. Arrive at a depot and you fill. Arrive somewhere
+without one and you had better have carried your way home — out and
+back on one fill is 0.035c with a full hold, a slow boat both ways.
+Deuterium and ³He are reactor stories. Metal is the drive story.
 
 
 ## The Stardrive
 
 The stardrive is a black-boxed module built by Interstellar Systems.
 Its internals are proprietary, with multiple layers of tamper
-protection. IS does not sell the scoop. IS does not maintain the
-scoop. IS sells the box.
+protection. IS sells the box, and IS sells what goes in it.
 
-What is known: you connect an LH₂ feed. The box produces a fusion
-torch. The process fuses plain protium via the proton-proton chain,
-which conventional physics considers far too slow for engineering
-use. How they solved the rate is the most closely guarded secret in
-human civilization.
+What is known: you connect a feed from IS fuel cells. The box produces
+a fusion torch. The process fuses plain protium via the proton-proton
+chain, which conventional physics considers far too slow for
+engineering use. How they solved the rate is the most closely guarded
+secret in human civilization. How they keep the fuel metallic is the
+second.
 
-That is the whole machine. It is not a ramjet. Collection is
-someone else's hardware. Insert hydrogen, extract thrust.
+That is the whole machine. It is not a ramjet. Insert metal, extract
+thrust.
 
 ### Why This Matters
 
 Normal D-D or D-³He fusion can only burn deuterium or helium-3 —
-trace in the ISM (deuterium is ~20 ppm of the hydrogen). The torch
-fuses **protium**, so every kilogram the collector tanks is fuel
-and remass. That is the difference between a ship limited to a
-tank of Δv and one that can cruise at a tenth of lightspeed.
+trace isotopes. The torch fuses **protium**, so fuel and remass are one
+fluid and the whole p-p yield goes into the exhaust: \(v_e \approx
+0.12c\) at full burn. That is what makes the stars reachable at all.
 
-The secret is the *rate*. Catalyzed p-p does not increase the
-yield. The energy per nucleon is still ~6.7 MeV, \(v_e \approx
-0.12c\) when you fuse what you throw. A static magnetic field does
-no work. The collector steers mass into the tanks and, when you
-leave it on while you burn, you still pay \(\dot{m} v\) of drag
-for the privilege. Net thrust with scoop and torch in steady state
-is \(\dot{m}(v_e - v)\). The wall is still \(v = v_e\). There is
-no field geometry that retires it.
+What makes them reachable **with cargo** is density. The 5.3 mass
+ratio for 0.10c-and-stop is ~860 kt of hydrogen for an empty ship. As
+LH₂ that is twelve million cubic metres, more than twice the whole
+hull. As metal it fits in the bands with room to spare.
 
-With the scoop **off**, the torch is a pure rocket. No ram drag,
-no income. \(\Delta v = v_e \ln(m_0/m_f)\). The 100,000 t tank on
-a 500 kt hull is ~8,000 km/s at the theoretical ceiling — a
-generous port, a lost star. You need the collector to climb.
+The secret is the *rate* and the *storage*. Catalysis does not increase
+the yield; the energy per nucleon is still ~6.7 MeV. There is no wall
+and no free lunch: \(\Delta v = v_e \ln(m_0/m_f)\), and the logarithm
+is the whole economy.
 
-### Acceleration Profile
+### Deceleration — Reverse and Burn
 
-Thrust is \(\dot{m}(v_e - v)\) with \(\dot{m} \propto v\). Collection grows
-with speed; net thrust dies as \(v\) approaches \(v_e\). The curve is a
-hump that peaks near 0.06c and is zero at 0.12c. The table below is
-disk-average ISM (1 atom/cm³) — a fat local cloud. In the Local Bubble,
-divide collection and accel by ten. See Speed and the Forward Environment.
+Months before the braking burn, the boxes are told to reverse —
+internally, on IS's schedule, hours — and the torch takes the speed off
+the way it put it on. The ship is lighter by then, so the burn is
+shorter: ~2.2 years for a freighter from 0.07c. The ship never turns
+over. The nose stays a shield; the tail stays a radiator. The A-frames
+do not move.
 
-| Ship velocity | Collection (disk) | Accel (500 kt) | Accel (250 kt) |
-|---------------|-------------------|----------------|----------------|
-| 0.003c (900 km/s) | 0.93 kg/s | 0.0066 G | 0.013 G |
-| 0.03c | 9.3 kg/s | 0.051 G | 0.10 G |
-| 0.06c — peak | 19 kg/s | 0.068 G | 0.14 G |
-| 0.08c | 25 kg/s | 0.060 G | 0.12 G |
-| **0.10c — cruise** | **31 kg/s** | **0.038 G** | **0.076 G** |
-| 0.11c | 34 kg/s | 0.021 G | 0.042 G |
-| 0.12c — wall | 37 kg/s | 0 | 0 |
-
-Sluggish at the bottom, a modest shove in the middle, nothing at the
-wall. The first few thousand km/s are tanked, scoop off. Then you
-live on income. A dry tank at the bottom of a Bubble climb is the
-new "missed the catch."
-
-### Deceleration — Parachute, then Torch
-
-Near cruise, \(v \approx v_e\): a reverse burn has almost nothing to
-give, and firing the exhaust into the scoop field is a good way to
-thrash the magnetosphere. So the first brake is the **collector**.
-The coils reshape from funnel to parachute. Incoming ISM reflects;
-the ship takes the recoil. Drag scales as \(\dot{m}\,v \propto v^2\).
-From 0.10c the sail has leverage the rocket has just lost.
-
-Once speed is well below the asymptote you command the boxes to
-reverse — internally, on IS's schedule, hours — and the torch
-finishes the descent on tankage. The collectors stay pointed at the
-ISM. The ship never turns over. The nose stays a shield; the tail
-stays a radiator. The A-frames do not move.
-
-A box that will not reverse no longer means "you cannot stop." The
-sail still dumps speed. It does mean the last burn is improvised,
-and you may arrive hot. See Maintenance. The collectors are not on
-that interval. A yard that cannot touch an IS box can still patch
-a coil.
+A box that will not reverse is the old nightmare: half the brake. The
+burn doubles and has to start earlier; find out late and you overshoot
+the star. Two boxes that will not reverse and you cannot stop at all.
+There is no sail. See Maintenance.
 
 ### Maintenance
 
 The **box** requires servicing by Interstellar Systems every ~60
-light-years of travel. The collectors do not. The inspection is
+light-years of travel. The inspection is
 opaque — IS tells you what needs doing and what it costs, never the
 details of what they found. The cost varies unpredictably.
 
 Skipping maintenance is possible but not advisable. Stardrives that
 exceed their service interval have been known to fail in "energetic"
-ways — a drive that throws 500,000 tonnes at a tenth of \(c\) does not
-fail quietly. No captain pushes the interval twice. Sixty light-years at
-cruise is six hundred years of flight; the interval is a fluence and wear
+ways — a drive that throws a million tonnes at a tenth of \(c\) does
+not fail quietly. No captain pushes the interval twice. Sixty light-years is
+six to nine centuries of flight; the interval is a fluence and wear
 budget, not a calendar.
 
 IS maintains service facilities in a handful of systems across
@@ -1249,76 +1151,82 @@ for the strategic implications.
 
 ## Cruise Operations
 
-During interstellar cruise at 0.10c the ramscoop is both the drive's
-intake and the ship's refinery. What it gathers, and how long a tank
-takes to fill, is a density question. Numbers below are **Local Bubble**
-(~0.1 atoms/cm³) first — that is the map — with a dense local cloud
-(1 atom/cm³) in parentheses.
+During interstellar cruise the ship coasts. Nothing is collected; the
+medium is something to survive, not something to eat.
 
-- **Reaction mass (LH₂)**: Collection ~3.1 kg/s (31 kg/s). The 100,000 t
-  remass tanks refill in **~1–2 years** in the Bubble (~a month in a fat
-  cloud). Ships still arrive with full tanks on any hop long enough to
-  matter.
-- **Hull armor**: Needs no in-flight replenishment — the carbon Whipple hull
-  doesn't ablate, and its water stuffing is sealed behind it (topped up at
-  ports, not scooped). Losing the scoop no longer threatens the shield,
-  only the fuel supply.
-- **D-³He reactor fuel**: Deuterium skims freely (~20 ppm of ISM hydrogen).
-  Helium-3 is scarcer: the field is optimized for protons, He²⁺ has half
-  the charge-to-mass ratio, and the Bubble is thin. Cruise skim is
-  **~0.5 t/year of ³He** in the Bubble (~5 t/year in a dense cloud). The
-  reactor at full power burns ~27 t/year, so collection never covers
-  redline. At a deep-cruise few percent of rated power, Bubble skim is
-  roughly break-even or a slight deficit. There is no comfortable surplus
-  to bank. **³He is a port commodity** — gas-giant atmosphere mining —
-  and a long cruise in thin air spends the tank you bought at the last
-  dock.
-- **Torch hydrogen**: the same LH₂ the remass tanks already are.
-  The scoop *is* the refuel. There is no deuterium bunker for the
-  drive. Reactor D is a separate, small account (~20 ppm skim,
-  plus whatever you buy).
+- **Fuel**: bands and boxes, all of it spoken for — the braking burn and
+  the reserve. Nothing aboard makes more. A course correction is paid
+  for out of the arrival margin.
+- **Cells**: the cargo manager watches every cell the way it watches the
+  sleepers. A cell running warm is an event (see The Fuel).
+- **Hull armor**: needs no in-flight replenishment — the carbon Whipple
+  hull doesn't ablate, and its water stuffing is sealed behind it
+  (topped up at ports).
+- **D-³He reactor fuel**: no skim. The 2,000 t tank is centuries at
+  redline, so a lean cruise barely touches it. **³He is a port
+  commodity** — gas-giant atmosphere mining. Deuterium is bought the
+  same way.
 
 The crew is in cold sleep during transit. Ship AI handles navigation,
-scoop-field shaping, and resource management autonomously. An AI captain
+cell monitoring, and resource management autonomously. An AI captain
 who stays awake lives the crossing.
 
 
-## The Collector
+## The Fuel — Metallic Hydrogen
 
-The scoop is **not** an Interstellar Systems product. Superconducting
-coils on the bow — yards build them, crews patch them, no 60 ly
-pilgrimage — throw a magnetic field ~14,000 km ahead. The field is
-the size of a planet; the hardware you can see is three rings around
-the nose and a throat on the axis. It ionizes interstellar hydrogen
-and funnels it into the **tanks**. The torch never sees the ISM. It
-sees LH₂.
+Squeeze hydrogen past ~400 GPa and it becomes a metal. Theory has
+predicted since the 1970s that it might *stay* metal when the pressure
+comes off, the way diamond stays diamond. Nobody in our century showed
+it; the best experiments watched it revert as the load came off.
+**Interstellar Systems can.** That is the setting's second gimme, stated
+plainly: metastable metallic hydrogen at zero pressure, made by IS and
+kept stable inside IS cells.
 
-### Collection Rate
+### What It Is
 
-**ṁ = π × r² × ρ × v**
+- **Density ~0.7 g/cm³**, ten times liquid hydrogen. The bands hold
+  ~987,000 t. A box cell holds ~50 t.
+- **It is still hydrogen.** The box fuses it like any other protium. It
+  shields like hydrogen, at ten times the density per metre.
+- **Only IS makes it.** Cells are black boxes like the drive: sealed,
+  tamper-protected, and opening one ends it. Two formats: **band cells**
+  shaped to the tank annulus, installed at a depot, and **box cells** in
+  the standard container (see Fuel Boxes).
 
-Where:
-- r = scoop radius (~14,000 km = 1.4 × 10⁷ m)
-- ρ = ISM density
-- v = ship velocity
+### What It Costs to Carry
 
-At 0.10c and disk-average density (1 atom/cm³ = 1.67 × 10⁻²¹ kg/m³):
+Metal that reverts to molecular gas releases **216 MJ/kg** — about 50×
+TNT. Above ~1000 K the metastability fails. That is small next to fusion
+(0.03% of the p-p yield), and it does not matter in the drive. It
+matters in a breach.
 
-> π × (1.4×10⁷)² × 1.67×10⁻²¹ × 3.0×10⁷ ≈ **31 kg/s**
+| Unit | Metal | Reversion energy | TNT |
+|------|-------|------------------|-----|
+| One box cell | ~50 t | ~1×10¹³ J | ~2.6 kt |
+| Full bands | ~987 kt | ~2×10²⁰ J | ~50 Gt |
 
-The Local Bubble, which contains the entire 30 ly inhabited sphere, is
-~0.1 atoms/cm³: **~3.1 kg/s** at cruise. Local clouds and filaments move
-that number by a factor of a few. Spiral-arm densities are not on this
-map. Density sets time-to-cruise, dust load, and ³He skim — not the
-0.12c wall.
+Cells are segmented so a breach costs one cell, not the ship. The
+nightmare is **sympathetic reversion** — one cell's heat tripping its
+neighbour's. Everything hot lives aft, behind the hold, away from the
+bands. In combat a hit on the bands is the worst hit there is. Box cells
+can go out the bay doors, slowly. Band cells do not jettison.
 
-The same coils do three jobs: **funnel** (into the tanks), **glance**
-(deflect what you do not want, cheaply), and **parachute** (reflect
-the ISM and brake). They are not a radiation shield for the crew;
-4.7 MeV protons stop in the Whipple. They are not an accelerator; a
-static B field does no work. They are not a drive. Lose the scoop
-and you still have a torch and whatever is in the tank. Lose the
-box and you have a very expensive balloon of hydrogen.
+This is not antimatter. Metal is stable until it is heated or breached,
+it pumps and stores, a gram that fails is a firecracker and not a
+crater, and the gimme stays inside an IS cell.
+
+### The Fuel Leash
+
+IS sells metal at its service facilities and at **depots** it stocks
+with its own tankers — more depots than service facilities, fewer than
+inhabited systems. IS sets the price, and it is the largest line in any
+freight budget. IS decides which systems get a depot.
+
+A system without one is a slow-boat destination: a ship going there has
+to carry the fuel home with it, and out-and-back on one fill is 0.035c
+with a full hold, half a freighter's speed. Pulling a depot does not
+blockade a system. It makes every trip there twice as long. See
+[Trade](trade.md#interstellar-systems-and-the-shape-of-civilization).
 
 
 ## Small Craft

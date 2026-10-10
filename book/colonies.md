@@ -24,16 +24,15 @@ Each colony system needs:
 Not all routes are equal. The entire 30 ly inhabited sphere sits inside
 the Local Bubble (~0.1 atoms/cm³). Spiral-arm densities are not on this
 map. What varies is local clouds and filaments — a factor of a few, not
-three orders of magnitude. Denser gas means faster time-to-cruise and
-more ³He skim, and more dust for the FEL. It does not raise the 0.12c
-speed wall.
+three orders of magnitude. Nothing aboard collects the medium, so density
+does not touch speed or fuel. Denser gas means more dust for the FEL.
 
 Route knowledge is valuable. The best paths between systems — balancing
 density, distance, and grains — are closely guarded trade secrets.
 
-Typical flight times at 0.10c cruise, Local Bubble, accel and decel
-included: α Cen ~70 years; a 10 ly leg ~125 years; the far edge ~330
-years. See [Ship Systems](ship-systems.md#speed-and-the-forward-environment).
+Typical flight times, burns included, for a full-hold freighter at
+0.07c: α Cen ~66 years; a 10 ly leg ~146 years; the far edge ~430
+years. The 0.10c express, two-thirds fuel: ~48, ~104, ~304. See [Ship Systems](ship-systems.md#speed-and-the-forward-environment).
 
 ## Open Questions
 
