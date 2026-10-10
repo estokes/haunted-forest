@@ -448,8 +448,8 @@ something Sol had already begun to suspect — unusual geological
 formations that didn't match any natural process.
 
 Expansion has been slow and uneven, limited by the scarcity of
-stardrives and by the crossings themselves. At 0.05–0.07c the
-30-light-year sphere takes on the order of five to six centuries to
+stardrives and by the crossings themselves. At 0.06–0.08c the
+30-light-year sphere takes on the order of four to five centuries to
 fill. The present sits
 just after that filling. Within 30 light-years of Sol, perhaps 20-30
 systems have permanent human presence, ranging from major colony worlds

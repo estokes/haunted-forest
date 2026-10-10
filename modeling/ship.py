@@ -18,11 +18,13 @@
 # from container size + clearances + structurally-sized members (structural_sizing).
 #
 # 1 km x 40 m (12.5:1). The fuel bands are 315 m of full-section silo,
-# 1.41e6 m3 of IS metallic-hydrogen "dust" — BB-sized superconducting shot,
-# 0.7 g/cm3 solid, ~0.64 packed — which leaves 365 m of hold. Each band is
+# 1.41e6 m3 of IS metallic-hydrogen "dust" — superconducting shot in two
+# sizes (~3 mm and ~0.4 mm fines), 0.7 g/cm3 solid, ~0.80 packed — which
+# leaves 365 m of hold. Each band is
 # a stack of compartments behind piston bulkheads; a band drains one
 # compartment at a time and the next bulkhead follows the charge down, so
-# the shot is always packed and never has room to fall. Habitat sits
+# the shot is always packed and never has room to fall. The piston gap is
+# tighter than the fines. Habitat sits
 # midships between the bands. Hotel plant is a 70 m tandem mirror aft.
 #
 # The torch is two IS black-box nacelles on GUYED PYLONS. Each pod sits in a
@@ -104,7 +106,7 @@ SPEC = {
     "material_density": 1400.0,
     "safety_factor": 2.0,
     "cargo_bays": (181.5, 185.0), "bay_aft_margin": 5.0,
-    "metal_density": 700.0, "dust_packing": 0.64,
+    "metal_density": 700.0, "dust_packing": 0.80,
     # Bands are silos cut into compartments by piston bulkheads; each carries
     # its own compartment's shot, keeps it packed, and is the firebreak
     # against sympathetic reversion.

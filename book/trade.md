@@ -308,20 +308,20 @@ at each conversion.
 ## Interstellar Systems and the Shape of Civilization
 
 Stardrive maintenance is required every ~60 light-years of travel
-(nine to twelve centuries of flight at cruise — the interval is fluence
+(eight to ten centuries of flight at cruise — the interval is fluence
 and wear, not a calendar).
 Interstellar Systems performs all maintenance. They have service
 facilities in perhaps 3-5 systems across inhabited space. The
 inspection is opaque — they tell you what needs doing and what it
 costs, never why. You pay, because the alternative is a stardrive
-failure, and a drive that throws a million tonnes at five percent of
+failure, and a drive that throws a million tonnes at six percent of
 \(c\) does not fail quietly.
 
 This gives IS control over the topology of human expansion:
 
 **The 30 light-year leash.** A ship can travel at most ~30 light-years
 from the nearest IS facility before it must turn back for maintenance —
-about six centuries of flight. Effectively, civilization cannot expand
+about five centuries of flight. Effectively, civilization cannot expand
 beyond 30 ly from an IS service point. IS chooses where to build
 facilities. Therefore IS chooses the shape of the frontier.
 
@@ -343,7 +343,7 @@ its facilities and at depots it stocks itself; it sets the price,
 which is the largest line in any freight budget, and it decides which
 systems get a depot. A system without one is not closed. It is slow:
 ships must carry the fuel home, and out-and-back on one fill is
-~0.026c with a full hold — half a freighter's speed, twice the
+~0.03c with a full hold — half a freighter's speed, twice the
 crossing. Pulling a depot is
 IS's quiet embargo.
 

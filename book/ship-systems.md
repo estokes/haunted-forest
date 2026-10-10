@@ -13,9 +13,9 @@ materials with tensile strengths of 50-100 GPa at densities of
 The fuel takes **315 m** of full-section tank — two bands around the
 midships habitat — and leaves **365 m** of hold. It is not liquid
 hydrogen. It is **metallic hydrogen shot** from Interstellar Systems —
-BB-sized superconducting balls that pour like a liquid and pack six
-times as much hydrogen into a cubic metre: the bands hold **~630,000 t**
-(see The Fuel). As LH₂ the same bands held 100,000 t, and that does not
+superconducting balls in two sizes that pour like a liquid and pack
+eight times as much hydrogen into a cubic metre: the bands hold
+**~790,000 t** (see The Fuel). As LH₂ the same bands held 100,000 t, and that does not
 reach a star.
 The bays are shorter than they were at 30 m; they are also fatter, ten tracks instead of
 seven, and they carry more. The face grew by 1.8×. Dust and FEL time
@@ -288,7 +288,7 @@ whatever speed its fuel buys:
 Catalysis fuses all of the hydrogen and the box puts nearly all of the
 p-p mass defect (~0.007 \(mc^2\)) into the exhaust. A crossing is one
 burn up, a coast, and one burn down, so the tank pays for cruise speed
-twice. Going to **0.05c and stopping** takes a mass ratio of **2.3**;
+twice. Going to **0.06c and stopping** takes a mass ratio of **2.7**;
 0.10c would take 5.3, far more than the bands hold. That is why the ship is
 mostly fuel when it leaves, and why every tonne of cargo is a speed
 decision.
@@ -302,23 +302,23 @@ lived years. See [Narrative](narrative.md) and [History](history.md).
 
 ### Speed Is Bought With Cargo
 
-Fuel lives only in the bands: ~630 kt of shot, loaded at port. Keep
+Fuel lives only in the bands: ~790 kt of shot, loaded at port. Keep
 **25 kt** in reserve for the arrival system, and the cargo load sets
 the cruise:
 
 | Cruise | Cargo | Fuel | Departs | Arrives | α Cen (4.4 ly) | 10 ly | 30 ly |
 |--------|-------|------|---------|---------|----------------|-------|-------|
-| 0.04c | 191 kt | 455 kt (bands part full) | 882 kt | 453 kt | ~111 yr | ~251 yr | ~751 yr |
-| **~0.05c — freighter** | **191 kt** | **633 kt (bands full)** | **1.06 Mt** | **453 kt** | **~88 yr** | **~198 yr** | **~590 yr** |
-| 0.055c | 143 kt | 633 kt | 1.01 Mt | 405 kt | ~82 yr | ~184 yr | ~547 yr |
-| 0.06c | 92 kt | 633 kt | 961 kt | 353 kt | ~75 yr | ~169 yr | ~502 yr |
-| 0.065c | 49 kt | 633 kt | 919 kt | 310 kt | ~70 yr | ~156 yr | ~463 yr |
-| **~0.07c — empty hold** | **0** | **633 kt** | **870 kt** | **262 kt** | **~63 yr** | **~141 yr** | **~419 yr** |
+| 0.05c | 191 kt | 615 kt (bands part full) | 1.04 Mt | 453 kt | ~90 yr | ~202 yr | ~602 yr |
+| **~0.06c — freighter** | **191 kt** | **790 kt (bands full)** | **1.22 Mt** | **453 kt** | **~77 yr** | **~171 yr** | **~508 yr** |
+| 0.065c | 130 kt | 790 kt | 1.16 Mt | 391 kt | ~70 yr | ~156 yr | ~464 yr |
+| 0.07c | 84 kt | 790 kt | 1.11 Mt | 346 kt | ~65 yr | ~145 yr | ~431 yr |
+| 0.075c | 45 kt | 790 kt | 1.07 Mt | 307 kt | ~61 yr | ~136 yr | ~403 yr |
+| **~0.08c — empty hold** | **0** | **790 kt** | **1.03 Mt** | **262 kt** | **~56 yr** | **~125 yr** | **~369 yr** |
 
-Times include both burns. A full hold cruises at **~0.05c**; that is a
+Times include both burns. A full hold cruises at **~0.06c**; that is a
 freighter. Past that the bands are full and the only way faster is to
-carry less: 0.06c is 92 kt of cargo, and an empty hold tops out near
-**0.07c** — couriers, warships, and anyone being chased.
+carry less: 0.07c is 84 kt of cargo, and an empty hold tops out near
+**0.08c** — couriers, warships, and anyone being chased.
 
 ### The Local Bubble — the Map Is Inside It
 
@@ -335,10 +335,10 @@ spend.** A clean lane is kind to the hull. A dirty one is a gauntlet.
 ### The Burn Profile
 
 At the 3.2 PW nozzle rating and \(v_e = 0.12c\) the torch eats ~5 kg/s
-and pushes ~180 MN. On a 1.06 Mt freighter that is **0.017 G**, rising
-as the bands empty: **2.4 years** to 0.05c, covering 0.06 ly. Braking
-is lighter work on a lighter ship: **1.5 years**, 0.04 ly. An empty
-hold takes 2.5 years up and 1.4 down. Everything between is a coast.
+and pushes ~180 MN. On a 1.22 Mt freighter that is **0.015 G**, rising
+as the bands empty: **3.0 years** to 0.06c, covering 0.08 ly. Braking
+is lighter work on a lighter ship: **1.9 years**, 0.06 ly. An empty
+hold takes 3.3 years up and 1.6 down. Everything between is a coast.
 
 Overdraw does not help here; 2× is good for minutes. Neither does a rich
 mixture: every kilogram thrown below full burn is cruise speed lost.
@@ -359,7 +359,7 @@ tissue at tens of gray per second), so the Whipple water is the radiation
 shield that matters. Nothing magnetic stands in front of the ship, and
 nothing needs to: 4.7 MeV protons do not punch a water-stuffed metre. The
 figures here are for 0.10c, faster than anything now flies; at
-0.05–0.07c every particle and grain carries a quarter to a half of
+0.06–0.08c every particle and grain carries a third to two-thirds of
 the energy below.
 
 Aberration and blueshift are mild: \(D = \sqrt{(1+\beta)/(1-\beta)} \approx 1.11\),
@@ -377,8 +377,8 @@ Sand is a THz-and-cooker problem. See Active Debris Defense.
 
 The ship does not fly at the speed a captain wants. It flies at the
 speed its loadout bought: every slot of cargo is a slot of fuel it is
-not. A full hold is 0.05c. Emptying it buys 0.07c and a 10 ly crossing
-nearly sixty years shorter. The lane matters for dust
+not. A full hold is 0.06c. Emptying it buys 0.08c and a 10 ly crossing
+nearly fifty years shorter. The lane matters for dust
 and FEL time, not speed. Sleepers do not care how long the crossing is.
 The cargo, the insurance clock, and anyone awake do.
 
@@ -416,7 +416,7 @@ at this \(\beta\)) are the penetrating radiation problem; the ram is not.
 2. **Water + fuel radiation shield**: The barrel's water stuffing is the
    primary radiation barrier for the crew's flanks; the fuel bands add
    more and cover fore and aft. Metallic hydrogen is still hydrogen, the
-   best shielding per unit mass, packed six times as dense. And because the water is
+   best shielding per unit mass, packed eight times as dense. And because the water is
    never burned as propellant, the shield doesn't thin out as you spend
    fuel — a robustness the old LH₂-only barrier never had.
 
@@ -742,7 +742,7 @@ The structure lines come out of `modeling/ship.py`, sized for the
 46 GN mount rating; the skin takes no credit for stiffening, so it is
 the conservative number.
 
-### Operating Mass (~870,000 tonnes)
+### Operating Mass (~1,030,000 tonnes)
 
 Ready to fly — bands full, shielded, crewed, hold empty:
 
@@ -750,14 +750,14 @@ Ready to fly — bands full, shielded, crewed, hold empty:
 |-----------|------|
 | Empty mass | 190,000 t |
 | Whipple shield water (barrel: radiation + impact stuffing) | 40,000 t |
-| Metallic-hydrogen shot, fuel bands (full) | ~633,000 t |
+| Metallic-hydrogen shot, fuel bands (full) | ~790,000 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (hab air + reserves) | 20 t |
 | Water and consumables | 100 t |
 | Small craft (shuttles, fighters, transports) | 5,000 t |
 | Crew (~10 people) | ~1 t |
 
-### Loaded Mass (~0.87–1.06 Mt departing, ~0.26–0.45 Mt arriving)
+### Loaded Mass (~1.0–1.2 Mt departing, ~0.26–0.45 Mt arriving)
 
 Operating mass plus the hold: **9,568 containers, ~191,000 tonnes** of
 cargo at most. The cargo load is the cruise speed — see Speed Is Bought
@@ -765,14 +765,14 @@ With Cargo.
 
 | Loadout | Departs | Arrives | Cruise |
 |---------|---------|---------|--------|
-| Freighter, full hold | ~1.06 Mt | ~453 kt | ~0.05c |
-| Fast freighter, 92 kt cargo | ~961 kt | ~353 kt | 0.06c |
-| Courier or warship, empty hold | ~870 kt | ~262 kt | ~0.07c |
-| Colony expedition, full hold, slow | ~882 kt | ~453 kt | 0.04c |
-| Out-and-back, no fuel at the far end | ~1.06 Mt | ~453 kt | ~0.026c each way |
+| Freighter, full hold | ~1.22 Mt | ~453 kt | ~0.06c |
+| Fast freighter, 84 kt cargo | ~1.11 Mt | ~346 kt | 0.07c |
+| Courier or warship, empty hold | ~1.03 Mt | ~262 kt | ~0.08c |
+| Colony expedition, full hold, slow | ~1.04 Mt | ~453 kt | 0.05c |
+| Out-and-back, no fuel at the far end | ~1.22 Mt | ~453 kt | ~0.03c each way |
 
 The drive mounts are rated for **46 GN** — 9 G at 520 kt. A fueled ship
-is limited by mass, not crew: **~4.4 G** at a freighter's departure, the
+is limited by mass, not crew: **~3.8 G** at a freighter's departure, the
 full 9 G only once the bands are low.
 
 Fuel is one account, in the bands. A hull breach no longer spills cold
@@ -1083,7 +1083,7 @@ their limit at the same number:
 - **Feed** — the shot lines are sized for it, ~96 t/s (see Fuel
   Handling).
 
-A fueled ship never gets there: the mounts' 46 GN is ~4.4 G on a
+A fueled ship never gets there: the mounts' 46 GN is ~3.8 G on a
 departing freighter. 9 G is an arrival-weight number.
 
 Below 9 G you have margin on all four; at 9 G you have margin on none, and
@@ -1107,7 +1107,7 @@ the reserve. A fight can empty it.
 **The trade tension** is what goes in each slot, and whether the next
 system stocks metal. Arrive at a depot and you fill. Arrive somewhere
 without one and you had better have carried your way home — out and
-back on one fill is ~0.026c with a full hold, a slow boat both ways.
+back on one fill is ~0.03c with a full hold, a slow boat both ways.
 Deuterium and ³He are reactor stories. Metal is the drive story.
 
 
@@ -1134,9 +1134,9 @@ trace isotopes. The torch fuses **protium**, so fuel and remass are one
 fluid and the whole p-p yield goes into the exhaust: \(v_e \approx
 0.12c\) at full burn. That is what makes the stars reachable at all.
 
-What makes them reachable **with cargo** is density. The 2.3 mass
-ratio a full-hold freighter needs for 0.05c-and-stop is ~615 kt of
-hydrogen. As LH₂ that is nearly nine million cubic metres, almost twice
+What makes them reachable **with cargo** is density. The 2.7 mass
+ratio a full-hold freighter needs for 0.06c-and-stop is ~790 kt of
+hydrogen. As LH₂ that is eleven million cubic metres, more than twice
 the whole hull. As shot it fits in the bands.
 
 The secret is the *rate* and the *storage*. Catalysis does not increase
@@ -1149,7 +1149,7 @@ is the whole economy.
 Months before the braking burn, the boxes are told to reverse —
 internally, on IS's schedule, hours — and the torch takes the speed off
 the way it put it on. The ship is lighter by then, so the burn is
-shorter: ~1.5 years for a freighter from 0.05c. The ship never turns
+shorter: ~1.9 years for a freighter from 0.06c. The ship never turns
 over. The nose stays a shield; the tail stays a radiator. The pylons
 do not move.
 
@@ -1167,9 +1167,9 @@ details of what they found. The cost varies unpredictably.
 
 Skipping maintenance is possible but not advisable. Stardrives that
 exceed their service interval have been known to fail in "energetic"
-ways — a drive that throws a million tonnes at five percent of \(c\)
+ways — a drive that throws a million tonnes at six percent of \(c\)
 does not fail quietly. No captain pushes the interval twice. Sixty light-years is
-nine to twelve centuries of flight; the interval is a fluence and wear
+eight to ten centuries of flight; the interval is a fluence and wear
 budget, not a calendar.
 
 IS maintains service facilities in a handful of systems across
@@ -1218,13 +1218,14 @@ does. The secret is the making, not the keeping.
 ### What It Is
 
 - **Density ~0.7 g/cm³** as a solid, ten times liquid hydrogen.
-- **It is shot.** IS ships it as superconducting balls the size of a
-  BB, ~4.5 mm, ~33 mg each. Shot that size flows like a liquid, filters
-  easily, and packs to ~64% under compression. The bands hold
-  **~630,000 t**. Spacers call it **dust** anyway, with some reverence
-  and a lot of fear.
+- **It is shot.** IS ships it as superconducting balls in two sizes:
+  coarse ~3 mm, and fines ~0.4 mm that fill the gaps. The mix flows like
+  a liquid and packs to ~80% under compression. The smallest grain is
+  still far bigger than any gap in the tank, so it cannot leak. The
+  bands hold **~790,000 t**. Spacers call it **dust**, with some
+  reverence and a lot of fear.
 - **It is still hydrogen.** The box fuses it like any other protium. It
-  shields like hydrogen, packed six times as dense.
+  shields like hydrogen, packed eight times as dense.
 - **It superconducts.** Metallic hydrogen was predicted in 1968 to be a
   high-temperature superconductor. IS metal is, well above the
   temperature it is stored at. That is what makes it pumpable (see Fuel
@@ -1243,15 +1244,18 @@ matters in a breach.
 
 | Unit | Metal | Reversion energy | TNT |
 |------|-------|------------------|-----|
-| One ball | ~33 mg | ~7 kJ | a large firecracker |
+| One fine grain | ~25 µg | ~5 J | a snap |
+| One coarse ball | ~10 mg | ~2 kJ | a firecracker |
 | A handful | 100 g | ~22 MJ | ~5 kg |
-| One silo compartment | ~40 kt | ~9×10¹⁵ J | ~2 Mt |
-| Full bands | ~630 kt | ~1.4×10¹⁷ J | ~33 Mt |
+| One silo compartment | ~50 kt | ~1.1×10¹⁶ J | ~2.6 Mt |
+| Full bands | ~790 kt | ~1.7×10¹⁷ J | ~41 Mt |
 
 ### Piston Silos — the Fuel Never Falls
 
 Each band is a stack of compartments, 20 m long, separated by **piston
-bulkheads** that ride the core and the hull skin. A band drains one
+bulkheads** that ride the core and the hull skin like a trash
+compactor's ram. The gap between piston and wall is tighter than the
+fines. A band drains one
 compartment at a time, from the end nearest the feed, and the next
 bulkhead follows the charge down. Every compartment is either full and
 locked or being emptied under a piston. The shot is always packed. It
@@ -1259,7 +1263,7 @@ never has room to move.
 
 That is the point. A loose charge in a partly empty tank, with the boxes
 reversed, falls the length of the tank: twenty metres at 4 G is a
-40 kt slug hitting a bulkhead at ~40 m/s, with every ball grinding
+50 kt slug hitting a bulkhead at ~40 m/s, with every ball grinding
 against its neighbours on the way. The pistons make that impossible by
 construction.
 
@@ -1272,7 +1276,7 @@ combat a hit on the bands is the worst hit there is. The bands do not
 jettison.
 
 This is not antimatter. Metal is stable until it is heated or shocked,
-it pours and stores, a ball that fails is a firecracker and not a
+it pours and stores, a grain that fails is a firecracker and not a
 crater, and the gimme stays in IS's factories.
 
 ### Fuel Handling — Pumping Dust
@@ -1320,7 +1324,7 @@ freight budget. IS decides which systems get a depot.
 
 A system without one is a slow-boat destination: a ship going there has
 to carry the fuel home with it, and out-and-back on one fill is
-~0.026c with a full hold, half a freighter's speed. Pulling a depot does not
+~0.03c with a full hold, half a freighter's speed. Pulling a depot does not
 blockade a system. It makes every trip there twice as long. See
 [Trade](trade.md#interstellar-systems-and-the-shape-of-civilization).
 
