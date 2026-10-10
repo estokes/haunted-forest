@@ -568,7 +568,7 @@ prevent memorization of specific prices.
 ## Time Dilation Mechanic
 
 This is implant and compute slow-time in combat and operations, **not**
-Lorentz \(\gamma\). The ship cruises at 0.06–0.08c; \(\gamma < 1.004\).
+Lorentz \(\gamma\). The ship cruises at 0.07–0.10c; \(\gamma \le 1.005\).
 A century in flight is a century at home. Crew skip it with cold sleep.
 This section is the other clock: how fast a mind can think when the
 missiles are already in the air.

@@ -31,8 +31,8 @@ Route knowledge is valuable. The best paths between systems — balancing
 density, distance, and grains — are closely guarded trade secrets.
 
 Typical flight times, burns included, for a full-hold freighter at
-~0.06c: α Cen ~77 years; a 10 ly leg ~171 years; the far edge ~508
-years. An empty-hold courier at ~0.08c: ~56, ~125, ~369. See [Ship Systems](ship-systems.md#speed-and-the-forward-environment).
+~0.07c: α Cen ~65 years; a 10 ly leg ~143 years; the far edge ~424
+years. An empty-hold courier at 0.10c: ~46, ~101, ~296. See [Ship Systems](ship-systems.md#speed-and-the-forward-environment).
 
 ## Open Questions
 

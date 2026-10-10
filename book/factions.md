@@ -46,7 +46,7 @@ them the most powerful and most resented entity in civilization.
 ### Maintenance Monopoly
 
 All stardrives require servicing every ~60 light-years of travel
-(eight to ten centuries of flight — a wear budget, not a calendar). Only
+(six to nine centuries of flight — a wear budget, not a calendar). Only
 IS can perform the work. A dead box is a pilgrimage. They maintain service facilities in a handful
 of systems — perhaps 3-5 across inhabited space. The inspection is
 opaque: they tell you what it costs, not what they found.

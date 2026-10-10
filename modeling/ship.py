@@ -18,9 +18,9 @@
 # from container size + clearances + structurally-sized members (structural_sizing).
 #
 # 1 km x 40 m (12.5:1). The fuel bands are 315 m of full-section silo,
-# 1.41e6 m3 of IS metallic-hydrogen "dust" — superconducting shot in two
-# sizes (~3 mm and ~0.4 mm fines), 0.7 g/cm3 solid, ~0.80 packed — which
-# leaves 365 m of hold. Each band is
+# IS metallic-hydrogen "dust" — superconducting shot in three sizes
+# (~25 mm, ~3.5 mm, ~0.5 mm fines), 0.7 g/cm3 solid, ~0.85 packed — and
+# 365 m of hold. The barrel is a dry Whipple over an isogrid inner hull. Each band is
 # a stack of compartments behind piston bulkheads; a band drains one
 # compartment at a time and the next bulkhead follows the charge down, so
 # the shot is always packed and never has room to fall. The piston gap is
@@ -93,7 +93,7 @@ def arange(lo, hi, step):
 
 
 SPEC = {
-    "length": 1000.0, "radius_outer": 40.0, "barrel_thickness": 2.0,
+    "radius_outer": 40.0, "barrel_thickness": 2.0,
     "core_radius": 4.0, "nose_cap_len": 105.0, "tail_len": 16.0,
     "container": {"L": 12.0, "W": 2.5, "H": 2.5}, "container_mass_t": 20.0,
     "clearance": 0.15,
@@ -106,7 +106,17 @@ SPEC = {
     "material_density": 1400.0,
     "safety_factor": 2.0,
     "cargo_bays": (181.5, 185.0), "bay_aft_margin": 5.0,
-    "metal_density": 700.0, "dust_packing": 0.80,
+    "metal_density": 700.0, "dust_packing": 0.85,
+    "exhaust_c": 0.12, "arrival_reserve_t": 25_000,
+    # Dry Whipple everywhere: carbon bumpers, heavier on the raked nose
+    # cone. Radiation shielding is local: a water jacket around the crew
+    # hab. Sleepers ride one to a box, each pod in its own jacket (cargo).
+    "armor_t_per_m2": {"barrel": 0.10, "nose": 0.30, "tail": 0.10},
+    "hab": {"r": 6.5, "shield_water_m": 1.0},
+    # Inner-hull skin: isogrid ribs outboard in the barrel gap, so the silo
+    # pistons and the rails see a smooth bore. Monocoque and stringer kept
+    # for comparison.
+    "skin": "isogrid", "frame_pitch_m": 6.25,
     # Bands are silos cut into compartments by piston bulkheads; each carries
     # its own compartment's shot, keeps it packed, and is the firebreak
     # against sympathetic reversion.
@@ -114,19 +124,18 @@ SPEC = {
     # Hull-borne masses for the axial load path. Nacelles and pylons ride
     # the pylon, not the skin. Structure is computed, not listed.
     "mass_t": {
-        "distributed": 27_000 + 10_000 + 5_000 + 3_000,
-        "water": 40_000,
-        "reactor_zone": 8_000 + 8_000 + 2_000,
-        "crew_core": 600,
-        "cargo_aft_hangar": 8_000,
-        "nacelles": 52_000,
+        "weapons": 10_000, "sensors": 5_000, "misc": 3_000,
+        "reactor": 8_000, "thermal": 8_000, "dhe3": 2_000,
+        "life_support": 500, "consumables": 121,
+        "hangar": 3_000, "small_craft": 5_000,
+        "stardrive": 52_000,
     },
     "zones": [
-        ("nose_whipple",   48.5,  (0.35, 0.55, 0.85)),
+        ("nose_whipple",   23.5,  (0.35, 0.55, 0.85)),
         ("cargo_fore",    181.5,  (0.90, 0.65, 0.15)),
-        ("fuel_fore",     160.0,  (0.20, 0.70, 0.90)),
+        ("fuel_fore",     172.5,  (0.20, 0.70, 0.90)),
         ("crew_core",      40.0,  (0.90, 0.25, 0.35)),
-        ("fuel_aft",      155.0,  (0.20, 0.70, 0.90)),
+        ("fuel_aft",      167.5,  (0.20, 0.70, 0.90)),
         ("cargo_aft",     185.0,  (0.90, 0.65, 0.15)),
         ("reactor",       140.0,  (0.70, 0.30, 0.90)),
         ("radiator_aft",   90.0,  (0.90, 0.40, 0.20)),
@@ -170,6 +179,9 @@ SPEC = {
         "machine_r": 3.2, "machine_len": 28.0,
     },
 }
+
+
+SPEC["length"] = sum(z[1] for z in SPEC["zones"])
 
 
 def _beam_mass(side, length, count, rho):
@@ -366,29 +378,70 @@ def silo_bulkheads_t(spec, zones, accel):
     return n * math.pi * (inner ** 2 - core ** 2) * t_eq * rho / 1e3
 
 
+def skin_t_m(spec, N):
+    """Equivalent inner-hull thickness for axial load N.
+    monocoque: classical shell buckling, 0.5 knockdown (R cancels).
+    stringer: Z-stiffened panel between frames, sigma = 0.9*sqrt(N_line*E/L)
+    (Shanley), plus a quarter again for the frames.
+    isogrid: a quarter heavier than stringer for the same load."""
+    E = spec["material_E_Pa"]; sf = spec["safety_factor"]
+    R = spec["radius_outer"] - spec["barrel_thickness"]
+    if spec["skin"] == "monocoque":
+        return math.sqrt(N * sf / (2 * math.pi * 0.5 * 0.6 * E))
+    n_line = N * sf / (TAU * R)
+    sigma = min(0.9 * math.sqrt(n_line * E / spec["frame_pitch_m"]),
+                spec["material_strength_Pa"] / sf)
+    stringer = 1.25 * n_line / sigma
+    return stringer * (1.25 if spec["skin"] == "isogrid" else 1.0)
+
+
+def hull_areas_m2(spec):
+    R = spec["radius_outer"]
+    return {"barrel": TAU * R * spec["length"],
+            "nose": math.pi * R * math.hypot(R, spec["nose_cap_len"]),
+            "tail": math.pi * R * R + TAU * R * spec["tail_len"]}
+
+
+def armor_t(spec):
+    areas = hull_areas_m2(spec)
+    return {k: areas[k] * spec["armor_t_per_m2"][k] for k in areas}
+
+
+def crew_shield_t(spec, zones):
+    """Water jacket around the hab cylinder and its end caps."""
+    h = spec["hab"]; t = h["shield_water_m"]
+    r = h["r"] + t / 2
+    length = zones["crew_core"][3] - 4.0
+    return (TAU * r * length + 2 * math.pi * r * r) * t
+
+
 def hull_loads(spec, zones, sz, pyl):
     """Axial force in the inner-hull skin under forward thrust at the mount
-    rating, full bands, hold full or empty, and the shell-buckling skin it
-    needs. Thrust enters at the aft anchor frame; everything forward of it
+    rating, full bands, hold full or empty, and the skin it needs. Thrust enters at the aft anchor frame; everything forward of it
     is pushed."""
     g = 9.81
-    E = spec["material_E_Pa"]; rho = spec["material_density"]
-    sf = spec["safety_factor"]
+    rho = spec["material_density"]
     R = spec["radius_outer"] - spec["barrel_thickness"]
     L = spec["length"]; mt = spec["mass_t"]
-    gamma, t_min, dz = 0.5, 0.02, 5.0
+    t_min, dz = 0.02, 5.0
     z_in = pyl["z_anchor_aft"]
     fuel = fuel_bands_t(spec)
     fuel_len = sum(zones[n][3] for n in ("fuel_fore", "fuel_aft"))
     slots = sz["capacity_boxes"]
     F = spec["thrust_rating_N"]
 
+    armor = armor_t(spec)
+    cap, tail = spec["nose_cap_len"], spec["tail_len"]
+    crew = mt["life_support"] + mt["consumables"] + crew_shield_t(spec, zones)
+
     def lumps(slot_t, skin_t_per_m, band_t):
-        out = [(-L / 2, L / 2, mt["distributed"] + skin_t_per_m * L),
-               (pyl["z_post"], L / 2, mt["water"]),
-               (zones["reactor"][0], zones["reactor"][1], mt["reactor_zone"]),
-               (zones["crew_core"][0], zones["crew_core"][1], mt["crew_core"]),
-               (zones["cargo_aft"][0], zones["cargo_aft"][1], mt["cargo_aft_hangar"])]
+        out = [(-L / 2, L / 2, mt["weapons"] + mt["sensors"] + mt["misc"]
+                + armor["barrel"] + skin_t_per_m * L),
+               (L / 2, L / 2 + cap, armor["nose"]),
+               (-L / 2 - tail, -L / 2, armor["tail"]),
+               (zones["reactor"][0], zones["reactor"][1], mt["reactor"] + mt["thermal"] + mt["dhe3"]),
+               (zones["crew_core"][0], zones["crew_core"][1], crew),
+               (zones["cargo_aft"][0], zones["cargo_aft"][1], mt["hangar"] + mt["small_craft"])]
         for name in ("fuel_fore", "fuel_aft"):
             z0, z1, _, ln = zones[name]
             out.append((z0, z1, (fuel + band_t) * ln / fuel_len))
@@ -407,12 +460,12 @@ def hull_loads(spec, zones, sz, pyl):
         a_max = 0.0
         for slot_t in (spec["container_mass_t"], 0.0):
             ls = lumps(slot_t, skin_per_m, band_t)
-            M = sum(m for _, _, m in ls) + mt["nacelles"] + pyl["total_t"]
+            M = sum(m for _, _, m in ls) + mt["stardrive"] + pyl["total_t"]
             a = min(F, spec["max_accel_G"] * g * M * 1e3) / (M * 1e3)
             a_max = max(a_max, a)
             N = [max(n, a * above(ls, z) * 1e3) for n, z in zip(N, stations)]
         band_t = silo_bulkheads_t(spec, zones, a_max)
-        t = [max(t_min, math.sqrt(n * sf / (2 * math.pi * gamma * 0.6 * E))) for n in N]
+        t = [max(t_min, skin_t_m(spec, n)) for n in N]
         skin = (sum(TAU * R * ti * dz for ti in t) + TAU * R * t_min * (z_in + L / 2)) * rho / 1e3
         skin_per_m = skin / L
     return {
@@ -423,6 +476,33 @@ def hull_loads(spec, zones, sz, pyl):
         "band_silo_t": round(band_t),
         "fuel_bands_t": round(fuel),
     }
+
+
+def mass_budget(spec, zones, sz, pyl, hull):
+    mt = spec["mass_t"]
+    empty = {
+        "armor": sum(armor_t(spec).values()),
+        "skin": hull["skin_t"], "hold_racks": sum(sz["scaffold_t_per_bay"]),
+        "silo_bulkheads": hull["band_silo_t"], "pylons": pyl["total_t"],
+    }
+    empty.update({k: mt[k] for k in ("reactor", "thermal", "stardrive", "weapons",
+                                     "sensors", "life_support", "hangar", "misc")})
+    carried = {"crew_shield_water": crew_shield_t(spec, zones),
+               "dhe3": mt["dhe3"], "consumables": mt["consumables"],
+               "small_craft": mt["small_craft"]}
+    dry = sum(empty.values()) + sum(carried.values())
+    return {"empty": {k: round(v) for k, v in empty.items()},
+            "carried": {k: round(v) for k, v in carried.items()},
+            "empty_t": round(sum(empty.values())), "dry_t": round(dry),
+            "fuel_t": hull["fuel_bands_t"], "operating_t": round(dry + hull["fuel_bands_t"])}
+
+
+def cruise_c(spec, budget, cargo_t, fuel_t=None):
+    """Burn up, coast, burn down, arrive with the reserve: the cruise the fuel buys."""
+    fuel = budget["fuel_t"] if fuel_t is None else fuel_t
+    m_arr = budget["dry_t"] + cargo_t + spec["arrival_reserve_t"]
+    m_dep = budget["dry_t"] + cargo_t + fuel
+    return math.tanh(spec["exhaust_c"] * math.log(m_dep / m_arr) / 2)
 
 
 def _fresh_scene():
@@ -715,7 +795,10 @@ def build_tanks(coll, spec, zones):
 
 def build_crew(coll, spec, zones):
     z0, z1, _, _ = zones["crew_core"]
-    _cyl_surface("hab_pressure", 6.5, z0 + 2.0, z1 - 2.0, coll, C_HAB, verts=36, caps=True)
+    h = spec["hab"]
+    _cyl_surface("hab_pressure", h["r"], z0 + 2.0, z1 - 2.0, coll, C_HAB, verts=36, caps=True)
+    _cyl_surface("hab_water_jacket", h["r"] + h["shield_water_m"], z0 + 2.0 - h["shield_water_m"],
+                 z1 - 2.0 + h["shield_water_m"], coll, C_LOAD, verts=36, caps=True, alpha=0.35)
     _cyl_surface("bridge_blister", 4.0, z1 - 8.0, z1 + 4.0, coll, C_HAB, verts=24, caps=True)
     return {"hab_len_m": round((z1 - z0) - 4.0, 1)}
 
@@ -941,6 +1024,8 @@ def build():
     sz = structural_sizing(SPEC)
     zones = zone_map(SPEC)
     pyl = guyed_pylon(SPEC, zones)
+    loads = hull_loads(SPEC, zones, sz, pyl)
+    budget = mass_budget(SPEC, zones, sz, pyl, loads)
     hull = _collection("SHIP_hull_zones"); struct = _collection("SHIP_structure")
     colls = (_collection("SHIP_cargo_support"), _collection("SHIP_cargo_arc"),
              _collection("SHIP_cargo_rail"), _collection("SHIP_cargo"),
@@ -974,7 +1059,9 @@ def build():
         "build_s": round(time.perf_counter() - t0, 2),
         "sizing": sz, "section": sec, "fuel": tanksec, "crew": crewsec,
         "reactor": rsec, "radiator": radsec, "nacelles": nacsec,
-        "pylon": pyl, "hull": hull_loads(SPEC, zones, sz, pyl),
+        "pylon": pyl, "hull": loads, "budget": budget,
+        "cruise_c": {"full_hold": round(cruise_c(SPEC, budget, sz["capacity_t"]), 4),
+                     "empty_hold": round(cruise_c(SPEC, budget, 0.0), 4)},
         "sensors": sensec, "hangar": hansec,
     }
 

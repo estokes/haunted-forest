@@ -10,31 +10,31 @@ constructed from carbon nanotube composites and graphene sheets —
 materials with tensile strengths of 50-100 GPa at densities of
 ~1,400 kg/m³.
 
-The fuel takes **315 m** of full-section tank — two bands around the
-midships habitat — and leaves **365 m** of hold. It is not liquid
+The fuel takes **340 m** of full-section tank — two bands around the
+midships habitat — and leaves **366 m** of hold. It is not liquid
 hydrogen. It is **metallic hydrogen shot** from Interstellar Systems —
-superconducting balls in two sizes that pour like a liquid and pack
-eight times as much hydrogen into a cubic metre: the bands hold
-**~790,000 t** (see The Fuel). As LH₂ the same bands held 100,000 t, and that does not
-reach a star.
-The bays are shorter than they were at 30 m; they are also fatter, ten tracks instead of
-seven, and they carry more. The face grew by 1.8×. Dust and FEL time
-scale with that.
+superconducting balls in three sizes that pour like a liquid and pack
+eight and a half times as much hydrogen into a cubic metre: the bands
+hold **~910,000 t** (see The Fuel). As LH₂ the same bands would hold
+110,000 t, and that does not reach a star. The bays are fatter than
+they were at 30 m, ten tracks instead of seven, and they carry more.
+The face grew by 1.8×. Dust and FEL time scale with that.
 
-For perspective: the load-bearing skin is ~0.3 m of CNT at its
-thickest. At the mount rating it carries ~43 GN, a membrane stress of
-~0.6 GPa against 50 GPa. The skin is sized by buckling, not strength.
-The drive's 9 G redline is crew and nozzles; the frame is built for the
-thrust, not the other way round.
-
-The load-bearing structure — a carbon-nanosheet inner hull plus the hold
-racks and the fuel silos' bulkheads — is ~70,000 t, about 6% of a fueled
-ship. Thrust enters the inner hull at the pylon anchor frames (see The
-Pylons) and runs forward as membrane compression, ~43 GN at the root,
-tapering to nothing at the nose. Sized for shell buckling the skin is
-0.30 m at the root and ~55,000 t in all, with no credit taken for the
-hold rails that stiffen it. The Whipple armor wrapped around it is
-separate (see Hull Armor and Radiation Protection).
+The load-bearing structure is the **inner hull**, an **isogrid**: a thin
+carbon skin with a triangular grid of ribs grown into its outer face, in
+the gap under the Whipple. The bore stays smooth for the silo pistons and
+the cargo rails. Thrust enters it at the pylon anchor frames (see The
+Pylons) and runs forward as compression, ~43 GN at the root, tapering to
+nothing at the nose. The isogrid carries that at ~0.12 m equivalent
+thickness, ~22,000 t in all. A plain shell would need 0.30 m and
+~57,000 t, because a shell is sized by buckling and runs at ~1% of the
+material's strength; worse, a dent or a patch lowers its buckling load
+sharply, and shell buckling is sudden. The grid fails locally: a cut rib
+sheds its load to its neighbours in three directions, and the same grid
+carries the twist when one engine cuts out. With the hold racks and the
+silo bulkheads, the load-bearing structure is ~37,000 t, about 3% of a
+fueled ship. The drive's 9 G redline is crew and nozzles; the frame is
+built for the thrust, not the other way round.
 
 Most of the interior volume is **unpressurized**: cargo bays, hangars,
 engineering spaces, fuel tankage. Pressurized habitable space for the crew
@@ -53,9 +53,9 @@ The ship is built in concentric layers, designed to protect the crew and
 sensitive cargo from radiation coming from any direction:
 
 ```
-     Carbon-nanosheet Whipple bumpers (outer, multi-layer)
-     Water stuffing (barrel: radiation shield + debris absorber)
-     Inner hull (carbon nanosheet, structural)
+     Carbon-nanosheet Whipple bumpers (outer, multi-layer, dry)
+     Vacuum gap: isogrid ribs, crawlspace
+     Inner hull (isogrid skin, structural)
      ─────────────────────────────────────
      Unpressurized bays (cargo, hangars)
      Fuel bands (metallic-hydrogen shot, piston silos)
@@ -65,24 +65,20 @@ sensitive cargo from radiation coming from any direction:
      Fuel bands (metallic-hydrogen shot, piston silos)
      Unpressurized bays (cargo, hangars)
      ─────────────────────────────────────
-     Inner hull / water stuffing / carbon Whipple bumpers
+     Inner hull / gap / carbon Whipple bumpers
 ```
 
-The barrel hull is a **stuffed Whipple shield**: spaced carbon-nanosheet
-bumper layers with water in the gaps. The carbon shrugs off the
-interstellar gas and shatters micrometeoroids; the water disperses the
-debris cloud and is the primary radiation shield for the crew's flanks.
-Water and hydrogen are the best radiation shielding per unit mass, and the
-water — unlike the fuel — is never burned, so the shield doesn't
-thin as you spend it. The fuel bands are distributed around the crew on
-all sides — cosmic rays are isotropic, so the crew needs shielding from
-every direction — adding to the water barrel and covering fore and aft. The
-ship is **directionally specialized**: it never flips (the drive reverses
-instead — see The Stardrive), so each end does one job. The **nose** is a
-thick water-stuffed Whipple, the same construction as the barrel but
-heavier and raked; it always faces the ISM and is the single most-hit
-surface on the ship, so it gets the best armor the design has, not a
-dual-role compromise. The **tail** is a pure radiator (see Thermal
+The barrel hull is a **dry Whipple shield**: spaced carbon-nanosheet
+bumper layers over a vacuum gap. The carbon shrugs off the interstellar
+gas and shatters micrometeoroids into clouds that spread across the gap
+before they reach the inner hull. It is not a radiation shield, and it
+does not try to be: almost nothing aboard needs one. The crew hab has
+its own water jacket, and each sleeper rides in a shielded box (see
+Passengers as Freight). The ship is **directionally specialized**: it
+never flips (the drive reverses instead — see The Stardrive), so each
+end does one job. The **nose** is a heavier, raked dry Whipple; it
+always faces the ISM and is the single most-hit surface on the ship,
+so it gets the best armor the design has, not a dual-role compromise. The **tail** is a pure radiator (see Thermal
 Management) — it never meets the ISM, so it carries no shield duty at all.
 
 ### Longitudinal Layout
@@ -90,7 +86,7 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
 ```
                   ↑ direction of travel — always
 
-     [ Water-Whipple nose                                ]
+     [ Dry Whipple nose                                  ]
      [ Cargo bay / hangars                               ]
      [ Fuel bands (metallic hydrogen)                    ]
      [ Crew / sensitive cargo                            ]
@@ -277,6 +273,20 @@ alive in the dark. Losing power to a passenger container isn't a manifest
 error; it's a body count. The hold is monitored the way a hospital ward is
 monitored, and for the same reason.
 
+A sleeper box carries **one** sleeper. The pod sits in the middle of the
+box inside ~0.75 m of water and polyethylene — ~15 t, most of the 20 t
+the box is rated for. Spacers call them **lead boxes**. They are not lead:
+lead turns a cosmic ray into a shower of secondaries and makes the dose
+worse. Hydrogen stops them best.
+
+It is still not enough. Deep space delivers on the order of a sievert a
+year; the box halves it. A century and a half in the hold is tens of
+sieverts, and a frozen body repairs nothing. The box only buys time.
+**Revival** is what saves a sleeper — a long, expensive repair of a
+lifetime of radiation damage — and not everyone comes back. A sleeper
+costs a whole slot and a revival bill. Colonies are founded with genomes
+and artificial wombs instead; a genome kept as data takes no dose.
+
 
 ## Speed and the Forward Environment
 
@@ -288,8 +298,8 @@ whatever speed its fuel buys:
 Catalysis fuses all of the hydrogen and the box puts nearly all of the
 p-p mass defect (~0.007 \(mc^2\)) into the exhaust. A crossing is one
 burn up, a coast, and one burn down, so the tank pays for cruise speed
-twice. Going to **0.06c and stopping** takes a mass ratio of **2.7**;
-0.10c would take 5.3, far more than the bands hold. That is why the ship is
+twice. Going to **0.07c and stopping** takes a mass ratio of **3.2**;
+0.10c takes 5.3, more than the bands hold with cargo aboard. That is why the ship is
 mostly fuel when it leaves, and why every tonne of cargo is a speed
 decision.
 
@@ -302,23 +312,23 @@ lived years. See [Narrative](narrative.md) and [History](history.md).
 
 ### Speed Is Bought With Cargo
 
-Fuel lives only in the bands: ~790 kt of shot, loaded at port. Keep
+Fuel lives only in the bands: ~910 kt of shot, loaded at port. Keep
 **25 kt** in reserve for the arrival system, and the cargo load sets
 the cruise:
 
 | Cruise | Cargo | Fuel | Departs | Arrives | α Cen (4.4 ly) | 10 ly | 30 ly |
 |--------|-------|------|---------|---------|----------------|-------|-------|
-| 0.05c | 191 kt | 615 kt (bands part full) | 1.04 Mt | 453 kt | ~90 yr | ~202 yr | ~602 yr |
-| **~0.06c — freighter** | **191 kt** | **790 kt (bands full)** | **1.22 Mt** | **453 kt** | **~77 yr** | **~171 yr** | **~508 yr** |
-| 0.065c | 130 kt | 790 kt | 1.16 Mt | 391 kt | ~70 yr | ~156 yr | ~464 yr |
-| 0.07c | 84 kt | 790 kt | 1.11 Mt | 346 kt | ~65 yr | ~145 yr | ~431 yr |
-| 0.075c | 45 kt | 790 kt | 1.07 Mt | 307 kt | ~61 yr | ~136 yr | ~403 yr |
-| **~0.08c — empty hold** | **0** | **790 kt** | **1.03 Mt** | **262 kt** | **~56 yr** | **~125 yr** | **~369 yr** |
+| 0.05c | 191 kt | 528 kt (bands part full) | 889 kt | 386 kt | ~90 yr | ~202 yr | ~602 yr |
+| 0.06c | 191 kt | 689 kt (bands part full) | 1.05 Mt | 386 kt | ~75 yr | ~169 yr | ~502 yr |
+| **~0.07c — freighter** | **191 kt** | **908 kt (bands full)** | **1.27 Mt** | **386 kt** | **~65 yr** | **~143 yr** | **~424 yr** |
+| 0.08c | 120 kt | 908 kt | 1.20 Mt | 315 kt | ~58 yr | ~128 yr | ~378 yr |
+| 0.09c | 58 kt | 908 kt | 1.14 Mt | 252 kt | ~52 yr | ~114 yr | ~336 yr |
+| **~0.10c — empty hold** | **0** | **908 kt** | **1.08 Mt** | **195 kt** | **~46 yr** | **~101 yr** | **~296 yr** |
 
-Times include both burns. A full hold cruises at **~0.06c**; that is a
+Times include both burns. A full hold cruises at **~0.07c**; that is a
 freighter. Past that the bands are full and the only way faster is to
-carry less: 0.07c is 84 kt of cargo, and an empty hold tops out near
-**0.08c** — couriers, warships, and anyone being chased.
+carry less: 0.08c is 120 kt of cargo, and an empty hold reaches
+**0.10c** — couriers, warships, and anyone being chased.
 
 ### The Local Bubble — the Map Is Inside It
 
@@ -335,10 +345,10 @@ spend.** A clean lane is kind to the hull. A dirty one is a gauntlet.
 ### The Burn Profile
 
 At the 3.2 PW nozzle rating and \(v_e = 0.12c\) the torch eats ~5 kg/s
-and pushes ~180 MN. On a 1.22 Mt freighter that is **0.015 G**, rising
-as the bands empty: **3.0 years** to 0.06c, covering 0.08 ly. Braking
-is lighter work on a lighter ship: **1.9 years**, 0.06 ly. An empty
-hold takes 3.3 years up and 1.6 down. Everything between is a coast.
+and pushes ~180 MN. On a 1.27 Mt freighter that is **0.014 G**, rising
+as the bands empty: **3.6 years** to 0.07c, covering 0.12 ly. Braking
+is lighter work on a lighter ship: **2.0 years**, 0.08 ly. An empty
+hold takes 4.0 years up and 1.7 down. Everything between is a coast.
 
 Overdraw does not help here; 2× is good for minutes. Neither does a rich
 mixture: every kilogram thrown below full burn is cruise speed lost.
@@ -355,12 +365,13 @@ power on the nose, disk-average:
 About 116 kW over the ~5,000 m² nose. In the Bubble, 2.3 W/m² — a rounding
 error next to sunlight. The hull does not have a heat problem. Unshielded, the
 *dose* is still promptly lethal (MeV protons stop in the first millimetre of
-tissue at tens of gray per second), so the Whipple water is the radiation
-shield that matters. Nothing magnetic stands in front of the ship, and
-nothing needs to: 4.7 MeV protons do not punch a water-stuffed metre. The
-figures here are for 0.10c, faster than anything now flies; at
-0.06–0.08c every particle and grain carries a third to two-thirds of
-the energy below.
+tissue at tens of gray per second), so the Whipple is the radiation
+shield that matters for anything alive behind the nose. Nothing magnetic
+stands in front of the ship, and nothing needs to: 4.7 MeV protons stop
+in the first bumper. The
+figures here are for 0.10c, the fastest anything flies (an empty
+hold); a 0.07c freighter sees half the energy per particle and per
+grain.
 
 Aberration and blueshift are mild: \(D = \sqrt{(1+\beta)/(1-\beta)} \approx 1.11\),
 round-trip \(D^2 \approx 1.22\). Threats are still biased forward. They are not
@@ -377,8 +388,8 @@ Sand is a THz-and-cooker problem. See Active Debris Defense.
 
 The ship does not fly at the speed a captain wants. It flies at the
 speed its loadout bought: every slot of cargo is a slot of fuel it is
-not. A full hold is 0.06c. Emptying it buys 0.08c and a 10 ly crossing
-nearly fifty years shorter. The lane matters for dust
+not. A full hold is 0.07c. Emptying it buys 0.10c and a 10 ly crossing
+forty years shorter. The lane matters for dust
 and FEL time, not speed. Sleepers do not care how long the crossing is.
 The cargo, the insurance clock, and anyone awake do.
 
@@ -396,58 +407,52 @@ arrives as a hypervelocity impactor
 (see Active Debris Defense). Galactic cosmic rays (GeV, roughly isotropic
 at this \(\beta\)) are the penetrating radiation problem; the ram is not.
 
-### The Solution (two layers)
+### The Solution
 
-1. **Stuffed carbon-Whipple hull**: The outer hull is not a coating but a
-   **Whipple shield** — spaced carbon-nanosheet bumper layers with water in
-   the gaps — doing two jobs at once:
+1. **Dry carbon-Whipple hull**: The outer hull is not a coating but a
+   **Whipple shield** — spaced carbon-nanosheet bumper layers over a
+   vacuum gap — doing two jobs at once:
    - *Gas erosion*: carbon is bound ~700× more tightly than the hydrogen
      ice it replaces (covalent ~7 eV/atom vs van der Waals ~0.01 eV), so
-     the relativistic ISM gas barely touches it. Where the old ice eroded
-     at ~85 kg/s and had to be continuously regrown, a carbon hull outlasts
+     the relativistic ISM gas barely touches it. A carbon hull outlasts
      the ship by orders of magnitude against the gas — no ablation, no
      cryo, no in-flight replenishment.
-   - *Micrometeoroids*: the outer bumper shatters and vaporizes a
-     penetrating grain into a spreading debris cloud; the standoff gap lets
-     it fan out; the water disperses it as a diffuse impulse instead of a
-     hole-punch. Gas bladders in the water manage the pressure pulse and
-     water's 9% freeze-expansion.
+   - *Micrometeoroids*: at these speeds a grain vaporizes on the first
+     bumper whatever is behind it. The layers and the spacing do the
+     work: each bumper spreads the cloud further, and the gap lets it fan
+     out before the next. Water behind the bumpers added mass, not much
+     protection, and froze, boiled, and needed bladders. It is gone.
 
-2. **Water + fuel radiation shield**: The barrel's water stuffing is the
-   primary radiation barrier for the crew's flanks; the fuel bands add
-   more and cover fore and aft. Metallic hydrogen is still hydrogen, the
-   best shielding per unit mass, packed eight times as dense. And because the water is
-   never burned as propellant, the shield doesn't thin out as you spend
-   fuel — a robustness the old LH₂-only barrier never had.
+2. **Local radiation shielding**: cosmic rays are the penetrating
+   problem, and only a few small spaces need protecting. The crew hab
+   carries a **1 m water jacket** (~1,900 t), which doubles as a
+   life-support reserve. Sleepers ride one to a shielded box. Nothing
+   else aboard minds the dose.
 
 ### The Whipple Hull
 
-- **Barrel**: spaced carbon-nanosheet bumpers, water-stuffed, ~1 m thick.
-  Always cool (grazing incidence), so the water self-arranges
-  frozen-outer / liquid-inner with no active cryo.
-- **Nose**: full water-stuffed Whipple — the same construction as the
-  barrel, built thicker and raked. Because the ship never flips (see The
-  Stardrive), the nose is *always* the leading face and the single most-hit
-  surface on the ship, so it gets the best armor the design has rather than
-  the dry compromise a dual-role endcap would force. It also sits inside the
-  active-defense cone, which is trained forward, so it gets the most help
-  shedding the medium grains.
+- **Barrel**: spaced carbon-nanosheet bumpers over a dry gap, with the
+  isogrid ribs of the inner hull standing in it.
+- **Nose**: a heavier, raked dry Whipple, more layers on the cone.
+  Because the ship never flips (see The Stardrive), the nose is *always*
+  the leading face and the single most-hit surface on the ship, so it
+  gets the best armor the design has rather than the compromise a
+  dual-role endcap would force. It also sits inside the active-defense
+  cone, which is trained forward, so it gets the most help shedding the
+  medium grains.
 - **Tail**: a pure radiator (see Thermal Management). It never meets the
-  ISM, so it carries no shield duty — no bumper compromise, no
-  drained-coolant dance, just a radiator built to radiate. The fuel bands
-  around the crew carry the fore/aft radiation shielding.
+  ISM, so it carries no shield duty — no bumper compromise, just a
+  radiator built to radiate.
 - **Erosion**: negligible against the ISM *gas*. Practical lifetime is set
   by the rare large grain active defense misses and slow dust
   micro-cratering — patched at drydock, not self-healed. A raked, conical
   leading cap spreads the flux and glances off dust (sloped-armor logic),
   buying more margin still.
-- **Inspection and repair**: the barrel gaps are a meter of water a person
-  can enter. Crew suit up and **dive the hull** — internal, wet EVA — to
-  inspect bumper layers and patch battle damage or micrometeoroid
-  punctures from the inside, the water pumped down locally to work a
-  section dry.
-- **No in-flight replenishment**: water is topped up at any icy body;
-  carbon is patched at service intervals.
+- **Inspection and repair**: the gap under the bumpers is a crawlspace.
+  Crew suit up and **crawl the hull** — internal EVA, in vacuum, among
+  the isogrid ribs — to inspect bumper layers, splice a cut rib, and
+  patch battle damage or micrometeoroid punctures from the inside.
+- **No in-flight replenishment**: carbon is patched at service intervals.
 
 
 ## Active Debris Defense
@@ -481,7 +486,7 @@ let them arrive intact.
 No single mechanism spans twelve orders of magnitude, so defense is binned by
 energy:
 
-1. **Whipple hull** (carbon + water): shatters and absorbs the small grains
+1. **Whipple hull** (dry carbon bumpers): shatters and absorbs the small grains
    (≲ a few µm).
 2. **Active detection**: finds the medium grains the hull can't take, far
    enough out to act.
@@ -623,8 +628,8 @@ kill-zone cover some of it. The rest is an accepted Whipple hit rate.
 
 ### Where the Suite Sits
 
-Not on the nose. The nose is a stuffed Whipple. Structural CNT is a
-conductor; water is a microwave oven. You cannot look through it. The
+Not on the nose. The nose is a stack of Whipple bumpers, and
+structural CNT is a conductor. You cannot look through it. The
 rake that glances dust points the cone's face mostly *out* (~69° off
 the velocity vector), so a conformal AESA on the bumper cannot stare
 dead ahead anyway. Flattening the tip would fix the angle and put a
@@ -717,15 +722,15 @@ still to never fly at it.
 
 ## Mass Budget
 
-### Empty Mass (~190,000 tonnes)
+### Empty Mass (~161,000 tonnes)
 
 The ship with nothing in it — hull, structure, permanently installed
 systems:
 
 | Component | Mass |
 |-----------|------|
-| Hull (multi-layer carbon-nanosheet Whipple armor) | 27,000 t |
-| Inner-hull skin (load-bearing, 0.30 m at the root) | 54,000 t |
+| Hull armor (dry carbon-nanosheet Whipple, heavier on the nose) | 30,000 t |
+| Inner hull (isogrid, ~0.12 m equivalent at the root) | 22,000 t |
 | Hold racks (rails, frames, cage — both bays) | 10,000 t |
 | Fuel silo piston bulkheads (compartments every 20 m) | 5,000 t |
 | Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
@@ -738,26 +743,25 @@ systems:
 | Hangar structures and launch systems | 3,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-The structure lines come out of `modeling/ship.py`, sized for the
-46 GN mount rating; the skin takes no credit for stiffening, so it is
-the conservative number.
+The armor and structure lines come out of `modeling/ship.py`, sized for
+the 46 GN mount rating.
 
-### Operating Mass (~1,030,000 tonnes)
+### Operating Mass (~1,080,000 tonnes)
 
-Ready to fly — bands full, shielded, crewed, hold empty:
+Ready to fly — bands full, crewed, hold empty:
 
 | Component | Mass |
 |-----------|------|
-| Empty mass | 190,000 t |
-| Whipple shield water (barrel: radiation + impact stuffing) | 40,000 t |
-| Metallic-hydrogen shot, fuel bands (full) | ~790,000 t |
+| Empty mass | 161,000 t |
+| Crew hab water jacket (1 m) | 1,900 t |
+| Metallic-hydrogen shot, fuel bands (full) | ~908,000 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (hab air + reserves) | 20 t |
 | Water and consumables | 100 t |
 | Small craft (shuttles, fighters, transports) | 5,000 t |
 | Crew (~10 people) | ~1 t |
 
-### Loaded Mass (~1.0–1.2 Mt departing, ~0.26–0.45 Mt arriving)
+### Loaded Mass (~0.9–1.3 Mt departing, ~0.20–0.39 Mt arriving)
 
 Operating mass plus the hold: **9,568 containers, ~191,000 tonnes** of
 cargo at most. The cargo load is the cruise speed — see Speed Is Bought
@@ -765,14 +769,14 @@ With Cargo.
 
 | Loadout | Departs | Arrives | Cruise |
 |---------|---------|---------|--------|
-| Freighter, full hold | ~1.22 Mt | ~453 kt | ~0.06c |
-| Fast freighter, 84 kt cargo | ~1.11 Mt | ~346 kt | 0.07c |
-| Courier or warship, empty hold | ~1.03 Mt | ~262 kt | ~0.08c |
-| Colony expedition, full hold, slow | ~1.04 Mt | ~453 kt | 0.05c |
-| Out-and-back, no fuel at the far end | ~1.22 Mt | ~453 kt | ~0.03c each way |
+| Freighter, full hold | ~1.27 Mt | ~386 kt | ~0.07c |
+| Fast freighter, 120 kt cargo | ~1.20 Mt | ~315 kt | 0.08c |
+| Courier or warship, empty hold | ~1.08 Mt | ~195 kt | ~0.10c |
+| Colony expedition, full hold, slow | ~0.89 Mt | ~386 kt | 0.05c |
+| Out-and-back, no fuel at the far end | ~1.27 Mt | ~386 kt | ~0.036c each way |
 
 The drive mounts are rated for **46 GN** — 9 G at 520 kt. A fueled ship
-is limited by mass, not crew: **~3.8 G** at a freighter's departure, the
+is limited by mass, not crew: **~3.7 G** at a freighter's departure, the
 full 9 G only once the bands are low.
 
 Fuel is one account, in the bands. A hull breach no longer spills cold
@@ -963,10 +967,10 @@ target we never paid for. The **aft hull is the radiator.**
 
 Only the engineering end radiates: the reactor barrel, the tail
 barrel, and the tail face — about **63,000 m²** (ε ≈ 0.9). Nose,
-holds, fuel bands, and habitat stay Whipple and water. You do not run
+holds, fuel bands, and habitat stay dry Whipple. You do not run
 1800 K skin over metal — it reverts near 1000 K — or over a sleeper
-container. The 2 m barrel that was water on those stations is
-vacuum and MLI next to the hot gores.
+container. The barrel gap on those stations is vacuum and MLI next
+to the hot gores, as it is everywhere else.
 
 Eight azimuthal gores, eight valves, matching the plant sim. Shut
 the ones that face a contact. The remaining skin runs hotter, or
@@ -1053,19 +1057,19 @@ burns through the throat, or the coils quench. Overdraw buys thrust
 *without* spending your range — you pay in nozzle life instead.
 
 Acceleration is **a = 2·P / (m·v_e)**. At 3.2 PW, on a freighter that
-has just braked into a system (~454 kt) with its 25 kt reserve:
+has just braked into a system (~386 kt) with its 25 kt reserve:
 
 | Mode | Exhaust vel | Accel | Reserve lasts | Δv from reserve |
 |------|------------:|------:|--------------:|----------------:|
-| Lean (full burn) | 36,000 km/s | 0.04 G | ~59 days | ~2,000 km/s |
-| Cruise | 14,400 km/s | 0.1 G | ~9 days | ~800 km/s |
-| Hard maneuver | 1,440 km/s | 1 G | ~2.2 hours | ~80 km/s |
-| Combat | 480 km/s | 3 G | ~15 min | ~27 km/s |
-| Violent | 290 km/s | 5 G | ~5 min | ~16 km/s |
+| Lean (full burn) | 36,000 km/s | 0.05 G | ~59 days | ~2,400 km/s |
+| Cruise | 16,900 km/s | 0.1 G | ~13 days | ~1,100 km/s |
+| Hard maneuver | 1,690 km/s | 1 G | ~3 hours | ~110 km/s |
+| Combat | 560 km/s | 3 G | ~20 min | ~38 km/s |
+| Violent | 340 km/s | 5 G | ~7 min | ~23 km/s |
 
 Read the last column and wince: hard acceleration is **Δv-catastrophic**.
-Empty the reserve at 5 G and you've changed velocity by 16 km/s; spend
-it lean and the same mass buys 2,000. And the reserve is all there is.
+Empty the reserve at 5 G and you've changed velocity by 23 km/s; spend
+it lean and the same mass buys 2,400. And the reserve is all there is.
 At departure a fight spends cruise speed. On arrival it spends the
 margin you meant to dock on. More reserve is less cruise speed.
 
@@ -1083,7 +1087,7 @@ their limit at the same number:
 - **Feed** — the shot lines are sized for it, ~96 t/s (see Fuel
   Handling).
 
-A fueled ship never gets there: the mounts' 46 GN is ~3.8 G on a
+A fueled ship never gets there: the mounts' 46 GN is ~3.7 G on a
 departing freighter. 9 G is an arrival-weight number.
 
 Below 9 G you have margin on all four; at 9 G you have margin on none, and
@@ -1107,7 +1111,7 @@ the reserve. A fight can empty it.
 **The trade tension** is what goes in each slot, and whether the next
 system stocks metal. Arrive at a depot and you fill. Arrive somewhere
 without one and you had better have carried your way home — out and
-back on one fill is ~0.03c with a full hold, a slow boat both ways.
+back on one fill is ~0.036c with a full hold, a slow boat both ways.
 Deuterium and ³He are reactor stories. Metal is the drive story.
 
 
@@ -1134,10 +1138,10 @@ trace isotopes. The torch fuses **protium**, so fuel and remass are one
 fluid and the whole p-p yield goes into the exhaust: \(v_e \approx
 0.12c\) at full burn. That is what makes the stars reachable at all.
 
-What makes them reachable **with cargo** is density. The 2.7 mass
-ratio a full-hold freighter needs for 0.06c-and-stop is ~790 kt of
-hydrogen. As LH₂ that is eleven million cubic metres, more than twice
-the whole hull. As shot it fits in the bands.
+What makes them reachable **with cargo** is density. The 3.2 mass
+ratio a full-hold freighter needs for 0.07c-and-stop is ~880 kt of
+hydrogen. As LH₂ that is twelve million cubic metres, two and a half
+times the whole hull. As shot it fits in the bands.
 
 The secret is the *rate* and the *storage*. Catalysis does not increase
 the yield; the energy per nucleon is still ~6.7 MeV. There is no wall
@@ -1149,7 +1153,7 @@ is the whole economy.
 Months before the braking burn, the boxes are told to reverse —
 internally, on IS's schedule, hours — and the torch takes the speed off
 the way it put it on. The ship is lighter by then, so the burn is
-shorter: ~1.9 years for a freighter from 0.06c. The ship never turns
+shorter: ~2.0 years for a freighter from 0.07c. The ship never turns
 over. The nose stays a shield; the tail stays a radiator. The pylons
 do not move.
 
@@ -1167,9 +1171,9 @@ details of what they found. The cost varies unpredictably.
 
 Skipping maintenance is possible but not advisable. Stardrives that
 exceed their service interval have been known to fail in "energetic"
-ways — a drive that throws a million tonnes at six percent of \(c\)
+ways — a drive that throws a million tonnes at seven percent of \(c\)
 does not fail quietly. No captain pushes the interval twice. Sixty light-years is
-eight to ten centuries of flight; the interval is a fluence and wear
+six to nine centuries of flight; the interval is a fluence and wear
 budget, not a calendar.
 
 IS maintains service facilities in a handful of systems across
@@ -1192,8 +1196,7 @@ medium is something to survive, not something to eat.
   watches the sleepers. A compartment running warm is an event (see The
   Fuel).
 - **Hull armor**: needs no in-flight replenishment — the carbon Whipple
-  hull doesn't ablate, and its water stuffing is sealed behind it
-  (topped up at ports).
+  hull doesn't ablate.
 - **D-³He reactor fuel**: no skim. The 2,000 t tank is centuries at
   redline, so a lean cruise barely touches it. **³He is a port
   commodity** — gas-giant atmosphere mining. Deuterium is bought the
@@ -1218,14 +1221,14 @@ does. The secret is the making, not the keeping.
 ### What It Is
 
 - **Density ~0.7 g/cm³** as a solid, ten times liquid hydrogen.
-- **It is shot.** IS ships it as superconducting balls in two sizes:
-  coarse ~3 mm, and fines ~0.4 mm that fill the gaps. The mix flows like
-  a liquid and packs to ~80% under compression. The smallest grain is
-  still far bigger than any gap in the tank, so it cannot leak. The
-  bands hold **~790,000 t**. Spacers call it **dust**, with some
+- **It is shot.** IS ships it as superconducting balls in three sizes:
+  ~25 mm, ~3.5 mm, and ~0.5 mm fines, each filling the gaps of the size
+  above. The mix flows like a liquid and packs to ~85% under
+  compression. The smallest grain is still far bigger than any gap in
+  the tank, so it cannot leak. The bands hold **~910,000 t**. Spacers call it **dust**, with some
   reverence and a lot of fear.
 - **It is still hydrogen.** The box fuses it like any other protium. It
-  shields like hydrogen, packed eight times as dense.
+  shields like hydrogen, packed eight and a half times as dense.
 - **It superconducts.** Metallic hydrogen was predicted in 1968 to be a
   high-temperature superconductor. IS metal is, well above the
   temperature it is stored at. That is what makes it pumpable (see Fuel
@@ -1244,11 +1247,11 @@ matters in a breach.
 
 | Unit | Metal | Reversion energy | TNT |
 |------|-------|------------------|-----|
-| One fine grain | ~25 µg | ~5 J | a snap |
-| One coarse ball | ~10 mg | ~2 kJ | a firecracker |
-| A handful | 100 g | ~22 MJ | ~5 kg |
-| One silo compartment | ~50 kt | ~1.1×10¹⁶ J | ~2.6 Mt |
-| Full bands | ~790 kt | ~1.7×10¹⁷ J | ~41 Mt |
+| One fine grain | ~46 µg | ~10 J | a snap |
+| One middle ball | ~16 mg | ~3 kJ | a firecracker |
+| One coarse ball | ~6 g | ~1.2 MJ | a hand grenade |
+| One silo compartment | ~53 kt | ~1.1×10¹⁶ J | ~2.7 Mt |
+| Full bands | ~910 kt | ~2×10¹⁷ J | ~47 Mt |
 
 ### Piston Silos — the Fuel Never Falls
 
@@ -1263,7 +1266,7 @@ never has room to move.
 
 That is the point. A loose charge in a partly empty tank, with the boxes
 reversed, falls the length of the tank: twenty metres at 4 G is a
-50 kt slug hitting a bulkhead at ~40 m/s, with every ball grinding
+53 kt slug hitting a bulkhead at ~40 m/s, with every ball grinding
 against its neighbours on the way. The pistons make that impossible by
 construction.
 
@@ -1324,7 +1327,7 @@ freight budget. IS decides which systems get a depot.
 
 A system without one is a slow-boat destination: a ship going there has
 to carry the fuel home with it, and out-and-back on one fill is
-~0.03c with a full hold, half a freighter's speed. Pulling a depot does not
+~0.036c with a full hold, half a freighter's speed. Pulling a depot does not
 blockade a system. It makes every trip there twice as long. See
 [Trade](trade.md#interstellar-systems-and-the-shape-of-civilization).
 
