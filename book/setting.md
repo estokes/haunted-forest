@@ -8,11 +8,10 @@ understanding, but engineering has advanced fantastically.
 - **No FTL.** The light barrier is never broken by humans, augmented humans,
   or AIs.
 - **Stardrives**: Interstellar Systems sells a black box, and the
-  only fuel it burns: metastable metallic hydrogen, in sealed cells
-  nobody else can make. Metal in, fusion torch out. There is no speed
-  wall, only the rocket equation: a full hold cruises at **0.07c**,
-  and **0.10c** costs two-thirds of the hold in fuel. Every refuel is
-  an IS transaction. They sell drives rarely, to buyers they choose.
+  only fuel it burns: metastable metallic hydrogen shot nobody else
+  can make — spacers call it dust. Dust in, fusion torch out. There is
+  no speed wall, only the rocket equation: a full hold cruises at
+  **~0.05c**, and an empty one tops out near **0.07c**. Every refuel is an IS transaction. They sell drives rarely, to buyers they choose.
   See [Factions](factions.md) and [Ship Systems](ship-systems.md).
 - **Nanofabrication**: Manufacturing any object from raw materials is trivial
   given a design. This creates post-scarcity for most goods.

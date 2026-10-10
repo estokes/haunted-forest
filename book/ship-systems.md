@@ -12,25 +12,29 @@ materials with tensile strengths of 50-100 GPa at densities of
 
 The fuel takes **315 m** of full-section tank — two bands around the
 midships habitat — and leaves **365 m** of hold. It is not liquid
-hydrogen. It is **metallic hydrogen** in Interstellar Systems cells,
-ten times denser: the bands hold **~990,000 t** (see The Fuel). As
-LH₂ the same bands held 100,000 t, and that does not reach a star.
+hydrogen. It is **metallic hydrogen shot** from Interstellar Systems —
+BB-sized superconducting balls that pour like a liquid and pack six
+times as much hydrogen into a cubic metre: the bands hold **~630,000 t**
+(see The Fuel). As LH₂ the same bands held 100,000 t, and that does not
+reach a star.
 The bays are shorter than they were at 30 m; they are also fatter, ten tracks instead of
 seven, and they carry more. The face grew by 1.8×. Dust and FEL time
 scale with that.
 
-For perspective: the structural stress at the base of a 1 km column
-under 1G, at the ship's average density (~240 kg/m³ fueled), is
-about 2.4 MPa. CNT handles 50 GPa. The structure could
-withstand tens of thousands of G before failing; the drive's 9G
-redline is nothing to the frame — the limits are the crew and the
-nozzles, not the structure.
+For perspective: the load-bearing skin is ~0.3 m of CNT at its
+thickest. At the mount rating it carries ~43 GN, a membrane stress of
+~0.6 GPa against 50 GPa. The skin is sized by buckling, not strength.
+The drive's 9 G redline is crew and nozzles; the frame is built for the
+thrust, not the other way round.
 
-The load-bearing structure — a carbon-nanosheet inner hull plus the ship's
-longitudinal frame — is a small fraction of the mass. The heavy part of the
-hull is the multi-layer, water-stuffed Whipple armor wrapped around it (see
-Hull Armor and Radiation Protection); the inner shell mainly holds pressure
-and carries thrust.
+The load-bearing structure — a carbon-nanosheet inner hull plus the hold
+racks and the fuel silos' bulkheads — is ~70,000 t, about 6% of a fueled
+ship. Thrust enters the inner hull at the pylon anchor frames (see The
+Pylons) and runs forward as membrane compression, ~43 GN at the root,
+tapering to nothing at the nose. Sized for shell buckling the skin is
+0.30 m at the root and ~55,000 t in all, with no credit taken for the
+hold rails that stiffen it. The Whipple armor wrapped around it is
+separate (see Hull Armor and Radiation Protection).
 
 Most of the interior volume is **unpressurized**: cargo bays, hangars,
 engineering spaces, fuel tankage. Pressurized habitable space for the crew
@@ -54,11 +58,11 @@ sensitive cargo from radiation coming from any direction:
      Inner hull (carbon nanosheet, structural)
      ─────────────────────────────────────
      Unpressurized bays (cargo, hangars)
-     Metallic-hydrogen fuel bands (IS cells)
+     Fuel bands (metallic-hydrogen shot, piston silos)
      ─────────────────────────────────────
      Crew / sensitive cargo core (pressurized)
      ─────────────────────────────────────
-     Metallic-hydrogen fuel bands (IS cells)
+     Fuel bands (metallic-hydrogen shot, piston silos)
      Unpressurized bays (cargo, hangars)
      ─────────────────────────────────────
      Inner hull / water stuffing / carbon Whipple bumpers
@@ -95,10 +99,11 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
      [ Ship reactor / engineering                        ]
      [ Aft radiating hull (8 zoned gores)                ]  ← always in the wake
 
-  Stardrive nacelles sit on 45° A-frames that pierce the hull and
-  land on a torque box (two CNT belt rings + longerons). The boxes
-  fire either way by internal reconfiguration — nothing on the
-  pylon moves. The stand-off keeps the plumes off the radiating skin.
+  Stardrive nacelles ride guyed pylons at the hold/reactor bulkhead:
+  one radial post each to a keystone on the axis, two cables each to
+  hull frames fore and aft. The boxes fire either way by internal
+  reconfiguration — nothing on the pylon moves. The stand-off keeps
+  the plumes off the radiating skin.
 ```
 
 The ship is **directionally specialized and never flips**: the nose
@@ -108,16 +113,48 @@ IS black boxes — ride in nacelles so their waste heat and radiation
 stay off the hull. The pylons do not slew. Each IS box fires
 fore or aft by reconfiguring internally on command — hours, not
 seconds; IS does not publish the procedure. A fight is a one-way
-burn. Midcourse you have years. The pylons are not cantilevers. Four 45° struts per nacelle pierce
-the barrel and land on a torque box: two heavy CNT belt rings
-through the engineering hull, longerons between them, a box around
-the core. Thrust is axial in the struts — one pair in compression,
-one in tension — and the rings spread it as hoop so the skin never
-sees a point load. A 25 kt pod at 9 g is 2.2 GN; a radial boom
-would have to take that as a 40 m bending moment. The A-frame
-refuses the moment. Sized as tubes — Euler owns the 75 m
-compression legs, ~22 cm wall in a 3.6 m strut — the mounts are
-**~6,000 t**. There is no second engine at the tail and nothing on
+burn. Midcourse you have years.
+
+### The Pylons — Posts and Cables
+
+Each pod sits in a **cage** — three rings and four longerons around
+the IS shell, ship hardware. The cage hangs on a **guyed pylon**:
+
+- **One radial post** from the cage to a **keystone** on the ship's
+  axis, at the bulkhead between the aft hold and the reactor. The two
+  nacelles' posts meet head-on there, so their pushes cancel inside
+  the ship. The post is in compression whichever way the boxes fire.
+- **Two cables.** One runs from the cage aft-inward to a hull frame
+  ~54 m behind the post, one forward-inward to a frame ~54 m ahead of
+  it. Forward thrust loads the aft cable; reverse loads the fore cable.
+  A cable only ever pulls.
+- Each cable's line is aimed through the pod's thrust axis at the
+  post, so the three forces meet at a point and the pod asks nothing
+  of the cage in bending.
+- At each anchor frame a **spoke** through the axis ties the two
+  nacelles' cables together, so the hull ring never sees a radial
+  point load. The forward spoke runs in a sector-boundary plane of the
+  hold; the aft spokes stop at a hub ring around the reactor coils.
+- Light splayed **stays** take lateral load.
+
+Carbon nanotube is strongest in tension and heaviest in compression,
+where buckling grows with length squared. The pylon puts the big loads
+in cables and keeps the one compression member short and fat. At the
+46 GN rating (23 GN per nacelle), with 10% cable pretension to keep
+the idle cable taut:
+
+| Member | Load | Size |
+|--------|------|------|
+| Cable (one loaded at a time) | ~29 GN tension | ~1.2 m, 84 m long |
+| Post | ~15 GN compression, always | ~6 m tube, 80 m to the axis |
+| Anchor spokes | ~15 GN tension | |
+
+No member changes sign when the boxes reverse. Posts, cables, stays,
+spokes, hub, keystone, cages, and fittings come to **~3,400 t**. Thrust
+enters the hull skin at the two anchor frames. The post also carries
+the shot lines and the FEL power out to the pods.
+
+There is no second engine at the tail and nothing on
 the bow but armor. To decelerate, the boxes are told to reverse and
 the torch takes the speed off the way it put it on. The ship never
 turns over. Nothing on the pylon moves.
@@ -142,7 +179,7 @@ This is what the ship is *for*. Strip away the drive, the shield, the reactor,
 and their only job is to carry the hold between stars. Two cargo bays — one
 forward of the crew core, one aft — run about **180 m** and **185 m**. The
 fuel bands take 315 m next to them (see Hull and Structure). The bays
-are full-radius, and every slot in them is either cargo or speed.
+are full-radius, and every tonne in them costs speed.
 
 ### The Standard Container
 
@@ -150,25 +187,8 @@ Cargo is fully containerized in a single standard box: **12 × 2.5 × 2.5 m**,
 about 75 m³, ~20 t loaded — a deliberate descendant of the twentieth-century
 intermodal container, because a standard that already worked for four hundred
 years isn't worth reinventing. One size means one set of rails, one handling
-system, one lock. The rack holds **10,304 containers** (~206,000 t) if every
+system, one lock. The rack holds **9,568 containers** (~191,000 t) if every
 slot is filled; the loadmaster leaves empty slots for trim.
-
-### Fuel Boxes
-
-IS sells metal in two shapes: band cells that fill the tank annulus,
-and **box cells** — standard containers with **~50 t** of metallic
-hydrogen inside, as slugs. A box cell rides the same rails and clamps
-to the same pair; the handler docks it to a feed port at the bay's
-staging concourse when its turn comes (see Fuel Handling). Every slot in
-the hold is a choice between 20 t of cargo and 50 t of fuel. A hold
-of nothing but fuel is ~515,000 t more metal on top of the bands. See
-Speed Is Bought With Slots.
-
-A box cell weighs 2.5× a cargo box. The clamp is rated for a 20 t box
-at 9 G (1.77 MN), so a hold carrying fuel boxes is limited to ~3.6 G
-until they are burned or double-clamped. A fueled ship cannot pull
-much more than that anyway (see Mass Budget). Box cells burn first:
-every one emptied lifts the clamp limit and frees a slot.
 
 ### The Rack — a Hard Disk Stood on Its Axis
 
@@ -268,9 +288,10 @@ whatever speed its fuel buys:
 Catalysis fuses all of the hydrogen and the box puts nearly all of the
 p-p mass defect (~0.007 \(mc^2\)) into the exhaust. A crossing is one
 burn up, a coast, and one burn down, so the tank pays for cruise speed
-twice. Going to **0.10c and stopping** takes a mass ratio of **5.3**.
-That is why the ship is mostly fuel when it leaves, and why every slot
-in the hold is a speed decision.
+twice. Going to **0.05c and stopping** takes a mass ratio of **2.3**;
+0.10c would take 5.3, far more than the bands hold. That is why the ship is
+mostly fuel when it leaves, and why every tonne of cargo is a speed
+decision.
 
 Time dilation is not in this bargain. \(\gamma(0.10c) \approx 1.005\).
 Reaching 0.5c would cost \((\gamma - 1)Mc^2\): 65 years at full nozzle
@@ -279,25 +300,25 @@ in flight is a century at home. The crew buys time with **cold sleep**,
 not with \(\gamma\). An AI captain who stays awake pays the century in
 lived years. See [Narrative](narrative.md) and [History](history.md).
 
-### Speed Is Bought With Slots
+### Speed Is Bought With Cargo
 
-The bands hold ~990 kt of metal. The hold has 10,304 slots, each a
-20 t cargo box or a ~50 t fuel box. Keep **25 kt** in reserve for the
-arrival system, and the loadout sets the cruise:
+Fuel lives only in the bands: ~630 kt of shot, loaded at port. Keep
+**25 kt** in reserve for the arrival system, and the cargo load sets
+the cruise:
 
 | Cruise | Cargo | Fuel | Departs | Arrives | α Cen (4.4 ly) | 10 ly | 30 ly |
 |--------|-------|------|---------|---------|----------------|-------|-------|
-| 0.05c | 206 kt | 580 kt (bands part full) | 0.99 Mt | 430 kt | ~90 yr | ~200 yr | ~600 yr |
-| 0.06c | 206 kt | 760 kt | 1.17 Mt | 430 kt | ~76 yr | ~170 yr | ~500 yr |
-| **0.07c — freighter** | **206 kt** | **980 kt (bands full)** | **1.38 Mt** | **430 kt** | **~66 yr** | **~146 yr** | **~430 yr** |
-| 0.08c | 161 kt | 1.10 Mt | 1.46 Mt | 385 kt | ~59 yr | ~129 yr | ~380 yr |
-| 0.09c | 116 kt | 1.21 Mt | 1.53 Mt | 340 kt | ~53 yr | ~115 yr | ~337 yr |
-| **0.10c — express** | **75 kt** | **1.31 Mt** | **1.59 Mt** | **300 kt** | **~48 yr** | **~104 yr** | **~304 yr** |
-| 0.12c — empty hold | 0 | 1.50 Mt | 1.70 Mt | 225 kt | ~41 yr | ~88 yr | ~253 yr |
+| 0.04c | 191 kt | 455 kt (bands part full) | 882 kt | 453 kt | ~111 yr | ~251 yr | ~751 yr |
+| **~0.05c — freighter** | **191 kt** | **633 kt (bands full)** | **1.06 Mt** | **453 kt** | **~88 yr** | **~198 yr** | **~590 yr** |
+| 0.055c | 143 kt | 633 kt | 1.01 Mt | 405 kt | ~82 yr | ~184 yr | ~547 yr |
+| 0.06c | 92 kt | 633 kt | 961 kt | 353 kt | ~75 yr | ~169 yr | ~502 yr |
+| 0.065c | 49 kt | 633 kt | 919 kt | 310 kt | ~70 yr | ~156 yr | ~463 yr |
+| **~0.07c — empty hold** | **0** | **633 kt** | **870 kt** | **262 kt** | **~63 yr** | **~141 yr** | **~419 yr** |
 
-Times include both burns. A full hold cruises at **0.07c**; that is a
-freighter. **0.10c is the express**: two-thirds of the hold is fuel. An
-empty hold buys 0.12c, and nobody pays a crossing to carry nothing.
+Times include both burns. A full hold cruises at **~0.05c**; that is a
+freighter. Past that the bands are full and the only way faster is to
+carry less: 0.06c is 92 kt of cargo, and an empty hold tops out near
+**0.07c** — couriers, warships, and anyone being chased.
 
 ### The Local Bubble — the Map Is Inside It
 
@@ -314,10 +335,10 @@ spend.** A clean lane is kind to the hull. A dirty one is a gauntlet.
 ### The Burn Profile
 
 At the 3.2 PW nozzle rating and \(v_e = 0.12c\) the torch eats ~5 kg/s
-and pushes ~180 MN. On a 1.38 Mt freighter that is **0.013 G**, rising
-as the bands empty: **3.9 years** to 0.07c, covering 0.12 ly. Braking
-is lighter work on a lighter ship: **2.2 years**, 0.08 ly. The express
-takes 5.8 years up and 2.5 down. Everything between is a coast.
+and pushes ~180 MN. On a 1.06 Mt freighter that is **0.017 G**, rising
+as the bands empty: **2.4 years** to 0.05c, covering 0.06 ly. Braking
+is lighter work on a lighter ship: **1.5 years**, 0.04 ly. An empty
+hold takes 2.5 years up and 1.4 down. Everything between is a coast.
 
 Overdraw does not help here; 2× is good for minutes. Neither does a rich
 mixture: every kilogram thrown below full burn is cruise speed lost.
@@ -337,8 +358,9 @@ error next to sunlight. The hull does not have a heat problem. Unshielded, the
 tissue at tens of gray per second), so the Whipple water is the radiation
 shield that matters. Nothing magnetic stands in front of the ship, and
 nothing needs to: 4.7 MeV protons do not punch a water-stuffed metre. The
-figures here are for the 0.10c express; a 0.07c freighter sees half the
-energy per particle and per grain.
+figures here are for 0.10c, faster than anything now flies; at
+0.05–0.07c every particle and grain carries a quarter to a half of
+the energy below.
 
 Aberration and blueshift are mild: \(D = \sqrt{(1+\beta)/(1-\beta)} \approx 1.11\),
 round-trip \(D^2 \approx 1.22\). Threats are still biased forward. They are not
@@ -355,8 +377,8 @@ Sand is a THz-and-cooker problem. See Active Debris Defense.
 
 The ship does not fly at the speed a captain wants. It flies at the
 speed its loadout bought: every slot of cargo is a slot of fuel it is
-not. A full hold is 0.07c. The express gives up two-thirds of the hold
-for 0.10c and a crossing forty years shorter. The lane matters for dust
+not. A full hold is 0.05c. Emptying it buys 0.07c and a 10 ly crossing
+nearly sixty years shorter. The lane matters for dust
 and FEL time, not speed. Sleepers do not care how long the crossing is.
 The cargo, the insurance clock, and anyone awake do.
 
@@ -394,7 +416,7 @@ at this \(\beta\)) are the penetrating radiation problem; the ram is not.
 2. **Water + fuel radiation shield**: The barrel's water stuffing is the
    primary radiation barrier for the crew's flanks; the fuel bands add
    more and cover fore and aft. Metallic hydrogen is still hydrogen, the
-   best shielding per unit mass, at ten times the density. And because the water is
+   best shielding per unit mass, packed six times as dense. And because the water is
    never burned as propellant, the shield doesn't thin out as you spend
    fuel — a robustness the old LH₂-only barrier never had.
 
@@ -616,8 +638,8 @@ hardware on the pod shell, not inside the IS box:
   10 m faces at 10 MW are ~2,400 km each on a centimetre.
 - A **THz head** on the same pallet (sand cone).
 - A **metre-class FEL director** (interdiction and cooker). The
-  machines — GW-class linacs — live in the torque box and shoot
-  through the 3.6 m A-frame tubes.
+  machine — a GW-class linac — rides the pod cage beside it. Only
+  power crosses the post.
 - A **shutter** that parks over the face when that box fires
   forward. Cruise is look. Reverse is lids.
 
@@ -695,7 +717,7 @@ still to never fly at it.
 
 ## Mass Budget
 
-### Empty Mass (~151,000 tonnes)
+### Empty Mass (~190,000 tonnes)
 
 The ship with nothing in it — hull, structure, permanently installed
 systems:
@@ -703,53 +725,58 @@ systems:
 | Component | Mass |
 |-----------|------|
 | Hull (multi-layer carbon-nanosheet Whipple armor) | 27,000 t |
-| Internal structure (decks, bulkheads, framing, fuel-band racks) | 28,000 t |
+| Inner-hull skin (load-bearing, 0.30 m at the root) | 54,000 t |
+| Hold racks (rails, frames, cage — both bays) | 10,000 t |
+| Fuel silo piston bulkheads (compartments every 20 m) | 5,000 t |
 | Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
 | Thermal management (tin loops, headers) | 8,000 t |
 | Stardrive modules (IS boxes, feeds) | 52,000 t |
-| Drive mounts (A-frames, belt rings, torque box) | 6,000 t |
+| Drive pylons (posts, cables, cages, spokes) | 3,400 t |
 | Weapons systems | 10,000 t |
 | Sensors, communications, computing | 5,000 t |
 | Life support (sized for ~10 crew) | 500 t |
 | Hangar structures and launch systems | 3,000 t |
 | Miscellaneous (wiring, plumbing, fittings) | 3,000 t |
 
-### Operating Mass (~1,185,000 tonnes)
+The structure lines come out of `modeling/ship.py`, sized for the
+46 GN mount rating; the skin takes no credit for stiffening, so it is
+the conservative number.
+
+### Operating Mass (~870,000 tonnes)
 
 Ready to fly — bands full, shielded, crewed, hold empty:
 
 | Component | Mass |
 |-----------|------|
-| Empty mass | 151,000 t |
+| Empty mass | 190,000 t |
 | Whipple shield water (barrel: radiation + impact stuffing) | 40,000 t |
-| Metallic hydrogen, fuel bands (IS band cells, full) | ~987,000 t |
+| Metallic-hydrogen shot, fuel bands (full) | ~633,000 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (hab air + reserves) | 20 t |
 | Water and consumables | 100 t |
 | Small craft (shuttles, fighters, transports) | 5,000 t |
 | Crew (~10 people) | ~1 t |
 
-### Loaded Mass (~1.0–1.7 Mt departing, ~0.23–0.43 Mt arriving)
+### Loaded Mass (~0.87–1.06 Mt departing, ~0.26–0.45 Mt arriving)
 
-Operating mass plus the hold: 10,304 slots of 20 t cargo boxes or
-~50 t fuel boxes. **Cargo capacity: ~206,000 tonnes**, or ~515,000 t of
-extra fuel, or any split between. The split is the cruise speed — see
-Speed Is Bought With Slots.
+Operating mass plus the hold: **9,568 containers, ~191,000 tonnes** of
+cargo at most. The cargo load is the cruise speed — see Speed Is Bought
+With Cargo.
 
 | Loadout | Departs | Arrives | Cruise |
 |---------|---------|---------|--------|
-| Freighter, full hold | ~1.38 Mt | ~430 kt | 0.07c |
-| Express, 75 kt cargo | ~1.59 Mt | ~300 kt | 0.10c |
-| Colony expedition, heavy, slow | ~1.2 Mt | ~430 kt | 0.06c |
-| Out-and-back, no fuel at the far end | ~1.39 Mt | ~430 kt | 0.035c each way |
+| Freighter, full hold | ~1.06 Mt | ~453 kt | ~0.05c |
+| Fast freighter, 92 kt cargo | ~961 kt | ~353 kt | 0.06c |
+| Courier or warship, empty hold | ~870 kt | ~262 kt | ~0.07c |
+| Colony expedition, full hold, slow | ~882 kt | ~453 kt | 0.04c |
+| Out-and-back, no fuel at the far end | ~1.06 Mt | ~453 kt | ~0.026c each way |
 
 The drive mounts are rated for **46 GN** — 9 G at 520 kt. A fueled ship
-is limited by mass, not crew: **~3.4 G** at a freighter's departure, the
+is limited by mass, not crew: **~4.4 G** at a freighter's departure, the
 full 9 G only once the bands are low.
 
-Fuel is one account: the torch drinks bands and boxes alike. A hull
-breach no longer spills cold hydrogen. It exposes a cell, which is worse
-(see The Fuel).
+Fuel is one account, in the bands. A hull breach no longer spills cold
+hydrogen. It opens a silo compartment, which is worse (see The Fuel).
 
 
 ## Power: The Fusion Reactor
@@ -961,10 +988,11 @@ to shine.
 
 The torch plume is a separate, much louder announcement. Zoning
 the hotel plant does not hide a 3 G burn. It hides a ship that is
-*not* burning, or is burning away from you. The A-frames stand the
-nozzles ~50 m off the skin so a collimated plume misses the
-gores; at combat divergence the aft-most gores valve off because
-the plume is already heating them.
+*not* burning, or is burning away from you. The pylons stand the
+nozzles ~50 m off the skin so a collimated plume misses the gores.
+The pods sit at the hold/reactor bulkhead, so the aft plume runs the
+whole radiating barrel; at combat divergence the gores nearest the
+plumes valve off because the plume is already heating them.
 
 No deployables. Zoning is valves. The radiating skin is the hull.
 Its mass is already on the hull line; the thermal budget is the
@@ -1003,8 +1031,8 @@ ship reactor:
 One vendor, two products. **The stardrive** is an Interstellar Systems
 black box: feed it metal, a fusion torch comes out. Catalyzed p-p — the
 secret — is inside. There is no ram, no pellet, no onboard igniter
-farm. **The fuel** is IS's too: metastable metallic hydrogen in sealed
-cells that nobody else can make. See The Fuel.
+farm. **The fuel** is IS's too: metastable metallic hydrogen shot that
+nobody else can make. See The Fuel.
 
 Nothing aboard collects anything. In-system and interstellar are the
 same engine on a different budget, and the budget is the rocket
@@ -1025,22 +1053,21 @@ burns through the throat, or the coils quench. Overdraw buys thrust
 *without* spending your range — you pay in nozzle life instead.
 
 Acceleration is **a = 2·P / (m·v_e)**. At 3.2 PW, on a freighter that
-has just braked into a system (~430 kt) with its 25 kt reserve:
+has just braked into a system (~454 kt) with its 25 kt reserve:
 
 | Mode | Exhaust vel | Accel | Reserve lasts | Δv from reserve |
 |------|------------:|------:|--------------:|----------------:|
-| Lean (full burn) | 36,000 km/s | 0.04 G | ~59 days | ~2,200 km/s |
-| Cruise | 15,200 km/s | 0.1 G | ~10 days | ~900 km/s |
-| Hard maneuver | 1,500 km/s | 1 G | ~2.5 hours | ~90 km/s |
-| Combat | 510 km/s | 3 G | ~17 min | ~30 km/s |
-| Violent | 300 km/s | 5 G | ~6 min | ~18 km/s |
+| Lean (full burn) | 36,000 km/s | 0.04 G | ~59 days | ~2,000 km/s |
+| Cruise | 14,400 km/s | 0.1 G | ~9 days | ~800 km/s |
+| Hard maneuver | 1,440 km/s | 1 G | ~2.2 hours | ~80 km/s |
+| Combat | 480 km/s | 3 G | ~15 min | ~27 km/s |
+| Violent | 290 km/s | 5 G | ~5 min | ~16 km/s |
 
 Read the last column and wince: hard acceleration is **Δv-catastrophic**.
-Empty the reserve at 5 G and you've changed velocity by 18 km/s; spend
-it lean and the same mass buys 2,200. And the reserve is all there is.
+Empty the reserve at 5 G and you've changed velocity by 16 km/s; spend
+it lean and the same mass buys 2,000. And the reserve is all there is.
 At departure a fight spends cruise speed. On arrival it spends the
-margin you meant to dock on. More reserve is more fuel boxes, which is
-less cargo.
+margin you meant to dock on. More reserve is less cruise speed.
 
 ### The Combat Redline
 
@@ -1053,10 +1080,10 @@ their limit at the same number:
   Bare, it's ~5 G.
 - **Nozzle** — the 3.5× overdraw burn-through / quench limit.
 - **Reaction mass** — the reserve empties in minutes at these rates.
-- **Feed** — the slug train is sized for it, ~175 slugs/s (see Fuel
+- **Feed** — the shot lines are sized for it, ~96 t/s (see Fuel
   Handling).
 
-A fueled ship never gets there: the mounts' 46 GN is ~3.4 G on a
+A fueled ship never gets there: the mounts' 46 GN is ~4.4 G on a
 departing freighter. 9 G is an arrival-weight number.
 
 Below 9 G you have margin on all four; at 9 G you have margin on none, and
@@ -1071,16 +1098,16 @@ on the same drive tech. The capital ship punches; the fighters knife-fight.
 
 The bands hold one crossing. You cannot top them up from a comet or a
 gas giant: hydrogen is everywhere, metal is not. Refuelling is an IS
-transaction at an IS depot — swap the spent band cells, load box cells,
+transaction at an IS depot — an IS tanker tops up the bands, and you
 pay what IS asks (see The Fuel).
 
-A clean port call — approach, dock, swap cells, depart — barely touches
+A clean port call — approach, dock, take on shot, depart — barely touches
 the reserve. A fight can empty it.
 
 **The trade tension** is what goes in each slot, and whether the next
 system stocks metal. Arrive at a depot and you fill. Arrive somewhere
 without one and you had better have carried your way home — out and
-back on one fill is 0.035c with a full hold, a slow boat both ways.
+back on one fill is ~0.026c with a full hold, a slow boat both ways.
 Deuterium and ³He are reactor stories. Metal is the drive story.
 
 
@@ -1090,7 +1117,7 @@ The stardrive is a black-boxed module built by Interstellar Systems.
 Its internals are proprietary, with multiple layers of tamper
 protection. IS sells the box, and IS sells what goes in it.
 
-What is known: you connect a feed from IS fuel cells. The box produces
+What is known: you connect a shot line. The box produces
 a fusion torch. The process fuses plain protium via the proton-proton
 chain, which conventional physics considers far too slow for
 engineering use. How they solved the rate is the most closely guarded
@@ -1107,10 +1134,10 @@ trace isotopes. The torch fuses **protium**, so fuel and remass are one
 fluid and the whole p-p yield goes into the exhaust: \(v_e \approx
 0.12c\) at full burn. That is what makes the stars reachable at all.
 
-What makes them reachable **with cargo** is density. The 5.3 mass
-ratio for 0.10c-and-stop is ~860 kt of hydrogen for an empty ship. As
-LH₂ that is twelve million cubic metres, more than twice the whole
-hull. As metal it fits in the bands with room to spare.
+What makes them reachable **with cargo** is density. The 2.3 mass
+ratio a full-hold freighter needs for 0.05c-and-stop is ~615 kt of
+hydrogen. As LH₂ that is nearly nine million cubic metres, almost twice
+the whole hull. As shot it fits in the bands.
 
 The secret is the *rate* and the *storage*. Catalysis does not increase
 the yield; the energy per nucleon is still ~6.7 MeV. There is no wall
@@ -1122,8 +1149,8 @@ is the whole economy.
 Months before the braking burn, the boxes are told to reverse —
 internally, on IS's schedule, hours — and the torch takes the speed off
 the way it put it on. The ship is lighter by then, so the burn is
-shorter: ~2.2 years for a freighter from 0.07c. The ship never turns
-over. The nose stays a shield; the tail stays a radiator. The A-frames
+shorter: ~1.5 years for a freighter from 0.05c. The ship never turns
+over. The nose stays a shield; the tail stays a radiator. The pylons
 do not move.
 
 A box that will not reverse is the old nightmare: half the brake. The
@@ -1140,9 +1167,9 @@ details of what they found. The cost varies unpredictably.
 
 Skipping maintenance is possible but not advisable. Stardrives that
 exceed their service interval have been known to fail in "energetic"
-ways — a drive that throws a million tonnes at a tenth of \(c\) does
-not fail quietly. No captain pushes the interval twice. Sixty light-years is
-six to nine centuries of flight; the interval is a fluence and wear
+ways — a drive that throws a million tonnes at five percent of \(c\)
+does not fail quietly. No captain pushes the interval twice. Sixty light-years is
+nine to twelve centuries of flight; the interval is a fluence and wear
 budget, not a calendar.
 
 IS maintains service facilities in a handful of systems across
@@ -1158,11 +1185,12 @@ for the strategic implications.
 During interstellar cruise the ship coasts. Nothing is collected; the
 medium is something to survive, not something to eat.
 
-- **Fuel**: bands and boxes, all of it spoken for — the braking burn and
-  the reserve. Nothing aboard makes more. A course correction is paid
+- **Fuel**: the bands, all of it spoken for — the braking burn and the
+  reserve. Nothing aboard makes more. A course correction is paid
   for out of the arrival margin.
-- **Cells**: the cargo manager watches every cell the way it watches the
-  sleepers. A cell running warm is an event (see The Fuel).
+- **Silos**: the cargo manager watches every compartment the way it
+  watches the sleepers. A compartment running warm is an event (see The
+  Fuel).
 - **Hull armor**: needs no in-flight replenishment — the carbon Whipple
   hull doesn't ablate, and its water stuffing is sealed behind it
   (topped up at ports).
@@ -1172,7 +1200,7 @@ medium is something to survive, not something to eat.
   same way.
 
 The crew is in cold sleep during transit. Ship AI handles navigation,
-cell monitoring, and resource management autonomously. An AI captain
+silo monitoring, and resource management autonomously. An AI captain
 who stays awake lives the crossing.
 
 
@@ -1189,21 +1217,22 @@ does. The secret is the making, not the keeping.
 
 ### What It Is
 
-- **Density ~0.7 g/cm³**, ten times liquid hydrogen. The bands hold
-  ~987,000 t. A box cell holds ~50 t.
+- **Density ~0.7 g/cm³** as a solid, ten times liquid hydrogen.
+- **It is shot.** IS ships it as superconducting balls the size of a
+  BB, ~4.5 mm, ~33 mg each. Shot that size flows like a liquid, filters
+  easily, and packs to ~64% under compression. The bands hold
+  **~630,000 t**. Spacers call it **dust** anyway, with some reverence
+  and a lot of fear.
 - **It is still hydrogen.** The box fuses it like any other protium. It
-  shields like hydrogen, at ten times the density per metre.
-- **It is a solid.** Nothing pumps it. IS ships it as **slugs** — 1 m
-  cylinders, ~550 kg each — and the ship moves slugs, not fluid.
+  shields like hydrogen, packed six times as dense.
 - **It superconducts.** Metallic hydrogen was predicted in 1968 to be a
   high-temperature superconductor. IS metal is, well above the
-  temperature it is stored at. That is what makes it movable (see Fuel
+  temperature it is stored at. That is what makes it pumpable (see Fuel
   Handling).
-- **Only IS makes it.** Slugs come packed in sealed, tamper-evident
-  cells — not because the metal needs them, but because IS wants to know
-  where its metal goes. Two formats: **band cells**, slug racks shaped
-  to the tank annulus and installed at a depot, and **box cells**, slug
-  magazines in the standard container (see Fuel Boxes).
+- **Only IS makes it.** It arrives by IS tanker and goes into the bands
+  through sealed fill ports. IS meters every gram, not because the
+  metal needs watching but because IS wants to know where its metal
+  goes.
 
 ### What It Costs to Carry
 
@@ -1214,58 +1243,73 @@ matters in a breach.
 
 | Unit | Metal | Reversion energy | TNT |
 |------|-------|------------------|-----|
-| One box cell | ~50 t | ~1×10¹³ J | ~2.6 kt |
-| Full bands | ~987 kt | ~2×10²⁰ J | ~50 Gt |
+| One ball | ~33 mg | ~7 kJ | a large firecracker |
+| A handful | 100 g | ~22 MJ | ~5 kg |
+| One silo compartment | ~40 kt | ~9×10¹⁵ J | ~2 Mt |
+| Full bands | ~630 kt | ~1.4×10¹⁷ J | ~33 Mt |
 
-Cells are segmented so a breach costs one cell, not the ship. The
-nightmare is **sympathetic reversion** — one cell's heat tripping its
-neighbour's. Everything hot lives aft, behind the hold, away from the
-bands. In combat a hit on the bands is the worst hit there is. Box cells
-can go out the bay doors, slowly. Band cells do not jettison.
+### Piston Silos — the Fuel Never Falls
+
+Each band is a stack of compartments, 20 m long, separated by **piston
+bulkheads** that ride the core and the hull skin. A band drains one
+compartment at a time, from the end nearest the feed, and the next
+bulkhead follows the charge down. Every compartment is either full and
+locked or being emptied under a piston. The shot is always packed. It
+never has room to move.
+
+That is the point. A loose charge in a partly empty tank, with the boxes
+reversed, falls the length of the tank: twenty metres at 4 G is a
+40 kt slug hitting a bulkhead at ~40 m/s, with every ball grinding
+against its neighbours on the way. The pistons make that impossible by
+construction.
+
+The bulkheads are also firebreaks. A compartment going up whole is not
+survivable and no bulkhead pretends otherwise. They are a wall for a
+small reversion to stop at before it finds the rest. The nightmare is
+**sympathetic reversion**, one ball's heat tripping its neighbours'.
+Everything hot lives aft, behind the hold, away from the bands. In
+combat a hit on the bands is the worst hit there is. The bands do not
+jettison.
 
 This is not antimatter. Metal is stable until it is heated or shocked,
-it stacks and stores, a gram that fails is a firecracker and not a
+it pours and stores, a ball that fails is a firecracker and not a
 crater, and the gimme stays in IS's factories.
 
-### Fuel Handling — the Slug Train
+### Fuel Handling — Pumping Dust
 
 You cannot revert the metal to gas and pipe it. Reversion is 216 MJ/kg
 of heat inside the ship: a gigawatt at lean flow, terawatts in a fight.
 So the metal reaches the box as metal, and the box reverts and fuses it,
 where 216 MJ/kg is noise.
 
+Each ball superconducts, so a magnetic field pushes it away. A
+coil-lined pipe running a travelling field herds the shot along with
+the balls held off each other and off the wall: nothing grinds, nothing
+heats. Reverse the field and the flow stops dead. The valves are
+magnetic.
+
 The feed has to carry what the torch can drink:
 
-| Burn | Flow (both boxes) | Slugs/s |
-|------|-------------------|---------|
-| Lean crossing burn | ~5 kg/s | one every ~2 min |
-| 0.1 G, arriving | ~28 kg/s | ~0.05 |
-| 1 G, arriving / departing | ~2.8 / ~29 t/s | ~5 / ~52 |
-| 3 G, arriving | ~25 t/s | ~45 |
-| 9 G (46 GN at 11 PW) | ~96 t/s | ~175 |
+| Burn | Flow (both boxes) |
+|------|-------------------|
+| Lean crossing burn | ~5 kg/s |
+| 0.1 G, arriving | ~28 kg/s |
+| 1 G, arriving / departing | ~2.8 / ~29 t/s |
+| 3 G, arriving | ~25 t/s |
+| 9 G (46 GN at 11 PW) | ~96 t/s |
 
-Nine G sizes the line. The feed is a **maglev tube**. A superconductor
-is pushed out of a magnetic field, so a slug floats in a coil-lined bore
-and never touches the wall: no friction, no wear, no hot spot. The route
-is ~500 m — band racks inward to the core spine, aft along the core to
-the torque box, out one bore in each A-frame, into the box. At 9 G each
-nacelle draws ~87 slugs/s; at 1.5 m pitch the train runs ~130 m/s. On a
-crossing burn it is one slug every couple of minutes. Box cells dock to
-feed ports at the bay concourses and feed the same spine.
+Nine G sizes the line: ~1.7 m bore per nacelle at ~60 m/s. The route is
+~500 m — from the draining compartment inward to the core spine, aft
+along the core to the keystone, out through each post, into the box.
 
-Slugs are stored cold and shaded. They cross the engineering hull, the
-one hot place on the ship, in seconds, inside a shielded bore in the
-core.
-
-The cost is the train itself. One slug is ~28 t of TNT. At 9 G each
-nacelle's train holds ~330 slugs in flight, ~9 kt, strung through its
-pylon. The tube is
-segmented with blast gates; a slug that reverts vents its segment and
-the gates stop the train either side. A hit on a feed bore takes that
-nacelle off the line until the train is rerouted or the bore is cleared.
-The A-frame tube already carries the FEL beam line; now it carries the
-fuel too. It was the most valuable structure on the ship. It is now
-also the most dangerous.
+The cost is that a charged line is a fuse. Each nacelle's line holds
+~400 t of moving shot, ~20 kt of TNT, threaded through its pylon. So the
+lines run dry between burns: the shot is drawn back into the silo, and
+the lines are **charged** before a burn — the moment everyone aboard
+dislikes. A reversion in a line runs both ways until a magnetic gate
+stops it. A hit on a post takes that nacelle off the line. A leak is
+worse than a hole: spilled shot rolls everywhere, and every ball is a
+firecracker that has to be found with a magnet.
 
 ### The Fuel Leash
 
@@ -1275,8 +1319,8 @@ inhabited systems. IS sets the price, and it is the largest line in any
 freight budget. IS decides which systems get a depot.
 
 A system without one is a slow-boat destination: a ship going there has
-to carry the fuel home with it, and out-and-back on one fill is 0.035c
-with a full hold, half a freighter's speed. Pulling a depot does not
+to carry the fuel home with it, and out-and-back on one fill is
+~0.026c with a full hold, half a freighter's speed. Pulling a depot does not
 blockade a system. It makes every trip there twice as long. See
 [Trade](trade.md#interstellar-systems-and-the-shape-of-civilization).
 

@@ -57,8 +57,8 @@ state and accepting control through netidx:
 
 - **Thermal management**: Tin loop, zoned aft radiators, waste heat
   (implemented; 100 GW plant)
-- **Fuel**: IS cell inventory (bands and box cells), feed, cell
-  temperatures, reversion alarms
+- **Fuel**: silo compartments (mass, temperature, piston position),
+  shot lines (charge state, flow), magnetic gates, reversion alarms
 - **Stardrive**: IS black box — metal feed, torch thrust, fuse-fraction,
   nozzle overdraw, reverse state. Observable externals only.
 - **Navigation**: Position, velocity, course plotting, Δv budget
@@ -568,7 +568,7 @@ prevent memorization of specific prices.
 ## Time Dilation Mechanic
 
 This is implant and compute slow-time in combat and operations, **not**
-Lorentz \(\gamma\). The ship cruises at 0.10c; \(\gamma \approx 1.005\).
+Lorentz \(\gamma\). The ship cruises at 0.05–0.07c; \(\gamma < 1.003\).
 A century in flight is a century at home. Crew skip it with cold sleep.
 This section is the other clock: how fast a mind can think when the
 missiles are already in the air.

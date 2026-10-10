@@ -29,7 +29,7 @@ Advantages:
 - Direct integration with ship systems — no implant intermediary
 - **Unlimited combat slow-time**: slow the game to 1/100th speed with
   no duration limit (implant/compute time, not Lorentz \(\gamma\) —
-  cruise is 0.10c). Write Graphix programs mid-combat, consult LLMs
+  cruise is under 0.1c). Write Graphix programs mid-combat, consult LLMs
   for strategy, run tactical simulations, iterate on approaches — all
   while the enemy's missile crawls toward you. See
   [Architecture](architecture.md#time-dilation-mechanic) for details.
