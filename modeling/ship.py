@@ -18,13 +18,13 @@
 # from container size + clearances + structurally-sized members (structural_sizing).
 #
 # 1 km x 40 m (12.5:1). The fuel bands are 315 m of full-section silo,
-# IS metallic-hydrogen "dust" — superconducting shot in three sizes
-# (~25 mm, ~3.5 mm, ~0.5 mm fines), 0.7 g/cm3 solid, ~0.85 packed — and
-# 365 m of hold. The barrel is a dry Whipple over an isogrid inner hull. Each band is
-# a stack of compartments behind piston bulkheads; a band drains one
-# compartment at a time and the next bulkhead follows the charge down, so
-# the shot is always packed and never has room to fall. The piston gap is
-# tighter than the fines. Habitat sits
+# IS metallic-hydrogen dust — superconducting grains graded like sand in
+# three sizes (~4 mm, ~0.6 mm, ~80 um), 0.7 g/cm3 solid, ~0.85 packed —
+# and 365 m of hold. The crew core is a sleeper vault inside a ring of
+# fuel. The barrel is a dry Whipple over an isogrid inner hull. Each band is
+# a stack of 20 m compartments behind fixed bulkheads, each holding its
+# dust under a pressurized bladder; a band drains one compartment at a time
+# and the bladder keeps the dust packed, so it never has room to fall. Habitat sits
 # midships between the bands. Hotel plant is a 70 m tandem mirror aft.
 #
 # The torch is two IS black-box nacelles on GUYED PYLONS. Each pod sits in a
@@ -109,18 +109,23 @@ SPEC = {
     "metal_density": 700.0, "dust_packing": 0.85,
     "exhaust_c": 0.12, "arrival_reserve_t": 25_000,
     # Dry Whipple everywhere: carbon bumpers, heavier on the raked nose
-    # cone. Radiation shielding is local: a water jacket around the crew
-    # hab. Sleepers ride one to a box, each pod in its own jacket (cargo).
+    # cone. Radiation shielding is local. The crew hab has a water jacket
+    # and a confined magnetic shell (magnet_T across magnet_gap_m). Around
+    # it, the sleeper vault: berths out to rack_r_out, then a ring of fuel
+    # to the hull, with full compartments fore and aft.
     "armor_t_per_m2": {"barrel": 0.10, "nose": 0.30, "tail": 0.10},
-    "hab": {"r": 6.5, "shield_water_m": 1.0},
+    "hab": {"r": 6.5, "shield_water_m": 1.0, "magnet_T": 2.0, "magnet_gap_m": 5.0,
+            "conductor_J": 1.0e10},
+    "vault": {"rack_r_out": 25.0, "end_wall_m": 2.0, "berth_t": 5.0},
     # Inner-hull skin: isogrid ribs outboard in the barrel gap, so the silo
-    # pistons and the rails see a smooth bore. Monocoque and stringer kept
+    # bladders and the rails see a smooth bore. Monocoque and stringer kept
     # for comparison.
     "skin": "isogrid", "frame_pitch_m": 6.25,
-    # Bands are silos cut into compartments by piston bulkheads; each carries
-    # its own compartment's shot, keeps it packed, and is the firebreak
-    # against sympathetic reversion.
+    # Bands are silos cut into compartments by fixed bulkheads; each carries
+    # its own compartment's dust and is the firebreak against sympathetic
+    # reversion. Bladders hold the dust packed with warm helium at bladder_bar.
     "silo_compartment_m": 20.0, "silo_bulkhead_depth_m": 3.0,
+    "bladder": {"bar": 5.0, "gas_K": 300.0, "gas_M": 0.004},
     # Hull-borne masses for the axial load path. Nacelles and pylons ride
     # the pylon, not the skin. Structure is computed, not listed.
     "mass_t": {
@@ -349,6 +354,8 @@ def structural_sizing(spec):
         "conn_side_m": round(a_conn, 3),
         "tracks_per_sector": len(lay["rings"]) - 1,
         "rail_lines_per_layer": n_lines,
+        "tracks": [{"r_in": t["r_in"], "r_out": t["r_out"], "lines": t["per_sector"] * ns}
+                   for t in lay["per_track"]],
         "layers_per_bay": layers,
         "capacity_boxes": capacity,
         "capacity_t": capacity * spec["container_mass_t"],
@@ -356,9 +363,16 @@ def structural_sizing(spec):
     }
 
 
-def fuel_bands_t(spec):
-    vol, _ = fuel_volume_m3(spec)
-    return vol * spec["metal_density"] * spec["dust_packing"] / 1e3
+def fuel_t(spec):
+    bulk = spec["metal_density"] * spec["dust_packing"] / 1e3
+    vol = fuel_volumes_m3(spec)
+    return {"bands": vol["bands"] * bulk, "vault_ring": vol["vault_ring"] * bulk}
+
+
+def pressurant_t(spec):
+    """Warm helium behind the bladders once every compartment is empty."""
+    b = spec["bladder"]; vol = fuel_volumes_m3(spec)
+    return b["bar"] * 1e5 * (vol["bands"] + vol["vault_ring"]) * b["gas_M"] / (8.314 * b["gas_K"]) / 1e3
 
 
 def silo_bulkheads_t(spec, zones, accel):
@@ -373,8 +387,7 @@ def silo_bulkheads_t(spec, zones, accel):
     p = bulk * accel * h
     face = max(0.005, p * span ** 2 / (8.0 * sig * d))
     t_eq = 2.0 * face + 0.01 * d
-    fuel_len = sum(zones[n][3] for n in ("fuel_fore", "fuel_aft"))
-    n = math.ceil(fuel_len / h) + 2
+    n = math.ceil(fuel_volumes_m3(spec)["band_len"] / h) + 2
     return n * math.pi * (inner ** 2 - core ** 2) * t_eq * rho / 1e3
 
 
@@ -407,6 +420,30 @@ def armor_t(spec):
     return {k: areas[k] * spec["armor_t_per_m2"][k] for k in areas}
 
 
+def hab_magnet_t(spec, zones):
+    """Confined azimuthal field in a shell around the hab's water jacket.
+    The structure must hold the stored energy: the virial floor is
+    W*rho/sigma at allowable stress, and real magnets run ~10x over it.
+    Conductor carries the axial currents on both shell walls."""
+    h = spec["hab"]; mu0 = 4e-7 * math.pi
+    r0 = h["r"] + h["shield_water_m"]; r1 = r0 + h["magnet_gap_m"]
+    length = zones["crew_core"][3] - 4.0
+    W = h["magnet_T"] ** 2 / (2 * mu0) * math.pi * (r1 ** 2 - r0 ** 2) * length
+    sig = spec["material_strength_Pa"] / spec["safety_factor"]
+    I = math.pi * (r0 + r1) * h["magnet_T"] / mu0
+    conductor = 2 * I / h["conductor_J"] * (length + 2 * (r1 - r0)) * 8000.0
+    return (10 * W * spec["material_density"] / sig + conductor) / 1e3
+
+
+def vault_berths(spec, sz, zones):
+    zp = spec["container"]["L"] + 0.5
+    h, v = spec["hab"], spec["vault"]
+    r_min = h["r"] + h["shield_water_m"] + h["magnet_gap_m"]
+    lines = sum(t["lines"] for t in sz["tracks"]
+                if t["r_in"] >= r_min and t["r_out"] <= v["rack_r_out"])
+    return lines * int((zones["crew_core"][3] - 2 * v["end_wall_m"]) / zp)
+
+
 def crew_shield_t(spec, zones):
     """Water jacket around the hab cylinder and its end caps."""
     h = spec["hab"]; t = h["shield_water_m"]
@@ -425,14 +462,16 @@ def hull_loads(spec, zones, sz, pyl):
     L = spec["length"]; mt = spec["mass_t"]
     t_min, dz = 0.02, 5.0
     z_in = pyl["z_anchor_aft"]
-    fuel = fuel_bands_t(spec)
-    fuel_len = sum(zones[n][3] for n in ("fuel_fore", "fuel_aft"))
+    fuel = fuel_t(spec)
+    fuel_len = fuel_volumes_m3(spec)["band_len"]
     slots = sz["capacity_boxes"]
     F = spec["thrust_rating_N"]
 
     armor = armor_t(spec)
     cap, tail = spec["nose_cap_len"], spec["tail_len"]
-    crew = mt["life_support"] + mt["consumables"] + crew_shield_t(spec, zones)
+    crew = (mt["life_support"] + mt["consumables"] + crew_shield_t(spec, zones)
+            + hab_magnet_t(spec, zones) + fuel["vault_ring"]
+            + vault_berths(spec, sz, zones) * spec["vault"]["berth_t"])
 
     def lumps(slot_t, skin_t_per_m, band_t):
         out = [(-L / 2, L / 2, mt["weapons"] + mt["sensors"] + mt["misc"]
@@ -444,7 +483,7 @@ def hull_loads(spec, zones, sz, pyl):
                (zones["cargo_aft"][0], zones["cargo_aft"][1], mt["hangar"] + mt["small_craft"])]
         for name in ("fuel_fore", "fuel_aft"):
             z0, z1, _, ln = zones[name]
-            out.append((z0, z1, (fuel + band_t) * ln / fuel_len))
+            out.append((z0, z1, (fuel["bands"] + band_t) * ln / fuel_len))
         for name, b, scaf in zip(("cargo_fore", "cargo_aft"), spec["cargo_bays"], sz["scaffold_t_per_bay"]):
             z0, z1, _, _ = zones[name]
             out.append((z0, z1, scaf + slots * slot_t * b / sum(spec["cargo_bays"])))
@@ -474,7 +513,8 @@ def hull_loads(spec, zones, sz, pyl):
         "skin_stress_GPa": round(max(n / (TAU * R * ti) for n, ti in zip(N, t)) / 1e9, 2),
         "skin_t": round(skin),
         "band_silo_t": round(band_t),
-        "fuel_bands_t": round(fuel),
+        "fuel_bands_t": round(fuel["bands"]),
+        "fuel_vault_t": round(fuel["vault_ring"]),
     }
 
 
@@ -487,14 +527,34 @@ def mass_budget(spec, zones, sz, pyl, hull):
     }
     empty.update({k: mt[k] for k in ("reactor", "thermal", "stardrive", "weapons",
                                      "sensors", "life_support", "hangar", "misc")})
+    empty["hab_magnet"] = hab_magnet_t(spec, zones)
     carried = {"crew_shield_water": crew_shield_t(spec, zones),
+               "pressurant": pressurant_t(spec),
                "dhe3": mt["dhe3"], "consumables": mt["consumables"],
                "small_craft": mt["small_craft"]}
     dry = sum(empty.values()) + sum(carried.values())
+    fuel = hull["fuel_bands_t"] + hull["fuel_vault_t"]
     return {"empty": {k: round(v) for k, v in empty.items()},
             "carried": {k: round(v) for k, v in carried.items()},
             "empty_t": round(sum(empty.values())), "dry_t": round(dry),
-            "fuel_t": hull["fuel_bands_t"], "operating_t": round(dry + hull["fuel_bands_t"])}
+            "fuel_t": fuel, "operating_t": round(dry + fuel)}
+
+
+def vault_shield(spec, sz, budget):
+    """Fuel the vault needs kept until the braking burn — its ring plus two
+    compartments each side — against what is still aboard at cruise."""
+    f = fuel_t(spec)
+    comp = f["bands"] * spec["silo_compartment_m"] / fuel_volumes_m3(spec)["band_len"]
+    out = {"needed_t": round(f["vault_ring"] + 4 * comp),
+           "ring_g_cm2": round((spec["radius_outer"] - spec["barrel_thickness"]
+                                - spec["vault"]["rack_r_out"])
+                               * spec["metal_density"] * spec["dust_packing"] / 10)}
+    for name, cargo in (("full_hold", sz["capacity_t"]), ("empty_hold", 0.0)):
+        v = cruise_c(spec, budget, cargo)
+        m_dep = budget["dry_t"] + cargo + budget["fuel_t"]
+        left = m_dep / math.exp(math.atanh(v) / spec["exhaust_c"]) - budget["dry_t"] - cargo
+        out[name + "_at_cruise_t"] = round(left)
+    return out
 
 
 def cruise_c(spec, budget, cargo_t, fuel_t=None):
@@ -690,12 +750,18 @@ def zone_map(spec):
     return out
 
 
-def fuel_volume_m3(spec):
+def fuel_volumes_m3(spec):
+    """Band silos (core to hull) and the vault ring (berth racks to hull,
+    the length of the crew core between its end walls)."""
     inner = spec["radius_outer"] - spec["barrel_thickness"]
     core = spec["core_radius"]
-    area = math.pi * (inner ** 2 - core ** 2)
-    length = sum(z[1] for z in spec["zones"] if z[0].startswith("fuel_"))
-    return area * length, length
+    zl = dict((n, ln) for n, ln, _ in spec["zones"])
+    band_len = zl["fuel_fore"] + zl["fuel_aft"]
+    v = spec["vault"]
+    ring_len = zl["crew_core"] - 2 * v["end_wall_m"]
+    return {"bands": math.pi * (inner ** 2 - core ** 2) * band_len,
+            "vault_ring": math.pi * (inner ** 2 - v["rack_r_out"] ** 2) * ring_len,
+            "band_len": band_len}
 
 
 def build_cargo(z0, z1, colls, spec, sz):
@@ -788,9 +854,16 @@ def build_tanks(coll, spec, zones):
         z0, z1, _, _ = zones[name]
         _cyl_surface(f"{name}_inner", core + 0.4, z0, z1, coll, C_METAL, verts=48, alpha=0.45)
         _cyl_surface(f"{name}_outer", inner - 0.3, z0, z1, coll, C_METAL, verts=64, alpha=0.45)
-    vol, length = fuel_volume_m3(spec)
-    return {"volume_m3": round(vol), "mass_kt": round(fuel_bands_t(spec) / 1e3, 1),
-            "tank_len_m": length}
+    z0, z1, _, _ = zones["crew_core"]
+    v = spec["vault"]
+    _cyl_surface("vault_ring_inner", v["rack_r_out"], z0 + v["end_wall_m"], z1 - v["end_wall_m"],
+                 coll, C_METAL, verts=48, alpha=0.45)
+    _cyl_surface("vault_ring_outer", inner - 0.3, z0 + v["end_wall_m"], z1 - v["end_wall_m"],
+                 coll, C_METAL, verts=64, alpha=0.45)
+    vol = fuel_volumes_m3(spec); f = fuel_t(spec)
+    return {"volume_m3": round(vol["bands"] + vol["vault_ring"]),
+            "bands_kt": round(f["bands"] / 1e3, 1), "vault_ring_kt": round(f["vault_ring"] / 1e3, 1),
+            "band_len_m": vol["band_len"]}
 
 
 def build_crew(coll, spec, zones):
@@ -799,6 +872,8 @@ def build_crew(coll, spec, zones):
     _cyl_surface("hab_pressure", h["r"], z0 + 2.0, z1 - 2.0, coll, C_HAB, verts=36, caps=True)
     _cyl_surface("hab_water_jacket", h["r"] + h["shield_water_m"], z0 + 2.0 - h["shield_water_m"],
                  z1 - 2.0 + h["shield_water_m"], coll, C_LOAD, verts=36, caps=True, alpha=0.35)
+    _cyl_surface("hab_magnet_shell", h["r"] + h["shield_water_m"] + h["magnet_gap_m"],
+                 z0 + 2.0, z1 - 2.0, coll, C_COIL, verts=48, alpha=0.25)
     _cyl_surface("bridge_blister", 4.0, z1 - 8.0, z1 + 4.0, coll, C_HAB, verts=24, caps=True)
     return {"hab_len_m": round((z1 - z0) - 4.0, 1)}
 
@@ -1062,6 +1137,7 @@ def build():
         "pylon": pyl, "hull": loads, "budget": budget,
         "cruise_c": {"full_hold": round(cruise_c(SPEC, budget, sz["capacity_t"]), 4),
                      "empty_hold": round(cruise_c(SPEC, budget, 0.0), 4)},
+        "vault": {"berths": vault_berths(SPEC, sz, zones), **vault_shield(SPEC, sz, budget)},
         "sensors": sensec, "hangar": hansec,
     }
 

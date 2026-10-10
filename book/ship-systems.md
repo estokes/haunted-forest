@@ -12,18 +12,19 @@ materials with tensile strengths of 50-100 GPa at densities of
 
 The fuel takes **340 m** of full-section tank — two bands around the
 midships habitat — and leaves **366 m** of hold. It is not liquid
-hydrogen. It is **metallic hydrogen shot** from Interstellar Systems —
-superconducting balls in three sizes that pour like a liquid and pack
-eight and a half times as much hydrogen into a cubic metre: the bands
-hold **~910,000 t** (see The Fuel). As LH₂ the same bands would hold
+hydrogen. It is **metallic hydrogen dust** from Interstellar Systems —
+superconducting grains graded like sand that pour like a liquid and
+pack eight and a half times as much hydrogen into a cubic metre. The
+bands hold ~910,000 t, and a ring around the sleeper vault another
+~55,000 t (see The Fuel and The Vault). As LH₂ the same bands would hold
 110,000 t, and that does not reach a star. The bays are fatter than
 they were at 30 m, ten tracks instead of seven, and they carry more.
 The face grew by 1.8×. Dust and FEL time scale with that.
 
 The load-bearing structure is the **inner hull**, an **isogrid**: a thin
 carbon skin with a triangular grid of ribs grown into its outer face, in
-the gap under the Whipple. The bore stays smooth for the silo pistons and
-the cargo rails. Thrust enters it at the pylon anchor frames (see The
+the gap under the Whipple. The bore stays smooth for the silo bladders
+and the cargo rails. Thrust enters it at the pylon anchor frames (see The
 Pylons) and runs forward as compression, ~43 GN at the root, tapering to
 nothing at the nose. The isogrid carries that at ~0.12 m equivalent
 thickness, ~22,000 t in all. A plain shell would need 0.30 m and
@@ -58,11 +59,11 @@ sensitive cargo from radiation coming from any direction:
      Inner hull (isogrid skin, structural)
      ─────────────────────────────────────
      Unpressurized bays (cargo, hangars)
-     Fuel bands (metallic-hydrogen shot, piston silos)
+     Fuel bands (metallic-hydrogen dust, bladder silos)
      ─────────────────────────────────────
-     Crew / sensitive cargo core (pressurized)
+     Crew hab + sleeper vault, ringed with fuel
      ─────────────────────────────────────
-     Fuel bands (metallic-hydrogen shot, piston silos)
+     Fuel bands (metallic-hydrogen dust, bladder silos)
      Unpressurized bays (cargo, hangars)
      ─────────────────────────────────────
      Inner hull / gap / carbon Whipple bumpers
@@ -73,8 +74,8 @@ bumper layers over a vacuum gap. The carbon shrugs off the interstellar
 gas and shatters micrometeoroids into clouds that spread across the gap
 before they reach the inner hull. It is not a radiation shield, and it
 does not try to be: almost nothing aboard needs one. The crew hab has
-its own water jacket, and each sleeper rides in a shielded box (see
-Passengers as Freight). The ship is **directionally specialized**: it
+its own water jacket and magnetic shell, and the sleepers ride in a
+vault inside the fuel (see The Vault). The ship is **directionally specialized**: it
 never flips (the drive reverses instead — see The Stardrive), so each
 end does one job. The **nose** is a heavier, raked dry Whipple; it
 always faces the ISM and is the single most-hit surface on the ship,
@@ -89,7 +90,7 @@ Management) — it never meets the ISM, so it carries no shield duty at all.
      [ Dry Whipple nose                                  ]
      [ Cargo bay / hangars                               ]
      [ Fuel bands (metallic hydrogen)                    ]
-     [ Crew / sensitive cargo                            ]
+     [ Crew hab + sleeper vault, ringed with fuel        ]
      [ Fuel bands (metallic hydrogen)                    ]
      [ Cargo bay / hangars                               ]
      [ Ship reactor / engineering                        ]
@@ -148,7 +149,7 @@ the idle cable taut:
 No member changes sign when the boxes reverse. Posts, cables, stays,
 spokes, hub, keystone, cages, and fittings come to **~3,400 t**. Thrust
 enters the hull skin at the two anchor frames. The post also carries
-the shot lines and the FEL power out to the pods.
+the dust lines and the FEL power out to the pods.
 
 There is no second engine at the tail and nothing on
 the bow but armor. To decelerate, the boxes are told to reverse and
@@ -273,19 +274,19 @@ alive in the dark. Losing power to a passenger container isn't a manifest
 error; it's a body count. The hold is monitored the way a hospital ward is
 monitored, and for the same reason.
 
-A sleeper box carries **one** sleeper. The pod sits in the middle of the
-box inside ~0.75 m of water and polyethylene — ~15 t, most of the 20 t
-the box is rated for. Spacers call them **lead boxes**. They are not lead:
-lead turns a cosmic ray into a shower of secondaries and makes the dose
-worse. Hydrogen stops them best.
+Sleepers do not ride in the hold. They ride in the **vault** (see The
+Vault): ~190 berths, one sleeper to a ~5 t box, in the middle of the
+fuel. Spacers still call them **lead boxes**, from the days when each
+box carried its own shielding — never lead, which turns a cosmic ray
+into a shower and makes the dose worse.
 
-It is still not enough. Deep space delivers on the order of a sievert a
-year; the box halves it. A century and a half in the hold is tens of
-sieverts, and a frozen body repairs nothing. The box only buys time.
-**Revival** is what saves a sleeper — a long, expensive repair of a
-lifetime of radiation damage — and not everyone comes back. A sleeper
-costs a whole slot and a revival bill. Colonies are founded with genomes
-and artificial wombs instead; a genome kept as data takes no dose.
+A berth is scarce, and the vault does not make a crossing free. The
+braking burn eats the vault's shielding in the last two years, a frozen
+body repairs nothing, and **revival** still means repairing radiation
+damage. It is a much smaller bill than a box in the open hold would
+run, but it is a bill, and not everyone comes back. Colonies are
+founded with genomes and artificial wombs instead; a genome kept as
+data takes no dose.
 
 
 ## Speed and the Forward Environment
@@ -312,23 +313,24 @@ lived years. See [Narrative](narrative.md) and [History](history.md).
 
 ### Speed Is Bought With Cargo
 
-Fuel lives only in the bands: ~910 kt of shot, loaded at port. Keep
+Fuel lives in the bands and the vault ring: ~960 kt of dust, loaded at
+port. Keep
 **25 kt** in reserve for the arrival system, and the cargo load sets
 the cruise:
 
 | Cruise | Cargo | Fuel | Departs | Arrives | α Cen (4.4 ly) | 10 ly | 30 ly |
 |--------|-------|------|---------|---------|----------------|-------|-------|
-| 0.05c | 191 kt | 528 kt (bands part full) | 889 kt | 386 kt | ~90 yr | ~202 yr | ~602 yr |
-| 0.06c | 191 kt | 689 kt (bands part full) | 1.05 Mt | 386 kt | ~75 yr | ~169 yr | ~502 yr |
-| **~0.07c — freighter** | **191 kt** | **908 kt (bands full)** | **1.27 Mt** | **386 kt** | **~65 yr** | **~143 yr** | **~424 yr** |
-| 0.08c | 120 kt | 908 kt | 1.20 Mt | 315 kt | ~58 yr | ~128 yr | ~378 yr |
-| 0.09c | 58 kt | 908 kt | 1.14 Mt | 252 kt | ~52 yr | ~114 yr | ~336 yr |
-| **~0.10c — empty hold** | **0** | **908 kt** | **1.08 Mt** | **195 kt** | **~46 yr** | **~101 yr** | **~296 yr** |
+| 0.05c | 191 kt | 529 kt (bands part full) | 892 kt | 387 kt | ~90 yr | ~202 yr | ~602 yr |
+| 0.06c | 191 kt | 692 kt (bands part full) | 1.05 Mt | 387 kt | ~76 yr | ~169 yr | ~502 yr |
+| **~0.074c — freighter** | **191 kt** | **963 kt (full)** | **1.33 Mt** | **387 kt** | **~63 yr** | **~139 yr** | **~410 yr** |
+| 0.08c | 138 kt | 963 kt | 1.27 Mt | 334 kt | ~58 yr | ~128 yr | ~378 yr |
+| 0.09c | 72 kt | 963 kt | 1.21 Mt | 268 kt | ~52 yr | ~114 yr | ~336 yr |
+| **~0.105c — empty hold** | **0** | **963 kt** | **1.13 Mt** | **196 kt** | **~45 yr** | **~98 yr** | **~289 yr** |
 
-Times include both burns. A full hold cruises at **~0.07c**; that is a
+Times include both burns. A full hold cruises at **~0.074c**; that is a
 freighter. Past that the bands are full and the only way faster is to
-carry less: 0.08c is 120 kt of cargo, and an empty hold reaches
-**0.10c** — couriers, warships, and anyone being chased.
+carry less: 0.08c is 138 kt of cargo, and an empty hold reaches
+**0.105c** — couriers, warships, and anyone being chased.
 
 ### The Local Bubble — the Map Is Inside It
 
@@ -345,10 +347,10 @@ spend.** A clean lane is kind to the hull. A dirty one is a gauntlet.
 ### The Burn Profile
 
 At the 3.2 PW nozzle rating and \(v_e = 0.12c\) the torch eats ~5 kg/s
-and pushes ~180 MN. On a 1.27 Mt freighter that is **0.014 G**, rising
-as the bands empty: **3.6 years** to 0.07c, covering 0.12 ly. Braking
-is lighter work on a lighter ship: **2.0 years**, 0.08 ly. An empty
-hold takes 4.0 years up and 1.7 down. Everything between is a coast.
+and pushes ~180 MN. On a 1.33 Mt freighter that is **0.014 G**, rising
+as the bands empty: **3.9 years** to 0.074c, covering 0.13 ly. Braking
+is lighter work on a lighter ship: **2.1 years**, 0.09 ly. An empty
+hold takes 4.2 years up and 1.8 down. Everything between is a coast.
 
 Overdraw does not help here; 2× is good for minutes. Neither does a rich
 mixture: every kilogram thrown below full burn is cruise speed lost.
@@ -388,8 +390,8 @@ Sand is a THz-and-cooker problem. See Active Debris Defense.
 
 The ship does not fly at the speed a captain wants. It flies at the
 speed its loadout bought: every slot of cargo is a slot of fuel it is
-not. A full hold is 0.07c. Emptying it buys 0.10c and a 10 ly crossing
-forty years shorter. The lane matters for dust
+not. A full hold is ~0.074c. Emptying it buys ~0.105c and a 10 ly
+crossing forty years shorter. The lane matters for dust
 and FEL time, not speed. Sleepers do not care how long the crossing is.
 The cargo, the insurance clock, and anyone awake do.
 
@@ -424,10 +426,39 @@ at this \(\beta\)) are the penetrating radiation problem; the ram is not.
      protection, and froze, boiled, and needed bladders. It is gone.
 
 2. **Local radiation shielding**: cosmic rays are the penetrating
-   problem, and only a few small spaces need protecting. The crew hab
-   carries a **1 m water jacket** (~1,900 t), which doubles as a
-   life-support reserve. Sleepers ride one to a shielded box. Nothing
-   else aboard minds the dose.
+   problem, and only a few small spaces need protecting: the crew hab
+   and the sleepers, both in the vault (below). Nothing else aboard
+   minds the dose.
+
+### The Vault — the Fuel Is the Shield
+
+Deep space delivers on the order of a sievert a year in cosmic rays.
+Nothing practical stops them except mass, and the best mass per
+kilogram is hydrogen. The ship carries ~960,000 t of it.
+
+So the crew core, midships between the two fuel bands, is built as a
+**vault**:
+
+- **On the axis, the crew hab**, with a 1 m water jacket (~1,900 t,
+  which doubles as a life-support reserve) and a **magnetic shell**
+  outside it: a confined 2 T field across 5 m, ~10 T·m, which turns
+  back protons below a few GeV and roughly halves what is left. It
+  stores ~2×10¹⁰ J and weighs ~20 t; the field stays inside the shell.
+- **Around the hab, ~190 sleeper berths** on racks out to a radius of
+  25 m.
+- **Around the berths, a ring of fuel** out to the hull: ~13 m of dust,
+  ~770 g/cm². Fore and aft, full band compartments: more than twice
+  that.
+
+That is more shielding than Earth's atmosphere. Through the coast the
+dose drops from sieverts a year to the order of a millisievert.
+
+The drain order keeps it that way. Compartments far from the vault
+burn first. The vault's ring and the two compartments on each side,
+~270,000 t, are held until the braking burn; at cruise a freighter
+still carries ~350,000 t and an empty-hold courier ~300,000 t. The
+shield is thinnest exactly when the ship is braking into a system, and
+everyone sleeps in the middle of ~50 Mt of potential explosion.
 
 ### The Whipple Hull
 
@@ -732,7 +763,8 @@ systems:
 | Hull armor (dry carbon-nanosheet Whipple, heavier on the nose) | 30,000 t |
 | Inner hull (isogrid, ~0.12 m equivalent at the root) | 22,000 t |
 | Hold racks (rails, frames, cage — both bays) | 10,000 t |
-| Fuel silo piston bulkheads (compartments every 20 m) | 5,000 t |
+| Fuel silo bulkheads and bladders (compartments every 20 m) | 5,000 t |
+| Crew hab magnetic shell (2 T across 5 m) | 20 t |
 | Ship reactor + direct conversion (~100 GW fusion) | 8,000 t |
 | Thermal management (tin loops, headers) | 8,000 t |
 | Stardrive modules (IS boxes, feeds) | 52,000 t |
@@ -746,7 +778,7 @@ systems:
 The armor and structure lines come out of `modeling/ship.py`, sized for
 the 46 GN mount rating.
 
-### Operating Mass (~1,080,000 tonnes)
+### Operating Mass (~1,130,000 tonnes)
 
 Ready to fly — bands full, crewed, hold empty:
 
@@ -754,14 +786,15 @@ Ready to fly — bands full, crewed, hold empty:
 |-----------|------|
 | Empty mass | 161,000 t |
 | Crew hab water jacket (1 m) | 1,900 t |
-| Metallic-hydrogen shot, fuel bands (full) | ~908,000 t |
+| Metallic-hydrogen dust (bands ~908,000 t, vault ring ~55,000 t) | ~963,000 t |
+| Bladder pressurant (warm helium) | 1,300 t |
 | D-³He reactor fuel | 2,000 t |
 | Atmosphere (hab air + reserves) | 20 t |
 | Water and consumables | 100 t |
 | Small craft (shuttles, fighters, transports) | 5,000 t |
 | Crew (~10 people) | ~1 t |
 
-### Loaded Mass (~0.9–1.3 Mt departing, ~0.20–0.39 Mt arriving)
+### Loaded Mass (~0.9–1.33 Mt departing, ~0.20–0.39 Mt arriving)
 
 Operating mass plus the hold: **9,568 containers, ~191,000 tonnes** of
 cargo at most. The cargo load is the cruise speed — see Speed Is Bought
@@ -769,14 +802,14 @@ With Cargo.
 
 | Loadout | Departs | Arrives | Cruise |
 |---------|---------|---------|--------|
-| Freighter, full hold | ~1.27 Mt | ~386 kt | ~0.07c |
-| Fast freighter, 120 kt cargo | ~1.20 Mt | ~315 kt | 0.08c |
-| Courier or warship, empty hold | ~1.08 Mt | ~195 kt | ~0.10c |
-| Colony expedition, full hold, slow | ~0.89 Mt | ~386 kt | 0.05c |
-| Out-and-back, no fuel at the far end | ~1.27 Mt | ~386 kt | ~0.036c each way |
+| Freighter, full hold | ~1.33 Mt | ~387 kt | ~0.074c |
+| Fast freighter, 138 kt cargo | ~1.27 Mt | ~334 kt | 0.08c |
+| Courier or warship, empty hold | ~1.13 Mt | ~196 kt | ~0.105c |
+| Colony expedition, full hold, slow | ~0.89 Mt | ~387 kt | 0.05c |
+| Out-and-back, no fuel at the far end | ~1.33 Mt | ~387 kt | ~0.037c each way |
 
 The drive mounts are rated for **46 GN** — 9 G at 520 kt. A fueled ship
-is limited by mass, not crew: **~3.7 G** at a freighter's departure, the
+is limited by mass, not crew: **~3.5 G** at a freighter's departure, the
 full 9 G only once the bands are low.
 
 Fuel is one account, in the bands. A hull breach no longer spills cold
@@ -1035,7 +1068,7 @@ ship reactor:
 One vendor, two products. **The stardrive** is an Interstellar Systems
 black box: feed it metal, a fusion torch comes out. Catalyzed p-p — the
 secret — is inside. There is no ram, no pellet, no onboard igniter
-farm. **The fuel** is IS's too: metastable metallic hydrogen shot that
+farm. **The fuel** is IS's too: metastable metallic hydrogen dust that
 nobody else can make. See The Fuel.
 
 Nothing aboard collects anything. In-system and interstellar are the
@@ -1057,18 +1090,18 @@ burns through the throat, or the coils quench. Overdraw buys thrust
 *without* spending your range — you pay in nozzle life instead.
 
 Acceleration is **a = 2·P / (m·v_e)**. At 3.2 PW, on a freighter that
-has just braked into a system (~386 kt) with its 25 kt reserve:
+has just braked into a system (~387 kt) with its 25 kt reserve:
 
 | Mode | Exhaust vel | Accel | Reserve lasts | Δv from reserve |
 |------|------------:|------:|--------------:|----------------:|
 | Lean (full burn) | 36,000 km/s | 0.05 G | ~59 days | ~2,400 km/s |
 | Cruise | 16,900 km/s | 0.1 G | ~13 days | ~1,100 km/s |
 | Hard maneuver | 1,690 km/s | 1 G | ~3 hours | ~110 km/s |
-| Combat | 560 km/s | 3 G | ~20 min | ~38 km/s |
-| Violent | 340 km/s | 5 G | ~7 min | ~23 km/s |
+| Combat | 560 km/s | 3 G | ~20 min | ~37 km/s |
+| Violent | 340 km/s | 5 G | ~7 min | ~22 km/s |
 
 Read the last column and wince: hard acceleration is **Δv-catastrophic**.
-Empty the reserve at 5 G and you've changed velocity by 23 km/s; spend
+Empty the reserve at 5 G and you've changed velocity by 22 km/s; spend
 it lean and the same mass buys 2,400. And the reserve is all there is.
 At departure a fight spends cruise speed. On arrival it spends the
 margin you meant to dock on. More reserve is less cruise speed.
@@ -1084,10 +1117,10 @@ their limit at the same number:
   Bare, it's ~5 G.
 - **Nozzle** — the 3.5× overdraw burn-through / quench limit.
 - **Reaction mass** — the reserve empties in minutes at these rates.
-- **Feed** — the shot lines are sized for it, ~96 t/s (see Fuel
+- **Feed** — the dust lines are sized for it, ~96 t/s (see Fuel
   Handling).
 
-A fueled ship never gets there: the mounts' 46 GN is ~3.7 G on a
+A fueled ship never gets there: the mounts' 46 GN is ~3.5 G on a
 departing freighter. 9 G is an arrival-weight number.
 
 Below 9 G you have margin on all four; at 9 G you have margin on none, and
@@ -1105,13 +1138,13 @@ gas giant: hydrogen is everywhere, metal is not. Refuelling is an IS
 transaction at an IS depot — an IS tanker tops up the bands, and you
 pay what IS asks (see The Fuel).
 
-A clean port call — approach, dock, take on shot, depart — barely touches
+A clean port call — approach, dock, take on dust, depart — barely touches
 the reserve. A fight can empty it.
 
 **The trade tension** is what goes in each slot, and whether the next
 system stocks metal. Arrive at a depot and you fill. Arrive somewhere
 without one and you had better have carried your way home — out and
-back on one fill is ~0.036c with a full hold, a slow boat both ways.
+back on one fill is ~0.037c with a full hold, a slow boat both ways.
 Deuterium and ³He are reactor stories. Metal is the drive story.
 
 
@@ -1121,7 +1154,7 @@ The stardrive is a black-boxed module built by Interstellar Systems.
 Its internals are proprietary, with multiple layers of tamper
 protection. IS sells the box, and IS sells what goes in it.
 
-What is known: you connect a shot line. The box produces
+What is known: you connect a dust line. The box produces
 a fusion torch. The process fuses plain protium via the proton-proton
 chain, which conventional physics considers far too slow for
 engineering use. How they solved the rate is the most closely guarded
@@ -1141,7 +1174,7 @@ fluid and the whole p-p yield goes into the exhaust: \(v_e \approx
 What makes them reachable **with cargo** is density. The 3.2 mass
 ratio a full-hold freighter needs for 0.07c-and-stop is ~880 kt of
 hydrogen. As LH₂ that is twelve million cubic metres, two and a half
-times the whole hull. As shot it fits in the bands.
+times the whole hull. As dust it fits in the bands.
 
 The secret is the *rate* and the *storage*. Catalysis does not increase
 the yield; the energy per nucleon is still ~6.7 MeV. There is no wall
@@ -1153,7 +1186,7 @@ is the whole economy.
 Months before the braking burn, the boxes are told to reverse —
 internally, on IS's schedule, hours — and the torch takes the speed off
 the way it put it on. The ship is lighter by then, so the burn is
-shorter: ~2.0 years for a freighter from 0.07c. The ship never turns
+shorter: ~2.1 years for a freighter from 0.074c. The ship never turns
 over. The nose stays a shield; the tail stays a radiator. The pylons
 do not move.
 
@@ -1221,12 +1254,13 @@ does. The secret is the making, not the keeping.
 ### What It Is
 
 - **Density ~0.7 g/cm³** as a solid, ten times liquid hydrogen.
-- **It is shot.** IS ships it as superconducting balls in three sizes:
-  ~25 mm, ~3.5 mm, and ~0.5 mm fines, each filling the gaps of the size
-  above. The mix flows like a liquid and packs to ~85% under
-  compression. The smallest grain is still far bigger than any gap in
-  the tank, so it cannot leak. The bands hold **~910,000 t**. Spacers call it **dust**, with some
-  reverence and a lot of fear.
+- **It is dust.** IS ships it as superconducting grains graded like
+  sand, in three sizes — ~4 mm, ~0.6 mm, and ~80 µm fines — each filling
+  the gaps of the size above. The mix flows like a liquid and packs to
+  ~85% under compression. Finer would pack worse and flow worse: micron
+  powder is cohesive, arches, and throws sparks when it moves. The bands
+  and the vault ring hold **~960,000 t**. Spacers call it **dust**, with
+  some reverence and a lot of fear.
 - **It is still hydrogen.** The box fuses it like any other protium. It
   shields like hydrogen, packed eight and a half times as dense.
 - **It superconducts.** Metallic hydrogen was predicted in 1968 to be a
@@ -1247,33 +1281,40 @@ matters in a breach.
 
 | Unit | Metal | Reversion energy | TNT |
 |------|-------|------------------|-----|
-| One fine grain | ~46 µg | ~10 J | a snap |
-| One middle ball | ~16 mg | ~3 kJ | a firecracker |
-| One coarse ball | ~6 g | ~1.2 MJ | a hand grenade |
+| One coarse grain (4 mm) | ~23 mg | ~5 kJ | a firecracker |
+| A pinch | 1 g | ~216 kJ | ~50 g |
+| A bucket | 10 kg | ~2 GJ | ~0.5 t |
 | One silo compartment | ~53 kt | ~1.1×10¹⁶ J | ~2.7 Mt |
-| Full bands | ~910 kt | ~2×10¹⁷ J | ~47 Mt |
+| All fuel aboard | ~960 kt | ~2×10¹⁷ J | ~50 Mt |
 
-### Piston Silos — the Fuel Never Falls
+### Bladder Silos — the Fuel Never Falls
 
-Each band is a stack of compartments, 20 m long, separated by **piston
-bulkheads** that ride the core and the hull skin like a trash
-compactor's ram. The gap between piston and wall is tighter than the
-fines. A band drains one
-compartment at a time, from the end nearest the feed, and the next
-bulkhead follows the charge down. Every compartment is either full and
-locked or being emptied under a piston. The shot is always packed. It
-never has room to move.
+Each band is a stack of compartments, 20 m long, between fixed
+bulkheads. In each compartment the dust sits under a **bladder** — two,
+in fact — inflated with warm helium at ~5 bar, enough to hold the bed
+packed at full thrust. A band drains one compartment at a time; as the
+dust leaves, the bladder grows into the space. Every compartment is
+either full or being emptied under pressure. The dust is always packed.
+It never has room to move. A sealed membrane does not leak whatever the
+grain size, and it follows the annulus without a sliding seal. Once
+every compartment is empty the helium fills the bands: ~1,300 t of it,
+carried for the whole trip.
 
 That is the point. A loose charge in a partly empty tank, with the boxes
 reversed, falls the length of the tank: twenty metres at 4 G is a
-53 kt slug hitting a bulkhead at ~40 m/s, with every ball grinding
-against its neighbours on the way. The pistons make that impossible by
-construction.
+53 kt slug hitting a bulkhead at ~40 m/s, with every grain grinding
+against its neighbours on the way. The bladders make that impossible.
+If one tears, its twin still holds, and the bulkheads limit the fall to
+one compartment.
+
+The drain order is also the vault's shield: compartments far from the
+crew core go first, and the vault's ring and its nearest neighbours
+last (see The Vault).
 
 The bulkheads are also firebreaks. A compartment going up whole is not
 survivable and no bulkhead pretends otherwise. They are a wall for a
 small reversion to stop at before it finds the rest. The nightmare is
-**sympathetic reversion**, one ball's heat tripping its neighbours'.
+**sympathetic reversion**, one grain's heat tripping its neighbours'.
 Everything hot lives aft, behind the hold, away from the bands. In
 combat a hit on the bands is the worst hit there is. The bands do not
 jettison.
@@ -1289,10 +1330,10 @@ of heat inside the ship: a gigawatt at lean flow, terawatts in a fight.
 So the metal reaches the box as metal, and the box reverts and fuses it,
 where 216 MJ/kg is noise.
 
-Each ball superconducts, so a magnetic field pushes it away. A
-coil-lined pipe running a travelling field herds the shot along with
-the balls held off each other and off the wall: nothing grinds, nothing
-heats. Reverse the field and the flow stops dead. The valves are
+Each grain superconducts, so a magnetic field pushes it away. A
+coil-lined pipe running a travelling field herds the dust along with
+the grains held off each other and off the wall: nothing grinds,
+nothing heats, nothing sparks. Reverse the field and the flow stops dead. The valves are
 magnetic.
 
 The feed has to carry what the torch can drink:
@@ -1310,13 +1351,13 @@ Nine G sizes the line: ~1.7 m bore per nacelle at ~60 m/s. The route is
 along the core to the keystone, out through each post, into the box.
 
 The cost is that a charged line is a fuse. Each nacelle's line holds
-~400 t of moving shot, ~20 kt of TNT, threaded through its pylon. So the
-lines run dry between burns: the shot is drawn back into the silo, and
+~400 t of moving dust, ~20 kt of TNT, threaded through its pylon. So the
+lines run dry between burns: the dust is drawn back into the silo, and
 the lines are **charged** before a burn — the moment everyone aboard
 dislikes. A reversion in a line runs both ways until a magnetic gate
 stops it. A hit on a post takes that nacelle off the line. A leak is
-worse than a hole: spilled shot rolls everywhere, and every ball is a
-firecracker that has to be found with a magnet.
+worse than a hole: spilled dust drifts everywhere, every pinch is 50 g
+of TNT, and all of it has to be found with a magnet.
 
 ### The Fuel Leash
 
@@ -1327,7 +1368,7 @@ freight budget. IS decides which systems get a depot.
 
 A system without one is a slow-boat destination: a ship going there has
 to carry the fuel home with it, and out-and-back on one fill is
-~0.036c with a full hold, half a freighter's speed. Pulling a depot does not
+~0.037c with a full hold, half a freighter's speed. Pulling a depot does not
 blockade a system. It makes every trip there twice as long. See
 [Trade](trade.md#interstellar-systems-and-the-shape-of-civilization).
 

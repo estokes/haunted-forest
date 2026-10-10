@@ -36,9 +36,13 @@ Between star systems, trade exists because of what nanofab can't solve:
 
 ### Passengers and Persons
 
-The bread-and-butter revenue for any ship operator. Biological humans
-in cold sleep, AI persons in hardened storage, augmented humans with
-their cognitive hardware. A hop is a century. Passage is emigration,
+The highest-value revenue for any ship operator, and the scarcest. A
+ship has ~190 vault berths (see [Ship Systems — The
+Vault](ship-systems.md#the-vault--the-fuel-is-the-shield)), and every
+sleeper wakes to a revival bill. Biological humans in cold sleep, AI
+persons in hardened storage, augmented humans with their cognitive
+hardware. Colonies are founded with genomes and artificial wombs,
+because a genome kept as data takes no dose. A hop is a century. Passage is emigration,
 exile, colonization, or an institutional posting — not a sales call.
 Everyone who needs to be in another system in another century pays, or
 buys their own ship.
@@ -343,7 +347,7 @@ its facilities and at depots it stocks itself; it sets the price,
 which is the largest line in any freight budget, and it decides which
 systems get a depot. A system without one is not closed. It is slow:
 ships must carry the fuel home, and out-and-back on one fill is
-~0.036c with a full hold — half a freighter's speed, twice the
+~0.037c with a full hold — half a freighter's speed, twice the
 crossing. Pulling a depot is
 IS's quiet embargo.
 

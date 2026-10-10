@@ -8,8 +8,8 @@ understanding, but engineering has advanced fantastically.
 - **No FTL.** The light barrier is never broken by humans, augmented humans,
   or AIs.
 - **Stardrives**: Interstellar Systems sells a black box, and the
-  only fuel it burns: metastable metallic hydrogen shot nobody else
-  can make — spacers call it dust. Dust in, fusion torch out. There is
+  only fuel it burns: metastable metallic hydrogen dust nobody else
+  can make. Dust in, fusion torch out. There is
   no speed wall, only the rocket equation: a full hold cruises at
   **~0.07c**, and an empty one reaches **0.10c**. Every refuel is an IS transaction. They sell drives rarely, to buyers they choose.
   See [Factions](factions.md) and [Ship Systems](ship-systems.md).

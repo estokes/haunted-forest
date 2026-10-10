@@ -57,8 +57,9 @@ state and accepting control through netidx:
 
 - **Thermal management**: Tin loop, zoned aft radiators, waste heat
   (implemented; 100 GW plant)
-- **Fuel**: silo compartments (mass, temperature, piston position),
-  shot lines (charge state, flow), magnetic gates, reversion alarms
+- **Fuel**: silo compartments (mass, temperature, bladder pressure),
+  drain order, dust lines (charge state, flow), magnetic gates,
+  reversion alarms
 - **Stardrive**: IS black box — metal feed, torch thrust, fuse-fraction,
   nozzle overdraw, reverse state. Observable externals only.
 - **Navigation**: Position, velocity, course plotting, Δv budget
