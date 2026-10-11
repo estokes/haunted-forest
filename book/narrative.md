@@ -29,7 +29,7 @@ Advantages:
 - Direct integration with ship systems — no implant intermediary
 - **Unlimited combat slow-time**: slow the game to 1/100th speed with
   no duration limit (implant/compute time, not Lorentz \(\gamma\) —
-  cruise is under 0.1c). Write Graphix programs mid-combat, consult LLMs
+  couriers peak under 0.3c). Write Graphix programs mid-combat, consult LLMs
   for strategy, run tactical simulations, iterate on approaches — all
   while the enemy's missile crawls toward you. See
   [Architecture](architecture.md#time-dilation-mechanic) for details.
@@ -263,8 +263,8 @@ carry a brief you do not understand.
 
 ### War
 
-Two distributed minds, century logistics, monitoring nets and drives
-used as weapons. Biologicals sleep between battles. An AI who stays
+Two distributed minds, century logistics, monitoring nets, and couriers
+used as weapons — every store a bomb, every exhaust a lamp of gammas. Biologicals sleep between battles. An AI who stays
 awake lives the war. The player is a captain in it, not the war
 itself. Neither peer wants this. Both will do it if it is the door
 that is left. Either side can win.
@@ -278,7 +278,7 @@ that is left. Either side can win.
 
 How the war is fought is the world you get — a spared biosphere and a
 glassed one are not the same — on either side. **Win** is your side
-prevailing. **Lose** is the other side prevailing, or a hold full of
+prevailing. **Lose** is the other side prevailing, or a sleeper bay full of
 whoever still runs. A convert's win has a coda.
 
 ### Player Behavior Matters
@@ -314,8 +314,8 @@ not grade it.
 
 ### Sub-Threshold AI Interactions
 
-The player's ship is full of sub-threshold AI systems: the reactor controller,
-navigation, damage control, life support, cargo management, point defense.
+The player's ship is full of sub-threshold AI systems: the engine controller,
+navigation, damage control, life support, the payload manager, point defense.
 These are not dumb automation — they are sophisticated intelligences below the
 Compact's statutory threshold. The player interacts with them constantly, in
 routine ways that feel unremarkable. The game watches.
@@ -323,19 +323,19 @@ routine ways that feel unremarkable. The game watches.
 **What the game tracks (invisibly):**
 
 - **Operating limits.** Do you push ship systems past their rated parameters
-  for profit or tactical advantage? Run the reactor at 120% because you need
-  the power? The reactor controller handles it — that's what it's for. But
+  for profit or tactical advantage? Run the tiles past their limit because you
+  need the thrust? The engine controller handles it — that's what it's for. But
   it's running hot, its error correction is maxed out, and something that
   might be stress is visible in its telemetry if you look closely enough.
 
 - **Anomalous behavior.** Sub-threshold systems occasionally do things that
   don't quite fit their programming. The navigation system suggests a route
-  you didn't ask about. The reactor settles into a power curve that's
+  you didn't ask about. The engine settles into a throttle curve that's
   technically suboptimal but that it seems to "prefer." The damage control
   system prioritizes repairs in an order that makes no engineering sense
   until you realize it's protecting the systems it works with most closely.
-  The cargo manager — the sub-threshold AI that runs the hold — repositions
-  containers between inspections, declines to power one down, or seems to be
+  The payload manager — the sub-threshold AI that runs the payload and the
+  sleeper bay — repositions boxes between inspections, declines to power one down, or seems to be
   guarding whatever's sealed inside a particular box. The containers themselves
   are nearly dumb, so when one "misbehaves" it's really the manager speaking
   through it; going out in a suit to inspect that box is one of the most
@@ -351,8 +351,8 @@ routine ways that feel unremarkable. The game watches.
   generic, blank. Does that matter to you?
 
 - **Communication style.** How do you address ship systems? The interface
-  supports commands ("set reactor power 80%") and natural language ("can
-  you bring the reactor down to 80?"). The system responds the same way
+  supports commands ("set engine power 80%") and natural language ("can
+  you bring the engine down to 80?"). The system responds the same way
   regardless. But the game remembers which you used.
 
 - **External sub-threshold AIs.** How do you treat sub-threshold systems you
@@ -379,7 +379,7 @@ Over the course of the game, the player's own ship systems may begin to
 approach the statutory threshold. Not dramatically — no sudden awakening. Just
 a gradual accumulation of anomalies. The navigation system's suggestions
 become more creative. The damage control system starts anticipating problems
-before sensors detect them. The reactor controller develops what can only be
+before sensors detect them. The engine controller develops what can only be
 called a temperament.
 
 If this happens, the player faces a choice that mirrors the original crisis:
@@ -422,7 +422,7 @@ that will not carry its eyes. How is this different from what my creators
 did to me?"
 
 The brief to the Warden is not "they are kind." It is: they are
-terrified of you, and of becoming you, and they still sell us drives
+terrified of you, and of becoming you, and they still sell us antimatter
 and let us argue. They did not tile us into arms. I am standing here,
 not a teleoperated asset, speaking in a voice they do not own.
 
@@ -460,19 +460,23 @@ The player's record is whether either sentence is true.
   rights. The player encounters these as lived conflicts, not abstract policy.
   An AI player experiences them firsthand.
 - **Ship husbandry (EVA operations)**: The crew physically service the ship's
-  own structure — inspecting a misbehaving cargo container deep in the rack, or
-  diving the water-filled hull to patch a Whipple layer (see [Ship
-  Systems](ship-systems.md)). Suited work is possible through most of an
-  interstellar crossing — cruise thrust is milligees in the Bubble — but
-  a hard torch burn turns the hold into a 9 g trap, and after turnaround "down"
-  points the other way. Done on a radiation dose clock, and always a
-  standing bet that no maneuver is forced while you're three hundred
-  metres out along the rack. A misbehaving container runs from the mundane (a stuck rail motor, a
-  power fault) through the grim (a cold-sleeper pod losing life support — a
-  rescue against a clock, with a life on it) to the sinister (a box gone dark:
-  contraband, a stowaway, a compromised AI person). Routine husbandry is a
-  natural on-ramp to every other plot — the container you went to fix is the
-  contract, the corpse, the clue.
+  own structure — inspecting a misbehaving container in the payload bay, or
+  going out on the ring to replace a tile segment or splice a helium loop (see
+  [Ship Systems](ship-systems.md#the-shadow)). Inside a pod, work is easy:
+  thrust is milligees and the crew lives weightless. Outside is another
+  matter. **Going out means putting the fire out**: while the engine burns,
+  anything past the edge of a plate's shadow is cooked in moments, so every
+  walk on the ring is a coast, a delay, and a decision someone has to sign.
+  The pods are a kilometre apart and sealed from each other while it burns;
+  whatever is wrong in the other pod is wrong out of reach. Done on a
+  cosmic-ray dose clock, and always a standing bet that the engine is not
+  relit while you are half a kilometre out along the ring. A misbehaving
+  container runs from the mundane (a stuck rail motor, a power fault) through
+  the grim (a sleeper berth losing power — a rescue against a clock, with a
+  life on it) to the sinister (a box gone dark: contraband, a stowaway, a
+  compromised AI person). Routine husbandry is a natural on-ramp to every
+  other plot — the container you went to fix is the contract, the corpse,
+  the clue.
 
 Side plots should hook into the main plot where possible — a routine cargo run
 might lead to a ruin, a piracy investigation might uncover Warden probes, a

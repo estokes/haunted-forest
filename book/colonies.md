@@ -25,14 +25,16 @@ Not all routes are equal. The entire 30 ly inhabited sphere sits inside
 the Local Bubble (~0.1 atoms/cm³). Spiral-arm densities are not on this
 map. What varies is local clouds and filaments — a factor of a few, not
 three orders of magnitude. Nothing aboard collects the medium, so density
-does not touch speed or fuel. Denser gas means more dust for the FEL.
+does not touch speed or fuel. Denser gas means more grains for the FEL.
 
 Route knowledge is valuable. The best paths between systems — balancing
 density, distance, and grains — are closely guarded trade secrets.
 
-Typical flight times, burns included, for a full-hold freighter at
-~0.074c: α Cen ~63 years; a 10 ly leg ~139 years; the far edge ~410
-years. An empty-hold courier at ~0.105c: ~45, ~98, ~289. See [Ship Systems](ship-systems.md#speed-and-the-forward-environment).
+Typical crossings for a courier, which burns the whole way: α Cen ~66
+years; a 10 ly hop ~112 years; 30 ly ~241, on a specially fitted ship.
+Most routes are chains of hops of 10 ly or less between IS depots. A
+system without a depot is a one-way destination. See [Ship
+Systems](ship-systems.md#the-crossing).
 
 ## Open Questions
 

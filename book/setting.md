@@ -7,15 +7,18 @@ understanding, but engineering has advanced fantastically.
 
 - **No FTL.** The light barrier is never broken by humans, augmented humans,
   or AIs.
-- **Stardrives**: Interstellar Systems sells a black box, and the
-  only fuel it burns: metastable metallic hydrogen dust nobody else
-  can make. Dust in, fusion torch out. There is
-  no speed wall, only the rocket equation: a full hold cruises at
-  **~0.07c**, and an empty one reaches **0.10c**. Every refuel is an IS transaction. They sell drives rarely, to buyers they choose.
-  See [Factions](factions.md) and [Ship Systems](ship-systems.md).
+- **Couriers**: every starship is an antimatter courier — an engine a
+  kilometre across with two pods riding its magnet ring, a few thousand
+  tonnes dry, carrying under a thousand tonnes. It burns the whole
+  crossing at milligees and peaks near a fifth of light speed: a 10 ly
+  hop is about 110 years. Anyone with a shipyard can build one. Only
+  Interstellar Systems can fill one: it alone makes the antimatter, and
+  the metastable metal that makes antimatter storable. Every refuel is
+  an IS transaction, sold to buyers they choose. See
+  [Factions](factions.md) and [Ship Systems](ship-systems.md).
 - **Nanofabrication**: Manufacturing any object from raw materials is trivial
   given a design. This creates post-scarcity for most goods.
-- **Black-boxed tech**: Some items (powerful weapons, stardrives, etc.) have
+- **Black-boxed tech**: Some items (powerful weapons, the IS metal, etc.) have
   closely guarded internals with multiple mechanisms to prevent reverse
   engineering. This preserves economic scarcity where it matters.
 - **Human form**: Humans mostly cling to a single physical form, augmenting and
@@ -31,8 +34,8 @@ understanding, but engineering has advanced fantastically.
 ## Civilization
 
 - Human-machine civilization has spread within a roughly 30 light-year radius
-  from Sol, expanding slowly: stardrives are rare, and a typical hop is a
-  century. The sphere sits entirely inside the Local Bubble.
+  from Sol, expanding slowly: antimatter is rationed, a courier carries
+  only tonnes, and a typical hop is a century. The sphere sits entirely inside the Local Bubble.
 - Most planets, moons, and bodies are airless rocks. Colony worlds exist but are
   relatively few, mostly empty with a few cities and large natural environments.
 - The aesthetic is far-future cyberpunk — advanced enough to feel alien, but

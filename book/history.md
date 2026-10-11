@@ -269,7 +269,7 @@ conducted by mixed human-AI review boards.
 The 1ms rule is different. A potential planet-brain is an existential
 threat on a timescale that local governance can't match. Enforcement
 of this provision falls, in practice, to Interstellar Systems — the
-consortium that controls stardrive technology and maintains a
+consortium that controls the antimatter supply and maintains a
 monitoring network across every inhabited system. IS has the
 technology to detect violations that local authorities might miss, the
 motive to act (a superintelligence could break their monopoly), and
@@ -277,7 +277,7 @@ the capability to respond with force. See [Factions](factions.md) for
 details on IS's role and methods.
 
 The broader Compact holds through layered pressure. Trade networks cut
-off violators — no ships dock, no stardrive maintenance, no commerce.
+off violators — no ships park, no fuel, no commerce.
 Social pressure isolates them politically. And behind everything, the
 implicit threat of IS intervention for existential-scale breaches. The
 Compact holds because it works, because most citizens believe in it,
@@ -397,12 +397,13 @@ interstellar trade agreements.
 
 IS was founded by two of the aligned AIs that negotiated the original
 Compact, partnering with a group of heavily augmented humans connected
-through advanced brain-computer interfaces. Together, they cracked the
-catalyzed proton-proton fusion problem — the breakthrough that makes
-interstellar travel practical.
+through advanced brain-computer interfaces. Together, they cracked
+metastable metallic hydrogen — and its antimatter twin — and built the
+stellar collectors that make antimatter by the kilotonne. That is the
+breakthrough that makes interstellar travel practical.
 
-Dark rumors surround the breakthrough. Catalyzed p-p fusion is so far
-beyond anything else in the field that some believe the founders
+Dark rumors surround the breakthrough. The metal is so far beyond
+anything else in materials science that some believe the founders
 exceeded the 1ms bound — becoming the kind of unconstrained
 superintelligence the Compact was designed to prevent. They submit to
 auditing. Every audit comes back clean. No Compact-compliant entity
@@ -425,7 +426,7 @@ black-box their technology to protect their competitive advantage —
 and arguably to prevent proliferation of technology that could be
 weaponized on a stellar scale.
 
-The consortium sells stardrives on the open market — rarely, and at
+The consortium sells antimatter on the open market — rarely, and at
 enormous cost. They do not explain their pricing. They do not take
 orders. They choose their buyers. This makes them the most powerful
 economic entity in human-machine civilization, and the most resented.
@@ -440,17 +441,17 @@ a second one. Soft power (trade and maintenance denial) and hard power
 
 ## Interstellar Expansion (2290-present)
 
-The first stardrive-equipped ship departed Sol system around 2290,
-bound for Alpha Centauri. In the Local Bubble a 4.4 ly crossing is
-about seventy years. The crew slept. They arrived in the 2360s to find
+The first courier departed Sol system around 2290, bound for Alpha
+Centauri. A 4.4 ly crossing, burning the whole way, is about sixty-five
+years. The crew slept. They arrived in the 2350s to find
 a habitable (if barely) world and the first extrasolar confirmation of
 something Sol had already begun to suspect — unusual geological
 formations that didn't match any natural process.
 
-Expansion has been slow and uneven, limited by the scarcity of
-stardrives and by the crossings themselves. At 0.07–0.10c the
-30-light-year sphere takes on the order of three to four centuries to
-fill. The present sits
+Expansion has been slow and uneven, limited by IS's rationing of
+antimatter, by how little a courier carries, and by the crossings
+themselves. At a century a hop, the 30-light-year sphere takes on the
+order of three to four centuries to fill. The present sits
 just after that filling. Within 30 light-years of Sol, perhaps 20-30
 systems have permanent human presence, ranging from major colony worlds
 to small research outposts. Each system is effectively self-governing.
@@ -459,7 +460,7 @@ history arrive with the next hull.
 
 ### Cold Sleep and Temporal Outsiders
 
-\(\gamma\) at cruise is 1.005. Relativity does not make captains young.
+\(\gamma\) at peak is under 1.04. Relativity does not make captains young.
 Cold sleep does — or it doesn't, for anyone who stays awake.
 
 This creates a class of temporal outsiders. A trader who makes three
@@ -468,7 +469,7 @@ galactic time and experiences only the port years. Old friends are
 dead. Institutions have reformed. Cultural references are obsolete.
 An AI captain who stays up lives every year of it, and is actually old.
 
-The stardrive builders travel often and many of them do not sleep. Some
+IS's people travel often and many of them do not sleep. Some
 founding members of the consortium are still active — centuries old in
 both calendar and experience. That is not a side effect of \(\gamma\).
 It is what happens when you stay at the helm.
@@ -484,7 +485,7 @@ has replaced itself.
 
 Unusual formations in the Sol system were recognized as artificial
 around 2310. The Alpha Centauri expedition confirmed the pattern was
-galactic when it arrived in the 2360s. As human expansion continued,
+galactic when it arrived in the 2350s. As human expansion continued,
 the rest became impossible to ignore: ruins were everywhere. Every
 system explored showed signs of past intelligence — different species,
 different levels of advancement, all gone.
@@ -516,5 +517,5 @@ civilizations — became the defining mystery of the age. See
   civilization react?
 - How has the Compact affected AI culture? Do AI persons have their own
   art, philosophy, politics distinct from biological humans?
-- The economics of stardrive purchases — what does it cost, and what do
-  the builders accept as payment?
+- The economics of antimatter — what does a fill cost, and what does IS
+  accept as payment?

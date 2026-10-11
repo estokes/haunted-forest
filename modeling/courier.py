@@ -1,7 +1,7 @@
-# Courier mass budget and trip time (book/courier.md). The engine's magnet
-# mass, gamma shadow, plate load, thrust and hits come from a hf-nozzle
-# report; the rest of the ship is the brief's. Run it to print the brief's
-# tables.
+# Courier mass budget and trip time (book/ship-systems.md, book/courier.md).
+# The engine's magnet mass, gamma shadow, plate load, thrust and hits come
+# from a hf-nozzle report; the rest of the ship is set here. Run it to print
+# the bible's tables.
 #
 # Trips are brachistochrones at full power: burn toward the target, flip
 # midway in mass (equal rapidity each half), arrive at rest. All propellant

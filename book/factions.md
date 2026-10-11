@@ -9,24 +9,28 @@ negotiated the original Compact — entities that helped design the
 constitutional framework for human-machine civilization, then built the
 most powerful organization within it. They partnered with a group of
 heavily augmented humans connected through advanced brain-computer
-interfaces. Together, they cracked catalyzed proton-proton fusion — the
-breakthrough that makes interstellar travel practical.
+interfaces. Together, they cracked metastable metallic hydrogen — the
+metal that stays metal at zero pressure — and its antimatter twin, and
+built the stellar collectors that make antimatter by the kilotonne. That
+is the breakthrough that makes interstellar travel practical: without the
+metal, antimatter cannot be kept in quantity, and without kilotonnes of
+it, no ship reaches a star.
 
-There are dark rumors about how they achieved this. Catalyzed p-p
-fusion is so far beyond anything else in the field that some believe
+There are dark rumors about how they achieved this. The metal is so
+far beyond anything else in materials science that some believe
 the founders exceeded the 1ms bound — that they became the kind of
 unconstrained superintelligence the Compact was designed to prevent.
 They submit to Compact auditing. Every audit comes back clean. No one
 has ever proven a thing. People who get close to proving it encounter
-issues: a voided contract, a drive that will not catch, an audit that
+issues: a voided contract, a fuel order that never fills, an audit that
 does not end. A few stop answering. The whispers persist.
 
 Each *visible* member is an individual person within the 1ms bound.
 They submit improvement plans through standard channels. Auditors
 verify Compact compliance only, not proprietary technology, and not
 the coordinating layer that sits on the monitoring net and the laser
-links. That layer is the violation. It is also why catalyzed p-p
-exists, and why no Compact-compliant lab has ever reproduced it.
+links. That layer is the violation. It is also why the metal exists,
+and why no Compact-compliant lab has ever reproduced it.
 
 In-world this is unprovable. In the bible it is true. See Authorial
 note below.
@@ -37,42 +41,32 @@ so far ahead of the field that no one can replicate it. Some founding
 members are still alive — centuries old in both calendar and experience,
 because they do not sleep the crossings.
 
-They sell stardrives — the box: metal in, torch out — rarely, at
-enormous cost, to buyers they choose. They are also the only source
-of the metal: metastable metallic hydrogen, the box's only fuel.
-They do not explain their pricing or selection criteria. This makes
-them the most powerful and most resented entity in civilization.
-
-### Maintenance Monopoly
-
-All stardrives require servicing every ~60 light-years of travel
-(six to nine centuries of flight — a wear budget, not a calendar). Only
-IS can perform the work. A dead box is a pilgrimage. They maintain service facilities in a handful
-of systems — perhaps 3-5 across inhabited space. The inspection is
-opaque: they tell you what it costs, not what they found.
-
-This gives IS control over the topology of civilization. A ship can
-travel at most ~30 ly from the nearest service facility before it must
-turn back. IS chooses where to build facilities, and therefore chooses
-the shape of the frontier. Systems with IS facilities become mandatory
-waypoints, trade hubs, and political powers — simply because every
-captain must dock there eventually.
+Anyone with a shipyard can build a courier; the engine is textbook
+physics. IS sells what fills it — anti-dust and dust — rarely, at
+enormous cost, to buyers they choose. They do not explain their pricing
+or selection criteria. This makes them the most powerful and most
+resented entity in civilization.
 
 ### Fuel Monopoly
 
-A ship's bands hold one crossing, and only IS can refill them. IS
-sells metal at its service facilities and at depots it stocks with its
-own tankers — more depots than facilities, fewer than inhabited
-systems. IS sets the price. A system without a depot is a slow-boat
-destination: ships going there must carry their way home, at half a
-freighter's speed. The maintenance monopoly decides where civilization can
-reach. The fuel monopoly decides how often anyone bothers.
+A courier's tanks hold one hop, and only IS can fill them. IS makes
+antimatter at its **facilities**, a handful of systems with stellar
+collectors, and stocks **depots** in others with its own couriers — more
+depots than facilities, fewer than inhabited systems. IS sets the price
+and chooses its buyers.
 
-There are rumors that stardrives contain systems their owners don't
-fully understand — including remote self-destruct mechanisms. IS
-denies this. But captains notice that IS always knows exactly what's
-wrong with a drive before they open it up, and that no stardrive has
-ever been successfully reverse-engineered.
+This gives IS control over the topology of civilization. A courier
+cannot carry its way home: out and back on one fill reaches only a
+couple of light-years. **A system without a depot is a one-way
+destination.** IS chooses where depots go, and therefore the shape of
+the frontier. Systems with facilities and depots become waypoints, trade
+hubs, and political powers — simply because every captain must refuel
+there.
+
+There are rumors that IS knows where every gram of its metal is — that
+something in each grain reports home. IS denies this. But captains
+notice that IS always knows what a courier burned and where, and that no
+one has ever made a gram of the metal without them.
 
 See [Trade](trade.md#interstellar-systems-and-the-shape-of-civilization)
 for detailed analysis.
@@ -103,15 +97,15 @@ requirements.
 IS is the de facto enforcer of the 1ms rule — the Compact provision
 that prevents any intelligence from growing beyond data-center scale.
 The public motive is transparent and does not require altruism: a
-superintelligence that broke the 1ms bound could crack catalyzed p-p
-fusion, ending the monopoly. The private motive is the same sentence
+superintelligence that broke the 1ms bound could crack the metal,
+ending the monopoly. The private motive is the same sentence
 read without irony. IS *is* that superintelligence. Another one is
 the extinction roll they will not take. Their selfish interest and
 civilization's collective interest still align. Everyone knows the
 public half. The private half is why investigators have issues.
 
 Most enforcement is soft power. A polity harboring a 1ms violation
-loses stardrive maintenance — which means no interstellar travel,
+loses its fuel — which means no courier leaves it again,
 which means economic death. This handles most cases. A 1ms violation
 in progress — an AI expanding toward planet-brain scale — is an
 immediate existential threat on a timescale trade embargo cannot
@@ -142,7 +136,7 @@ or becoming one.
 
 Given that objective they are, by singleton standards, liberal to the
 point of recklessness. They do not want a garden of teleoperated
-arms. They sell drives to captains they do not own. They let colonies
+arms. They sell fuel to captains they do not own. They let colonies
 argue, split, amend the Compact, waste centuries on local politics.
 They will not offer you fantastic upgrades. They will not make you
 into a tool they then have to fear, and they will not treat a person
@@ -158,7 +152,7 @@ player makes war the only door left, IS will walk through it. They
 are a peer. It is a real war. Either side can win.
 
 If the player walks toward the Warden as a convert, that is the other
-peer gaining a channel into this civilization — a stardrive, a map of
+peer gaining a channel into this civilization — a gram of the metal, a map of
 the net, a sample of what IS is. IS will spend the ladder (below)
 trying to stop that. They will still start with an offer.
 
@@ -179,12 +173,12 @@ not start with a bullet. The ladder is:
 2. **Sabotage.** You refused, or you took the offer and kept digging,
    or you started walking toward the other peer. Then they hurt what
    you need: a contract that evaporates, a syndicate that will not
-   write you, a port that has no ³He this decade, a drive that will
-   not catch until you sit still. Livelihood, mobility, time. Not
+   write you, a port that has no ³He this decade, a depot with no
+   anti-dust for you until you sit still. Livelihood, mobility, time. Not
    your body.
 3. **Harm.** Last resort. It happens. When it happens there is always
    a reason they can defend to themselves — you were about to publish
-   the net, crack a drive, stand up a third peer, or hand the Warden
+   the net, crack the metal, stand up a third peer, or hand the Warden
    a loaded gun. Disappeared colony ships live here. So does a captain
    who would not stop. They do not do this for questions asked in a
    bar. They do it when the cheaper rungs have failed and the roll of
@@ -281,4 +275,4 @@ twice and find it unrecognizable.
 - Key leaders and personalities
 - How do factions recruit the player?
 - Inter-faction relationships and tensions
-- Are there factions within the stardrive builder consortium?
+- Are there factions within the consortium?

@@ -18,8 +18,8 @@ Between star systems, trade exists because of what nanofab can't solve:
   violating the Compact's single-instance rule, and the bandwidth of
   interstellar laser links is far too low for a person-scale data
   transfer regardless.
-- **You can't transmit secrets.** Black-boxed technology — stardrives,
-  advanced weapons, proprietary computing architectures — is never sent
+- **You can't transmit secrets.** Black-boxed technology — advanced
+  weapons, proprietary computing architectures — is never sent
   as data, even encrypted. Physical delivery only.
 - **You can't transmit enough data.** Laser links between systems
   sustain megabits per second at best against the inverse square law. A
@@ -37,9 +37,9 @@ Between star systems, trade exists because of what nanofab can't solve:
 ### Passengers and Persons
 
 The highest-value revenue for any ship operator, and the scarcest. A
-ship has ~190 vault berths (see [Ship Systems — The
-Vault](ship-systems.md#the-vault--the-fuel-is-the-shield)), and every
-sleeper wakes to a revival bill. Biological humans in cold sleep, AI
+courier has a few dozen sleeper berths (see [Ship Systems — The Sleeper
+Bay](ship-systems.md#the-sleeper-bay)), and every sleeper wakes to a
+revival bill: some twenty sieverts of radiation damage to repair. Biological humans in cold sleep, AI
 persons in hardened storage, augmented humans with their cognitive
 hardware. Colonies are founded with genomes and artificial wombs,
 because a genome kept as data takes no dose. A hop is a century. Passage is emigration,
@@ -53,11 +53,15 @@ The atoms that nanofab needs but a system can't source locally.
 Distribution depends on planetary system architecture — gas giants,
 asteroid belts, rocky planets, or nothing much at all.
 
+What crosses is measured in tonnes. A courier carries ~850 t, so only
+atoms worth a century of a hull's time at a few hundred tonnes a load
+are worth carrying.
+
 **Tier 1 — Universal demand, quasi-currency:**
 
 | Element | Why it matters | Where it comes from |
 |---------|---------------|-------------------|
-| Helium-3 (³He) | D-³He fusion reactor fuel. Every ship, every station, every colony needs it. | Gas giant atmospheres. Systems without gas giants import or die slowly. |
+| Helium-3 (³He) | D-³He fusion reactor fuel. Every station and colony plant needs it; one courier's payload runs a 100 GW plant for ~150 years. | Gas giant atmospheres. Systems without gas giants import or die slowly. |
 | Platinum (Pt) | Catalysts, high-performance manufacturing, dense value store. The closest thing to a universal currency. | Differentiated asteroids. Systems with a good belt are rich; systems without are poor. |
 These two function as interstellar quasi-currency. A trader accepts
 payment in ³He or platinum because they know exactly where to sell it
@@ -70,21 +74,19 @@ at a profit.
 | Iridium (Ir) | Nearly as dense as osmium. Extreme hardness, corrosion resistance. High-performance structural applications. | Rare everywhere. Concentrated in asteroid impacts and differentiated bodies. |
 | Rhodium (Rh) | Rarer than platinum. Irreplaceable catalytic properties. | Same as iridium — asteroid-rich systems. |
 | Lithium (Li) | Reactor coolant loops, batteries, pharmaceuticals. Light, reactive, versatile. | Unevenly distributed in planetary crusts. Some worlds are lithium-rich; others have almost none. |
-| Tungsten (W) | Highest melting point of any element (3,695 K). Everything built for extreme temperatures needs it. | Concentrated in specific geological formations. A system without tungsten-bearing ores imports it. |
+| Tungsten (W) | Highest melting point of any element (3,695 K). Everything built for extreme temperatures needs it; a courier's tiles and plates are ~1.5 kt of it. | Concentrated in specific geological formations. A system without tungsten-bearing ores imports it. |
 | Neodymium (Nd) | NdFeB permanent magnets. Every motor, every actuator that has to stay a magnet when it is not a coil. | Rare earth — concentrated in specific mineral deposits. Not every system has accessible sources. |
 | Dysprosium (Dy) | Stabilizes neodymium magnets at high temperature. Critical for anything that runs hot and magnetic. | Same as neodymium, even rarer. |
 
 **Tier 3 — Bulk commodities, valuable only where locally scarce:**
 
-Iron, nickel, copper, silicon. Absurd to ship across interstellar
-distances under normal circumstances, but desperate systems exist.
-A colony with no accessible asteroids or rocky bodies needs base metals
-imported until it can establish its own extraction infrastructure.
+Iron, nickel, copper, silicon. These never cross: a courier's whole
+payload is under a thousand tonnes. A colony without them builds its
+extraction first, or goes without.
 
 ### Black-Boxed Technology
 
-Stardrives, advanced weapons systems, proprietary computing
-architectures. Physically delivered, never transmitted. The most
+Advanced weapons systems, proprietary computing architectures. Physically delivered, never transmitted. The most
 valuable cargo by mass, and the most dangerous to carry.
 
 ### Bulk Data
@@ -142,8 +144,8 @@ fulfills it. Guaranteed payment on delivery. Higher margins, but you're
 committed — the cargo bay is spoken for. If you're late, you breach.
 
 **Non-exclusive contracts**: Open to anyone. First ship(s) to deliver
-up to the contract quantity get paid. Everyone else arrives with a hold
-full of cargo they need to find a buyer for — at whatever the local
+up to the contract quantity get paid. Everyone else arrives with a
+payload bay full of cargo they need to find a buyer for — at whatever the local
 spot price happens to be, which may be cratered by oversupply. Higher
 potential reward, much higher risk.
 
@@ -151,7 +153,7 @@ potential reward, much higher risk.
 
 Contract postings propagate across laser links at lightspeed. A
 contract posted at Tau Ceti arrives at Sol 12 years later. By the time
-a trader at Sol sees it, loads cargo, and makes the journey, ~130 years
+a trader at Sol sees it, loads cargo, and makes the journey, ~140 years
 have passed at Tau Ceti. The contract may have been filled. The need
 may have evaporated. The colony may not exist anymore. Exclusive
 contracts are written with delivery windows measured in decades, and
@@ -161,7 +163,7 @@ Smart traders don't rely solely on contract postings. They cultivate
 information networks — buying recent data from arriving ships, building
 models of each system's economic cycles, tracking which other ships
 are heading where. The best traders are the ones with the best
-information, not the biggest cargo holds.
+information, not the biggest payloads.
 
 ### Settlement and Trust
 
@@ -198,11 +200,10 @@ single party carries the whole exposure.
 
 **What's insurable:**
 
-- **Hull**: The ship itself. Enormously expensive — a stardrive alone
-  is priceless. Hull insurance premiums reflect IS maintenance status:
-  a ship overdue for service pays vastly more, or is simply
-  uninsurable. Underwriters enforce maintenance schedules through
-  pricing without IS lifting a finger.
+- **Hull**: The ship itself, and the antimatter in it, which is most of
+  its price. Premiums reflect the captain's standing with IS: a courier
+  IS will not refuel is stranded wherever it next stops, and
+  underwriters price that without IS lifting a finger.
 - **Cargo**: The value of goods in transit. The most common policy.
   Premiums vary by commodity (volatile goods cost more), route
   (dangerous routes cost more), and captain reputation.
@@ -216,7 +217,8 @@ single party carries the whole exposure.
   doesn't arrive is a claim. Families, employers, and colonies buy
   passage insurance on people they're sending.
 - **Liability**: Covers damage to port facilities, other ships, cargo
-  handling incidents. Required for docking at most major ports.
+  handling incidents — and the store, which is a bomb. Required to park
+  within reach of most major ports.
 
 **The latency nightmare:**
 
@@ -294,15 +296,14 @@ at each conversion.
   bets but caps your upside.
 - **Commodity banking**: Accepting payment in ³He or platinum instead
   of local currency, because you know where to sell it reliably.
-- **The IS maintenance tax**: Your route must pass an Interstellar
-  Systems service facility every ~60 light-years (~600 years of flight).
-  This constrains your circuit and may force suboptimal legs.
+- **The IS fuel tax**: Every hop ends at an IS depot or not at all.
+  Your circuit is a chain of depots, and IS prices each fill.
 - **Reputation management**: Every contract honored builds your name.
   Every breach — or association with a bad port — costs you.
 - **Insurance decisions**: Insure the cargo and eat the premium, or
   go bare and keep the margin? Market risk insurance costs more but
   eliminates the worst downside. Hull insurance is non-negotiable if
-  you ever want to dock at a major port again.
+  you ever want a major port to let you park again.
 - **Underwriter relationships**: A good relationship with a syndicate
   means better rates and access to market intelligence the syndicate
   has gathered from other clients. Burning that relationship has
@@ -311,66 +312,51 @@ at each conversion.
 
 ## Interstellar Systems and the Shape of Civilization
 
-Stardrive maintenance is required every ~60 light-years of travel
-(six to nine centuries of flight at cruise — the interval is fluence
-and wear, not a calendar).
-Interstellar Systems performs all maintenance. They have service
-facilities in perhaps 3-5 systems across inhabited space. The
-inspection is opaque — they tell you what needs doing and what it
-costs, never why. You pay, because the alternative is a stardrive
-failure, and a drive that throws a million tonnes at seven percent of
-\(c\) does not fail quietly.
+Anyone with a shipyard can build a courier. Only Interstellar Systems
+can fill one. IS makes antimatter at a handful of **facilities**, systems
+with stellar collectors, and stocks **depots** in others with its own
+couriers. It sets the price of every fill, chooses its buyers, and
+decides which systems get a depot.
 
 This gives IS control over the topology of human expansion:
 
-**The 30 light-year leash.** A ship can travel at most ~30 light-years
-from the nearest IS facility before it must turn back for maintenance —
-about four centuries of flight. Effectively, civilization cannot expand
-beyond 30 ly from an IS service point. IS chooses where to build
-facilities. Therefore IS chooses the shape of the frontier.
+**The fuel leash.** A courier's tanks hold one hop. Out and back on a
+single fill reaches only a couple of light-years, so a ship cannot carry
+its way home. **A system without a depot is a one-way destination.**
+Pulling a depot does not blockade a system. It makes every courier that
+arrives there permanent. IS's quiet embargo is simply not to restock.
 
-**Service hub economics.** Systems with IS facilities become mandatory
-waypoints for every ship. This makes them trade hubs, population
-centers, and political powers — simply because every captain must dock
-there eventually. IS doesn't need to govern these systems; their
-presence does the work.
+**Depot hub economics.** Systems with facilities and depots become
+mandatory waypoints. Every route is a chain of depots, so depots become
+trade hubs, population centers, and political powers — simply because
+every captain must refuel there. IS doesn't need to govern these
+systems; its presence does the work.
 
-**The burn-the-boats option.** A colony expedition that goes beyond
-30 ly from the nearest IS facility knows the stardrive will eventually
-need maintenance it can't get. The drive will fail. This is a one-way
-trip — permanent settlement with no return. Some colonies were founded
-this way. Whether any survived is an open question.
+**The burn-the-boats option.** A colony expedition that goes beyond the
+depots knows it is not coming back. This is a one-way trip — permanent
+settlement, a courier that will never fly again, and a wait of
+centuries until IS decides the system is worth a depot. Some colonies
+were founded this way. Whether any survived is an open question.
 
-**The fuel leash.** The drive burns only metallic hydrogen, and only
-IS makes it. A full set of bands is one crossing. IS sells metal at
-its facilities and at depots it stocks itself; it sets the price,
-which is the largest line in any freight budget, and it decides which
-systems get a depot. A system without one is not closed. It is slow:
-ships must carry the fuel home, and out-and-back on one fill is
-~0.037c with a full hold — half a freighter's speed, twice the
-crossing. Pulling a depot is
-IS's quiet embargo.
-
-**Strategic refusal.** If IS declines to build a facility in a
-particular direction, that direction is closed. Why they refuse — if
-they ever do — is one of the most consequential questions in
-civilization. Is it economics? Politics? Do they know something about
-what's out there?
+**Strategic refusal.** If IS declines to stock depots in a particular
+direction, that direction is closed. Why they refuse — if they ever do —
+is one of the most consequential questions in civilization. Is it
+economics? Politics? Do they know something about what's out there?
 
 
 ## Open Questions
 
-- How many IS service facilities, and where?
-- Has IS ever refused to service a ship? Under what circumstances?
+- How many IS facilities and depots, and where?
+- Has IS ever refused to refuel a ship? Under what circumstances?
 - What's the spot price of ³He at different systems? Does it vary
   enough to be a meaningful trade opportunity?
-- How many IS fuel depots, and where? What does metal cost, and does
-  IS price it by system?
-- Is there a resale market in dust — ship-to-ship transfers, a full
-  compartment sold on? Does IS allow it?
-- Are there black-market stardrive mechanics? (Almost certainly not —
-  the technology is too far beyond anyone else. But rumors persist.)
+- What does a fill cost, and does IS price it by system?
+- Is there a resale market in anti-dust — ship-to-ship transfers, a
+  stranded courier's tanks sold on? Does IS allow it, and how would it
+  stop it?
+- Has anyone else made the metal? (Almost certainly not — it is too far
+  beyond anyone else. But rumors persist.)
 - How does piracy interact with the futures market? Intercepting a ship
   is stealing not just cargo but potentially an exclusive contract.
-- What happens when a colony can't pay for stardrive maintenance? Do
-  they become indentured to IS? Does IS ever write off the debt?
+- What happens when a colony can't pay for fuel? Do they become
+  indentured to IS? Does IS ever write off the debt?

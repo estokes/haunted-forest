@@ -1,9 +1,11 @@
 # Collector Sizing — What a Real Magnetic Scoop Takes
 
 > **Outcome (2026-10-10):** the scoop is dropped. The ship carries
-> metastable metallic hydrogen that only IS makes; see
-> [Ship Systems — The Fuel](ship-systems.md#the-fuel--metallic-hydrogen).
-> This doc stays as the reason why.
+> metastable metallic hydrogen that only IS makes. Since 2026-10-11 the
+> fusion torch is gone too: couriers burn antimatter, with the metal as
+> its partner and its store; see [Ship Systems — The
+> Metal](ship-systems.md#the-metal) and [Courier](courier.md). This doc
+> stays as the reason the scoop died.
 
 2026-10-10. Follows review findings P1–P2
 ([review-2026-09-22.md](review-2026-09-22.md)). Numbers come from

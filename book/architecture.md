@@ -34,7 +34,10 @@ timesteps.
 ### What Exists
 
 The D-³He fusion reactor (`crates/hf-game/src/ship/reactor.rs`) is the
-first implemented system:
+first implemented system. It models the plant that powers stations and
+colonies (see [Station Power](station-power.md)); couriers do not carry
+one. It stays the proving ground for the pattern every system follows,
+and moves under `/station/` when station sims arrive.
 
 - **Reactor state**: temperature (MK), pressure, density, field
   strength, fuel rate, cooling rate, containment integrity, power
@@ -53,25 +56,31 @@ first implemented system:
 ### Future Systems
 
 Each system follows the same pattern — physics simulation exposing
-state and accepting control through netidx:
+state and accepting control through netidx. The courier's (see
+[Ship Systems](ship-systems.md)):
 
-- **Thermal management**: Tin loop, zoned aft radiators, waste heat
-  (implemented; 100 GW plant)
-- **Fuel**: silo compartments (mass, temperature, bladder pressure),
-  drain order, dust lines (charge state, flow), magnetic gates,
-  reversion alarms
-- **Stardrive**: IS black box — metal feed, torch thrust, fuse-fraction,
-  nozzle overdraw, reverse state. Observable externals only.
-- **Navigation**: Position, velocity, course plotting, Δv budget
-  (burn up, coast, burn down, reserve)
-- **Power distribution**: Load balancing across ship systems,
+- **Engine**: annihilation power, each pod's grain streams, the
+  reaction-point offset that steers, ring current, tile loads, the
+  forward leak
+- **Heat and power**: helium loop segments and their temperatures, the
+  turbines (~16 GW), fins, the port heater
+- **Stores**: antimatter cores (field, bed temperature), dust tanks
+  (bladder pressure, temperature), stops, feed lines and magnetic
+  valves, drain order, reversion alarms
+- **Shielding**: plates, stops, jackets, the ring's cosmic-ray shelter,
+  dose clocks
+- **Navigation**: position, velocity, the crossing plan (burn, flip,
+  burn), antimatter budget
+- **Power distribution**: load balancing across ship systems,
   priority allocation
-- **Life support**: Atmosphere, temperature, cold sleep pod status
-- **Weapons**: Targeting, capacitor charge, ammunition
-- **Sensors**: Two nacelle-shoulder packages — THz sand-search, mm
-  pebble-search, cued LIDAR, optical cooker, passive IR. FEL machines
-  in the torque box. Fire-control floor 10 ms /
-  407 km at 0.10c.
+- **Life support**: habs, sleeper bay berths
+- **Weapons**: targeting, capacitor charge
+- **Sensors**: two pod-flank packages — THz sand search, mm pebble
+  search, cued LIDAR, optical cooker, passive IR. FEL machines inside
+  the pods. Fire-control floor 10 ms / ~950 km at 0.18c.
+
+The station plant's thermal loop (tin, eight zoned radiators) is
+implemented alongside the reactor.
 
 
 ## Layer 2: netidx — The Data Fabric
@@ -86,7 +95,7 @@ enabling bidirectional control.
 The `NetBridge` (`crates/hf-game/src/net/bridge.rs`) connects Bevy's
 synchronous ECS to netidx's async runtime:
 
-- **Publish**: Ship systems publish state every frame at paths like
+- **Publish**: Systems publish state every frame at paths like
   `/ship/reactor/plasma/temperature`
 - **Publish writable**: Control inputs are published as writable
   values at paths like `/ship/reactor/control/fuel_rate`. External
@@ -103,10 +112,25 @@ intervals.
 
 ### The Hierarchy
 
-The netidx path hierarchy mirrors the ship's physical structure:
+The netidx path hierarchy mirrors the ship's physical structure. The
+implemented reactor still publishes under `/ship/reactor/`; it moves to
+`/station/reactor/` when station sims arrive.
 
 ```
 /ship/
+    engine/
+        ...
+    heat/
+        ...
+    stores/
+        ...
+    navigation/
+        ...
+    sensors/
+        ...
+    weapons/
+        ...
+/station/
     reactor/
         plasma/
             temperature     (f64, MK, read-only)
@@ -124,14 +148,6 @@ The netidx path hierarchy mirrors the ship's physical structure:
             mode            (ReactorMode, writable)
         status              (ReactorStatus, read-only)
     thermal/
-        ...
-    propulsion/
-        ...
-    navigation/
-        ...
-    sensors/
-        ...
-    weapons/
         ...
 ```
 
@@ -181,8 +197,9 @@ automate and optimize ship operations:
 
 - Custom dashboards: subscribe to the values you care about, arrange
   them how you want
-- Automation: "if reactor containment drops below 0.8, set mode to
-  Shutdown" — written as a reactive dataflow, not an imperative script
+- Automation: "if a tile segment's helium runs past 3,000 K, throttle
+  the engine 10%" — written as a reactive dataflow, not an imperative
+  script
 - Analysis tools: aggregate sensor data, compute moving averages,
   detect anomalies
 - Tactical programs: trajectory plotting, threat assessment, combat
@@ -569,7 +586,7 @@ prevent memorization of specific prices.
 ## Time Dilation Mechanic
 
 This is implant and compute slow-time in combat and operations, **not**
-Lorentz \(\gamma\). The ship cruises at 0.07–0.10c; \(\gamma \le 1.005\).
+Lorentz \(\gamma\). A courier peaks under 0.3c; \(\gamma \le 1.04\).
 A century in flight is a century at home. Crew skip it with cold sleep.
 This section is the other clock: how fast a mind can think when the
 missiles are already in the air.
@@ -614,7 +631,7 @@ have time to use them.
 Augmented and heavily augmented characters achieve slow-time through
 accelerated neural processing driven by their implants. This generates
 waste heat in the brain — the same thermodynamic problem the ship's
-reactor faces, at a much smaller and more delicate scale.
+engine faces, at a much smaller and more delicate scale.
 
 After a few minutes of accelerated cognition, biological tissue
 approaches thermal damage thresholds. The implants force a return to
@@ -623,8 +640,8 @@ acceleration is available again. Pushing past the thermal limit risks
 permanent neurological damage.
 
 The AI player has no such constraint. Their substrate is the ship's
-compute infrastructure, cooled by the same liquid tin loops that cool
-the reactor. They can stay in slow-time indefinitely. This is their
+compute infrastructure, cooled by the same helium loops and fins that
+cool the engine. They can stay in slow-time indefinitely. This is their
 primary combat advantage — not that they think faster for a burst,
 but that they can sustain it.
 
@@ -637,7 +654,7 @@ Everything connects through netidx:
 ┌─────────────────────────────────────────────────┐
 │                   netidx hierarchy               │
 │                                                   │
-│  /ship/reactor/...  /ship/nav/...  /market/...   │
+│  /ship/engine/...   /ship/nav/...  /market/...   │
 └──────┬──────────────────┬──────────────┬─────────┘
        │                  │              │
   ┌────▼────┐      ┌──────▼─────┐  ┌────▼────────┐
@@ -675,7 +692,8 @@ system with their own.
 |-----------|--------|
 | Bevy ECS framework | Running |
 | NetBridge (publish, subscribe, writable, write) | Implemented |
-| Reactor physics simulation | Implemented (100 GW / 70 m; bible-aligned) |
+| Reactor physics simulation | Implemented (station plant, 100 GW / 70 m) |
+| Station plant thermal (tin loop, zoned radiators) | Implemented |
 | Reactor auto-control (PID loop) | Implemented |
 | Reactor keyboard controls (test) | Implemented |
 | HUD (Rust, transitional) | Implemented |
@@ -683,7 +701,7 @@ system with their own.
 | LLM bridge (hf-llm) | Scaffolded (crate exists, Bevy plugin works) |
 | LLM model (hf-model) | Not started (crate exists, empty) |
 | Time dilation mechanic | Not started |
-| Other ship systems (thermal, propulsion, nav) | Not started |
+| Courier systems (engine, stores, heat, nav) | Not started |
 | Market/trade simulation | Not started |
 
 
