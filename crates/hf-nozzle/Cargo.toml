@@ -1,0 +1,13 @@
+[package]
+name = "hf-nozzle"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+glam = "0.30"
+rand = { version = "0.9", features = ["small_rng"] }
+rand_distr = "0.5"
+rayon = "1"
+serde.workspace = true
+serde_json.workspace = true
