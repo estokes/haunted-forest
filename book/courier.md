@@ -27,7 +27,7 @@ work up to ~1000 K**. Neither is forbidden; both are among the first
 things such a civilization would crack.
 
 The price: no engine that can carry a 1 Mt freighter survives its own
-gamma rays. The ship has to be small.
+gamma rays. The ship is tens of kilotonnes, and most of it is engine.
 
 ## The Engine — Beamed Core
 
@@ -48,12 +48,16 @@ shower needs 15–20 radiation lengths of tungsten, 5–7 cm). There are
 three places they hurt:
 
 1. **The nozzle's own magnets.** Each coil sits in the shadow of a
-   tungsten tile facing the reaction. A tile can shed ~10 MW/m² (radiating
-   at ~2,900 K through fins), which sets how close to the reaction
-   anything may sit: r ≥ √(G / 4π·10 MW/m²), with G the gamma power. With
-   superconductors good to ~1000 K the coils run warm, so the tiles only
-   need 15 radiation lengths (~5 cm); the ~5% of the shower that leaks
-   through is radiated by the coils themselves at ~900 K.
+   tungsten tile facing the reaction. How much gamma flux a tile can take
+   sets how close to the reaction anything may sit:
+   r ≥ √(G / 4π·q), with G the gamma power and q the tile limit. The tiles
+   are **helium-cooled**: gammas deposit heat through the tile's depth, not
+   at its face, so channels a few millimetres apart hold the tungsten
+   within tens of kelvin of the coolant, and **q ≈ 50 MW/m²**. The helium
+   carries the heat to the ship's power plant. With 1000 K superconductors
+   the coils run warm; the tiles need only 15 radiation lengths (~5 cm),
+   and the ~5% of each shower that leaks through is radiated by the coils
+   at ~900 K.
 2. **The rest of the ship.** It sits at the far end of a boom, behind a
    shield plate. The plate's heat scales with the ship's angular size seen
    from the engine.
@@ -66,65 +70,61 @@ three places they hurt:
 Thrust grows with power (∝ G). Tile area grows with the nozzle's radius
 (∝ √G). Magnet mass grows with the field volume (∝ G^1.5). So small
 engines are mass-inefficient, very large ones are magnet-bound, and the
-sweet spot is in between:
+sweet spot is in between. At q = 50 MW/m²:
 
-| Gamma power | Nozzle radius | Tiles | Magnets | Engine | Thrust | Thrust/engine mass |
-|---|---|---|---|---|---|---|
-| 0.1 TW | 28 m | 90 t | ~0 | 120 t | 380 N | 3.2 mN/kg |
-| 1 TW | 89 m | 280 t | 15 t | 400 t | 3.8 kN | 9.5 mN/kg |
-| **10 TW** | **280 m** | **0.9 kt** | **0.47 kt** | **1.8 kt** | **38 kN** | **21 mN/kg** |
-| 30 TW | 490 m | 1.6 kt | 2.4 kt | 5.3 kt | 114 kN | 22 mN/kg |
-| 100 TW | 890 m | 2.8 kt | 15 kt | 23 kt | 380 kN | 16 mN/kg |
+| Gamma power | Nozzle radius | Tiles | Magnets | Cooling | Engine | Thrust | Thrust/engine mass |
+|---|---|---|---|---|---|---|---|
+| 1 TW | 40 m | 130 t | ~0 | 85 t | 0.28 kt | 3.8 kN | 14 mN/kg |
+| 10 TW | 126 m | 400 t | 42 t | 270 t | 0.92 kt | 38 kN | 41 mN/kg |
+| 100 TW | 400 m | 1.3 kt | 1.3 kt | 0.85 kt | 4.5 kt | 380 kN | 85 mN/kg |
+| **180 TW** | **535 m** | **1.7 kt** | **3.2 kt** | **1.1 kt** | **7.8 kt** | **684 kN** | **87 mN/kg** |
+| 300 TW | 690 m | 2.2 kt | 6.9 kt | 1.5 kt | 13.7 kt | 1.1 MN | 83 mN/kg |
 
 Assumptions: two coils 0.25 m wide; 0.15 T in the reaction zone (pions at
 ~350 MeV/c bend inside their ~18 m decay length); magnets at 10× the
-stored-energy (virial) floor on near-ideal CNT; +30% for structure and
-feeds; coil fins for the tile leak.
+stored-energy (virial) floor on near-ideal CNT; +30% for frame and feeds;
+coil fins for the tile leak; cooling = helium loop plus radiators.
 
-### Ship size follows
-
-With the engine 40% of a ship fueled for 10 ly, burning the whole
-crossing:
-
-| Gamma power | Ship | Accel | 4.4 ly | 10 ly (peak) | Antimatter | Payload |
-|---|---|---|---|---|---|---|
-| 0.1 TW | 300 t | 0.13 mG | ~340 yr | ~520 yr (0.04c) | 26 t | ~100 t |
-| 1 TW | 1.0 kt | 0.39 mG | ~190 yr | ~290 yr (0.07c) | 140 t | ~210 t |
-| **10 TW** | **4.5 kt** | **0.86 mG** | **~120 yr** | **~190 yr (0.11c)** | **~920 t** | **~430 t** |
-| 30 TW | 13 kt | 0.88 mG | ~120 yr | ~185 yr (0.11c) | 2.7 kt | ~1.2 kt |
-
-Above ~10 TW the crossing stops getting faster; the ship just gets bigger.
-Small couriers are possible but slow: a 300 t ship takes five centuries to
-go 10 ly. Payload is nearly free at the design point: cutting it from
-850 t to 100 t saves only ~10% of the crossing time, because the engine
-and propellant are most of the ship.
+The tile limit is the master knob. Passive tiles radiating at ~2,900 K
+take ~10 MW/m², and the best engine then manages ~22 mN/kg — a 10 ly
+crossing of ~200 years. Helium cooling quadruples the specific thrust.
 
 ## Design Point
 
-**~10 TW of gammas (~28 TW of annihilation), 850 t of payload.** Dry mass
-~3,330 t; ~5,350 t at departure fueled for 10 ly.
+**~180 TW of gammas (~500 TW of annihilation), 850 t of payload.** Dry
+mass ~9.9 kt; ~27 kt at departure fueled for 10 ly.
 
 ```
   ← direction of travel (accelerating)
 
-  [payload | stores | dust tank | W plate]════════ 500 m boom ════════( engine )
-   ~10 m wide                                                   annihilation point
-                                                                inside a ~560 m ring
-                                                                nozzle; tiles face in
+  [payload | anti store | dust tank | W plate]═══════ 1 km boom ═══════( engine )
+   16 m wide                                                     annihilation point
+                                                                 inside a ~1 km ring
+                                                                 nozzle; tiles face in
 ```
 
 | Part | Mass | Notes |
 |---|---|---|
-| Engine | ~1,810 t | two superconducting rings, ~280 m radius, running at ~900 K; ~900 t of 5 cm tungsten tiles shading them; ~470 t of magnet; ~33 t of coil fins; feeds and frame |
-| Boom | ~30 t | 500 m, in compression at 38 kN — light |
-| Shield plate | ~100 t | 7 cm tungsten, 5 m radius, facing the engine; takes ~250 MW and radiates it at ~2,900 K |
-| Power plant | ~140 t | heat engine on the tiles, its radiator fins, and the ~40 t port heater |
-| Structure, systems, hab | ~400 t | |
+| Engine | ~7,850 t | two superconducting rings, ~535 m radius, at ~900 K; ~1,700 t of 5 cm helium-cooled tungsten tiles; ~3,200 t of magnet; ~1,500 t of frame and feeds; ~300 t of coil fins; ~1,100 t of helium loop and radiators |
+| Boom | ~200 t | 1 km, guyed at its quarter points; 684 kN in compression |
+| Shield plate | ~360 t | 7 cm tungsten, 8 m radius, helium-cooled; takes ~2.9 GW; its own fins at the payload end |
+| Power plant | ~100 t | the turbines on the tile loop, and the ~40 t port heater |
+| Structure, tanks, systems, hab | ~500 t | |
 | **Payload** | **~850 t** | |
-| Matter dust tank | ~1,010 t of dust | behind the plate: ~22 m of dust, ~1,300 g/cm², the second shield layer and the annihilation partner |
-| Antimatter store | ~1,010 t of anti-dust | levitated in a magnetic store behind the tank; fed down the boom at ~0.15 g/s |
+| Matter dust tank | ~8.6 kt of dust (10 ly) | ~72 m long at 8 m radius, behind the plate: the second shield layer and the annihilation partner |
+| Antimatter store | ~8.6 kt of anti-dust (10 ly) | levitated in a magnetic store behind the tank; fed down the boom at up to ~2.8 g/s |
 
-Thrust ~38 kN; ~0.7 mG at departure, rising as propellant burns.
+Thrust ~684 kN; ~2.6 mG at departure, rising as propellant burns.
+
+**Payload is nearly free.** The engine and its propellant are most of the
+ship, so carrying more costs little time:
+
+| Payload | 10 ly | 30 ly |
+|---|---|---|
+| 100 t | ~96 yr | ~196 yr |
+| **850 t** | **~98 yr** | **~201 yr** |
+| 2,000 t | ~103 yr | ~209 yr |
+| 5,000 t | ~113 yr | ~226 yr |
 
 ## Flight
 
@@ -133,54 +133,59 @@ the ship, brake the rest. Propellant is loaded for the hop:
 
 | Hop | Time | Peak | Departure | Antimatter |
 |---|---|---|---|---|
-| α Cen (4.4 ly) | ~130 yr | ~0.067c | ~4.6 kt | ~640 t |
-| 10 ly | ~210 yr | ~0.097c | ~5.3 kt | ~1,010 t |
-| 20 ly | ~310 yr | ~0.13c | ~6.3 kt | ~1,500 t |
-| 30 ly | ~390 yr | ~0.16c | ~7.1 kt | ~1,900 t |
+| α Cen (4.4 ly) | ~60 yr | ~0.15c | ~20 kt | ~5.3 kt |
+| 10 ly | ~98 yr | ~0.21c | ~27 kt | ~8.6 kt |
+| 20 ly | ~153 yr | ~0.27c | ~37 kt | ~13.5 kt |
+| 30 ly | ~201 yr | ~0.31c | ~45 kt | ~17.7 kt |
 
-That is ~1.5× the freighter's crossings. Coasting at a lower peak saves
-propellant and costs time.
+That is about the old freighter's crossing times, honestly. Coasting at a
+lower peak saves propellant and costs time. At the peaks above, time
+dilation is a few percent: a 10 ly crossing runs about a year shorter
+aboard than at home. The times are non-relativistic; at 0.3c they are a
+few percent off.
 
 **Flipping is back.** The ship rotates at midcourse. The engine leads
 into the medium on the braking half, so its rings carry their own Whipple
-strips (~200 t, inside the engine line), and the tungsten plate is good
-armor for the other end.
+strips, and the tungsten plate is good armor for the other end.
+
+**The medium gets harder.** At 0.21c an ISM proton arrives with ~21 MeV
+(4.7 MeV at 0.1c) and a dust grain with ~4× the energy; at 0.31c, ~49 MeV
+and ~10×. Debris defense must be redone for these speeds.
 
 ## Heat
 
-Almost all the waste leaves for free: ~10 TW of gammas and the pion and
+Almost all the waste leaves for free: ~180 TW of gammas and the pion and
 muon exhaust fly away, and annihilation happens in vacuum with no chamber
-walls. Only what the hardware intercepts has to be radiated:
+walls. Only what the hardware intercepts has to be handled:
 
-| Source | Heat | Temperature | Rejected by |
+| Source | Heat | Temperature | Handled by |
 |---|---|---|---|
-| Engine tiles | ~8.9 GW | ~2,900 K | tile fins, edge-on to the reaction |
-| Leak through the tiles into the coils | ~0.44 GW | ~900 K | ~7,000 m² of coil fins, edge-on |
-| Shield plate | ~0.25 GW | ~2,900 K | its face and fins |
-| Power plant | ~1.2 GW of waste for ~0.5 GW of electricity | ~1,000–1,500 K | 5,000–25,000 m² of fins |
-| Port heater (engine cold) | ~70 MW of waste | ~1,000–1,500 K | the same plant fins |
+| Engine tiles | ~84 GW | ~2,900 K | helium loop (~11 t/s) to turbines: ~25 GW of electricity, ~59 GW rejected through ~110,000 m² of fins at ~1,500 K |
+| Leak through the tiles into the coils | ~4 GW | ~900 K | ~60,000 m² of coil fins |
+| Shield plate | ~2.9 GW | ~2,900 K | its own helium loop and ~5,600 m² of fins at the payload end |
+| Port heater (engine cold) | ~70 MW of waste | ~1,000–1,500 K | the plant fins |
 | Hab, avionics, stores | MW | ~300 K | small radiators |
 
 **Radiators must be edge-on to the engine.** The plate's shadow is only as
-wide as the plate, 5 m in radius. At 500 m from the engine, any surface
-outside it faces ~3.2 MW/m² of gammas. So every radiator, at both ends of
+wide as the plate, 8 m in radius. A kilometre from the engine, any surface
+outside it faces ~14 MW/m² of gammas. So every radiator, at both ends of
 the boom, is a fin in a plane that contains the line to the reaction
-point; its faces never see it.
+point; its faces never see it. Everything else in the payload stack stays
+inside the 8 m shadow.
 
 **The dust tank must stay cold.** Metal reverts near 1000 K. The plate
-takes the gammas and radiates them at ~2,900 K; the tank behind it is
-insulated from it.
+takes the gammas; the tank behind it is insulated from it.
 
 ## Power
 
-The tile heat engine gives **gigawatts of electricity whenever the engine
-burns** — which is the whole crossing. Hotel, sensors, and an FEL all fit.
-With 1000 K superconductors nothing aboard needs cryogenic cooling:
-nozzle coils, the antimatter store's levitation, and the dust pumps all
-run warm.
+The tile loop gives **~25 GW of electricity whenever the engine burns** —
+which is the whole crossing. Hotel, sensors, and FELs all fit with room to
+spare. With 1000 K superconductors nothing aboard needs cryogenic
+cooling: nozzle coils, the antimatter store's levitation, and the dust
+pumps all run warm.
 
-**In port the same heat engine runs on a second heat source:** a small
-**annihilation heater** beside it at the engine end. Anti-dust and dust
+**In port the same turbines run on a second heat source:** a small
+**annihilation heater** beside them at the engine end. Anti-dust and dust
 meet inside a tungsten core ~0.9 m in radius, thick enough to stop the
 gammas (~20 radiation lengths) and the pions (~11 cm). About 84% of the
 energy stays as heat; the rest leaves as neutrinos from the stopped pions
@@ -189,34 +194,36 @@ contained, and it can be, because it is small.
 
 | | Value |
 |---|---|
-| Thermal power | ~100 MW (surface at the same ~10 MW/m² limit) |
+| Thermal power | ~100 MW (surface at ~10 MW/m²) |
 | Electricity | ~30 MW |
 | Core | ~40 t of tungsten |
 | Antimatter | ~20 g a year |
 
-It feeds from the same anti-dust line as the engine and rejects its waste
-through the plant's radiators. Pion capture on tungsten makes neutrons and
-activates the core over time, which is another reason it lives at the far
-end of the boom. The 100 GW reactor sim no longer powers the ship.
+It feeds from the same anti-dust line as the engine. Pion capture on
+tungsten makes neutrons and activates the core over time, which is
+another reason it lives at the far end of the boom. The 100 GW reactor sim
+no longer powers the ship.
 
 ## Maneuvering
 
 There is **one drive**. If the ship moves, the main engine moves it.
 
-- **Throttle.** The engine runs at any power from a trickle up to ~28 TW
-  of annihilation; thrust follows at ~1.4 N per GW.
+- **Throttle.** The engine runs at any power from a trickle up to
+  ~500 TW of annihilation; thrust follows at ~1.4 N per GW.
 - **Attitude.** Steering the nozzle field slightly off axis vectors the
-  thrust; with the mass spread along a 500 m boom, a small angle is a
-  large torque. The midcourse flip uses the same trick.
-- **In-system**, at full thrust (~0.7–0.8 mG), burning the whole way:
+  thrust; with the mass spread along a kilometre of boom, a small angle is
+  a large torque. The midcourse flip uses the same trick.
+- **In-system**, at full thrust, burning the whole way, between a ship
+  that has arrived (~15 kt, ~4.6 mG) and one fueled to leave (~27 kt,
+  ~2.6 mG):
 
 | Trip | Time | Δv | Antimatter |
 |---|---|---|---|
-| Earth–Moon distance | ~5 days | ~3.5 km/s | ~70 kg |
-| 1 AU | ~100 days | ~70 km/s | ~1.4 t |
-| 5 AU | ~230 days | ~150 km/s | ~3 t |
+| Earth–Moon distance | 2–3 days | 6–8 km/s | ~0.5–0.7 t |
+| 1 AU | 42–56 days | 120–165 km/s | ~10–14 t |
+| 5 AU | 94–126 days | 275–370 km/s | ~22–30 t |
 
-- **Ports.** A courier never docks. It parks a light-second or more out,
+- **Ports.** A courier never docks. It parks several light-seconds out,
   with its exhaust pointed away from anything that matters, and shuttles
   carry payload in.
 - **Combat.** Everything happens at milligees. Fights are slow and
@@ -228,29 +235,30 @@ There is **one drive**. If the ship moves, the main engine moves it.
 - **Engine gammas:** the plate and the dust tank behind it shadow the
   whole payload stack.
 - **Cosmic rays:** isotropic, so a sleeper needs shielding all round —
-  ~700 g/cm², ~45 t of water or dust per pod. A courier carries **a
-  handful** of fully shielded sleepers, or tens in lighter boxes that
-  leave the revival bill high.
-- Most of what crosses is data, genomes, wombs, AI persons, and unique
-  objects.
+  ~700 g/cm², ~45 t of water or dust per pod. With payload this cheap, a
+  courier can carry tens of fully shielded sleepers: 2,000 t of payload
+  costs five years on a 10 ly crossing.
+- Most of what crosses is still data, genomes, wombs, AI persons, and
+  unique objects.
 
 ## The Bomb
 
-A 10 ly load of ~1,010 t of antimatter is ~1.8×10²³ J, **~43 Tt** —
-Chicxulub-class; a 30 ly load is ~80 Tt. One 4 mm anti-grain is ~1 kt. A
-courier that loses its store is gone, and so is anything within about a
-light-second. Ports keep couriers far out; transfers ride shuttles.
+A 10 ly load of ~8.6 kt of antimatter is ~1.5×10²⁴ J, **~370 Tt** —
+several Chicxulubs; a 30 ly load is ~760 Tt. One 4 mm anti-grain is
+~1 kt. A courier that loses its store takes everything within several
+light-seconds with it. Ports keep couriers far out; transfers ride
+shuttles. IS ships enough antimatter on one courier to end a world.
 
 ## What It Changes
 
 - **No bulk interstellar trade.** Systems are self-sufficient; what crosses
-  is information, seeds, minds, and the rare object.
+  is information, seeds, minds, a few sleepers, and the rare object.
 - **Colonies are founded from genomes and wombs**; humans in the flesh
-  cross rarely.
+  cross rarely, in tens per ship.
 - **IS** is the antimatter monopoly, with stellar collectors at its
   facilities, and the only maker of the metal.
-- **Crossings are centuries.** History, trade, and the IS service
-  interval need re-timing.
+- **Crossings are a century or two**, close to the old canon; history and
+  the IS service interval need only light re-timing.
 
 ## What It Retires
 
@@ -267,12 +275,13 @@ any thruster but the main drive; "the ship never flips."
 2. **Nozzle design.** Keane & Zhang use ~10 T compact coils; this brief
    assumes large 0.15 T rings so the coils can sit far from the
    reaction. Needs a real field model.
-3. **Tile flux limit** (10 MW/m² assumed). It sets the nozzle size and
-   most of the engine mass.
-4. **Crew.** An AI captain and sleepers, or a waking human crew in a
-   payload of hundreds of tonnes.
-5. **Range.** Propellant and tankage for 30 ly hops versus payload.
-6. **Thrust vectoring.** How far the nozzle field can steer the exhaust
+3. **Tile cooling.** 50 MW/m² of volumetric gamma heating carried off by
+   ~11 t/s of helium for centuries. It sets the nozzle size and most of
+   the engine mass.
+4. **Debris at 0.2–0.3c.** Grain energies up to ~10× the freighter's.
+5. **Crew.** An AI captain and sleepers, or a waking human crew.
+6. **Range.** Tankage for 30 ly hops (~45 kt departing).
+7. **Thrust vectoring.** How far the nozzle field can steer the exhaust
    off axis, which sets the flip time and the attitude authority.
 
 ## Assumptions
@@ -282,7 +291,7 @@ any thruster but the main drive; "the ship never flips."
 | Gamma share of annihilation energy | 0.36 |
 | Effective exhaust over total propellant | 0.41c |
 | Thrust per annihilation power | 1.4 N/GW |
-| Tile flux limit | 10 MW/m² |
+| Tile limit | 50 MW/m², helium-cooled |
 | Tile thickness | 5 cm tungsten, 15 radiation lengths (1.0 t/m²); ~5% leaks |
 | Superconductor operating limit | ~1000 K; coils run at ~900 K |
 | Nozzle field in the reaction zone | 0.15 T |
