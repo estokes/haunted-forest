@@ -1,19 +1,31 @@
-//! Evaluate a nozzle spec and print the report as JSON.
+//! Evaluate a nozzle spec, or a cosmic-ray shelter spec, and print the
+//! report as JSON.
 //!
-//! `hf-nozzle` runs the default spec, `hf-nozzle -` reads a spec from stdin,
-//! `hf-nozzle FILE` reads one from FILE. Missing fields take defaults.
+//! `hf-nozzle [shelter] [-|FILE]`: with no path the default spec, `-` a spec
+//! on stdin, else one from FILE. Missing fields take defaults.
 
 use anyhow::{Context, Result};
-use hf_nozzle::Spec;
+use hf_nozzle::{ShelterSpec, Spec};
+use serde::de::DeserializeOwned;
 use std::{fs::File, io};
 
-fn main() -> Result<()> {
-    let spec: Spec = match std::env::args().nth(1).as_deref() {
-        None => Spec::default(),
+fn read<T: DeserializeOwned + Default>(arg: Option<&str>) -> Result<T> {
+    Ok(match arg {
+        None => T::default(),
         Some("-") => serde_json::from_reader(io::stdin()).context("spec on stdin")?,
         Some(path) => serde_json::from_reader(File::open(path).context(path.to_owned())?)
             .with_context(|| format!("spec in {path}"))?,
+    })
+}
+
+fn main() -> Result<()> {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let json = match args.first().map(String::as_str) {
+        Some("shelter") => serde_json::to_string(
+            &read::<ShelterSpec>(args.get(1).map(String::as_str))?.evaluate()?,
+        )?,
+        arg => serde_json::to_string(&read::<Spec>(arg)?.evaluate()?)?,
     };
-    println!("{}", serde_json::to_string(&spec.evaluate()?)?);
+    println!("{json}");
     Ok(())
 }

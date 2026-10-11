@@ -21,6 +21,9 @@ const TAU_MU: f64 = 2.197e-6;
 pub const ANN_MEV: f64 = 1876.5;
 const P_STAR_PI: f64 = 29.79; // muon momentum in the pion frame, MeV/c
 const PIONS_PER_ANN: usize = 3;
+/// Ship hits are binned by position along the struck body, this long each.
+pub const HIT_BIN_M: f64 = 20.0;
+pub const HIT_BINS: usize = 12;
 
 /// A solid cylinder of radius r from `a`, the end facing the reaction where
 /// its shield plate is, to `b`.
@@ -64,11 +67,12 @@ impl Ship {
         self.bodies.iter().map(|b| b.distance(x)).fold(f64::INFINITY, f64::min)
     }
 
-    /// What a step from `from` to `to` struck, if anything: a plate if the
-    /// step came from in front of the body's reaction end.
-    fn struck(&self, from: DVec3, to: DVec3) -> Option<Struck> {
+    /// What a step from `from` to `to` struck, if anything, and where along
+    /// the body: a plate if the step came from in front of the reaction end.
+    fn struck(&self, from: DVec3, to: DVec3) -> Option<(Struck, f64)> {
         let body = self.bodies.iter().find(|b| b.distance(to) == 0.0)?;
-        Some(if body.locate(from).1 < 0.0 { Struck::Plate } else { Struck::Side })
+        let s = if body.locate(from).1 < 0.0 { Struck::Plate } else { Struck::Side };
+        Some((s, body.locate(to).1))
     }
 }
 
@@ -119,6 +123,10 @@ pub struct Tally {
     pub plate_e: f64,
     pub side_e: f64,
     pub ship_n: u64,
+    /// Energy striking the ship by position along the body and by species
+    /// (pion, muon, electron).
+    pub hit_along: [f64; HIT_BINS],
+    pub hit_species: [f64; 3],
     pub trapped_e: f64,
 }
 
@@ -138,12 +146,18 @@ impl Add for Tally {
         self.plate_e += o.plate_e;
         self.side_e += o.side_e;
         self.ship_n += o.ship_n;
+        for (a, b) in self.hit_along.iter_mut().zip(o.hit_along) {
+            *a += b;
+        }
+        for (a, b) in self.hit_species.iter_mut().zip(o.hit_species) {
+            *a += b;
+        }
         self.trapped_e += o.trapped_e;
         self
     }
 }
 
-fn isotropic(rng: &mut SmallRng) -> DVec3 {
+pub(crate) fn isotropic(rng: &mut SmallRng) -> DVec3 {
     let u: f64 = rng.random_range(-1.0..1.0);
     let phi = rng.random_range(0.0..2.0 * PI);
     let s = (1.0 - u * u).sqrt();
@@ -190,6 +204,22 @@ struct Track {
     life: f64,
 }
 
+/// Time step for energy e (MeV) at x in field b: a fraction of a gyration,
+/// and a path no longer than half the clearance to anything solid.
+pub(crate) fn time_step(x: DVec3, b: DVec3, e: f64, clear: f64, scale: f64) -> f64 {
+    let omega = Q * (b.length() + 1e-30) / (e * MEV_C / C); // rad/s, relativistic
+    let ds = (0.01 * x.length() + 1.0).clamp(1.0, 40.0).min((0.5 * clear).max(1.0));
+    scale * (0.15 / omega).min(ds / C)
+}
+
+/// Advance momentum p (MeV/c) and position x one Boris step of dt in field b.
+pub(crate) fn boris(x: &mut DVec3, p: &mut DVec3, e: f64, charge: f64, b: DVec3, dt: f64) {
+    let tv = b * (charge * Q * dt / (2.0 * e * MEV_C / C)); // unit-free in p
+    let pp = *p + p.cross(tv);
+    *p += pp.cross(2.0 * tv / (1.0 + tv.length_squared()));
+    *x += *p / e * C * dt;
+}
+
 /// Follow one pion and its decay chain to its fate.
 fn follow(coils: &Coils, ship: &Ship, run: &Run, rng: &mut SmallRng) -> Tally {
     let mut t = Tally::default();
@@ -213,19 +243,9 @@ fn follow(coils: &Coils, ship: &Ship, run: &Run, rng: &mut SmallRng) -> Tally {
     for _ in 0..run.max_steps {
         let e = (k.p.length_squared() + k.m * k.m).sqrt();
         let b = coils.field(k.x);
-        let omega = Q * (b.length() + 1e-30) / (e * MEV_C / C); // rad/s, relativistic
-        let ds = (0.01 * k.x.length() + 1.0)
-            .clamp(1.0, 40.0)
-            .min((0.5 * clear).max(1.0))
-            .min((0.5 * ship.distance(k.x)).max(1.0));
-        let dt = run.step * (0.15 / omega).min(ds / C);
-
-        // Boris rotation; it is unit-free in p
-        let tv = b * (k.charge * Q * dt / (2.0 * e * MEV_C / C));
-        let pp = k.p + k.p.cross(tv);
-        k.p += pp.cross(2.0 * tv / (1.0 + tv.length_squared()));
+        let dt = time_step(k.x, b, e, clear.min(ship.distance(k.x)), run.step);
         let from = k.x;
-        k.x += k.p / e * C * dt;
+        boris(&mut k.x, &mut k.p, e, k.charge, b, dt);
         k.life -= dt * k.m / e;
 
         let (c, part) = coils.clearance(k.x);
@@ -234,12 +254,20 @@ fn follow(coils: &Coils, ship: &Ship, run: &Run, rng: &mut SmallRng) -> Tally {
             t.coil_e[part as usize] += e;
             return t;
         }
-        if let Some(s) = ship.struck(from, k.x) {
+        if let Some((s, along)) = ship.struck(from, k.x) {
             match s {
                 Struck::Plate => t.plate_e += e,
                 Struck::Side => t.side_e += e,
             }
             t.ship_n += 1;
+            t.hit_along[((along / HIT_BIN_M).max(0.0) as usize).min(HIT_BINS - 1)] += e;
+            t.hit_species[if k.m == M_PI {
+                0
+            } else if k.m == M_MU {
+                1
+            } else {
+                2
+            }] += e;
             return t;
         }
         if k.x.length() > run.r_dom {

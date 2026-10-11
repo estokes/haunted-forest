@@ -21,8 +21,13 @@ GAMMA_SHARE = 0.36             # of annihilation power, as gammas
 FRAME_T_PER_M = 700.0 / 535    # engine frame and feeds, per metre of mirror ring radius
 TILE_T_PER_GW = 74.0           # tiles, coil fins, helium loop per GW of conductor shadow
 HIT_T_PER_PPM = 40.0           # cooling for charged power landing on anything, per ppm of P_ANN
-PLATE_T_PER_GW = 82.0          # plate tungsten, helium loop and fins per GW of gammas on it
-REST_T = {"power": 100.0, "structure": 500.0}
+PLATE_M = 0.10                 # plate tungsten, 30 radiation lengths: ~0.07% of each shower leaks
+PLATE_COOL_T_PER_GW = 20.0     # plate helium loop and fins per GW of gammas on it
+STOP_M = 7.0                   # dust behind each plate never burned: stops the leak to below cosmic rays
+W_T_M3, DUST_T_M3 = 19.3, 0.6
+# jackets: cooled skins on the tank sections and the far ends, which take the
+# muon-decay electrons that reach the pods (hf-nozzle hits_along_ppm)
+REST_T = {"power": 100.0, "structure": 500.0, "jackets": 500.0}
 
 
 def engine_t(r):
@@ -38,9 +43,16 @@ def p_ann(r):
     return r["spec"]["gamma_tw"] * 1e12 / GAMMA_SHARE
 
 
+def plates_t(r):
+    """Shield plates and the stops of dust behind them, t."""
+    pods = r["spec"]["ship"]["pods"]
+    area = pods["n"] * math.pi * pods["r"] ** 2
+    return area * (PLATE_M * W_T_M3 + STOP_M * DUST_T_M3) + PLATE_COOL_T_PER_GW * r["plate_gw"]
+
+
 def ship_t(r):
-    """Everything but the engine and payload, t: plates and the rest."""
-    return PLATE_T_PER_GW * r["plate_gw"] + sum(REST_T.values())
+    """Everything but the engine and payload, t: plates, stops and the rest."""
+    return plates_t(r) + sum(REST_T.values())
 
 
 def dry_t(r, payload_t=850.0):
@@ -105,7 +117,7 @@ if __name__ == "__main__":
     thrust = r["ve_eff"] * p_ann(r) / C
     print(nozzle.line("design", r))
     print(f"engine {engine_t(r):.0f} t (magnets {r['magnet_t']:.0f} t, shadow {r['shadow_gw']:.0f} GW), "
-          f"plates {PLATE_T_PER_GW * r['plate_gw']:.0f} t, dry {dry*1e3:.0f} t, thrust {thrust/1e3:.0f} kN, "
+          f"plates and stops {plates_t(r):.0f} t, dry {dry*1e3:.0f} t, thrust {thrust/1e3:.0f} kN, "
           f"{thrust/(engine_t(r)*1e3)*1e3:.0f} mN/kg engine")
 
     print("\npayload    10 ly     30 ly")

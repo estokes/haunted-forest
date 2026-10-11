@@ -82,7 +82,7 @@ pub enum Layout {
 
 impl Default for Layout {
     fn default() -> Self {
-        Layout::Pods { n: 2, r: 5.7, length: 150.0, gap: 20.0, phase_deg: 0.0 }
+        Layout::Pods { n: 2, r: 5.7, length: 220.0, gap: 20.0, phase_deg: 0.0 }
     }
 }
 
@@ -127,6 +127,13 @@ pub struct ByPart {
 }
 
 #[derive(Clone, Debug, Serialize)]
+pub struct Species {
+    pub pion: f64,
+    pub muon: f64,
+    pub electron: f64,
+}
+
+#[derive(Clone, Debug, Serialize)]
 pub struct Report {
     pub spec: Spec,
     pub magnet_t: f64,
@@ -148,6 +155,10 @@ pub struct Report {
     pub side_ppm: f64,
     /// Tracks that struck the ship anywhere, for the statistics of the above.
     pub ship_hits: u64,
+    /// Charged power striking the ship, ppm, by track::HIT_BIN_M of position
+    /// along the struck body from its plate, and by species.
+    pub hits_along_ppm: Vec<f64>,
+    pub hits_species_ppm: Species,
     /// Gamma power on the ship's plates.
     pub plate_gw: f64,
     pub coil_ppm: ByPart,
@@ -279,6 +290,11 @@ impl Spec {
             plate_ppm: ppm(t.plate_e),
             side_ppm: ppm(t.side_e),
             ship_hits: t.ship_n,
+            hits_along_ppm: t.hit_along.iter().map(|&x| ppm(x)).collect(),
+            hits_species_ppm: {
+                let [pion, muon, electron] = t.hit_species.map(ppm);
+                Species { pion, muon, electron }
+            },
             plate_gw: plate_w / 1e9,
             coil_ppm: ByPart { ring, sweeper, spoke },
             forward: t.fwd_e / e,
