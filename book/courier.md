@@ -36,10 +36,38 @@ goes to charged pions; about **36%** to neutral pions, which become gamma
 rays averaging ~200 MeV, in every direction.
 
 A magnetic nozzle turns the charged pions into an exhaust. Keane & Zhang
-(2012, Geant4 simulation) get the pions out at ~0.69c. Counted over all
-the propellant burned — matter and antimatter, including the energy lost
-to gammas — that is an **effective exhaust of ~0.41c** and **~1.4 N of
-thrust per GW of annihilation**. Antimatter is half the propellant.
+(2012, Geant4) showed the idea with compact ~10 T coils. This design's
+nozzle is modelled in `modeling/nozzle.py`, which tracks pions through the
+real loop fields, with their decays to muons and electrons. Counted over
+all the propellant burned — matter and antimatter, including the energy
+lost to gammas and neutrinos — it gives an **effective exhaust of ~0.30c**
+and **~1.0 N of thrust per GW of annihilation**. Antimatter is half the
+propellant.
+
+Where the energy goes: ~36% leaves as gammas, ~43% as neutrinos (pions
+decay to muons within ~18 m, muons to electrons over ~2 km, and their
+neutrinos keep whatever direction the parent had), and what is left
+leaves as the charged exhaust.
+
+### The nozzle
+
+- **One mirror ring**, ~535 m in radius, set ~430 m toward the ship from
+  the reaction point and carrying ~18 MA. It makes only **~10 mT** at the
+  reaction point: nothing solid sits within half a kilometre, so the pions
+  and muons have room to swing wide while the field turns them. A stronger
+  field barely helps and the magnets' stored energy grows with its square.
+- **Most charged particles reflect** off the ring's field and leave along
+  −z. About **0.8%** of the annihilation power leaks forward through the
+  mirror, along the axis, straight at the ship.
+- **A sweeper** stops that. A ~20 mT transverse field over ~440 m between
+  the ring and the plate — a particle accelerator's trick — bends the leak
+  off the axis. Without it the plate takes ~2% of the annihilation power
+  (~10 TW); with it, ~3 parts per million (~1.5 GW). Deflecting the leak
+  pushes the ship sideways at ~3% of the thrust; the nozzle tilts ~1.5° to
+  cancel it.
+- **The coils see no charged particles.** Field lines from the reaction
+  point never reach them.
+- Magnets ~0.5 kt for the ring and ~0.1 kt for the sweeper.
 
 ### The gamma problem
 
@@ -47,8 +75,8 @@ Gammas are neutral (no field steers them) and penetrating (a 200 MeV
 shower needs 15–20 radiation lengths of tungsten, 5–7 cm). There are
 three places they hurt:
 
-1. **The nozzle's own magnets.** Each coil sits in the shadow of a
-   tungsten tile facing the reaction. How much gamma flux a tile can take
+1. **The nozzle's own magnets.** Each conductor — the mirror ring and the
+   sweeper — sits in the shadow of a tungsten tile facing the reaction. How much gamma flux a tile can take
    sets how close to the reaction anything may sit:
    r ≥ √(G / 4π·q), with G the gamma power and q the tile limit. The tiles
    are **helium-cooled**: gammas deposit heat through the tile's depth, not
@@ -74,57 +102,59 @@ sweet spot is in between. At q = 50 MW/m²:
 
 | Gamma power | Nozzle radius | Tiles | Magnets | Cooling | Engine | Thrust | Thrust/engine mass |
 |---|---|---|---|---|---|---|---|
-| 1 TW | 40 m | 130 t | ~0 | 85 t | 0.28 kt | 3.8 kN | 14 mN/kg |
-| 10 TW | 126 m | 400 t | 42 t | 270 t | 0.92 kt | 38 kN | 41 mN/kg |
-| 100 TW | 400 m | 1.3 kt | 1.3 kt | 0.85 kt | 4.5 kt | 380 kN | 85 mN/kg |
-| **180 TW** | **535 m** | **1.7 kt** | **3.2 kt** | **1.1 kt** | **7.8 kt** | **684 kN** | **87 mN/kg** |
-| 300 TW | 690 m | 2.2 kt | 6.9 kt | 1.5 kt | 13.7 kt | 1.1 MN | 83 mN/kg |
+| 10 TW | 126 m | 400 t | ~10 t | 270 t | 0.87 kt | 28 kN | 32 mN/kg |
+| 100 TW | 400 m | 1.3 kt | 0.26 kt | 0.85 kt | 3.1 kt | 280 kN | 91 mN/kg |
+| **180 TW** | **535 m** | **1.7 kt** | **0.62 kt** | **1.1 kt** | **4.5 kt** | **500 kN** | **112 mN/kg** |
+| 500 TW | 890 m | 2.8 kt | 2.9 kt | 1.9 kt | 9.9 kt | 1.4 MN | 141 mN/kg |
+| 1,000 TW | 1,260 m | 4.0 kt | 8.2 kt | 2.7 kt | 19 kt | 2.8 MN | 145 mN/kg |
 
-Assumptions: two coils 0.25 m wide; 0.15 T in the reaction zone (pions at
-~350 MeV/c bend inside their ~18 m decay length); magnets at 10× the
-stored-energy (virial) floor on near-ideal CNT; +30% for frame and feeds;
+Assumptions: tiles for the ring and the sweeper conductors (0.5 m of
+shadowed width in all); magnets scaled from the modelled ring and sweeper
+(10× the stored-energy floor on near-ideal CNT); +30% for frame and feeds;
 coil fins for the tile leak; cooling = helium loop plus radiators.
 
-The tile limit is the master knob. Passive tiles radiating at ~2,900 K
-take ~10 MW/m², and the best engine then manages ~22 mN/kg — a 10 ly
-crossing of ~200 years. Helium cooling quadruples the specific thrust.
+Bigger engines past ~180 TW gain little: 500 TW cuts a 10 ly crossing from
+~103 to ~91 years and more than doubles the antimatter. The tile limit is
+the master knob: passive tiles at ~10 MW/m² give an engine about a quarter
+as good.
 
 ## Design Point
 
 **~180 TW of gammas (~500 TW of annihilation), 850 t of payload.** Dry
-mass ~9.9 kt; ~27 kt at departure fueled for 10 ly.
+mass ~6.5 kt; ~25 kt at departure fueled for 10 ly.
 
 ```
   ← direction of travel (accelerating)
 
-  [payload | anti store | dust tank | W plate]═══════ 1 km boom ═══════( engine )
-   16 m wide                                                     annihilation point
-                                                                 inside a ~1 km ring
-                                                                 nozzle; tiles face in
+  [payload | anti store | dust tank | W plate]═════ 1 km boom ═════╪══════( engine )
+   16 m wide                                                  sweeper   annihilation point;
+                                                                        mirror ring 535 m
+                                                                        radius, 430 m toward
+                                                                        the ship
 ```
 
 | Part | Mass | Notes |
 |---|---|---|
-| Engine | ~7,850 t | two superconducting rings, ~535 m radius, at ~900 K; ~1,700 t of 5 cm helium-cooled tungsten tiles; ~3,200 t of magnet; ~1,500 t of frame and feeds; ~300 t of coil fins; ~1,100 t of helium loop and radiators |
-| Boom | ~200 t | 1 km, guyed at its quarter points; 684 kN in compression |
-| Shield plate | ~360 t | 7 cm tungsten, 8 m radius, helium-cooled; takes ~2.9 GW; its own fins at the payload end |
+| Engine | ~4,500 t | mirror ring (~535 m radius, ~18 MA, ~900 K) and sweeper, ~620 t of magnet; ~1,700 t of 5 cm helium-cooled tungsten tiles; ~700 t of frame and feeds; ~300 t of coil fins; ~1,100 t of helium loop and radiators |
+| Boom | ~200 t | 1 km, guyed at its quarter points; 500 kN in compression |
+| Shield plate | ~360 t | 7 cm tungsten, 8 m radius, helium-cooled; takes ~2.9 GW of gammas and ~1.5 GW of swept leak; its own fins at the payload end |
 | Power plant | ~100 t | the turbines on the tile loop, and the ~40 t port heater |
 | Structure, tanks, systems, hab | ~500 t | |
 | **Payload** | **~850 t** | |
-| Matter dust tank | ~8.6 kt of dust (10 ly) | ~72 m long at 8 m radius, behind the plate: the second shield layer and the annihilation partner |
-| Antimatter store | ~8.6 kt of anti-dust (10 ly) | levitated in a magnetic store behind the tank; fed down the boom at up to ~2.8 g/s |
+| Matter dust tank | ~9.1 kt of dust (10 ly) | ~76 m long at 8 m radius, behind the plate: the second shield layer and the annihilation partner |
+| Antimatter store | ~9.1 kt of anti-dust (10 ly) | levitated in a magnetic store behind the tank; fed down the boom at up to ~2.8 g/s |
 
-Thrust ~684 kN; ~2.6 mG at departure, rising as propellant burns.
+Thrust ~500 kN; ~2 mG at departure, rising as propellant burns.
 
 **Payload is nearly free.** The engine and its propellant are most of the
 ship, so carrying more costs little time:
 
 | Payload | 10 ly | 30 ly |
 |---|---|---|
-| 100 t | ~96 yr | ~196 yr |
-| **850 t** | **~98 yr** | **~201 yr** |
-| 2,000 t | ~103 yr | ~209 yr |
-| 5,000 t | ~113 yr | ~226 yr |
+| 100 t | ~99 yr | ~214 yr |
+| **850 t** | **~103 yr** | **~222 yr** |
+| 2,000 t | ~109 yr | ~232 yr |
+| 5,000 t | ~123 yr | ~256 yr |
 
 ## Flight
 
@@ -133,10 +163,10 @@ the ship, brake the rest. Propellant is loaded for the hop:
 
 | Hop | Time | Peak | Departure | Antimatter |
 |---|---|---|---|---|
-| α Cen (4.4 ly) | ~60 yr | ~0.15c | ~20 kt | ~5.3 kt |
-| 10 ly | ~98 yr | ~0.21c | ~27 kt | ~8.6 kt |
-| 20 ly | ~153 yr | ~0.27c | ~37 kt | ~13.5 kt |
-| 30 ly | ~201 yr | ~0.31c | ~45 kt | ~17.7 kt |
+| α Cen (4.4 ly) | ~61 yr | ~0.15c | ~17 kt | ~5.4 kt |
+| 10 ly | ~103 yr | ~0.20c | ~25 kt | ~9.1 kt |
+| 20 ly | ~166 yr | ~0.26c | ~36 kt | ~14.6 kt |
+| 30 ly | ~222 yr | ~0.29c | ~45 kt | ~19.4 kt |
 
 That is about the old freighter's crossing times, honestly. Coasting at a
 lower peak saves propellant and costs time. At the peaks above, time
@@ -145,7 +175,7 @@ aboard than at home. The times are non-relativistic; at 0.3c they are a
 few percent off.
 
 **Flipping is back.** The ship rotates at midcourse. The engine leads
-into the medium on the braking half, so its rings carry their own Whipple
+into the medium on the braking half, so its ring carries its own Whipple
 strips, and the tungsten plate is good armor for the other end.
 
 **The medium gets harder.** See Debris Defense.
@@ -160,7 +190,7 @@ walls. Only what the hardware intercepts has to be handled:
 |---|---|---|---|
 | Engine tiles | ~84 GW | ~2,900 K | helium loop (~11 t/s) to turbines: ~25 GW of electricity, ~59 GW rejected through ~110,000 m² of fins at ~1,500 K |
 | Leak through the tiles into the coils | ~4 GW | ~900 K | ~60,000 m² of coil fins |
-| Shield plate | ~2.9 GW | ~2,900 K | its own helium loop and ~5,600 m² of fins at the payload end |
+| Shield plate | ~4.4 GW (gammas plus swept leak) | ~2,900 K | its own helium loop and ~8,500 m² of fins at the payload end |
 | Port heater (engine cold) | ~70 MW of waste | ~1,000–1,500 K | the plant fins |
 | Hab, avionics, stores | MW | ~300 K | small radiators |
 
@@ -215,7 +245,7 @@ throttled, then coasting.
 **One main drive**, plus **dust reaction jets** for everything small.
 
 - **Throttle.** The main engine runs at any power from a trickle up to
-  ~500 TW of annihilation; thrust follows at ~1.4 N per GW.
+  ~500 TW of annihilation; thrust follows at ~1.0 N per GW.
 - **Attitude under burn.** Steering the nozzle field slightly off axis
   vectors the thrust; with the mass spread along a kilometre of boom, a
   small angle is a large torque.
@@ -227,14 +257,14 @@ throttled, then coasting.
     dust; in six hours, a few hundred newtons and under a tonne.
   - Translation is dear: 10 m/s on a 15 kt ship is ~12 t of dust.
 - **In-system**, on the main drive at full thrust, burning the whole way,
-  between a ship that has arrived (~15 kt, ~4.6 mG) and one fueled to
-  leave (~27 kt, ~2.6 mG):
+  between a ship that has arrived (~7 kt, ~7 mG) and one fueled to
+  leave (~25 kt, ~2 mG):
 
 | Trip | Time | Δv | Antimatter |
 |---|---|---|---|
-| Earth–Moon distance | 2–3 days | 6–8 km/s | ~0.5–0.7 t |
-| 1 AU | 42–56 days | 120–165 km/s | ~10–14 t |
-| 5 AU | 94–126 days | 275–370 km/s | ~22–30 t |
+| Earth–Moon distance | 2–3 days | 6–10 km/s | ~0.4–0.8 t |
+| 1 AU | 34–63 days | 110–210 km/s | ~8–15 t |
+| 5 AU | 75–140 days | 245–460 km/s | ~18–34 t |
 
 - **Ports.** A courier never docks. It parks several light-seconds out,
   with its exhaust pointed away from anything that matters, and shuttles
@@ -258,8 +288,9 @@ for 0.5c). The courier peaks at 0.2–0.3c:
 | Radar detect floor | ~1,200 km | ~2,600 km |
 
 **The engine is the target, not the payload.** The payload stack shows the
-medium ~200 m². The two rings — coils, tiles, and Whipple strips, a
-kilometre across — show ~10,000 m², twice the old freighter's face, and
+medium ~200 m². The mirror ring and the sweeper — conductors, tiles, and
+Whipple strips, the ring a kilometre across — show ~5,000 m², the old
+freighter's whole face, and
 they are exposed on both halves of the crossing. Interdiction has to cover
 a kilometre-wide annulus, not a nose.
 
@@ -275,14 +306,14 @@ worked out properly.
 - **Cosmic rays:** isotropic, so a sleeper needs shielding all round —
   ~700 g/cm², ~45 t of water or dust per pod. With payload this cheap, a
   courier can carry tens of fully shielded sleepers: 2,000 t of payload
-  costs five years on a 10 ly crossing.
+  costs six years on a 10 ly crossing.
 - Most of what crosses is still data, genomes, wombs, AI persons, and
   unique objects.
 
 ## The Bomb
 
-A 10 ly load of ~8.6 kt of antimatter is ~1.5×10²⁴ J, **~370 Tt** —
-several Chicxulubs; a 30 ly load is ~760 Tt. One 4 mm anti-grain is
+A 10 ly load of ~9.1 kt of antimatter is ~1.6×10²⁴ J, **~390 Tt** —
+several Chicxulubs; a 30 ly load is ~840 Tt. One 4 mm anti-grain is
 ~1 kt. A courier that loses its store takes everything within several
 light-seconds with it. Ports keep couriers far out; transfers ride
 shuttles. IS ships enough antimatter on one courier to end a world.
@@ -307,29 +338,31 @@ stations and colonies); "the ship never flips."
 
 ## Open Questions
 
-1. **Nozzle field model.** Keane & Zhang use ~10 T compact coils; this
-   brief assumes large 0.15 T rings so the coils can sit far from the
-   reaction. Next step: model the rings' field and track pions through it,
-   with decay, to check the ~0.41c and the thrust per GW.
-2. **Debris at 0.2–0.3c**, with the engine rings as the main target.
+1. **Nozzle refinements.** The model (`modeling/nozzle.py`) uses a fitted
+   pion momentum spectrum, ignores electron radiation, and resolves the
+   swept leak only to ~3 ppm. Next: finer leak statistics, a real
+   sweeper coil instead of an ideal field slab, and thrust vectoring.
+2. **Debris at 0.2–0.3c**, with the engine's ring as the main target.
 3. **Tile cooling.** 50 MW/m² of volumetric gamma heating carried off by
    ~11 t/s of helium in closed, segmented loops for centuries.
 4. **Crew.** An AI captain and sleepers, or a waking human crew.
 5. **Range.** Tankage for 30 ly hops (~45 kt departing).
-6. **Thrust vectoring.** How far the nozzle field can steer the exhaust
-   off axis, which sets attitude authority under burn.
+6. **Thrust vectoring.** How far tilting the mirror ring steers the
+   exhaust off axis, which sets attitude authority under burn and trims
+   the sweeper's side push. Now modelable.
 
 ## Assumptions
 
 | | Value |
 |---|---|
 | Gamma share of annihilation energy | 0.36 |
-| Effective exhaust over total propellant | 0.41c |
-| Thrust per annihilation power | 1.4 N/GW |
+| Effective exhaust over total propellant | 0.30c (modelled) |
+| Thrust per annihilation power | 1.0 N/GW (modelled) |
+| Neutrino share of annihilation energy | ~0.43 (modelled) |
 | Tile limit | 50 MW/m², helium-cooled |
 | Tile thickness | 5 cm tungsten, 15 radiation lengths (1.0 t/m²); ~5% leaks |
 | Superconductor operating limit | ~1000 K; coils run at ~900 K |
-| Nozzle field in the reaction zone | 0.15 T |
+| Nozzle | one mirror ring, ~535 m radius, ~430 m toward the ship, ~10 mT at the reaction point; ~20 mT sweeper over ~440 m |
 | Magnet mass | 10× virial floor, CNT at 25 GPa allowable |
 | Radiator fins | ~5 kg/m², edge-on to the reaction |
 | Payload | 850 t |
