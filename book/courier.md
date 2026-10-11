@@ -118,8 +118,8 @@ and propellant are most of the ship.
 | Engine | ~1,810 t | two superconducting rings, ~280 m radius, running at ~900 K; ~900 t of 5 cm tungsten tiles shading them; ~470 t of magnet; ~33 t of coil fins; feeds and frame |
 | Boom | ~30 t | 500 m, in compression at 38 kN — light |
 | Shield plate | ~100 t | 7 cm tungsten, 5 m radius, facing the engine; takes ~250 MW and radiates it at ~2,900 K |
-| Power plant | ~100 t | heat engine on the tiles, with its radiator fins |
-| Structure, systems, hab | ~440 t | |
+| Power plant | ~140 t | heat engine on the tiles, its radiator fins, and the ~40 t port heater |
+| Structure, systems, hab | ~400 t | |
 | **Payload** | **~850 t** | |
 | Matter dust tank | ~1,010 t of dust | behind the plate: ~22 m of dust, ~1,300 g/cm², the second shield layer and the annihilation partner |
 | Antimatter store | ~1,010 t of anti-dust | levitated in a magnetic store behind the tank; fed down the boom at ~0.15 g/s |
@@ -158,6 +158,7 @@ walls. Only what the hardware intercepts has to be radiated:
 | Leak through the tiles into the coils | ~0.44 GW | ~900 K | ~7,000 m² of coil fins, edge-on |
 | Shield plate | ~0.25 GW | ~2,900 K | its face and fins |
 | Power plant | ~1.2 GW of waste for ~0.5 GW of electricity | ~1,000–1,500 K | 5,000–25,000 m² of fins |
+| Port heater (engine cold) | ~70 MW of waste | ~1,000–1,500 K | the same plant fins |
 | Hab, avionics, stores | MW | ~300 K | small radiators |
 
 **Radiators must be edge-on to the engine.** The plate's shadow is only as
@@ -178,19 +179,49 @@ With 1000 K superconductors nothing aboard needs cryogenic cooling:
 nozzle coils, the antimatter store's levitation, and the dust pumps all
 run warm.
 
-In port, with the engine cold, the ship needs another source. **Open:**
-the existing 100 GW D-³He reactor sim (~8 kt) does not fit a 5 kt ship.
-Options: a much smaller plant, stored energy, or keep the mirror reactor
-as a station and colony system.
+**In port the same heat engine runs on a second heat source:** a small
+**annihilation heater** beside it at the engine end. Anti-dust and dust
+meet inside a tungsten core ~0.9 m in radius, thick enough to stop the
+gammas (~20 radiation lengths) and the pions (~11 cm). About 84% of the
+energy stays as heat; the rest leaves as neutrinos from the stopped pions
+and muons. It is the one place on the ship where annihilation is fully
+contained, and it can be, because it is small.
 
-## Maneuvering and Combat
+| | Value |
+|---|---|
+| Thermal power | ~100 MW (surface at the same ~10 MW/m² limit) |
+| Electricity | ~30 MW |
+| Core | ~40 t of tungsten |
+| Antimatter | ~20 g a year |
 
-- **Main drive:** ~0.7 mG. Not a combat drive.
-- **Thruster:** a dust rocket with no antimatter. Metal that reverts in a
-  chamber releases 216 MJ/kg by itself — a monopropellant good for
-  ~10–15 km/s of exhaust, capped by chamber temperature. At ~10 GW it
-  pushes ~1.5 MN, ~0.03 G on 5 kt. Each 500 t of dust is ~1 km/s of Δv.
-- Fights are slow, positional, and decided by Δv bookkeeping.
+It feeds from the same anti-dust line as the engine and rejects its waste
+through the plant's radiators. Pion capture on tungsten makes neutrons and
+activates the core over time, which is another reason it lives at the far
+end of the boom. The 100 GW reactor sim no longer powers the ship.
+
+## Maneuvering
+
+There is **one drive**. If the ship moves, the main engine moves it.
+
+- **Throttle.** The engine runs at any power from a trickle up to ~28 TW
+  of annihilation; thrust follows at ~1.4 N per GW.
+- **Attitude.** Steering the nozzle field slightly off axis vectors the
+  thrust; with the mass spread along a 500 m boom, a small angle is a
+  large torque. The midcourse flip uses the same trick.
+- **In-system**, at full thrust (~0.7–0.8 mG), burning the whole way:
+
+| Trip | Time | Δv | Antimatter |
+|---|---|---|---|
+| Earth–Moon distance | ~5 days | ~3.5 km/s | ~70 kg |
+| 1 AU | ~100 days | ~70 km/s | ~1.4 t |
+| 5 AU | ~230 days | ~150 km/s | ~3 t |
+
+- **Ports.** A courier never docks. It parks a light-second or more out,
+  with its exhaust pointed away from anything that matters, and shuttles
+  carry payload in.
+- **Combat.** Everything happens at milligees. Fights are slow and
+  positional: who saw whom first, where the exhaust points, and how much
+  propellant each side can spend.
 
 ## Shielding and Sleepers
 
@@ -226,11 +257,13 @@ light-second. Ports keep couriers far out; transfers ride shuttles.
 The 1 km hull, the hold, rack, and cargo manager; the guyed pylons; the
 fuel bands and bladder silos; the vault as designed; catalyzed p-p and the
 IS box as a fusion torch; the 100 GW plant as ship power (see Power);
-"the ship never flips."
+any thruster but the main drive; "the ship never flips."
 
 ## Open Questions
 
-1. **Port power** and the fate of the reactor sim.
+1. **The reactor sim.** Port power is the annihilation heater; the 100 GW
+   D-³He mirror sim no longer powers the ship. Keep it as a station and
+   colony system, or retire it.
 2. **Nozzle design.** Keane & Zhang use ~10 T compact coils; this brief
    assumes large 0.15 T rings so the coils can sit far from the
    reaction. Needs a real field model.
@@ -239,6 +272,8 @@ IS box as a fusion torch; the 100 GW plant as ship power (see Power);
 4. **Crew.** An AI captain and sleepers, or a waking human crew in a
    payload of hundreds of tonnes.
 5. **Range.** Propellant and tankage for 30 ly hops versus payload.
+6. **Thrust vectoring.** How far the nozzle field can steer the exhaust
+   off axis, which sets the flip time and the attitude authority.
 
 ## Assumptions
 
