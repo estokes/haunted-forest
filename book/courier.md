@@ -148,9 +148,7 @@ few percent off.
 into the medium on the braking half, so its rings carry their own Whipple
 strips, and the tungsten plate is good armor for the other end.
 
-**The medium gets harder.** At 0.21c an ISM proton arrives with ~21 MeV
-(4.7 MeV at 0.1c) and a dust grain with ~4× the energy; at 0.31c, ~49 MeV
-and ~10×. Debris defense must be redone for these speeds.
+**The medium gets harder.** See Debris Defense.
 
 ## Heat
 
@@ -201,21 +199,36 @@ contained, and it can be, because it is small.
 
 It feeds from the same anti-dust line as the engine. Pion capture on
 tungsten makes neutrons and activates the core over time, which is
-another reason it lives at the far end of the boom. The 100 GW reactor sim
-no longer powers the ship.
+another reason it lives at the far end of the boom.
+
+The 100 GW D-³He mirror reactor no longer powers the ship. It powers
+**stations and colonies**: only so many people want to live next to
+kilotonnes of antimatter.
+
+**The helium loops** are closed and segmented, so a leak isolates one
+sector of tiles and the engine throttles down around it. Spare helium
+rides in the payload stack. A courier that loses enough of it is
+throttled, then coasting.
 
 ## Maneuvering
 
-There is **one drive**. If the ship moves, the main engine moves it.
+**One main drive**, plus **dust reaction jets** for everything small.
 
-- **Throttle.** The engine runs at any power from a trickle up to
+- **Throttle.** The main engine runs at any power from a trickle up to
   ~500 TW of annihilation; thrust follows at ~1.4 N per GW.
-- **Attitude.** Steering the nozzle field slightly off axis vectors the
-  thrust; with the mass spread along a kilometre of boom, a small angle is
-  a large torque. The midcourse flip uses the same trick.
-- **In-system**, at full thrust, burning the whole way, between a ship
-  that has arrived (~15 kt, ~4.6 mG) and one fueled to leave (~27 kt,
-  ~2.6 mG):
+- **Attitude under burn.** Steering the nozzle field slightly off axis
+  vectors the thrust; with the mass spread along a kilometre of boom, a
+  small angle is a large torque.
+- **Reaction jets.** Clusters at both ends of the boom, burning dust as a
+  monopropellant: metal that reverts in a small chamber releases 216 MJ/kg
+  by itself, good for ~10–15 km/s of exhaust. They do attitude with the
+  engine cold, fine pointing, proximity work in port, and a backup flip.
+  - A flip in an hour needs ~8.5 kN at each end of the boom and ~5 t of
+    dust; in six hours, a few hundred newtons and under a tonne.
+  - Translation is dear: 10 m/s on a 15 kt ship is ~12 t of dust.
+- **In-system**, on the main drive at full thrust, burning the whole way,
+  between a ship that has arrived (~15 kt, ~4.6 mG) and one fueled to
+  leave (~27 kt, ~2.6 mG):
 
 | Trip | Time | Δv | Antimatter |
 |---|---|---|---|
@@ -229,6 +242,31 @@ There is **one drive**. If the ship moves, the main engine moves it.
 - **Combat.** Everything happens at milligees. Fights are slow and
   positional: who saw whom first, where the exhaust points, and how much
   propellant each side can spend.
+
+## Debris Defense
+
+The freighter's debris section was built for 0.1c (and an earlier draft
+for 0.5c). The courier peaks at 0.2–0.3c:
+
+| | 0.21c | 0.31c |
+|---|---|---|
+| ISM proton | ~21 MeV | ~49 MeV |
+| 100 µm grain | ~3 MJ | ~7.5 MJ |
+| 1 mm grain | ~0.8 t TNT | ~1.8 t TNT |
+| 1 cm pebble | ~0.8 kt TNT | ~1.8 kt TNT |
+| Fire-control floor (10 ms) | ~800 km | ~1,350 km |
+| Radar detect floor | ~1,200 km | ~2,600 km |
+
+**The engine is the target, not the payload.** The payload stack shows the
+medium ~200 m². The two rings — coils, tiles, and Whipple strips, a
+kilometre across — show ~10,000 m², twice the old freighter's face, and
+they are exposed on both halves of the crossing. Interdiction has to cover
+a kilometre-wide annulus, not a nose.
+
+What helps: the FEL bus has ~25 GW to draw on while the engine burns, and
+the ship's own sensor baseline is a kilometre. **The anti-social laser
+AI is back**, with more to shoot at and more power to shoot with. To be
+worked out properly.
 
 ## Shielding and Sleepers
 
@@ -264,25 +302,22 @@ shuttles. IS ships enough antimatter on one courier to end a world.
 
 The 1 km hull, the hold, rack, and cargo manager; the guyed pylons; the
 fuel bands and bladder silos; the vault as designed; catalyzed p-p and the
-IS box as a fusion torch; the 100 GW plant as ship power (see Power);
-any thruster but the main drive; "the ship never flips."
+IS box as a fusion torch; the 100 GW plant as ship power (it moves to
+stations and colonies); "the ship never flips."
 
 ## Open Questions
 
-1. **The reactor sim.** Port power is the annihilation heater; the 100 GW
-   D-³He mirror sim no longer powers the ship. Keep it as a station and
-   colony system, or retire it.
-2. **Nozzle design.** Keane & Zhang use ~10 T compact coils; this brief
-   assumes large 0.15 T rings so the coils can sit far from the
-   reaction. Needs a real field model.
+1. **Nozzle field model.** Keane & Zhang use ~10 T compact coils; this
+   brief assumes large 0.15 T rings so the coils can sit far from the
+   reaction. Next step: model the rings' field and track pions through it,
+   with decay, to check the ~0.41c and the thrust per GW.
+2. **Debris at 0.2–0.3c**, with the engine rings as the main target.
 3. **Tile cooling.** 50 MW/m² of volumetric gamma heating carried off by
-   ~11 t/s of helium for centuries. It sets the nozzle size and most of
-   the engine mass.
-4. **Debris at 0.2–0.3c.** Grain energies up to ~10× the freighter's.
-5. **Crew.** An AI captain and sleepers, or a waking human crew.
-6. **Range.** Tankage for 30 ly hops (~45 kt departing).
-7. **Thrust vectoring.** How far the nozzle field can steer the exhaust
-   off axis, which sets the flip time and the attitude authority.
+   ~11 t/s of helium in closed, segmented loops for centuries.
+4. **Crew.** An AI captain and sleepers, or a waking human crew.
+5. **Range.** Tankage for 30 ly hops (~45 kt departing).
+6. **Thrust vectoring.** How far the nozzle field can steer the exhaust
+   off axis, which sets attitude authority under burn.
 
 ## Assumptions
 
