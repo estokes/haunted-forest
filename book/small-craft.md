@@ -146,13 +146,21 @@ cones translate, as the Mirage's do, but much further, to set up the
 inlet for the ramjet. The delta's big wing gives it a low landing speed
 when it uses a strip.
 
-**Vertical lift comes from two fans buried in the centre fuselage**,
-either side of the centre of gravity, with doors above and below. The
-Mirage IIIV did the same in 1965 with eight small lift jets. The fans are
-~1.5 m across, driven electrically like the light shuttle's, from the
-engine's generator; together they lift ~120 kN, and louvres in their
-exits give control in the hover. The main engine idles straight aft. The
-fans' jet is ~250 m/s of cool air: hard on a surface, but not hot.
+**Vertical lift comes from three buried fans in a triangle around the
+centre of gravity**: one ~1.3 m fan behind the cockpit and one ~1.6 m fan
+in each wing root, each with doors above and below. The Ryan XV-5
+Vertifan flew this layout in 1964. The fans are driven electrically like
+the light shuttle's, from the engine's generator, with the motors in the
+duct rings, so a fan is thin enough for the delta's root. Together they
+lift ~120 kN from ~5.4 m² of disk, for ~16 MW.
+
+- **Control in the hover**: pitch by trading thrust between the nose fan
+  and the wing fans, roll by trading it between the wings, yaw by louvres
+  in the fan exits. The main engine idles straight aft.
+- **Downwash**: ~190 m/s of cool air — hard on a surface, but not hot.
+- **The centre fuselage** stays free for tanks and an internal bay.
+- **A fan lost in the hover** is a hard upset, as it was for every
+  lift-fan aircraft. The seat goes.
 
 | | Mass |
 |---|---|
