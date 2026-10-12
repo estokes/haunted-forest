@@ -4,7 +4,7 @@ Couriers cross between stars and never come near a planet. Everything
 else that flies in a system — shuttles, fighters, missiles, tugs — is a
 small craft. This doc covers the chemical tier: craft that burn **dust**,
 the same IS metal the couriers carry, as a chemical fuel — and the
-cruiser, which needs the ICF drive still to be designed.
+cruiser, which flies on the [ICF drive](icf-drive.md).
 
 Numbers here are first-order, from energy balances and textbook engine
 physics, not from a model.
@@ -321,9 +321,11 @@ risk is its magazine.
 ## Cruiser
 
 A scaled-up gunboat with an **ICF drive** and a **hangar** for fighters
-and a few gunboats. The drive gives it the hundreds of km/s a system
-takes; its small craft give it the gees and the last few km/s of a
-fight. Sizes wait on the drive's design.
+and a few gunboats: a ring 200 m across with three pods riding it, ~5 kt
+dry and ~9 kt loaded. The drive gives it the hundreds of km/s a system
+takes — 1 AU in ~25 days — and its small craft give it the gees and the
+last few km/s of a fight. Its drive's FELs double as a main battery that
+reaches ~10,000 km. See [ICF Drive](icf-drive.md#the-cruiser).
 
 ## Fighting a Courier
 
@@ -354,7 +356,6 @@ A courier cannot dodge, but it is a hard thing to approach:
 - A chemistry model for the dust-ammonia mixes and the air-breathing
   modes.
 - The fighter's airframe heating at Mach 6.
-- The ICF drive, and the cruiser built around it.
 - Antimatter-boosted dust (~3,000 s, gas core, a gamma lamp) and an
   open-ended fusion mirror for in-system craft.
 - Armor and tank insulation against FELs, worked through.

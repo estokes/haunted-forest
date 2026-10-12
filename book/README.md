@@ -15,6 +15,7 @@ pushed to its limits and the questions that follow.
    - [Station Power](station-power.md) — the D-³He plant that powers stations and colonies
    - [Small Craft](small-craft.md) — dust-burning shuttles, fighters, gunboats, missiles, the hybrid engine
    - [Sensors and Stealth](sensors.md) — passive and active sensing, cold faces, ammonia heat sinks
+   - [ICF Drive](icf-drive.md) — deuterium–helium-3 pulse drive, and the cruiser built on it
 7. **[Architecture](architecture.md)** — Game technical design: simulations, netidx, Graphix, LLMs
 8. **[Narrative](narrative.md)** — Main plot, the Warden, endings, side plots
 9. **[Ruins](ruins.md)** — Dead civilizations, archaeology, the Silence
