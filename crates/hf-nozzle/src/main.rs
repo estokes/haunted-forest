@@ -1,11 +1,11 @@
-//! Evaluate a nozzle spec, a cosmic-ray shelter spec, or an ICF blast
-//! shell spec, and print the report as JSON.
+//! Evaluate a nozzle spec, a cosmic-ray shelter spec, or an ICF blast spec
+//! (thin shell or hybrid), and print the report as JSON.
 //!
-//! `hf-nozzle [shelter|shell] [-|FILE]`: with no path the default spec, `-`
+//! `hf-nozzle [shelter|shell|hybrid] [-|FILE]`: with no path the default spec, `-`
 //! a spec on stdin, else one from FILE. Missing fields take defaults.
 
 use anyhow::{Context, Result};
-use hf_nozzle::{ShellSpec, ShelterSpec, Spec};
+use hf_nozzle::{HybridSpec, ShellSpec, ShelterSpec, Spec};
 use serde::de::DeserializeOwned;
 use std::{fs::File, io};
 
@@ -26,6 +26,9 @@ fn main() -> Result<()> {
         )?,
         Some("shell") => serde_json::to_string(
             &read::<ShellSpec>(args.get(1).map(String::as_str))?.evaluate()?,
+        )?,
+        Some("hybrid") => serde_json::to_string(
+            &read::<HybridSpec>(args.get(1).map(String::as_str))?.evaluate()?,
         )?,
         arg => serde_json::to_string(&read::<Spec>(arg)?.evaluate()?)?,
     };
