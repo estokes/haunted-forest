@@ -246,7 +246,7 @@ impl Coils {
 }
 
 /// Complete elliptic integrals K(m), E(m) by the arithmetic-geometric mean.
-fn ellipke(m: f64) -> (f64, f64) {
+pub(crate) fn ellipke(m: f64) -> (f64, f64) {
     let (mut a, mut b) = (1.0, (1.0 - m).sqrt());
     let (mut s, mut p2) = (0.5 * m, 0.5);
     for _ in 0..12 {
@@ -259,8 +259,18 @@ fn ellipke(m: f64) -> (f64, f64) {
     (k, k * (1.0 - s))
 }
 
+/// Flux function psi = rho A_phi of a circular loop of radius r in the z = 0
+/// plane carrying i, at (rho, z): the flux through the circle of radius rho
+/// there is 2 pi psi, and B_rho = -dpsi/dz / rho, B_z = dpsi/drho / rho.
+pub(crate) fn loop_psi(r: f64, i: f64, rho: f64, z: f64) -> f64 {
+    let d2 = (r + rho) * (r + rho) + z * z;
+    let m = (4.0 * r * rho / d2).clamp(0.0, 1.0 - 1e-15);
+    let (k, e) = ellipke(m);
+    MU0 * i / (2.0 * PI) * d2.sqrt() * ((1.0 - 0.5 * m) * k - e)
+}
+
 /// (B_rho, B_z) of a circular loop of radius r in the z = 0 plane carrying i.
-fn loop_field(r: f64, i: f64, rho: f64, z: f64) -> (f64, f64) {
+pub(crate) fn loop_field(r: f64, i: f64, rho: f64, z: f64) -> (f64, f64) {
     let s2 = r * r + rho * rho + z * z;
     let alpha2 = (s2 - 2.0 * r * rho).max(1e-12);
     let beta2 = s2 + 2.0 * r * rho;
@@ -296,6 +306,21 @@ mod tests {
         DVec3::ZERO,
         DVec3::new(-520.0, 40.0, 420.0),
     ];
+
+    #[test]
+    fn loop_flux_function_gives_its_field() {
+        let (r, i) = (100.0, 1e6);
+        for (rho, z) in [(30.0, 40.0), (150.0, -20.0), (99.0, 5.0), (0.5, 80.0)] {
+            let h = 1e-3;
+            let bz = (loop_psi(r, i, rho + h, z) - loop_psi(r, i, rho - h, z)) / (2.0 * h) / rho;
+            let br = -(loop_psi(r, i, rho, z + h) - loop_psi(r, i, rho, z - h)) / (2.0 * h) / rho;
+            let (er, ez) = loop_field(r, i, rho, z);
+            let scale = er.hypot(ez);
+            assert!((br - er).abs() < 1e-5 * scale && (bz - ez).abs() < 1e-5 * scale,
+                "({rho}, {z}): ({br}, {bz}) vs ({er}, {ez})");
+        }
+        assert_eq!(loop_psi(r, i, 0.0, 10.0), 0.0);
+    }
 
     #[test]
     fn loop_on_axis_matches_closed_form() {
