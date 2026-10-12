@@ -30,10 +30,11 @@ does not touch speed or fuel. Denser gas means more grains for the FEL.
 Route knowledge is valuable. The best paths between systems — balancing
 density, distance, and grains — are closely guarded trade secrets.
 
-Typical crossings for a courier, which burns the whole way: α Cen ~66
-years; a 10 ly hop ~112 years; 30 ly ~241, on a specially fitted ship.
-Most routes are chains of hops of 10 ly or less between IS depots. A
-system without a depot is a one-way destination. See [Ship
+Typical crossings for a courier, which burns, coasts, and brakes: α Cen
+~93 years; a 10 ly hop ~151 years; 30 ly ~308, on one tank. Most routes
+are chains of hops between IS depots. A system without a depot is a
+slow-boat destination: a courier carries its way home, and the round
+trip runs a quarter longer. See [Ship
 Systems](ship-systems.md#the-crossing).
 
 ## Open Questions

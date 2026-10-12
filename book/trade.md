@@ -37,12 +37,13 @@ Between star systems, trade exists because of what nanofab can't solve:
 ### Passengers and Persons
 
 The highest-value revenue for any ship operator, and the scarcest. A
-courier has a few dozen sleeper berths (see [Ship Systems — The Sleeper
-Bay](ship-systems.md#the-sleeper-bay)), and every sleeper wakes to a
-revival bill: some twenty sieverts of radiation damage to repair. Biological humans in cold sleep, AI
-persons in hardened storage, augmented humans with their cognitive
-hardware. Colonies are founded with genomes and artificial wombs,
-because a genome kept as data takes no dose. A hop is a century. Passage is emigration,
+courier has a few dozen berths in the bays at the centres of its dust
+balls (see [Ship Systems — The Bay](ship-systems.md#the-bay)), shielded
+to the background of an office on Earth. Biological humans in cold
+sleep, AI persons in hardened storage, augmented humans with their
+cognitive hardware. Colonies are founded with genomes and artificial
+wombs, because a few dozen berths a century and a half do not found a
+world. A hop is a century and a half. Passage is emigration,
 exile, colonization, or an institutional posting — not a sales call.
 Everyone who needs to be in another system in another century pays, or
 buys their own ship.
@@ -114,7 +115,7 @@ atoms, but it can't copy the authenticity.
 ### The Problem
 
 You're loading cargo in System A, bound for System B. The journey
-takes a century. You're betting on what System B will need when you
+takes a century and a half. You're betting on what System B will need when you
 arrive, based on laser data that's already a decade stale and will be
 a lifetime old when you dock. Other ships may be heading there with
 the same cargo. The market may have shifted. The colony may have had
@@ -153,7 +154,7 @@ potential reward, much higher risk.
 
 Contract postings propagate across laser links at lightspeed. A
 contract posted at Tau Ceti arrives at Sol 12 years later. By the time
-a trader at Sol sees it, loads cargo, and makes the journey, ~140 years
+a trader at Sol sees it, loads cargo, and makes the journey, ~180 years
 have passed at Tau Ceti. The contract may have been filled. The need
 may have evaporated. The colony may not exist anymore. Exclusive
 contracts are written with delivery windows measured in decades, and
@@ -320,11 +321,12 @@ decides which systems get a depot.
 
 This gives IS control over the topology of human expansion:
 
-**The fuel leash.** A courier's tanks hold one hop. Out and back on a
-single fill reaches only a couple of light-years, so a ship cannot carry
-its way home. **A system without a depot is a one-way destination.**
-Pulling a depot does not blockade a system. It makes every courier that
-arrives there permanent. IS's quiet embargo is simply not to restock.
+**The fuel leash.** A full tank goes 10 ly and comes back, but at a
+crawl: ~380 years against ~300 with a refill at the far end. **A system
+without a depot is a slow-boat destination.** Every courier that goes
+there carries its way home, and every round trip runs a quarter longer.
+Pulling a depot does not blockade a system. It makes it far. IS's quiet
+embargo is simply not to restock.
 
 **Depot hub economics.** Systems with facilities and depots become
 mandatory waypoints. Every route is a chain of depots, so depots become
@@ -332,11 +334,11 @@ trade hubs, population centers, and political powers — simply because
 every captain must refuel there. IS doesn't need to govern these
 systems; its presence does the work.
 
-**The burn-the-boats option.** A colony expedition that goes beyond the
-depots knows it is not coming back. This is a one-way trip — permanent
-settlement, a courier that will never fly again, and a wait of
-centuries until IS decides the system is worth a depot. Some colonies
-were founded this way. Whether any survived is an open question.
+**The burn-the-boats option.** A colony expedition that spends its
+whole fill on the way out, to go farther or faster, is not coming back.
+Its courier will not fly again until IS decides the system is worth a
+depot, which may be centuries. Some colonies were founded this way.
+Whether any survived is an open question.
 
 **Strategic refusal.** If IS declines to stock depots in a particular
 direction, that direction is closed. Why they refuse — if they ever do —

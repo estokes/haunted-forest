@@ -29,7 +29,7 @@ Advantages:
 - Direct integration with ship systems — no implant intermediary
 - **Unlimited combat slow-time**: slow the game to 1/100th speed with
   no duration limit (implant/compute time, not Lorentz \(\gamma\) —
-  couriers peak under 0.3c). Write Graphix programs mid-combat, consult LLMs
+  couriers cruise under 0.2c). Write Graphix programs mid-combat, consult LLMs
   for strategy, run tactical simulations, iterate on approaches — all
   while the enemy's missile crawls toward you. See
   [Architecture](architecture.md#time-dilation-mechanic) for details.
@@ -278,7 +278,7 @@ that is left. Either side can win.
 
 How the war is fought is the world you get — a spared biosphere and a
 glassed one are not the same — on either side. **Win** is your side
-prevailing. **Lose** is the other side prevailing, or a sleeper bay full of
+prevailing. **Lose** is the other side prevailing, or a bay full of
 whoever still runs. A convert's win has a coda.
 
 ### Player Behavior Matters
@@ -335,7 +335,7 @@ routine ways that feel unremarkable. The game watches.
   system prioritizes repairs in an order that makes no engineering sense
   until you realize it's protecting the systems it works with most closely.
   The payload manager — the sub-threshold AI that runs the payload and the
-  sleeper bay — repositions boxes between inspections, declines to power one down, or seems to be
+  bays — repositions boxes between inspections, declines to power one down, or seems to be
   guarding whatever's sealed inside a particular box. The containers themselves
   are nearly dumb, so when one "misbehaves" it's really the manager speaking
   through it; going out in a suit to inspect that box is one of the most
@@ -464,13 +464,15 @@ The player's record is whether either sentence is true.
   going out on the ring to replace a tile segment or splice a helium loop (see
   [Ship Systems](ship-systems.md#the-shadow)). Inside a pod, work is easy:
   thrust is milligees and the crew lives weightless. Outside is another
-  matter. **Going out means putting the fire out**: while the engine burns,
-  anything past the edge of a plate's shadow is cooked in moments, so every
-  walk on the ring is a coast, a delay, and a decision someone has to sign.
-  The pods are a kilometre apart and sealed from each other while it burns;
-  whatever is wrong in the other pod is wrong out of reach. Done on a
-  cosmic-ray dose clock, and always a standing bet that the engine is not
-  relit while you are half a kilometre out along the ring. A misbehaving
+  matter. **Going out means the coast, or putting the fire out**: while the
+  engine burns, anything past the edge of a plate's shadow is cooked in
+  moments. A burn lasts decades, so a repair that cannot wait for the coast
+  means stopping it — a delay, lost propellant, and a decision someone has
+  to sign. The pods are a kilometre apart and sealed from each other while
+  it burns; whatever is wrong in the other pod is wrong out of reach. Every
+  waking hour outside the dust ball spends the crew's dose budget, and
+  every walk is a standing bet that the engine is not relit while you are
+  half a kilometre out along the ring. A misbehaving
   container runs from the mundane (a stuck rail motor, a power fault) through
   the grim (a sleeper berth losing power — a rescue against a clock, with a
   life on it) to the sinister (a box gone dark: contraband, a stowaway, a

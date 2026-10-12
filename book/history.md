@@ -442,17 +442,19 @@ a second one. Soft power (trade and maintenance denial) and hard power
 ## Interstellar Expansion (2290-present)
 
 The first courier departed Sol system around 2290, bound for Alpha
-Centauri. A 4.4 ly crossing, burning the whole way, is about sixty-five
-years. The crew slept. They arrived in the 2350s to find
+Centauri. A 4.4 ly crossing is about ninety-three years. The crew
+slept. They arrived in the 2380s to find
 a habitable (if barely) world and the first extrasolar confirmation of
 something Sol had already begun to suspect — unusual geological
 formations that didn't match any natural process.
 
 Expansion has been slow and uneven, limited by IS's rationing of
 antimatter, by how little a courier carries, and by the crossings
-themselves. At a century a hop, the 30-light-year sphere takes on the
-order of three to four centuries to fill. The present sits
-just after that filling. Within 30 light-years of Sol, perhaps 20-30
+themselves. The 30-light-year sphere filled two ways. Chains of hops,
+each a century and a half, settled the inner systems. A few early
+expeditions flew one long hop of three centuries straight to the edge;
+the last of those arrived within living memory, and some are still in
+flight. Within 30 light-years of Sol, perhaps 20-30
 systems have permanent human presence, ranging from major colony worlds
 to small research outposts. Each system is effectively self-governing.
 Public news rides the laser net at \(c\); people and the bulk of
@@ -460,11 +462,11 @@ history arrive with the next hull.
 
 ### Cold Sleep and Temporal Outsiders
 
-\(\gamma\) at peak is under 1.04. Relativity does not make captains young.
+\(\gamma\) at cruise is under 1.01. Relativity does not make captains young.
 Cold sleep does — or it doesn't, for anyone who stays awake.
 
 This creates a class of temporal outsiders. A trader who makes three
-ten-light-year round trips skips something like seven centuries of
+ten-light-year round trips skips something like nine centuries of
 galactic time and experiences only the port years. Old friends are
 dead. Institutions have reformed. Cultural references are obsolete.
 An AI captain who stays up lives every year of it, and is actually old.
@@ -477,7 +479,7 @@ It is what happens when you stay at the helm.
 The time door is not flavor. It is a core source of narrative tension
 and a fundamental constraint on civilization's structure. Governance,
 culture, economics — everything is shaped by the fact that people who
-travel between stars vanish for a century and step into a city that
+travel between stars vanish for a century or two and step into a city that
 has replaced itself.
 
 
@@ -485,7 +487,7 @@ has replaced itself.
 
 Unusual formations in the Sol system were recognized as artificial
 around 2310. The Alpha Centauri expedition confirmed the pattern was
-galactic when it arrived in the 2350s. As human expansion continued,
+galactic when it arrived in the 2380s. As human expansion continued,
 the rest became impossible to ignore: ruins were everywhere. Every
 system explored showed signs of past intelligence — different species,
 different levels of advancement, all gone.

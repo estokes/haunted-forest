@@ -9,9 +9,9 @@ understanding, but engineering has advanced fantastically.
   or AIs.
 - **Couriers**: every starship is an antimatter courier — an engine a
   kilometre across with two pods riding its magnet ring, a few thousand
-  tonnes dry, carrying under a thousand tonnes. It burns the whole
-  crossing at milligees and peaks near a fifth of light speed: a 10 ly
-  hop is about 110 years. Anyone with a shipyard can build one. Only
+  tonnes dry, carrying under a thousand tonnes. It burns for decades at
+  milligees, coasts at about a tenth of light speed, and brakes: a 10 ly
+  hop is about 150 years. Anyone with a shipyard can build one. Only
   Interstellar Systems can fill one: it alone makes the antimatter, and
   the metastable metal that makes antimatter storable. Every refuel is
   an IS transaction, sold to buyers they choose. See
@@ -35,7 +35,7 @@ understanding, but engineering has advanced fantastically.
 
 - Human-machine civilization has spread within a roughly 30 light-year radius
   from Sol, expanding slowly: antimatter is rationed, a courier carries
-  only tonnes, and a typical hop is a century. The sphere sits entirely inside the Local Bubble.
+  only tonnes, and a typical hop is a century and a half. The sphere sits entirely inside the Local Bubble.
 - Most planets, moons, and bodies are airless rocks. Colony worlds exist but are
   relatively few, mostly empty with a few cities and large natural environments.
 - The aesthetic is far-future cyberpunk — advanced enough to feel alien, but
@@ -67,7 +67,7 @@ See [History](history.md) for how this evolved.
 With no FTL communication, each colony is effectively sovereign. Public
 news and contract data travel at lightspeed over the laser net; people,
 bulk archives, and the version of events anyone trusts arrive with the
-next hull, a century late. Political alliances form and dissolve over
+next hull, a century or two late. Political alliances form and dissolve over
 the generations between visits.
 
 ## Open Questions

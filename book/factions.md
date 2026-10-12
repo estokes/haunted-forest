@@ -56,10 +56,11 @@ depots than facilities, fewer than inhabited systems. IS sets the price
 and chooses its buyers.
 
 This gives IS control over the topology of civilization. A courier
-cannot carry its way home: out and back on one fill reaches only a
-couple of light-years. **A system without a depot is a one-way
-destination.** IS chooses where depots go, and therefore the shape of
-the frontier. Systems with facilities and depots become waypoints, trade
+can carry its way home from a system without a depot, but slowly: a full
+tank goes 10 ly and back at a crawl, and the round trip runs a quarter
+longer. **A system without a depot is a slow-boat destination.** IS
+chooses where depots go, and therefore which systems are close and which
+are far. Systems with facilities and depots become waypoints, trade
 hubs, and political powers — simply because every captain must refuel
 there.
 

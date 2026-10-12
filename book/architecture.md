@@ -73,11 +73,11 @@ state and accepting control through netidx. The courier's (see
   burn), antimatter budget
 - **Power distribution**: load balancing across ship systems,
   priority allocation
-- **Life support**: habs, sleeper bay berths
+- **Life support**: the bays and their berths, habs, dose clocks
 - **Weapons**: targeting, capacitor charge
 - **Sensors**: two pod-flank packages — THz sand search, mm pebble
   search, cued LIDAR, optical cooker, passive IR. FEL machines inside
-  the pods. Fire-control floor 10 ms / ~950 km at 0.18c.
+  the pods. Fire-control floor 10 ms / ~460 km at 0.11c.
 
 The station plant's thermal loop (tin, eight zoned radiators) is
 implemented alongside the reactor.
@@ -586,8 +586,8 @@ prevent memorization of specific prices.
 ## Time Dilation Mechanic
 
 This is implant and compute slow-time in combat and operations, **not**
-Lorentz \(\gamma\). A courier peaks under 0.3c; \(\gamma \le 1.04\).
-A century in flight is a century at home. Crew skip it with cold sleep.
+Lorentz \(\gamma\). A courier cruises under 0.2c; \(\gamma \le 1.02\).
+A century and a half in flight is a century and a half at home. Crew skip it with cold sleep.
 This section is the other clock: how fast a mind can think when the
 missiles are already in the air.
 
