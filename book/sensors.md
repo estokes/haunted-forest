@@ -18,7 +18,8 @@ Ranges here are order-of-magnitude. The passive ones assume a cooled
    then went cold is coasting on a path anyone can predict. The watcher
    points radar or lidar where it has to be.
 4. **Going active announces you.** A radar is heard 10–100 times farther
-   away than it can see.
+   away than it can see, by anyone in its beam. A lidar is seen by what
+   it hits.
 5. **Every picture is old.** At 30 light-seconds, it is 30 seconds old.
 
 ## Passive
@@ -66,6 +67,11 @@ The FEL director does three jobs: weapon, lidar, and cooker.
   search.
 - **The cooker**: flood a dark target with laser light and watch it
   warm and glow.
+- **Neither is covert to its target.** A laser warning receiver sees the
+  pulse that finds it, and the direction it came from. What lidar hides
+  is the hunter from everyone else: its beam is a metre wide, so a third
+  party sees nothing, and a lidar that searches and misses gives little
+  away.
 
 ### Who Shouts
 
@@ -137,7 +143,8 @@ A few tens of m/s does not take a craft anywhere. It does make it hard to
 find. A tracker that lost a dark craft predicts where it must be; 30 m/s
 of cold gas puts it ~100 km from that point an hour later, and the error
 grows. A cued lidar, a metre wide at a light-second, cannot search that.
-The hunter has to fall back on radar, and announce itself.
+The hunter has to fall back on radar, and announce itself to everyone in
+a wide volume, not just to the craft it is looking for.
 
 ### What Cannot Hide
 
