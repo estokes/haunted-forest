@@ -14,7 +14,7 @@ understanding, but engineering has advanced fantastically.
   hop is about 150 years. Anyone with a shipyard can build one. Only
   Interstellar Systems can fill one: it alone makes the antimatter, and
   the metastable metal that makes antimatter storable. Every refuel is
-  an IS transaction, sold to buyers they choose. See
+  an IS transaction. See
   [Factions](factions.md) and [Ship Systems](ship-systems.md).
 - **Nanofabrication**: Manufacturing any object from raw materials is trivial
   given a design. This creates post-scarcity for most goods.
@@ -34,7 +34,7 @@ understanding, but engineering has advanced fantastically.
 ## Civilization
 
 - Human-machine civilization has spread within a roughly 20 light-year radius
-  from Sol, about seventy star systems, expanding slowly: antimatter is rationed, a courier carries
+  from Sol, about seventy star systems, expanding slowly: antimatter is dear, a courier carries
   only tonnes, and a typical hop is a century and a half. The sphere sits entirely inside the Local Bubble.
 - Most planets, moons, and bodies are airless rocks. Colony worlds exist but are
   relatively few, mostly empty with a few cities and large natural environments.
@@ -48,6 +48,13 @@ exists only where it's enforced or fundamental: black-boxed designs that
 can't be copied, raw elemental feedstock that must be mined or imported,
 passage for persons who must physically travel, and unique objects that
 can't be replicated.
+
+**Dust and anti-dust are this civilization's oil.** IS metal fuels every
+courier, shuttle, and fighter, every weapon's magazine, and the
+emergency power of every station. There is one producer, it sells to
+anyone for any purpose, and the hint that it might stop is enough to
+bring anyone into line. See [Factions](factions.md) and [Small
+Craft](small-craft.md).
 
 Between star systems, trade operates through a futures market over laser
 links, settled in local currencies or commodity quasi-currencies (³He,

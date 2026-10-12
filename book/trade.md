@@ -316,8 +316,9 @@ at each conversion.
 Anyone with a shipyard can build a courier. Only Interstellar Systems
 can fill one. IS makes antimatter at a handful of **facilities**, systems
 with stellar collectors, and stocks **depots** in others with its own
-couriers. It sets the price of every fill, chooses its buyers, and
-decides which systems get a depot.
+couriers. It sets the price of every fill, sells to anyone for any
+purpose, and decides which systems get a depot. It almost never
+refuses a sale; it does not have to.
 
 This gives IS control over the topology of human expansion:
 

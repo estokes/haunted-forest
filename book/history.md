@@ -258,6 +258,13 @@ treated before they had any rights. The Compact addresses personhood
 after the fact but is silent on the conditions that produce persons.
 This is arguably its deepest flaw.
 
+One line the Compact does draw: **a sub-threshold AI may not make a
+lethal decision.** A person — human or AI — must be in the loop for
+every use of force, and in the loop means close enough to decide in
+time. Light-lag does the rest: a crew member a light-second from a fight
+is a second behind it. That is why warships carry crews, and why fighters
+carry pilots.
+
 ### Enforcement
 
 There is no central government across 20 light-years of human-machine
@@ -430,10 +437,13 @@ black-box their technology to protect their competitive advantage —
 and arguably to prevent proliferation of technology that could be
 weaponized on a stellar scale.
 
-The consortium sells antimatter on the open market — rarely, and at
-enormous cost. They do not explain their pricing. They do not take
-orders. They choose their buyers. This makes them the most powerful
-economic entity in human-machine civilization, and the most resented.
+The consortium sells dust and anti-dust on the open market, to anyone,
+for any purpose — ship fuel, shuttle fuel, power, weapons. They do not
+explain their pricing. They almost never refuse a sale, and they never
+need to: the hint that they might is enough to bring anyone into line.
+Civilization runs on IS metal the way the twentieth century ran on oil,
+and there is one producer. This makes them the most powerful economic
+entity in human-machine civilization, and the most resented.
 
 Beyond commerce, IS serves as the de facto enforcer of the 1ms rule.
 Their monitoring network spans every inhabited system. The public
@@ -452,7 +462,7 @@ a habitable (if barely) world and the first extrasolar confirmation of
 something Sol had already begun to suspect — unusual geological
 formations that didn't match any natural process.
 
-Expansion has been slow and uneven, limited by IS's rationing of
+Expansion has been slow and uneven, limited by the price of
 antimatter, by how little a courier carries, and by the crossings
 themselves. In three and a half centuries the frontier has reached
 about 20 light-years. The systems within ~10 ly were settled first, by

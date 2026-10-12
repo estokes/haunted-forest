@@ -42,18 +42,21 @@ members are still alive — centuries old in both calendar and experience,
 because they do not sleep the crossings.
 
 Anyone with a shipyard can build a courier; the engine is textbook
-physics. IS sells what fills it — anti-dust and dust — rarely, at
-enormous cost, to buyers they choose. They do not explain their pricing
-or selection criteria. This makes them the most powerful and most
-resented entity in civilization.
+physics. IS sells what fills it — anti-dust and dust — and what fills
+every shuttle, fighter, gunboat, and magazine besides. They sell to
+anyone, for any purpose, at prices they do not explain. Civilization
+runs on IS metal the way the twentieth century ran on oil, with one
+producer. IS almost never refuses a sale; the hint that it might is
+enough to bring anyone into line. This makes them the most powerful and
+most resented entity in civilization.
 
 ### Fuel Monopoly
 
 A courier's tanks hold one hop, and only IS can fill them. IS makes
 antimatter at its **facilities**, a handful of systems with stellar
 collectors, and stocks **depots** in others with its own couriers — more
-depots than facilities, fewer than inhabited systems. IS sets the price
-and chooses its buyers.
+depots than facilities, fewer than inhabited systems. IS sets the
+price, and could stop selling.
 
 This gives IS control over the topology of civilization. A courier
 can carry its way home from a system without a depot, but slowly: a full

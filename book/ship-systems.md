@@ -447,7 +447,8 @@ APU, and shuttles carry the payload in.
 Everything happens at milligees. Fights are slow and positional: who saw
 whom first, where each ship will be in a week, and how much antimatter
 each side can spend. A courier's exhaust is a weapon at short range and
-its store is a bomb at any range, so nobody closes on one lightly.
+its store is a bomb at any range, so nobody closes on one lightly. See
+[Small Craft — Fighting a Courier](small-craft.md#fighting-a-courier).
 
 
 ## Shielding and Sleepers
@@ -824,8 +825,8 @@ The standard fit:
 IS sells dust and anti-dust at its **facilities**, where its stellar
 collectors make the antimatter, and at **depots** it stocks with its own
 couriers — more depots than facilities, fewer than inhabited systems.
-**IS sets the price. IS chooses its buyers. IS decides which systems get
-a depot.** It is the largest line in any courier's budget, and it is
+**IS sets the price. IS decides which systems get a depot. IS sells to
+anyone, for anything — and could stop.** It is the largest line in any courier's budget, and it is
 paid in advance of a century.
 
 Anyone with a shipyard can build a courier; the engine is textbook

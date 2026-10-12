@@ -3,8 +3,8 @@
 Couriers cross between stars and never come near a planet. Everything
 else that flies in a system — shuttles, fighters, missiles, tugs — is a
 small craft. This doc covers the chemical tier: craft that burn **dust**,
-the same IS metal the couriers carry, as a chemical fuel. Fusion and
-antimatter drives for small craft are later work.
+the same IS metal the couriers carry, as a chemical fuel — and the
+cruiser, which needs the ICF drive still to be designed.
 
 Numbers here are first-order, from energy balances and textbook engine
 physics, not from a model.
@@ -193,11 +193,157 @@ for.
 And all of it comes from IS. A system whose depot runs dry grounds its
 shuttles and fighters along with its couriers.
 
-## Vacuum Fighters and Missiles
+## Vacuum Combat
 
-To come: short-range vacuum fighters and medium-range missiles, on rocket
-mode alone — pure dust for performance, how much Δv a fight takes, and
-what it means to fight a courier at milligees.
+Fights between small craft are short, local, and decided at range.
+
+- **There are no dogfights.** Engagements open at hundreds to thousands
+  of kilometres. An FEL's light crosses 1,000 km in 3 ms; nothing dodges
+  it. A craft survives a laser by being out of range, unseen, or armored.
+- **Gees are for geometry.** High acceleration changes where you will be
+  before the shooting starts, and spoils a missile's last seconds. It
+  does nothing against a beam.
+- **Δv is the budget, and it is small.** A dust rocket carries 10–20
+  km/s. Crossing a system takes tens of km/s and months, so small craft
+  fight near a planet, a station, or a carrier, where relative speeds are
+  low. A fighter keeps half its Δv to get home; a missile spends all of it
+  in one pass.
+- **The tanks are the weak point.** An FEL need not reach anything vital.
+  Heat a dust tank past ~1000 K and the craft destroys itself. Every
+  small craft insulates and armors its tanks first, and missiles, which
+  cannot, die easily.
+- **A person decides.** The Compact forbids sub-threshold AIs to make a
+  lethal decision ([History](history.md#sub-threshold-ais)), and
+  light-lag keeps that person close: a pilot a light-second from the
+  fight is a second behind it. Sub-threshold systems fly, aim, and track;
+  a crew member pulls every trigger.
+
+### FEL Ranges
+
+A beam spreads with distance, so the director's aperture sets the range:
+
+| Craft | Director | Beam | Lethal to soft targets | Blinding |
+|---|---|---|---|---|
+| Fighter | ~0.5 m | ~2 MW | ~100–300 km | ~1,000 km |
+| Gunboat | ~1.5 m | ~20 MW | ~1,000 km | several thousand km |
+
+Power is what separates the sizes. A dust-fired turbogenerator burns
+~150 kg of dust for ten minutes of a fighter's fire. A gunboat carries an
+annihilation APU, like a courier's, for endurance.
+
+## The Anti-Dust Coilgun
+
+Anti-grains superconduct, so a field gradient pushes them without
+touching them. A ~10 T coilgun takes a 4 mm anti-grain to ~20 km/s in
+about 10 m. It must be a coilgun: an anti-grain that touched a rail
+would annihilate in the barrel.
+
+- **Each grain is ~1 kt** when it meets matter, against ~1 kg of TNT for
+  the same grain of plain dust at that speed.
+- **It cannot be shot down cheaply.** An FEL heats the grain, it reverts
+  to gas, and the gas keeps coming, spreading as it flies. Caught at
+  100 km, the cloud is tens of kilometres across by arrival and harmless.
+  Caught close, the target still takes the kiloton.
+- **The magazine is a bomb.** 100 g of anti-dust is ~4,300 rounds and
+  ~4 Mt, held off the walls by a magnet. A gunboat that loses its
+  magazine's field is gone, and so is everything near it.
+
+## Missiles
+
+Dust rockets with no crew: mostly propellant, pure dust, hundreds of gees.
+
+| | |
+|---|---|
+| Mass | ~0.2–2 t |
+| Mass ratio | 5–10 |
+| Δv | ~25–40 km/s, all spent in one pass |
+| Acceleration | 50–200 G |
+| Guidance | radar, IR, optical; a crew member designates the target at launch |
+
+- **The fuel is the warhead.** Leftover dust reverts on impact at
+  216 MJ/kg, and above ~20 km/s of closing speed the impact itself brings
+  more. Plain missiles disable.
+- **Some carry an anti-dust warhead**: a grain or a few at the nose, in a
+  tiny trap. One grain is 1 kt, and its gamma flash gives an unshielded
+  crew ~50 Gy at 1 km, so a near miss kills. The trap needs power the
+  whole time: **a hot missile must stay plugged in**, and one whose trap
+  fails goes off in the magazine.
+- **Getting through is the problem.** Crossing a gunboat's 1,000 km kill
+  range at 30 km/s takes ~33 seconds under fire. Missiles work by
+  numbers, decoys, and insulated tanks.
+- **Targets are often easy to see.** A burning courier is a gamma lamp
+  across the system, and dust engines leave bright plumes. Hard targets
+  run cold, with their radiators edge-on.
+
+## Space-Superiority Fighter
+
+| | |
+|---|---|
+| Mass | ~12 t loaded, ~6 t dry |
+| Crew | one |
+| Propellant | ~6 t of pure dust (~300 t of TNT) |
+| Δv | ~12 km/s |
+| Acceleration | 3–5 G sustained, 9 G briefly |
+| Power | dust-fired turbogenerator |
+| Weapons | FEL (~2 MW beam), 4–6 missiles |
+| Endurance | hours |
+
+Short-range and fast, it fights near its base or its carrier: screening
+stations and ports, killing missiles, and contesting space against other
+fighters. Its Δv covers one engagement and the trip home.
+
+## Patrol Gunboat
+
+| | |
+|---|---|
+| Mass | ~300 t loaded, ~90 t dry |
+| Crew | ~5, plus ~8 marines |
+| Propellant | ~210 t of pure dust (~10 kt of TNT) |
+| Δv | ~20 km/s |
+| Acceleration | 1–2 G |
+| Power | annihilation APU (~50 MW thermal, ~15 MW electric) for endurance; dust turbogenerator and capacitors for the FEL |
+| Weapons | FEL (~20 MW beam), ~20 missiles, anti-dust coilgun |
+| Endurance | weeks |
+
+The gunboat is the working warship of a system: patrol, customs,
+quarantine, escort, and anti-piracy. Its marines board **shuttles and
+in-system craft**, matching speed and going aboard through a lock or the
+hull. Interstellar couriers are not boarded in the ordinary way — their
+engines and stores make that a different kind of operation.
+
+Its staying power is the APU: weeks of hotel and sensor power on grams of
+antimatter, so it can loiter where a fighter would have to go home. Its
+risk is its magazine.
+
+## Cruiser
+
+A scaled-up gunboat with an **ICF drive** and a **hangar** for fighters
+and a few gunboats. The drive gives it the hundreds of km/s a system
+takes; its small craft give it the gees and the last few km/s of a
+fight. Sizes wait on the drive's design.
+
+## Fighting a Courier
+
+A courier cannot dodge, but it is a hard thing to approach:
+
+- **A burning courier is surrounded by a kill zone.** Its 180 TW of gammas
+  give an unshielded crew a lethal dose in ~8 seconds at 100 km, ~13
+  minutes at 1,000 km, and about a day at 10,000 km. Shielding against
+  200 MeV gammas is too heavy for a small craft.
+- **The way in is a plate's shadow.** Each pod's plate casts a dark cone
+  outward, ~1.2 km wide at 100 km. An attacker riding it arrives at the
+  pod's far end. Otherwise, wait until the courier throttles down near a
+  port.
+- **Its exhaust leads while it brakes.** An arriving courier points a
+  0.28c particle beam at what lies ahead. Nobody attacks it head-on.
+- **It is only catchable near the ends of a crossing.** Braking at
+  ~2.8 mG it sheds its last 15 km/s over about two weeks and ~10 million
+  km on the way to its parking point, and departs the same way. Those
+  corridors are where escorts fly and pirates wait.
+- **You disable a courier, you do not destroy it.** Its antimatter store
+  is lethal out to several light-seconds, attackers included. The targets
+  are the ring's tile and helium segments, which throttle the engine, the
+  sensor packages, and the fins. The store is everyone's hostage.
 
 ## Open Questions
 
@@ -205,5 +351,7 @@ what it means to fight a courier at milligees.
 - A chemistry model for the dust-ammonia mixes and the air-breathing
   modes.
 - The fighter's airframe heating at Mach 6.
-- Antimatter-boosted dust (~3,000 s, gas core, a gamma lamp), fusion, and
-  ICF drives for small craft.
+- The ICF drive, and the cruiser built around it.
+- Antimatter-boosted dust (~3,000 s, gas core, a gamma lamp) and an
+  open-ended fusion mirror for in-system craft.
+- Armor and tank insulation against FELs, worked through.
