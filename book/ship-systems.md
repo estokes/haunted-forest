@@ -691,7 +691,8 @@ about 56° off its face on either half of the crossing:
   a GW-class linac, rides inside the pod.
 
 The two packages are ~1.1 km apart: a ranging baseline no single dish
-ever had. Braking, the view ahead passes ~550 m beside the reaction
+ever had. For sensing beyond debris defense, see [Sensors and
+Stealth](sensors.md). Braking, the view ahead passes ~550 m beside the reaction
 point and through the exhaust. The exhaust is too thin to stop radar or
 light, but it is the brightest thing in that part of the sky.
 

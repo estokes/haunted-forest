@@ -200,6 +200,7 @@ Fights between small craft are short, local, and decided at range.
 - **There are no dogfights.** Engagements open at hundreds to thousands
   of kilometres. An FEL's light crosses 1,000 km in 3 ms; nothing dodges
   it. A craft survives a laser by being out of range, unseen, or armored.
+- **Seeing is the first fight.** See [Sensors and Stealth](sensors.md).
 - **Gees are for geometry.** High acceleration changes where you will be
   before the shooting starts, and spoils a missile's last seconds. It
   does nothing against a beam.
@@ -279,10 +280,10 @@ Dust rockets with no crew: mostly propellant, pure dust, hundreds of gees.
 
 | | |
 |---|---|
-| Mass | ~12 t loaded, ~6 t dry |
+| Mass | ~13 t loaded, ~6 t dry |
 | Crew | one |
-| Propellant | ~6 t of pure dust (~300 t of TNT) |
-| Δv | ~12 km/s |
+| Propellant | ~6 t of pure dust (~300 t of TNT), ~1 t of ammonia |
+| Δv | ~10 km/s on the rocket, ~90 m/s of cold gas |
 | Acceleration | 3–5 G sustained, 9 G briefly |
 | Power | dust-fired turbogenerator |
 | Weapons | FEL (~2 MW beam), 4–6 missiles |
@@ -290,7 +291,9 @@ Dust rockets with no crew: mostly propellant, pure dust, hundreds of gees.
 
 Short-range and fast, it fights near its base or its carrier: screening
 stations and ports, killing missiles, and contesting space against other
-fighters. Its Δv covers one engagement and the trip home.
+fighters. Its Δv covers one engagement and the trip home. Its ammonia
+lets it run dark for a few hours and jink on cold gas (see
+[Sensors — Stealth](sensors.md#stealth)).
 
 ## Patrol Gunboat
 
@@ -298,8 +301,8 @@ fighters. Its Δv covers one engagement and the trip home.
 |---|---|
 | Mass | ~300 t loaded, ~90 t dry |
 | Crew | ~5, plus ~8 marines |
-| Propellant | ~210 t of pure dust (~10 kt of TNT) |
-| Δv | ~20 km/s |
+| Propellant | ~200 t of pure dust (~10 kt of TNT), ~10 t of ammonia |
+| Δv | ~18 km/s on the rocket, ~35 m/s of cold gas |
 | Acceleration | 1–2 G |
 | Power | annihilation APU (~50 MW thermal, ~15 MW electric) for endurance; dust turbogenerator and capacitors for the FEL |
 | Weapons | FEL (~20 MW beam), ~20 missiles, anti-dust coilgun |
