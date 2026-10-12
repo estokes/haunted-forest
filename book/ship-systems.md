@@ -844,9 +844,9 @@ there slower, and IS's quiet embargo is simply not to restock. See
 
 A courier never docks, so the shuttles belong to the ports: tugs and
 transfer craft that meet a parked courier tens of light-seconds out and
-carry its payload in. A courier may carry one small craft in its payload
-for systems that have none. What drives them — dust monopropellant,
-fusion, or contained antimatter heating a working fluid — is TBD.
+carry its payload in. A courier may carry a light shuttle in its payload
+for systems that have none. Shuttles and fighters burn dust as a chemical
+fuel; see [Small Craft](small-craft.md).
 
 
 ## Cruise Operations
