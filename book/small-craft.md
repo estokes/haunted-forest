@@ -323,7 +323,7 @@ risk is its magazine.
 A scaled-up gunboat with an **ICF drive** and a **hangar** for fighters
 and a few gunboats: a ring 200 m across with three pods riding it, ~5 kt
 dry and ~9 kt loaded. The drive gives it the hundreds of km/s a system
-takes — 1 AU in ~25 days — and its small craft give it the gees and the
+takes — 1 AU in ~24 days — and its small craft give it the gees and the
 last few km/s of a fight. Its drive's FELs double as a main battery that
 reaches ~10,000 km. See [ICF Drive](icf-drive.md#the-cruiser).
 
