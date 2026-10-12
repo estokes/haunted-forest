@@ -23,15 +23,20 @@ const P_STAR_PI: f64 = 29.79; // muon momentum in the pion frame, MeV/c
 const PIONS_PER_ANN: usize = 3;
 /// Ship hits are binned by position along the struck body, this long each.
 pub const HIT_BIN_M: f64 = 20.0;
-pub const HIT_BINS: usize = 12;
+pub const HIT_BINS: usize = 16;
 
-/// A solid cylinder of radius r from `a`, the end facing the reaction where
-/// its shield plate is, to `b`.
+/// A solid cylinder of radius r from `a`, the end facing the reaction, to
+/// `b`. Its end a is a shield plate if `plate`, and lies `s0` along the pod
+/// from the pod's plate.
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Body {
     pub a: [f64; 3],
     pub b: [f64; 3],
     pub r: f64,
+    #[serde(default)]
+    pub s0: f64,
+    #[serde(default)]
+    pub plate: bool,
 }
 
 impl Body {
@@ -71,8 +76,8 @@ impl Ship {
     /// the body: a plate if the step came from in front of the reaction end.
     fn struck(&self, from: DVec3, to: DVec3) -> Option<(Struck, f64)> {
         let body = self.bodies.iter().find(|b| b.distance(to) == 0.0)?;
-        let s = if body.locate(from).1 < 0.0 { Struck::Plate } else { Struck::Side };
-        Some((s, body.locate(to).1))
+        let s = if body.plate && body.locate(from).1 < 0.0 { Struck::Plate } else { Struck::Side };
+        Some((s, body.s0 + body.locate(to).1))
     }
 }
 

@@ -76,13 +76,36 @@ pub enum Layout {
     /// One stack on the axis beyond the mirror ring, plate at z.
     Axial { z: f64, r: f64, length: f64 },
     /// n pods spaced around the mirror ring, each on the line from the
-    /// reaction through the conductor, its plate `gap` beyond it.
-    Pods { n: usize, r: f64, length: f64, gap: f64, phase_deg: f64 },
+    /// reaction through the conductor, its plate `gap` beyond it. A pod may
+    /// open with a wider shield block, whose face is then the plate.
+    Pods {
+        n: usize,
+        r: f64,
+        length: f64,
+        gap: f64,
+        phase_deg: f64,
+        #[serde(default)]
+        block: Option<Block>,
+    },
+}
+
+/// The dust ball around a pod's bay, as the cylinder that bounds it.
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+pub struct Block {
+    pub r: f64,
+    pub length: f64,
 }
 
 impl Default for Layout {
     fn default() -> Self {
-        Layout::Pods { n: 2, r: 5.7, length: 220.0, gap: 20.0, phase_deg: 0.0 }
+        Layout::Pods {
+            n: 2,
+            r: 5.7,
+            length: 285.0,
+            gap: 20.0,
+            phase_deg: 0.0,
+            block: Some(Block { r: 12.25, length: 24.5 }),
+        }
     }
 }
 
@@ -234,15 +257,27 @@ impl Spec {
         }
         let bodies = match self.ship {
             Layout::Axial { z, r, length } => {
-                vec![Body { a: [0.0, 0.0, z], b: [0.0, 0.0, z + length], r }]
+                vec![Body {
+                    a: [0.0, 0.0, z],
+                    b: [0.0, 0.0, z + length],
+                    r,
+                    s0: 0.0,
+                    plate: true,
+                }]
             }
-            Layout::Pods { n, r, length, gap, phase_deg } => (0..n)
-                .map(|k| {
+            Layout::Pods { n, r, length, gap, phase_deg, block } => (0..n)
+                .flat_map(|k| {
                     let p = mirror
                         .at(phase_deg.to_radians() + 2.0 * PI * k as f64 / n as f64);
                     let u = p.normalize();
-                    let a = p + gap * u;
-                    Body { a: a.into(), b: (a + length * u).into(), r }
+                    let at = |s: f64| (p + (gap + s) * u).into();
+                    match block {
+                        None => vec![Body { a: at(0.0), b: at(length), r, s0: 0.0, plate: true }],
+                        Some(bl) => vec![
+                            Body { a: at(0.0), b: at(bl.length), r: bl.r, s0: 0.0, plate: true },
+                            Body { a: at(bl.length), b: at(length), r, s0: bl.length, plate: false },
+                        ],
+                    }
                 })
                 .collect(),
         };
@@ -257,6 +292,7 @@ impl Spec {
         let plate_w: f64 = ship
             .bodies
             .iter()
+            .filter(|b| b.plate)
             .map(|b| {
                 PI * b.r * b.r * self.gamma_tw * 1e12
                     / (4.0 * PI * (DVec3::from(b.a) - source).length_squared())
@@ -334,6 +370,23 @@ mod tests {
         let rings = Coils::new(c.loops.clone(), &[]);
         assert!((rings.field(DVec3::ZERO).length() - spec.b0).abs() < 1e-12);
         assert!((c.loops[1].0.i / c.loops[0].0.i - 0.5).abs() < 1e-12);
+    }
+
+    #[test]
+    fn block_is_the_plate_and_the_pod_trails_it() {
+        let (_, ship) = Spec::default().build().unwrap();
+        let Layout::Pods { n, r, length, block: Some(bl), .. } = Layout::default() else {
+            panic!("the default ship is pods with a shield block")
+        };
+        assert_eq!(ship.bodies.len(), 2 * n);
+        for pod in ship.bodies.chunks(2) {
+            let (front, tail) = (pod[0], pod[1]);
+            assert!(front.plate && !tail.plate);
+            assert_eq!((front.r, tail.r, tail.s0), (bl.r, r, bl.length));
+            assert!((DVec3::from(front.b) - DVec3::from(tail.a)).length() < 1e-9);
+            let total = (DVec3::from(tail.b) - DVec3::from(front.a)).length();
+            assert!((total - length).abs() < 1e-9, "{total}");
+        }
     }
 
     #[test]
