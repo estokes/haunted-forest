@@ -2,16 +2,24 @@
 //! are particles moving in three dimensions on an (r, z) grid, electrons a
 //! massless fluid. The ring's field is analytic and fixed; the plasma's own
 //! field evolves on the grid as a poloidal flux function psi (so div B = 0
-//! by construction) and an azimuthal field B_phi, by Faraday's law with the
-//! electric field from the electrons' Ohm's law,
+//! by construction), by Faraday's law with the electric field from the
+//! electrons' Ohm's law,
 //!
 //!   E = (J x B - J_i x B - grad p_e) / rho + eta J,
 //!
 //! where rho is the ions' charge density, J_i their current, and J the
 //! total current from Ampere's law without displacement current. The Hall
-//! term J x B / rho is how the field pushes ions. Near-vacuum cells take a
-//! density floor that scales with the local field, so whistler waves keep a
-//! bounded speed; the field advances in fourth-order Runge-Kutta substeps.
+//! term J x B / rho is how the field pushes ions.
+//!
+//! By default there is no azimuthal field B_phi. Then the flux in plasma
+//! cells moves with the ions (E_phi is the motional field), the radial and
+//! axial E carry the push, and the exchange of energy between ions and field
+//! is exact. Cells with too little plasma are vacuum: their flux is relaxed
+//! each step to a current-free field. With `toroidal`, B_phi evolves too and
+//! near-vacuum cells take a density floor scaled with the field; that floor
+//! carries whistler waves that real vacuum does not, and drains energy into
+//! B_phi, so it is kept only for comparison. The field advances in
+//! fourth-order Runge-Kutta steps.
 //! Electrons are isothermal. The grid's edge sees free space: each step its
 //! flux is set by the plasma's azimuthal currents through the loop Green's
 //! function, so the plasma neither pushes on nor is held by walls. The
@@ -92,6 +100,14 @@ pub struct HybridSpec {
     pub mirror: bool,
     /// The grid's edge sees free space; otherwise it is a superconducting box.
     pub open: bool,
+    /// Evolve B_phi with a whistler-carrying density floor (see the module
+    /// note); otherwise B_phi = 0 and vacuum cells hold a current-free field.
+    pub toroidal: bool,
+    /// Below this ion density, m^-3, a cell is vacuum.
+    pub n_vac: f64,
+    /// Over-relaxation sweeps of the vacuum field per particle step.
+    pub sor_iters: usize,
+    pub sor_omega: f64,
     /// Passes of the 1-2-1 filter on moments, and on the fields the ions
     /// feel; the same filter both ways keeps the exchange of energy fair.
     pub smooth: usize,
@@ -130,6 +146,10 @@ impl Default for HybridSpec {
             seed: 1,
             mirror: false,
             open: true,
+            toroidal: false,
+            n_vac: 1e15,
+            sor_iters: 40,
+            sor_omega: 1.85,
             smooth: 1,
             snapshots: 8,
         }
@@ -159,6 +179,10 @@ pub struct HybridReport {
     /// work J_i . E on them at the grid, the field's energy change, and
     /// -J . E summed over the field substeps.
     pub ledger: [f64; 4],
+    /// At each map: time, ions' axial momentum, ring impulse so far, ions'
+    /// kinetic energy, rise in poloidal field energy, and B_phi energy, all
+    /// in kg m/s or J.
+    pub history: Vec<[f64; 6]>,
     /// Radius by which 90% of ions in the |z| < 20 m slab lie, at its peak.
     pub max_equator_r: f64,
     pub particle_steps: usize,
@@ -441,7 +465,8 @@ impl Sim<'_> {
     }
 
     /// Time derivatives of psi and B_phi.
-    fn rates(&self, psi: &[f64], bphi: &[f64], m: &Moments) -> (Vec<f64>, Vec<f64>) {
+    fn rates(&self, psi: &[f64], bphi: &[f64], m: &Moments, vac: &[bool]) -> (Vec<f64>, Vec<f64>) {
+        let toroidal = self.spec.toroidal;
         let g = &self.g;
         let (nr, nz, d) = (g.nr, g.nz, g.dx);
         let dv = self.derived(psi, bphi, m);
@@ -454,10 +479,13 @@ impl Sim<'_> {
                 }
                 for i in 1..nr {
                     let x = g.at(i, k);
-                    if self.solid[x] {
+                    if self.solid[x] || (!toroidal && vac[x]) {
                         continue;
                     }
                     rp[i] = -g.r(i) * dv.e[1][x];
+                    if !toroidal {
+                        continue;
+                    }
                     let ez_r = (dv.e[2][g.at(i + 1, k)] - dv.e[2][g.at(i - 1, k)]) / (2.0 * d);
                     let er_z = (dv.e[0][g.at(i, k + 1)] - dv.e[0][g.at(i, k - 1)]) / (2.0 * d);
                     rb[i] = ez_r - er_z;
@@ -467,20 +495,53 @@ impl Sim<'_> {
         (dpsi, dbphi)
     }
 
-    /// One RK4 substep of the field.
-    fn advance(&self, psi: &mut [f64], bphi: &mut [f64], m: &Moments, dt: f64) {
+    /// One RK4 substep of the field; vacuum cells are left to `relax`
+    /// unless B_phi is evolved.
+    fn advance(&self, psi: &mut [f64], bphi: &mut [f64], m: &Moments, vac: &[bool], dt: f64) {
         let n = psi.len();
         let step = |base: &[f64], k: &[f64], h: f64| -> Vec<f64> { (0..n).map(|x| base[x] + h * k[x]).collect() };
-        let (k1p, k1b) = self.rates(psi, bphi, m);
+        let (k1p, k1b) = self.rates(psi, bphi, m, vac);
         let (p2, b2) = (step(psi, &k1p, 0.5 * dt), step(bphi, &k1b, 0.5 * dt));
-        let (k2p, k2b) = self.rates(&p2, &b2, m);
+        let (k2p, k2b) = self.rates(&p2, &b2, m, vac);
         let (p3, b3) = (step(psi, &k2p, 0.5 * dt), step(bphi, &k2b, 0.5 * dt));
-        let (k3p, k3b) = self.rates(&p3, &b3, m);
+        let (k3p, k3b) = self.rates(&p3, &b3, m, vac);
         let (p4, b4) = (step(psi, &k3p, dt), step(bphi, &k3b, dt));
-        let (k4p, k4b) = self.rates(&p4, &b4, m);
+        let (k4p, k4b) = self.rates(&p4, &b4, m, vac);
         for x in 0..n {
             psi[x] += dt / 6.0 * (k1p[x] + 2.0 * k2p[x] + 2.0 * k3p[x] + k4p[x]);
             bphi[x] += dt / 6.0 * (k1b[x] + 2.0 * k2b[x] + 2.0 * k3b[x] + k4b[x]);
+        }
+    }
+
+    /// Relax the plasma's flux in vacuum cells toward a current-free field,
+    /// Delta* psi = 0, holding plasma, conductor, axis and edge values, by
+    /// red-black over-relaxation.
+    fn relax(&self, psi: &mut [f64], vac: &[bool]) {
+        let g = &self.g;
+        let (nr, nz) = (g.nr, g.nz);
+        let w = self.spec.sor_omega;
+        for _ in 0..self.spec.sor_iters {
+            for colour in 0..2 {
+                let updates: Vec<(usize, f64)> = (1..nz)
+                    .into_par_iter()
+                    .flat_map_iter(|k| {
+                        let psi = &*psi;
+                        (1..nr).filter(move |i| (i + k) % 2 == colour).filter_map(move |i| {
+                            let x = g.at(i, k);
+                            if !vac[x] {
+                                return None;
+                            }
+                            let h = g.dx / (2.0 * g.r(i));
+                            let gs = 0.25
+                                * ((1.0 - h) * psi[x + 1] + (1.0 + h) * psi[x - 1] + psi[g.at(i, k + 1)] + psi[g.at(i, k - 1)]);
+                            Some((x, psi[x] + w * (gs - psi[x])))
+                        })
+                    })
+                    .collect();
+                for (x, v) in updates {
+                    psi[x] = v;
+                }
+            }
         }
     }
 
@@ -754,6 +815,7 @@ impl HybridSpec {
             peak_field_energy: 0.0,
             worst_energy_error: 0.0,
             ledger: [0.0; 4],
+            history: vec![],
             max_equator_r: 0.0,
             particle_steps: 0,
             field_steps: 0,
@@ -777,11 +839,29 @@ impl HybridSpec {
             if rep.t >= next_shot {
                 let dv = sim.derived(&psi, &bphi, &m);
                 let bz_center = sim.interp(&dv.b, 0.0, 0.0)[2];
+                let (mut wpol, mut wphi) = (0.0, 0.0);
+                for k in 1..g.nz {
+                    for i in 1..g.nr {
+                        let x = g.at(i, k);
+                        if sim.solid[x] {
+                            continue;
+                        }
+                        let (b0r, b0z) = (sim.bc[0][x], sim.bc[2][x] + self.uniform_t);
+                        wpol += (dv.b[0][x].powi(2) + dv.b[2][x].powi(2) - b0r * b0r - b0z * b0z) / (2.0 * MU0) * g.volume(i);
+                        wphi += dv.b[1][x].powi(2) / (2.0 * MU0) * g.volume(i);
+                    }
+                }
+                let live_pz: f64 = ions.iter().filter(|p| p.alive).map(|p| p.w * p.m * p.v[2]).sum::<f64>()
+                    + gone.iter().map(|g| g.1).sum::<f64>();
+                let live_ke: f64 = ions.iter().filter(|p| p.alive).map(ke).sum::<f64>() + gone.iter().map(|g| g.2).sum::<f64>();
+                rep.history.push([rep.t, live_pz - pz0, rep.ring_impulse_z, live_ke, wpol, wphi]);
                 rep.maps.push(Map { t: rep.t, bz_center, ..map(g, &m) });
                 next_shot += shot_every;
             }
             // field substeps over this particle step
-            let subs = (dt_p / dt_f_max).ceil().max(1.0) as usize;
+            let vac: Vec<bool> =
+                (0..n).map(|x| !sim.solid[x] && m.rho[x] < QE * self.n_vac).collect();
+            let subs = if self.toroidal { (dt_p / dt_f_max).ceil().max(1.0) as usize } else { 1 };
             let dt_f = dt_p / subs as f64;
             let wb = |psi: &[f64], bphi: &[f64]| {
                 let dv = sim.derived(psi, bphi, &m);
@@ -803,12 +883,16 @@ impl HybridSpec {
             for _ in 0..subs {
                 let (je, _) = sim.work(&psi, &bphi, &m);
                 rep.ledger[3] -= je * dt_f;
-                sim.advance(&mut psi, &mut bphi, &m, dt_f);
+                sim.advance(&mut psi, &mut bphi, &m, &vac, dt_f);
             }
             rep.ledger[2] += wb(&psi, &bphi) - wb0;
             rep.field_steps += subs;
             let dv = sim.derived(&psi, &bphi, &m);
             sim.open_edge(&mut psi, &dv.jphi, &m.rho);
+            if !self.toroidal {
+                sim.relax(&mut psi, &vac);
+            }
+            let dv = sim.derived(&psi, &bphi, &m);
             let felt = Derived {
                 b: dv.b.clone().map(|c| smooth(g, &c, self.smooth)),
                 e: dv.e.clone().map(|c| smooth(g, &c, self.smooth)),
@@ -1009,7 +1093,7 @@ mod tests {
     /// carry energy about but do not create it.
     #[test]
     fn vacuum_field_does_not_gain_energy() {
-        let spec = HybridSpec { rings: vec![], uniform_t: 0.1, r_max: 200.0, z_min: -200.0, z_max: 200.0, eta_vac: 0.0, ..HybridSpec::default() };
+        let spec = HybridSpec { rings: vec![], uniform_t: 0.1, r_max: 200.0, z_min: -200.0, z_max: 200.0, eta_vac: 0.0, toroidal: true, ..HybridSpec::default() };
         let sim = quiet_sim(&spec);
         let g = &sim.g;
         let mut psi = vec![0.0; g.len()];
@@ -1025,8 +1109,9 @@ mod tests {
         let w0 = field_energy(&sim, &psi, &bphi);
         let k2 = 2.0 * (PI / spec.dx).powi(2);
         let dt = spec.whistler_frac * 2.0 / (k2 * spec.b_ref / (MU0 * QE * spec.n_floor));
+        let vac = vec![false; g.len()];
         for _ in 0..400 {
-            sim.advance(&mut psi, &mut bphi, &m, dt);
+            sim.advance(&mut psi, &mut bphi, &m, &vac, dt);
         }
         let w1 = field_energy(&sim, &psi, &bphi);
         assert!(w1 < 1.05 * w0, "field energy grew from {w0} to {w1}");
