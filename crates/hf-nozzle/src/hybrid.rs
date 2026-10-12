@@ -12,13 +12,16 @@
 //! term J x B / rho is how the field pushes ions. Near-vacuum cells take a
 //! density floor that scales with the local field, so whistler waves keep a
 //! bounded speed; the field advances in fourth-order Runge-Kutta substeps.
-//! Electrons are isothermal. The current is computed from the field by the
+//! Electrons are isothermal. The grid's edge sees free space: each step its
+//! flux is set by the plasma's azimuthal currents through the loop Green's
+//! function, so the plasma neither pushes on nor is held by walls. The
+//! current is computed from the field by the
 //! same central differences that take the field from psi, and the ions are
 //! deposited and pushed with the same weights, so energy passes between
 //! ions and field without loss; resistivity is what dissipates it.
 
 use crate::{
-    field::{loop_field, MU0},
+    field::{loop_field, loop_psi, MU0},
     shell::ShellRing,
 };
 use anyhow::{bail, Result};
@@ -87,6 +90,8 @@ pub struct HybridSpec {
     pub seed: u64,
     /// Start every ion with a twin mirrored through z = 0, for checks.
     pub mirror: bool,
+    /// The grid's edge sees free space; otherwise it is a superconducting box.
+    pub open: bool,
     /// Passes of the 1-2-1 filter on moments, and on the fields the ions
     /// feel; the same filter both ways keeps the exchange of energy fair.
     pub smooth: usize,
@@ -124,6 +129,7 @@ impl Default for HybridSpec {
             wire_r: 6.0,
             seed: 1,
             mirror: false,
+            open: true,
             smooth: 1,
             snapshots: 8,
         }
@@ -233,6 +239,7 @@ struct Moments {
 struct Derived {
     b: [Vec<f64>; 3],
     e: [Vec<f64>; 3],
+    jphi: Vec<f64>,
 }
 
 struct Sim<'a> {
@@ -242,7 +249,72 @@ struct Sim<'a> {
     bc: [Vec<f64>; 3],
     /// Nodes inside a conductor: fields there are held.
     solid: Vec<bool>,
+    /// Edge nodes off the axis, interior nodes, and the flux at each edge
+    /// node per unit J_phi at each interior node (edge-major), for a
+    /// free-space edge.
+    edge: Vec<usize>,
+    inner: Vec<usize>,
+    green: Vec<f64>,
 }
+
+impl Sim<'_> {
+    fn new<'a>(spec: &'a HybridSpec, g: Grid, bc: [Vec<f64>; 3], solid: Vec<bool>) -> Sim<'a> {
+        let (nr, nz) = (g.nr, g.nz);
+        let mut edge: Vec<usize> = (0..=nz).map(|k| g.at(nr, k)).collect();
+        edge.extend((1..nr).flat_map(|i| [g.at(i, 0), g.at(i, nz)]));
+        let inner: Vec<usize> = (1..nz).flat_map(|k| (1..nr).map(move |i| (i, k))).map(|(i, k)| g.at(i, k)).collect();
+        let green = if spec.open {
+            let area = g.dx * g.dx;
+            let pos = |x: usize| (g.r(x % (nr + 1)), g.z(x / (nr + 1)));
+            edge.par_iter()
+                .flat_map_iter(|&b| {
+                    let (rb, zb) = pos(b);
+                    inner.iter().map(move |&s| {
+                        let (rs, zs) = pos(s);
+                        area * loop_psi(rs, 1.0, rb, zb - zs)
+                    })
+                })
+                .collect()
+        } else {
+            vec![]
+        };
+        Sim { spec, g, bc, solid, edge, inner, green }
+    }
+
+    /// Set the edge's flux to what the real currents give in free space:
+    /// those in plasma above the floor or beside a conductor, kept clear of
+    /// the edge so the edge cannot feed itself.
+    fn open_edge(&self, psi: &mut [f64], jphi: &[f64], rho: &[f64]) {
+        if self.green.is_empty() {
+            return;
+        }
+        let g = &self.g;
+        let m = self.inner.len();
+        let floor = QE * self.spec.n_floor;
+        let near_solid = |x: usize| {
+            let (i, k) = (x % (g.nr + 1), x / (g.nr + 1));
+            (i.saturating_sub(2)..=(i + 2).min(g.nr))
+                .any(|ii| (k.saturating_sub(2)..=(k + 2).min(g.nz)).any(|kk| self.solid[g.at(ii, kk)]))
+        };
+        let src: Vec<f64> = self
+            .inner
+            .iter()
+            .map(|&s| {
+                let (i, k) = (s % (g.nr + 1), s / (g.nr + 1));
+                let clear = i + 3 < g.nr && k >= 3 && k + 3 < g.nz;
+                if clear && (rho[s] > floor || near_solid(s)) { jphi[s] } else { 0.0 }
+            })
+            .collect();
+        let vals: Vec<f64> = (0..self.edge.len())
+            .into_par_iter()
+            .map(|b| self.green[b * m..(b + 1) * m].iter().zip(&src).map(|(g, j)| g * j).sum())
+            .collect();
+        for (&b, v) in self.edge.iter().zip(vals) {
+            psi[b] = v;
+        }
+    }
+}
+
 
 impl Sim<'_> {
     fn derived(&self, psi: &[f64], bphi: &[f64], m: &Moments) -> Derived {
@@ -364,7 +436,8 @@ impl Sim<'_> {
                 }
             }
         }
-        Derived { b, e }
+        let jphi = std::mem::take(&mut j[1]);
+        Derived { b, e, jphi }
     }
 
     /// Time derivatives of psi and B_phi.
@@ -626,7 +699,7 @@ impl HybridSpec {
                 bc[2][x] = 0.0;
             }
         }
-        let sim = Sim { spec: self, g, bc, solid };
+        let sim = Sim::new(self, g, bc, solid);
         let g = &sim.g;
 
         // the blast: uniform sphere, velocity growing with radius
@@ -735,9 +808,11 @@ impl HybridSpec {
             rep.ledger[2] += wb(&psi, &bphi) - wb0;
             rep.field_steps += subs;
             let dv = sim.derived(&psi, &bphi, &m);
+            sim.open_edge(&mut psi, &dv.jphi, &m.rho);
             let felt = Derived {
                 b: dv.b.clone().map(|c| smooth(g, &c, self.smooth)),
                 e: dv.e.clone().map(|c| smooth(g, &c, self.smooth)),
+                jphi: vec![],
             };
             // rise in magnetic energy, and force of the plasma's field on the rings
             let mut wf = 0.0;
@@ -882,7 +957,7 @@ mod tests {
             z0: spec.z_min,
         };
         let n = g.len();
-        Sim { spec, g, bc: [vec![0.0; n], vec![0.0; n], vec![0.0; n]], solid: vec![false; n] }
+        Sim::new(spec, g, [vec![0.0; n], vec![0.0; n], vec![0.0; n]], vec![false; n])
     }
 
     fn field_energy(sim: &Sim, psi: &[f64], bphi: &[f64]) -> f64 {
@@ -915,12 +990,13 @@ mod tests {
         assert!(r.collimation.abs() < 1e-9, "collimation {}", r.collimation);
     }
 
-    /// In a uniform field the blast pushes the field aside: ions slow, the
-    /// field's energy rises by what they lose, and the two agree with the
-    /// ledger of J_i . E and J . E.
+    /// In a uniform field, in a superconducting box (an open edge lets field
+    /// energy leave), the blast pushes the field aside: ions slow, the field's
+    /// energy rises by what they lose, and both agree with the ledger of
+    /// J_i . E and J . E.
     #[test]
     fn blast_in_uniform_field_keeps_its_energy() {
-        let r = quick(HybridSpec { rings: vec![], uniform_t: 0.1, te_ev: 0.0, smooth: 0, ..HybridSpec::default() });
+        let r = quick(HybridSpec { rings: vec![], uniform_t: 0.1, te_ev: 0.0, smooth: 0, open: false, ..HybridSpec::default() });
         assert!(r.energy_left < 0.9, "the field did not slow the blast: {}", r.energy_left);
         assert!(r.worst_energy_error < 0.03, "energy error {}", r.worst_energy_error);
         let [dke, jie, dw, je] = r.ledger;
