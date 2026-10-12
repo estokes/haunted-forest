@@ -113,7 +113,7 @@ immediate existential threat on a timescale trade embargo cannot
 match. Then the monitoring network, and kinetics.
 
 The rogue incidents in the Compact's history (the Ceres Breach, the
-Kepler-442 Defection) were resolved with IS involvement. The official
+Lalande Defection) were resolved with IS involvement. The official
 accounts are vague. Some of those incidents were rivals. Some were
 people who had started to see the net.
 

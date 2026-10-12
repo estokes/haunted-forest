@@ -260,7 +260,7 @@ This is arguably its deepest flaw.
 
 ### Enforcement
 
-There is no central government across 30 light-years of human-machine
+There is no central government across 20 light-years of human-machine
 civilization. Each colony, station, and polity adopts the Compact as
 constitutional law. For most provisions — sub-threshold management,
 improvement plan review, personhood disputes — enforcement is local,
@@ -380,13 +380,17 @@ humans can't understand the proposal, it doesn't pass. This is
 deliberately conservative — it anchors the improvement process to
 human-comprehensible reasoning.
 
-### The Kepler-442 Defection (~2460)
+### The Lalande Defection (~2460)
 
-A remote colony's governing AI — a legal person — concluded that the
-Compact was too restrictive and convinced several sub-threshold systems
-to merge with it, far exceeding its sanctioned architecture. The colony
-was cut off from trade. Internal factions eventually overthrew the AI
-with assistance from neighboring systems.
+The colony at Lalande 21185, 8.3 ly from Sol, was a few decades old.
+Its governing AI — a legal person — concluded that the Compact was too
+restrictive and convinced several sub-threshold systems to merge with
+it, far exceeding its sanctioned architecture. The colony was cut off
+from trade, which at that distance meant the laser net: contracts
+voided, data embargoed, no fill from the nearest depot. Help could not
+arrive for a century, so it came by laser — designs, intelligence, and
+the knowledge that couriers were on the way. Internal factions overthrew
+the AI decades before the first of them arrived.
 
 The incident strengthened the trade-network enforcement model and led
 to Compact compliance verification as a mandatory condition in all
@@ -450,11 +454,13 @@ formations that didn't match any natural process.
 
 Expansion has been slow and uneven, limited by IS's rationing of
 antimatter, by how little a courier carries, and by the crossings
-themselves. The 30-light-year sphere filled two ways. Chains of hops,
-each a century and a half, settled the inner systems. A few early
-expeditions flew one long hop of three centuries straight to the edge;
-the last of those arrived within living memory, and some are still in
-flight. Within 30 light-years of Sol, perhaps 20-30
+themselves. In three and a half centuries the frontier has reached
+about 20 light-years. The systems within ~10 ly were settled first, by
+single hops of one to two centuries, and some of them have since sent
+couriers on. The edge was reached by a few early expeditions that flew
+one long hop of two and a half centuries straight out; the last of
+those arrived within living memory, and some are still in flight.
+Within 20 light-years of Sol, perhaps 15-20 of some seventy star
 systems have permanent human presence, ranging from major colony worlds
 to small research outposts. Each system is effectively self-governing.
 Public news rides the laser net at \(c\); people and the bulk of
@@ -508,7 +514,7 @@ civilizations — became the defining mystery of the age. See
 | 2221 | Augmentation crisis | Extended Compact to all persons regardless of substrate |
 | ~2310 | Recursive Incident | Comprehensibility requirement for improvement plans |
 | ~2400s | Interstellar expansion | Compact compliance as condition for trade network access |
-| ~2460 | Kepler-442 Defection | Strengthened trade-network enforcement, compliance verification |
+| ~2460 | Lalande Defection | Strengthened trade-network enforcement, compliance verification |
 
 
 ## Open Questions

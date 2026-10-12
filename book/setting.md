@@ -33,8 +33,8 @@ understanding, but engineering has advanced fantastically.
 
 ## Civilization
 
-- Human-machine civilization has spread within a roughly 30 light-year radius
-  from Sol, expanding slowly: antimatter is rationed, a courier carries
+- Human-machine civilization has spread within a roughly 20 light-year radius
+  from Sol, about seventy star systems, expanding slowly: antimatter is rationed, a courier carries
   only tonnes, and a typical hop is a century and a half. The sphere sits entirely inside the Local Bubble.
 - Most planets, moons, and bodies are airless rocks. Colony worlds exist but are
   relatively few, mostly empty with a few cities and large natural environments.

@@ -63,7 +63,7 @@ state and accepting control through netidx. The courier's (see
   reaction-point offset that steers, ring current, tile loads, the
   forward leak
 - **Heat and power**: helium loop segments and their temperatures, the
-  turbines (~16 GW), fins, the port heater
+  turbines (~20 GW), fins, the APU
 - **Stores**: antimatter cores (field, bed temperature), dust tanks
   (bladder pressure, temperature), stops, feed lines and magnetic
   valves, drain order, reversion alarms

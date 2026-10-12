@@ -60,7 +60,8 @@ are bolted to it. Around its 3.4 km circumference run:
 - **The fins**: radiators for the turbines and the coils.
 - **The frame and feeds**, with Whipple strips on the faces the medium
   meets.
-- **The port heater**, on the ring well away from both pods (see Power).
+- **The APU**, an annihilation heater on the ring well away from both
+  pods (see Power).
 
 ### The Pods
 
@@ -274,7 +275,7 @@ chamber walls. Only what the hardware intercepts has to be handled:
 | Shield plates | ~14 GW of gammas, both | ~2,900 K | a helium loop per pod to its own turbines (~2 GW of electricity each), the rest through ~10,000 m² of fins per pod |
 | Electrons striking the pods | ~175 MW, both pods | ~700 K | the jackets, radiating from the pods' sides |
 | Dust balls | ~5 MW per pod, what gets through the plates | cold | helium cooling in their front metre |
-| Port heater (engine cold) | ~70 MW | ~1,000–1,500 K | the plant fins |
+| APU (engine cold) | ~70 MW | ~1,000–1,500 K | the plant fins |
 | Hab, avionics, stores | MW | ~300 K | small radiators |
 
 **Fins are edge-on twice over.** Each fin lies in a plane through the
@@ -289,11 +290,11 @@ insulated from both.
 
 The tile loop and the plate loops give **~20 GW of electricity whenever
 the engine burns**. Hotel, sensors, and the FEL all fit with room to
-spare. On the coast between the burns the engine is cold, and the port
-heater runs the ship (below).
+spare. On the coast between the burns the engine is cold, and the APU
+runs the ship (below).
 
-**In port the same turbines run on a second heat source:** a small
-**annihilation heater**. Anti-dust and dust meet inside a tungsten core
+**In port and on the coast the same turbines run on a second heat
+source:** a small **annihilation heater**, the ship's APU. Anti-dust and dust meet inside a tungsten core
 ~0.9 m in radius, thick enough to stop the gammas (~20 radiation lengths)
 and the pions (~11 cm). About 84% of the energy stays as heat; the rest
 leaves as neutrinos. It is the one place on the ship where annihilation
@@ -382,7 +383,7 @@ sides lean 34° into the medium the whole way.
 
 ### The Local Bubble — the Map Is Inside It
 
-Inhabited space is a 30-light-year sphere. The Local Bubble is on the
+Inhabited space is a sphere about 20 light-years in radius. The Local Bubble is on the
 order of a thousand light-years across. **Every voyage the player can
 fly is in thin air:** ~0.1 atoms/cm³, not the galactic-disk average of
 ~1. Route knowledge is local clouds and filaments — a factor of a few,
@@ -412,7 +413,7 @@ milliseconds of fire control** is. See Active Debris Defense.
 ### The Coast
 
 Between the burns the engine is cold for decades. The ring is dark, the
-helium loops idle, and the port heater carries the hotel load. The ring
+helium loops idle, and the APU carries the hotel load. The ring
 is a persistent superconducting loop, so its field, and the shelter it
 gives, stays up. The coast is when a crew can go out on the ring
 without putting out a fire.
@@ -439,7 +440,7 @@ rays, in every direction; pointing the exhaust away does nothing for
 those. Within ~10,000 km it gives an unshielded person a lethal dose in
 about a day, and at a light-second a few grays a year. Couriers throttle
 down near anything that breathes, park tens of light-seconds out on the
-port heater, and shuttles carry the payload in.
+APU, and shuttles carry the payload in.
 
 ### Combat
 
@@ -732,17 +733,21 @@ capacitor farm. A dirty passage is a power event and a thermal event:
 generation losses land on the plant fins, and the cooker is a
 forward-facing beacon. Every joule that leaves as beam does *not* land
 inboard. Coverage is finite — you point THz and cooker down the cone you
-can afford. On the coast the engine is cold and the bus is the port
-heater's ~30 MW, so the FEL fires from capacitors charged slowly. The
-cheapest defense against a pebble is still to never fly at it.
+can afford. On the coast the APU gives ~30 MW, enough to recharge a
+shot every few seconds. For a dirty filament the engine idles at a few
+percent instead: at ~5% the tile loop gives most of a gigawatt for ~9 t
+of antimatter a year, and the trajectory barely notices — but the gammas
+are back, and nobody may be out on the ring. The cheapest defense
+against a pebble is still to never fly at it.
 
 ### Open Tensions
 
 - **The last few hundred kilometres.** Below the fire-control floor, the
   shot is late by construction. Passive stare and a standing kill zone
   eat some of it. The rest is Whipple.
-- **The coast.** Decades with the engine cold and ~30 MW of power. A
-  dirty filament met on the coast is fought on capacitors.
+- **The coast.** Decades on the APU's ~30 MW. A dirty filament met on
+  the coast means idling the engine, and calling in whoever is out on
+  the ring.
 - **Sand on fast AI-only couriers.** At 0.18c fine sand outruns the
   suite. How much the strips and jackets eat in a dirty filament is the
   operational risk.
@@ -805,7 +810,7 @@ The standard fit:
 | Shield plates | ~2,100 t | two, 10 cm tungsten, 12.25 m radius, helium-cooled; ~7 GW of gammas each |
 | Dust balls | ~9,200 t | ~24.5 m across, never burned, the bays at their centres |
 | Jackets | ~700 t | cooled skins on the pods past the first 40 m |
-| Power plant | ~100 t | the turbines on the tile loop, and the ~40 t port heater |
+| Power plant | ~100 t | the turbines on the tile loop, and the ~40 t APU |
 | Structure, tanks, systems, hab | ~500 t | split between the pods |
 | **Payload** | **~850 t** | ~30 containers and the bays' berths |
 | **Dry** | **~17 kt** | |
