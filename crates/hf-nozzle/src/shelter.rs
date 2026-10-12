@@ -73,7 +73,7 @@ fn trace(coils: &Coils, x0: DVec3, p_mev: f64, spec: &ShelterSpec, rng: &mut Sma
     let mut clear = coils.clearance(x).0;
     for _ in 0..spec.max_steps {
         let b = coils.field(x);
-        let dt = time_step(x, b, e, clear, spec.nozzle.run.step);
+        let dt = time_step(x, b, p_mev, e, -1.0, clear, spec.nozzle.run.step);
         boris(&mut x, &mut p, e, -1.0, b, dt);
         clear = coils.clearance(x).0;
         if clear < spec.nozzle.run.hit_r {

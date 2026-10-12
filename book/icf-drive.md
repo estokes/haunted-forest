@@ -81,6 +81,35 @@ the 14.7 MeV protons, ~0.27 T·m for the alphas, against 3.1 T·m — and a
 25 MA ring forbids them a wide region around its conductor (see
 [Courier — The Ring Is a Shelter](courier.md#the-ring-is-a-shelter)).
 
+The tracker in `crates/hf-nozzle`, run with fusion protons and alphas
+from the burn point, confirms the shelter: no hits on the pods or the
+conductor in 400,000 tracks.
+
+### The Forward Leak
+
+The ring is a magnetic mirror, and the burn point sits in its weak
+field. Particles that gyrate tightly — the puff ions, and even the
+fusion protons, which circle in ~6 m at 0.1 T — follow field lines, and
+the field lines through the burn point all pass through the ring's bore.
+Those moving within the mirror's loss cone, nearly straight ahead, are
+not turned back: they leave forward along the axis, a negative thrust
+and a plume ahead of the ship. The tracker matches mirror theory to three
+decimal places:
+
+| Burn point behind the ring | Field there | Mirror ratio | Escapes forward | Momentum that becomes thrust |
+|---|---|---|---|---|
+| 60 m | 100 mT | 1.6 | 20% | 60% |
+| 100 m | 56 mT | 2.8 | 10% | 79% |
+| 150 m | 27 mT | 5.9 | 4.5% | 89% |
+| 200 m | 14 mT | 11 | 2.4% | 91% |
+
+Moving the burn point back fixes the leak, but weakens the field that has
+to stop each blast's plasma ball before it reaches the ring. Early on the
+blast is too dense to follow field lines: it pushes the field aside as a
+whole. How these two trade off is what the plasma model has to answer.
+Until then the design point stays at 60 m, with the leak as its known
+cost.
+
 Each pod faces the burn point with a **neutron plate** — about a metre of
 lithium hydride, boron, and steel, ~8 m in radius — and sits in its
 shadow. At ~117 m a plate catches ~0.1% of the neutrons, ~35 MW, and
@@ -139,10 +168,9 @@ burn hard or shoot hard, not both.
 
 ## Open Questions
 
-- The plasma ball's collective push on the field: a magnetohydrodynamic
-  model, not the single-particle tracker in `crates/hf-nozzle`.
-- The shelter for fusion protons and alphas around a 200 m ring, which
-  the tracker could check with those species added.
+- The plasma ball's collective push on the field, and the burn point's
+  best distance behind the ring: a hybrid particle-in-cell model, not the
+  single-particle tracker.
 - Pellet gain and driver energy for deuterium–helium-3.
 - Superconductor life under ~150 MW of neutrons.
 - Pellet manufacture aboard, and its cryogenics.

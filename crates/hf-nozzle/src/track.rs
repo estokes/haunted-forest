@@ -1,6 +1,7 @@
-//! Charged products of p-pbar annihilation tracked through the nozzle field,
-//! with pi -> mu nu and mu -> e nu nu decays, tallied by where their energy
-//! and momentum go.
+//! Charged particles tracked from a source through the nozzle field and
+//! tallied by where their energy and momentum go: the pions of p-pbar
+//! annihilation, with pi -> mu nu and mu -> e nu nu decays, or monoenergetic
+//! ions such as fusion products.
 
 use crate::field::{Coils, Part};
 use glam::DVec3;
@@ -24,6 +25,9 @@ const PIONS_PER_ANN: usize = 3;
 /// Ship hits are binned by position along the struck body, this long each.
 pub const HIT_BIN_M: f64 = 20.0;
 pub const HIT_BINS: usize = 16;
+/// Kinds of particle tallied separately: pion, muon, electron for
+/// annihilation; each ion in order for ion emission.
+pub const MAX_KINDS: usize = 8;
 
 /// A solid cylinder of radius r from `a`, the end facing the reaction, to
 /// `b`. Its end a is a shield plate if `plate`, and lies `s0` along the pod
@@ -84,6 +88,8 @@ impl Ship {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Run {
+    pub emission: Emission,
+    /// Source events: annihilations, or one of each ion per event.
     pub n_ann: usize,
     pub seed: u64,
     /// Sample pion directions only with cos(theta) > cone toward the ship,
@@ -101,6 +107,7 @@ pub struct Run {
 impl Default for Run {
     fn default() -> Self {
         Self {
+            emission: Emission::Annihilation,
             n_ann: 20_000,
             seed: 1,
             cone: None,
@@ -113,8 +120,30 @@ impl Default for Run {
     }
 }
 
+/// What the source emits.
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Emission {
+    /// Charged pions from p-pbar annihilation at rest, decaying in flight.
+    #[default]
+    Annihilation,
+    /// Each event emits every listed ion, isotropically.
+    Ions(Vec<Ion>),
+}
+
+/// A stable ion of rest mass m (MeV), charge in units of e, and kinetic
+/// energy t (MeV), emitted `per_event` times per event.
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+pub struct Ion {
+    pub m: f64,
+    pub charge: f64,
+    pub t: f64,
+    pub per_event: f64,
+}
+
 /// Energies in MeV, momenta in MeV/c and angular momenta about the origin
-/// in MeV/c m, summed over tracks.
+/// in MeV/c m, summed over tracks and weighted by how many particles each
+/// track stands for. Pion energies are total; ion energies kinetic.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Tally {
     pub escape_p: DVec3,
@@ -131,8 +160,11 @@ pub struct Tally {
     /// Energy striking the ship by position along the body and by species
     /// (pion, muon, electron).
     pub hit_along: [f64; HIT_BINS],
-    pub hit_species: [f64; 3],
+    pub hit_kind: [f64; MAX_KINDS],
     pub trapped_e: f64,
+    /// Sum of launch momentum magnitudes, the most axial momentum the
+    /// particles could carry away.
+    pub launch_p: f64,
 }
 
 impl Add for Tally {
@@ -154,10 +186,11 @@ impl Add for Tally {
         for (a, b) in self.hit_along.iter_mut().zip(o.hit_along) {
             *a += b;
         }
-        for (a, b) in self.hit_species.iter_mut().zip(o.hit_species) {
+        for (a, b) in self.hit_kind.iter_mut().zip(o.hit_kind) {
             *a += b;
         }
         self.trapped_e += o.trapped_e;
+        self.launch_p += o.launch_p;
         self
     }
 }
@@ -207,14 +240,21 @@ struct Track {
     m: f64,
     charge: f64,
     life: f64,
+    kind: usize,
+    /// Particles this track stands for.
+    weight: f64,
+    /// Energy not tallied: zero for pions, the rest mass for ions.
+    rest: f64,
 }
 
-/// Time step for energy e (MeV) at x in field b: a fraction of a gyration,
-/// and a path no longer than half the clearance to anything solid.
-pub(crate) fn time_step(x: DVec3, b: DVec3, e: f64, clear: f64, scale: f64) -> f64 {
-    let omega = Q * (b.length() + 1e-30) / (e * MEV_C / C); // rad/s, relativistic
+/// Time step for momentum p and energy e (MeV/c, MeV) of a particle of
+/// charge q (units of e) at x in field b: a fraction of a gyration, and a
+/// path no longer than half the clearance to anything solid.
+pub(crate) fn time_step(x: DVec3, b: DVec3, p: f64, e: f64, q: f64, clear: f64, scale: f64) -> f64 {
+    let omega = q.abs() * Q * (b.length() + 1e-30) / (e * MEV_C / C); // rad/s, relativistic
+    let v = (p / e * C).max(1.0);
     let ds = (0.01 * x.length() + 1.0).clamp(1.0, 40.0).min((0.5 * clear).max(1.0));
-    scale * (0.15 / omega).min(ds / C)
+    scale * (0.15 / omega).min(ds / v)
 }
 
 /// Advance momentum p (MeV/c) and position x one Boris step of dt in field b.
@@ -225,10 +265,9 @@ pub(crate) fn boris(x: &mut DVec3, p: &mut DVec3, e: f64, charge: f64, b: DVec3,
     *x += *p / e * C * dt;
 }
 
-/// Follow one pion and its decay chain to its fate.
-fn follow(coils: &Coils, ship: &Ship, run: &Run, rng: &mut SmallRng) -> Tally {
-    let mut t = Tally::default();
-    let dir = match run.cone {
+/// A launch direction: isotropic, or within run.cone of +z.
+fn direction(run: &Run, rng: &mut SmallRng) -> DVec3 {
+    match run.cone {
         None => isotropic(rng),
         Some(c) => {
             let u: f64 = rng.random_range(c..1.0);
@@ -236,51 +275,76 @@ fn follow(coils: &Coils, ship: &Ship, run: &Run, rng: &mut SmallRng) -> Tally {
             let s = (1.0 - u * u).sqrt();
             DVec3::new(s * phi.cos(), s * phi.sin(), u)
         }
-    };
-    let mut k = Track {
-        x: DVec3::from(run.source),
-        p: dir * pion_momentum(rng),
-        m: M_PI,
-        charge: if rng.random::<bool>() { 1.0 } else { -1.0 },
-        life: -TAU_PI * rng.random::<f64>().max(1e-300).ln(),
-    };
+    }
+}
+
+/// Track i of the run, as launched.
+fn launch(run: &Run, i: usize, rng: &mut SmallRng) -> Track {
+    let x = DVec3::from(run.source);
+    let dir = direction(run, rng);
+    match &run.emission {
+        Emission::Annihilation => Track {
+            x,
+            p: dir * pion_momentum(rng),
+            m: M_PI,
+            charge: if rng.random::<bool>() { 1.0 } else { -1.0 },
+            life: -TAU_PI * rng.random::<f64>().max(1e-300).ln(),
+            kind: 0,
+            weight: 1.0,
+            rest: 0.0,
+        },
+        Emission::Ions(ions) => {
+            let kind = i % ions.len();
+            let ion = ions[kind];
+            Track {
+                x,
+                p: dir * (ion.t * ion.t + 2.0 * ion.t * ion.m).sqrt(),
+                m: ion.m,
+                charge: ion.charge,
+                life: f64::INFINITY,
+                kind,
+                weight: ion.per_event,
+                rest: ion.m,
+            }
+        }
+    }
+}
+
+/// Follow one track, and any decay chain, to its fate.
+fn follow(coils: &Coils, ship: &Ship, run: &Run, mut k: Track, rng: &mut SmallRng) -> Tally {
+    let mut t = Tally { launch_p: k.weight * k.p.length(), ..Tally::default() };
     let mut clear = coils.clearance(k.x).0;
     for _ in 0..run.max_steps {
         let e = (k.p.length_squared() + k.m * k.m).sqrt();
         let b = coils.field(k.x);
-        let dt = time_step(k.x, b, e, clear.min(ship.distance(k.x)), run.step);
+        let dt = time_step(k.x, b, k.p.length(), e, k.charge, clear.min(ship.distance(k.x)), run.step);
         let from = k.x;
         boris(&mut k.x, &mut k.p, e, k.charge, b, dt);
         k.life -= dt * k.m / e;
+        let (w, et) = (k.weight, k.weight * (e - k.rest));
 
         let (c, part) = coils.clearance(k.x);
         clear = c;
         if c < run.hit_r {
-            t.coil_e[part as usize] += e;
+            t.coil_e[part as usize] += et;
             return t;
         }
         if let Some((s, along)) = ship.struck(from, k.x) {
             match s {
-                Struck::Plate => t.plate_e += e,
-                Struck::Side => t.side_e += e,
+                Struck::Plate => t.plate_e += et,
+                Struck::Side => t.side_e += et,
             }
             t.ship_n += 1;
-            t.hit_along[((along / HIT_BIN_M).max(0.0) as usize).min(HIT_BINS - 1)] += e;
-            t.hit_species[if k.m == M_PI {
-                0
-            } else if k.m == M_MU {
-                1
-            } else {
-                2
-            }] += e;
+            t.hit_along[((along / HIT_BIN_M).max(0.0) as usize).min(HIT_BINS - 1)] += et;
+            t.hit_kind[k.kind] += et;
             return t;
         }
         if k.x.length() > run.r_dom {
-            t.escape_p += k.p;
-            t.escape_l += k.x.cross(k.p);
-            t.escape_e += e;
+            t.escape_p += w * k.p;
+            t.escape_l += w * k.x.cross(k.p);
+            t.escape_e += et;
             if k.p.z > 0.0 {
-                t.fwd_e += e;
+                t.fwd_e += et;
             }
             return t;
         }
@@ -289,11 +353,13 @@ fn follow(coils: &Coils, ship: &Ship, run: &Run, rng: &mut SmallRng) -> Tally {
             let (de, dp) = if k.m == M_PI {
                 let e_star = (P_STAR_PI * P_STAR_PI + M_MU * M_MU).sqrt();
                 k.m = M_MU;
+                k.kind = 1;
                 k.life = -TAU_MU * rng.random::<f64>().max(1e-300).ln();
                 boost(e_star, isotropic(rng) * P_STAR_PI, beta)
             } else if k.m == M_MU {
                 let ee = (michel(rng) * M_MU / 2.0).max(M_E * 1.0001);
                 k.m = M_E;
+                k.kind = 2;
                 k.life = f64::INFINITY;
                 boost(ee, isotropic(rng) * (ee * ee - M_E * M_E).sqrt(), beta)
             } else {
@@ -305,31 +371,45 @@ fn follow(coils: &Coils, ship: &Ship, run: &Run, rng: &mut SmallRng) -> Tally {
             k.p = dp;
         }
     }
-    t.trapped_e += (k.p.length_squared() + k.m * k.m).sqrt();
+    t.trapped_e += k.weight * ((k.p.length_squared() + k.m * k.m).sqrt() - k.rest);
     t
 }
 
-/// Track run.n_ann annihilations' worth of charged pions in parallel. Each
-/// track has its own seeded generator, so results do not depend on threading.
+fn tracks_per_event(run: &Run) -> usize {
+    match &run.emission {
+        Emission::Annihilation => PIONS_PER_ANN,
+        Emission::Ions(ions) => ions.len(),
+    }
+}
+
+/// Track run.n_ann events' worth of particles in parallel. Each track has
+/// its own seeded generator, so results do not depend on threading.
 pub fn simulate(coils: &Coils, ship: &Ship, run: &Run) -> Tally {
-    (0..run.n_ann * PIONS_PER_ANN)
+    (0..run.n_ann * tracks_per_event(run))
         .into_par_iter()
         .map(|i| {
             let mut rng = SmallRng::seed_from_u64((run.seed << 40) ^ i as u64);
-            follow(coils, ship, run, &mut rng)
+            let k = launch(run, i, &mut rng);
+            follow(coils, ship, run, k, &mut rng)
         })
         .reduce(Tally::default, Tally::add)
 }
 
-/// Annihilation energy the tally stands for, MeV.
-pub fn e_ann(run: &Run) -> f64 {
+/// Energy the source emitted, MeV: annihilation energy for annihilation,
+/// kinetic energy for ions.
+pub fn e_emitted(run: &Run) -> f64 {
     let weight = run.cone.map_or(1.0, |c| (1.0 - c) / 2.0);
-    run.n_ann as f64 * ANN_MEV / weight
+    let per_event = match &run.emission {
+        Emission::Annihilation => ANN_MEV,
+        Emission::Ions(ions) => ions.iter().map(|i| i.per_event * i.t).sum(),
+    };
+    run.n_ann as f64 * per_event / weight
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::field::Loop;
 
     fn far_ship() -> Ship {
         Ship::default()
@@ -340,7 +420,7 @@ mod tests {
         let coils = Coils::new(vec![], &[]);
         let run = Run { n_ann: 20_000, r_dom: 2e5, ..Run::default() };
         let t = simulate(&coils, &far_ship(), &run);
-        let e = e_ann(&run);
+        let e = e_emitted(&run);
         let f = (t.escape_p + t.nu_p) / e;
         assert!(f.length() < 0.01, "net momentum {f}");
         let nu = t.nu_e / (t.nu_e + t.escape_e);
@@ -362,5 +442,23 @@ mod tests {
         }
         let got = t.escape_e + t.nu_e;
         assert!((got - want).abs() < 1e-6 * want, "{got} vs {want}");
+    }
+
+    /// A magnetic field does no work, so every ion's kinetic energy turns up
+    /// in some fate, weighted by how many ions each track stands for.
+    #[test]
+    fn ions_keep_their_energy_in_a_magnetic_field() {
+        let ring = Loop::new(100.0, DVec3::new(0.0, 0.0, 60.0), DVec3::Z, 25e6);
+        let coils = Coils::new(vec![(ring, Part::Ring)], &[]);
+        let ions = vec![
+            Ion { m: 938.272, charge: 1.0, t: 14.7, per_event: 1.0 },
+            Ion { m: 3727.38, charge: 2.0, t: 3.6, per_event: 3.0 },
+        ];
+        let run = Run { emission: Emission::Ions(ions), n_ann: 400, ..Run::default() };
+        let t = simulate(&coils, &far_ship(), &run);
+        let got = t.escape_e + t.coil_e.iter().sum::<f64>() + t.plate_e + t.side_e + t.trapped_e;
+        let want = e_emitted(&run);
+        assert!((got - want).abs() < 1e-9 * want, "{got} vs {want}");
+        assert_eq!(t.nu_e, 0.0);
     }
 }

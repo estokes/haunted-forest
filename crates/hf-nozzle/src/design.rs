@@ -4,7 +4,7 @@
 
 use crate::{
     field::{Coils, Loop, Part, Wire},
-    track::{self, Body, Run, Ship, C},
+    track::{self, Body, Emission, Run, Ship, C, MAX_KINDS},
 };
 use anyhow::{bail, Result};
 use glam::DVec3;
@@ -150,13 +150,6 @@ pub struct ByPart {
 }
 
 #[derive(Clone, Debug, Serialize)]
-pub struct Species {
-    pub pion: f64,
-    pub muon: f64,
-    pub electron: f64,
-}
-
-#[derive(Clone, Debug, Serialize)]
 pub struct Report {
     pub spec: Spec,
     pub magnet_t: f64,
@@ -179,9 +172,12 @@ pub struct Report {
     /// Tracks that struck the ship anywhere, for the statistics of the above.
     pub ship_hits: u64,
     /// Charged power striking the ship, ppm, by track::HIT_BIN_M of position
-    /// along the struck body from its plate, and by species.
+    /// along the struck body from its plate, and by kind: pion, muon,
+    /// electron for annihilation, each ion in order for ion emission.
     pub hits_along_ppm: Vec<f64>,
-    pub hits_species_ppm: Species,
+    pub hits_by_kind_ppm: Vec<f64>,
+    /// Axial thrust over the most the emitted momentum could give.
+    pub collimation: f64,
     /// Gamma power on the ship's plates.
     pub plate_gw: f64,
     pub coil_ppm: ByPart,
@@ -298,8 +294,13 @@ impl Spec {
                     / (4.0 * PI * (DVec3::from(b.a) - source).length_squared())
             })
             .sum();
+        let kinds = match &self.run.emission {
+            Emission::Annihilation => 3,
+            Emission::Ions(ions) if (1..=MAX_KINDS).contains(&ions.len()) => ions.len(),
+            Emission::Ions(ions) => bail!("ion emission takes 1 to {MAX_KINDS} ions, not {}", ions.len()),
+        };
         let t = track::simulate(&coils, &ship, &self.run);
-        let e = track::e_ann(&self.run);
+        let e = track::e_emitted(&self.run);
         let f = -(t.escape_p + t.nu_p) / e; // thrust per power, units of 1/c
         let torque = -(t.escape_l + t.nu_l) / e - DVec3::from(self.com).cross(f);
         let ppm = |x: f64| x / e * 1e6;
@@ -327,10 +328,8 @@ impl Spec {
             side_ppm: ppm(t.side_e),
             ship_hits: t.ship_n,
             hits_along_ppm: t.hit_along.iter().map(|&x| ppm(x)).collect(),
-            hits_species_ppm: {
-                let [pion, muon, electron] = t.hit_species.map(ppm);
-                Species { pion, muon, electron }
-            },
+            hits_by_kind_ppm: t.hit_kind[..kinds].iter().map(|&x| ppm(x)).collect(),
+            collimation: -(t.escape_p + t.nu_p).z / t.launch_p,
             plate_gw: plate_w / 1e9,
             coil_ppm: ByPart { ring, sweeper, spoke },
             forward: t.fwd_e / e,
