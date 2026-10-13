@@ -134,7 +134,11 @@ three places they hurt:
    propellant cannot be the stop: by arrival it is gone.
 3. **Using the energy.** We do not. Absorbed gamma energy becomes heat at
    the absorber's temperature, and ~3,000 K cannot make a 0.3c exhaust.
-   The gamma third leaves the ship. That is the honest cost.
+   Nor can the gammas be pushed on, though at 180 TW they carry ~600 kN,
+   more than the nozzle's thrust: nothing reflects them (see [Sensors —
+   Gamma Lenses](sensors.md#gamma-lenses)), and an absorber across the
+   forward half would take 90 TW of heat for 150 kN. The gamma third
+   leaves the ship. That is the honest cost.
 
 ### Why the Engine Is Big
 

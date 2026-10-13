@@ -45,6 +45,34 @@ give nothing away.
 - **A courier's magnetic field is not a signature.** The ring makes ~2 pT
   at 1,000 km, under the ~5 nT background between planets.
 
+### Gamma Lenses
+
+No material reflects gamma rays. They oscillate far faster than any
+electron can follow, so every material's refractive index differs from 1
+by a few parts in a billion at 1 MeV. Head-on, a surface reflects ~10⁻¹⁸
+of them; a plasma mirror for them would need ~10³⁹ electrons per m³,
+denser than a white dwarf. Mirrors work only at grazing angles, ~80 µrad
+off gold at 1 MeV, which suits telescopes and nothing else.
+
+What does work is diffraction off crystal planes. A **Laue lens** is a
+disc of crystal tiles, each tilted to bend one gamma line onto a detector
+behind it: 511 keV, from positrons meeting electrons, bends ~6 mrad off
+copper, so a 5 m lens focuses ~200 m behind itself. It catches tens of
+percent of that one line, and sees where it comes from against a dim
+background. Stations fly them as pairs, lens and detector in formation;
+a cruiser can string one across its ring.
+
+A lens does not find a burning courier; anything does. It tells drives
+apart and finds the quiet ones:
+
+- **What is burning.** Pion decay gives a courier a broad hump at ~70–300
+  MeV. An ICF drive's neutrons, caught in hydrogen, glow at 2.2 MeV.
+  Antimatter anywhere glows at 511 keV.
+- **A running annihilation APU.** A gunboat's APU makes ~18 MW of gammas
+  inside its shield. If even 1 kW of 511 keV leaks out, a lens with ~1 m²
+  of effective area sees it from a light-second or two in an hour. A
+  gunboat that wants to vanish shuts its APU down, not just its skin.
+
 ## Active
 
 ### Radar
