@@ -3,7 +3,7 @@
 # and the bottom-up mass that the down-and-back mission (crates/hf-fighter)
 # turns on.
 #
-# Headless:  blender -b --factory-startup --python modeling/fighter.py -- [--scale S] [--gauge MM] [--sweep] [--save FILE] [--render DIR]
+# Headless:  blender -b --factory-startup --python modeling/fighter.py -- [--scale S] [--gauge MM] [--high] [--sweep] [--save FILE] [--render DIR]
 # Live:      exec(open('/home/eric/proj/haunted-forest/modeling/fighter.py').read())
 #
 # X runs aft from the nose, Y to starboard, Z up; metres. The airframe
@@ -27,7 +27,13 @@ import bmesh
 import bpy
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fighter_equipment  # noqa: E402
 import fighter_structure  # noqa: E402
+
+# Equipment masses, kg, central or (--high) what today's practice adds back.
+HIGH = "--high" in sys.argv
+_EQ = {n: v[1 if HIGH else 0] for n, v in fighter_equipment.items().items()}
+fighter_structure.GEAR_FRACTION = _EQ["landing_gear"] / fighter_equipment.MAX_LANDING_KG
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
@@ -63,40 +69,38 @@ FIN = {"root_x": 9.6, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, 
 # (x0, x1, y, half-width, height)
 CFT = None
 
-# Machines at 100 kW/kg: a 50 MW turbopump (generator ~500 kg), a 30 MW
-# lift-fan motor (~300 kg), and their electronics.
 # Equipment: name -> (kind, size, centre, mass kg, colour). Sizes are fixed;
 # x of the centre scales with the airframe. "box" size is (dx, dy, dz);
 # "cyl_x" and "cyl_z" are (diameter, length) along X or Z.
 EQUIPMENT = {
-    "radar":           ("cyl_x", (0.50, 0.50), (1.60, 0.0, 0.0), 100, (0.6, 0.6, 0.9)),
-    "avionics":        ("box", (0.50, 0.50, 0.40), (2.40, 0.0, 0.0), 100, (0.5, 0.5, 0.8)),
+    "radar":           ("cyl_x", (0.50, 0.50), (1.60, 0.0, 0.0), _EQ["radar"], (0.6, 0.6, 0.9)),
+    "avionics":        ("box", (0.50, 0.50, 0.40), (2.40, 0.0, 0.0), _EQ["avionics"], (0.5, 0.5, 0.8)),
     "nose_gear":       ("box", (1.00, 0.40, 0.40), (3.60, 0.0, -0.30), 0, (0.3, 0.3, 0.3)),
     # Pilot, ~0.24 m3 of tissue-density breathing liquid, the shell, the
     # oxygenator and scrubber, the BCI: an escape capsule in its own right.
     # It is boarded through a dorsal hatch between the conformal tanks, by
     # a built-in ladder, and ejects upward through it. Drained, its liquid
     # waits in the reservoir.
-    "capsule":         ("box", (2.00, 0.60, 0.50), (8.60, 0.0, 0.78), 500, (0.95, 0.85, 0.35)),
+    "capsule":         ("box", (2.00, 0.60, 0.50), (8.60, 0.0, 0.78), _EQ["capsule"], (0.95, 0.85, 0.35)),
     "capsule_reservoir": ("box", (0.70, 0.60, 0.60), (5.45, 0.0, 0.35), 0, (0.95, 0.75, 0.45)),
     # The fan's shaft runs skin to skin; its doors are the skin.
-    "lift_fan":        ("cyl_z", (1.55, 1.42), (6.60, 0.0, 0.06), 700, (0.2, 0.8, 0.9)),
-    # Fan, compressor, casings, combustor, reheat, ~0.9 t, and motors for
-    # ~45 MW, what the fan and compressor want at Mach 2.
-    "engine":          ("cyl_x", (1.00, 4.10), (10.65, 0.0, -0.05), 1350, (0.9, 0.45, 0.2)),
-    "swivel_nozzle":   ("cyl_x", (0.90, 1.70), (13.55, 0.0, -0.05), 250, (0.95, 0.3, 0.15)),
-    "turbopump":       ("cyl_x", (0.45, 1.40), (10.20, 0.68, 0.22), 650, (0.85, 0.2, 0.6)),
-    "power_electronics": ("box", (1.20, 0.45, 0.40), (10.20, -0.68, 0.22), 500, (0.9, 0.9, 0.2)),
-    "fel":             ("box", (3.20, 0.55, 0.40), (11.00, 0.0, 0.68), 1000, (0.2, 0.9, 0.3)),
-    "fel_director":    ("cyl_z", (0.60, 0.40), (4.90, 0.0, 0.70), 200, (0.1, 1.0, 0.4)),
+    "lift_fan":        ("cyl_z", (1.55, 1.42), (6.60, 0.0, 0.06), _EQ["lift_fan"], (0.2, 0.8, 0.9)),
+    # Fan, compressor, casings, hot section, nozzle, and motors for ~45 MW,
+    # what the fan and compressor want at Mach 2.
+    "engine":          ("cyl_x", (1.00, 4.10), (10.65, 0.0, -0.05), _EQ["engine"] + _EQ["engine_motors"], (0.9, 0.45, 0.2)),
+    "swivel_nozzle":   ("cyl_x", (0.90, 1.70), (13.55, 0.0, -0.05), _EQ["swivel_nozzle"], (0.95, 0.3, 0.15)),
+    "turbopump":       ("cyl_x", (0.45, 1.40), (10.20, 0.68, 0.22), _EQ["turbopump"], (0.85, 0.2, 0.6)),
+    "power_electronics": ("box", (1.20, 0.45, 0.40), (10.20, -0.68, 0.22), _EQ["power_electronics"], (0.9, 0.9, 0.2)),
+    "fel":             ("box", (3.20, 0.55, 0.40), (11.00, 0.0, 0.68), _EQ["laser"], (0.2, 0.9, 0.3)),
+    "fel_director":    ("cyl_z", (0.60, 0.40), (4.90, 0.0, 0.70), _EQ["laser_turret"], (0.1, 1.0, 0.4)),
     # Stowed beside the engine's belly; the legs swing out to a wide track.
     "main_gear_l":     ("box", (1.30, 0.40, 0.32), (10.30, -0.66, -0.40), 0, (0.3, 0.3, 0.3)),
     "main_gear_r":     ("box", (1.30, 0.40, 0.32), (10.30, 0.66, -0.40), 0, (0.3, 0.3, 0.3)),
     # Two dust missiles side by side in each wing root, ~2.4 m x 0.18 m and
     # ~90 kg each; doors on the belly, sealed for entry like the Shuttle's
     # gear doors. Mass: doors, ejectors, hot seals.
-    "bay_l":           ("box", (2.60, 0.50, 0.24), (11.10, -1.85, -0.15), 40, (0.95, 0.55, 0.1)),
-    "bay_r":           ("box", (2.60, 0.50, 0.24), (11.10, 1.85, -0.15), 40, (0.95, 0.55, 0.1)),
+    "bay_l":           ("box", (2.60, 0.50, 0.24), (11.10, -1.85, -0.15), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_r":           ("box", (2.60, 0.50, 0.24), (11.10, 1.85, -0.15), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
 }
 # Equipment meant to stand proud of the skin: the laser's turret and the
 # nozzle's exit.
@@ -117,8 +121,8 @@ TANK_FILL = 0.75  # of a tank region's free volume: frames, baffles, feeds, and 
 
 # Equipment the list does not place, kg, taken at the centre of gravity.
 # Flush hardpoints: no pylons in the flow on entry.
-FIXED = {"inlets_and_ducts": 350, "propellant_system": 250, "flight_controls_and_rcs": 250,
-         "thermal": 200, "electrical": 150}
+FIXED = {n: _EQ[n] for n in ("inlets_and_ducts", "propellant_system", "flight_controls_and_rcs",
+                              "thermal", "electrical")}
 # The design manoeuvre's mass, and the heaviest the aircraft lands at.
 DESIGN_KG = fighter_structure.DESIGN_KG
 LANDING_KG = 21000.0
