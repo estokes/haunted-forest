@@ -8,9 +8,9 @@
 use anyhow::{Context, Result};
 use hf_engine::{
     atmos::{altitude_for_q, isa, Air},
-    blade::blade_heat,
+    blade::{blade_heat, coolant_heat},
     cycle::{rocket, EngineSpec, Mode, Point, PointReport},
-    gas::{eq_hp, eq_tp, Diluent, Feed, Gas},
+    gas::{eq_hp, Diluent, Feed, Gas},
     hover::{calibrated_efficiency, lift_fan, Airframe},
     parts::{Turbopump, TurbopumpSpec, G0},
     thermo::{sp, NS, THERMO},
@@ -62,13 +62,15 @@ fn row(name: &str, r: &PointReport) {
 /// J/kg a diluent absorbs from its tank to `t` at `p`: as a frozen gas, or
 /// cracked to equilibrium.
 fn coolant_dh(d: Diluent, p: f64, t: f64, cracked: bool) -> Result<f64> {
+    if cracked {
+        return coolant_heat(d, p, t);
+    }
     let liquid = d.feed(0.);
-    let hot = if cracked {
-        eq_tp(&liquid.b, t, p, None)?
-    } else {
+    let hot = {
         let j = match d {
             Diluent::Ammonia => sp::NH3,
             Diluent::Methane => sp::CH4,
+            Diluent::Aqueous(_) => sp::H2O,
         };
         let mut n = [0.; NS];
         n[j] = 1. / THERMO.gas[j].mw;
@@ -95,7 +97,7 @@ struct Summary {
 }
 
 fn chemistry(d: Diluent, sum: &mut Summary) -> Result<()> {
-    let name = d.name();
+    let name = d;
     println!("== Dust and {name}: equilibrium, with dissociation and soot");
     for (x, p) in [(1., 10e6), (2., 10e6)] {
         let g = eq_hp(&Feed::blend(&[(1., Feed::dust()), (x, d.feed(0.))]), p, None)?;
@@ -145,7 +147,7 @@ fn chemistry(d: Diluent, sum: &mut Summary) -> Result<()> {
 }
 
 fn turbopumps(d: Diluent, sum: &mut Summary) -> Result<()> {
-    println!("== Turbopump on {}, 10 MPa into 1.5 MPa, per MW-minute", d.name());
+    println!("== Turbopump on {}, 10 MPa into 1.5 MPa, per MW-minute", d);
     for (tit, reheat) in [(3000., false), (4000., false), (5000., false), (5000., true)] {
         let s = TurbopumpSpec { tit, reheat, diluent: d, ..Default::default() };
         let k = s.per_kg(1.5e6)?;
@@ -153,7 +155,7 @@ fn turbopumps(d: Diluent, sum: &mut Summary) -> Result<()> {
             "  {tit:.0} K{:15}: {:5.2} kg {}, {:4.2} kg dust, exhaust {:4.0} K, {:4.1}% soot",
             if reheat { ", stage reheat" } else { "" },
             Turbopump::diluent_per_mw_min(&k),
-            d.name(),
+            d,
             Turbopump::dust_per_mw_min(&k),
             k.exhaust.gas.t,
             100. * k.exhaust.gas.soot()
@@ -168,7 +170,7 @@ fn turbopumps(d: Diluent, sum: &mut Summary) -> Result<()> {
 }
 
 fn engine(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
-    println!("== Engine on {}", spec.turbopump.diluent.name());
+    println!("== Engine on {}", spec.turbopump.diluent);
     let sls = Point::default();
     let dry = spec.evaluate(&sls)?;
     row("sea level, max dry", &dry);
@@ -250,7 +252,7 @@ fn best_cruise(
 
 fn mission(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
     let d = spec.turbopump.diluent;
-    println!("== Cruise on {}, Mach 0.9 at 11 km, 11 t, Mirage-like drag", d.name());
+    println!("== Cruise on {}, Mach 0.9 at 11 km, 11 t, Mirage-like drag", d);
     let v = 0.9 * (1.4 * 287.053 * isa(11000.).0).sqrt();
     let drag = Airframe::default().drag(11000., 11000., 0.9);
     let base = Point { altitude: 11000., mach: 0.9, ..Default::default() };
@@ -272,7 +274,7 @@ fn mission(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
             km_per_t / (v / mirage_flow),
             km_per_m3 / (v / 1e3 / (mirage_flow / 800.)),
             r.diluent / r.dust,
-            d.name()
+            d
         );
         sum.cruise = (km_per_t, km_per_m3, r.diluent / r.dust);
     }
@@ -282,7 +284,7 @@ fn mission(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
 fn hover(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
     println!(
         "== Hover on {}, sea level (lift fan calibrated on the F-35B: {:.2} of ducted ideal)",
-        spec.turbopump.diluent.name(),
+        spec.turbopump.diluent,
         calibrated_efficiency()
     );
     let (fan_thrust, rear) = (75e3, 40e3);
@@ -336,7 +338,7 @@ fn hover(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
                 "    hover total {:.1} MW: {:.0} kg {} and {:.0} kg dust a minute",
                 r.electric / 1e6,
                 r.diluent * 60.,
-                spec.turbopump.diluent.name(),
+                spec.turbopump.diluent,
                 r.dust * 60.
             );
             if pitch == "variable" {
@@ -349,7 +351,7 @@ fn hover(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
 
 fn loads(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
     let d = spec.turbopump.diluent;
-    println!("== Electric loads on {} (turbopump into a 1.5 MPa combustor)", d.name());
+    println!("== Electric loads on {} (turbopump into a 1.5 MPa combustor)", d);
     let k = spec.turbopump.per_kg(1.5e6)?;
     for (name, mw, minutes) in [
         ("FEL, 10 min", 8., 10.),
@@ -360,7 +362,7 @@ fn loads(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
         println!(
             "  {name} at {mw} MW: {:.0} kg {}, {:.0} kg dust",
             tp.diluent * 60. * minutes,
-            d.name(),
+            d,
             tp.dust * 60. * minutes
         );
         if mw == 8. {
@@ -383,7 +385,7 @@ fn blades(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
     let p = spec.turbopump.p_reverter;
     println!(
         "== Turbopump blades on {} at {:.0} MW into 1.5 MPa: non-catalytic surfaces at 4,000 K",
-        d.name(),
+        d,
         TURBOPUMP_MAX / 1e6
     );
     let cracked = coolant_dh(d, p, 2500., true)?;
@@ -404,7 +406,7 @@ fn blades(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
     println!(
         "  heat {:.1} MW; {} cracked to 2,500 K takes {:.1} MJ/kg ({:.0}% of it needed), uncracked to {COKING_T:.0} K takes {:.1} MJ/kg ({:.0}%)",
         b.heat / 1e6,
-        d.name(),
+        d,
         cracked / 1e6,
         to(cracked),
         frozen / 1e6,
@@ -434,7 +436,7 @@ fn blade_envelope(spec: &EngineSpec) -> Result<()> {
                         blade_heat(&k, TURBOPUMP_MAX / k.electric, wall, dh, catalytic)?;
                     println!(
                         "  {:8} {:2.0} MPa, gas {tit:.0} K over {wall:.0} K, {:13}: {:6.0} MW/m2, {:3.0}%, {:.2} kg/MW-min, {:4.0} krpm",
-                        d.name(),
+                        d,
                         p_rev / 1e6,
                         if catalytic { "catalytic" } else { "non-catalytic" },
                         b.stages[0].flux / 1e6,
@@ -453,7 +455,7 @@ fn compare(sums: &[(Diluent, Summary)]) {
     println!("== Ammonia against methane");
     print!("  {:46}", "");
     for (d, _) in sums {
-        print!(" {:>24}", d.name());
+        print!(" {:>24}", d);
     }
     println!();
     let line = |name: &str, f: &dyn Fn(&Diluent, &Summary) -> String| {
@@ -464,7 +466,7 @@ fn compare(sums: &[(Diluent, Summary)]) {
         println!();
     };
     line("liquid kg/m3, stored at", &|d, _| {
-        format!("{:.0}, {:.0} K", d.density(), d.boiling())
+        format!("{:.0}, {:.0} K", d.density(), d.storage())
     });
     line("reverter at 5,000 K: dust:diluent, soot", &|_, s| {
         format!("1:{:.2}, {:.1}%", s.reverter_mix, 100. * s.reverter_soot)

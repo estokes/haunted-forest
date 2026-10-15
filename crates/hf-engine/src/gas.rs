@@ -7,7 +7,9 @@
 //! Fixed enthalpy or entropy is a root find on temperature around it.
 //! Condensed carbon is taken to move with the gas at its temperature.
 
-use crate::thermo::{el, CH4_MW, DUST_H, H_MW, NC, NE, NH3_MW, NS, P0, R, THERMO};
+use crate::thermo::{
+    el, CH4_MW, DUST_H, H2O_MW, H_MW, NC, NE, NH3_MW, NS, P0, R, THERMO,
+};
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 
@@ -41,15 +43,31 @@ impl Feed {
 }
 
 /// The liquid that carries, cools and dilutes the dust.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub enum Diluent {
     #[default]
     Ammonia,
     Methane,
+    /// Ammonia in water, by mass fraction of ammonia: 0 is pure water. Its
+    /// enthalpy takes the ammonia as dissolved at infinite dilution,
+    /// -80.3 kJ/mol; its density, ~1000 - 330 x kg/m3, fits 0-35%.
+    Aqueous(f64),
+}
+
+impl std::fmt::Display for Diluent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Diluent::Ammonia => write!(f, "ammonia"),
+            Diluent::Methane => write!(f, "methane"),
+            Diluent::Aqueous(x) if *x == 0. => write!(f, "water"),
+            Diluent::Aqueous(x) => write!(f, "{:.0}% ammonia-water", 100. * x),
+        }
+    }
 }
 
 impl Diluent {
     pub const ALL: [Diluent; 2] = [Diluent::Ammonia, Diluent::Methane];
+    pub const WATER: Diluent = Diluent::Aqueous(0.);
 
     /// The liquid from its tank, plus `heat` J/kg picked up on the way.
     pub fn feed(self, heat: f64) -> Feed {
@@ -65,30 +83,57 @@ impl Diluent {
                 b[el::C] = 1. / CH4_MW;
                 THERMO.ch4_liquid_h
             }
+            Diluent::Aqueous(x) => {
+                b[el::H] = 3. * x / NH3_MW + 2. * (1. - x) / H2O_MW;
+                b[el::N] = x / NH3_MW;
+                b[el::O] = (1. - x) / H2O_MW;
+                x * -80.29e3 / NH3_MW + (1. - x) * -285.83e3 / H2O_MW
+            }
         };
         Feed { b, h: h + heat }
     }
 
-    pub fn name(self) -> &'static str {
-        match self {
-            Diluent::Ammonia => "ammonia",
-            Diluent::Methane => "methane",
-        }
-    }
-
-    /// kg/m3, liquid at its 1 atm boiling point.
+    /// kg/m3, as stored.
     pub fn density(self) -> f64 {
         match self {
             Diluent::Ammonia => 682.,
             Diluent::Methane => 422.,
+            Diluent::Aqueous(x) => 1000. - 330. * x,
         }
     }
 
-    /// K, the 1 atm boiling point it is stored at.
-    pub fn boiling(self) -> f64 {
+    /// K, the temperature it is stored at: its 1 atm boiling point, or room
+    /// temperature for the aqueous liquids.
+    pub fn storage(self) -> f64 {
         match self {
             Diluent::Ammonia => 239.7,
             Diluent::Methane => 111.6,
+            Diluent::Aqueous(_) => 298.,
+        }
+    }
+
+    /// K, where it freezes: ammonia-water from its phase diagram, to the
+    /// eutectic near 33%.
+    pub fn freezing(self) -> f64 {
+        match self {
+            Diluent::Ammonia => 195.4,
+            Diluent::Methane => 90.7,
+            Diluent::Aqueous(x) => {
+                const PTS: [(f64, f64); 5] =
+                    [(0., 273.), (0.1, 259.), (0.2, 238.), (0.28, 196.), (0.33, 173.)];
+                let x = x.min(0.33);
+                let w = PTS.windows(2).find(|w| x <= w[1].0).unwrap_or(&PTS[3..5]);
+                w[0].1 + (x - w[0].0) / (w[1].0 - w[0].0) * (w[1].1 - w[0].1)
+            }
+        }
+    }
+
+    /// J/kg to boil it off a tank.
+    pub fn latent(self) -> f64 {
+        match self {
+            Diluent::Ammonia => 1.37e6,
+            Diluent::Methane => 0.51e6,
+            Diluent::Aqueous(x) => x * 1.37e6 + (1. - x) * 2.26e6,
         }
     }
 }

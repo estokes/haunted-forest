@@ -17,7 +17,6 @@ use anyhow::Result;
 use hf_engine::{
     atmos::altitude_for_q,
     cycle::{rocket, EngineSpec, Mode, Point, PointReport},
-    gas::Diluent,
     parts::G0,
 };
 use rayon::prelude::*;
@@ -39,6 +38,10 @@ pub struct AscentSpec {
     /// Nozzle exit area, m2, and the area ratio it gives.
     pub exit_area: f64,
     pub area_ratio: f64,
+    /// kg of diluent per kg of dust in rocket mode, and the chamber's
+    /// temperature on it.
+    pub mix: f64,
+    pub chamber_t: f64,
     pub orbit: f64,
     pub dt: f64,
     /// For the heating on the way up: nose and leading-edge radii, sweep.
@@ -48,21 +51,24 @@ pub struct AscentSpec {
 }
 
 impl AscentSpec {
-    /// Rocket mode on the tank's slurry, 1:0.24, at chamber pressure `pc`
-    /// through a nozzle whose exit is `exit_area` m2, at 92% of ideal: the
-    /// area ratio is what that exit gives the throat the thrust needs.
+    /// Rocket mode burning `mix` kg of the engine's diluent per kg of dust
+    /// at chamber pressure `pc` through a nozzle whose exit is `exit_area`
+    /// m2, at 92% of ideal: the area ratio is what that exit gives the
+    /// throat the thrust needs.
     pub fn new(
         engine: EngineSpec,
         rocket_thrust: f64,
         pc: f64,
         exit_area: f64,
+        mix: f64,
     ) -> Result<Self> {
+        let diluent = engine.turbopump.diluent;
         let mut ratio = 10.;
-        let mut r = rocket(Diluent::Ammonia, 0.24, pc, ratio)?;
+        let mut r = rocket(diluent, mix, pc, ratio)?;
         for _ in 0..6 {
             let throat = rocket_thrust / (r.isp_vacuum * G0) / r.throat_flux;
             ratio = exit_area / throat;
-            r = rocket(Diluent::Ammonia, 0.24, pc, ratio)?;
+            r = rocket(diluent, mix, pc, ratio)?;
         }
         Ok(Self {
             engine,
@@ -73,6 +79,8 @@ impl AscentSpec {
             rocket_isp: 0.92 * r.isp_vacuum,
             exit_area,
             area_ratio: ratio,
+            mix,
+            chamber_t: r.chamber_t,
             orbit: 200e3,
             dt: 0.1,
             nose_radius: 0.1,

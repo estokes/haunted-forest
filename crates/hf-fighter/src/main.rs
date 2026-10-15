@@ -1,23 +1,35 @@
 //! Close the fighter's down-and-back mission on an Earth-like planet: from
 //! orbit, deorbit, entry, a sortie, a landing on a 300 m dirt strip, and
 //! back to orbit on what it brought down, clean but for its laser. Prints
-//! the mass and volume budget, the strip, the climb and the entry, and how
-//! they move with the assumptions.
+//! what the tanks should hold for a fixed volume — which liquid, and how
+//! dust-rich the rocket burns — then the mission on the best of them: the
+//! budget, the strip, the climb and the entry, and how they move with the
+//! assumptions.
 
 use anyhow::Result;
-use hf_engine::{cycle::EngineSpec, parts::G0};
+use hf_engine::{
+    blade::{blade_heat, coolant_heat},
+    cycle::{EngineSpec, Point},
+    gas::Diluent,
+    parts::{Turbopump, TurbopumpSpec, G0},
+};
 use hf_fighter::{
     aero::Aero,
     ascent::{Ascent, AscentSpec, Table},
     entry::{tank_soak, EntryReport, EntrySpec, Peak},
+    fill::{filled_density, volume},
     heat::Insulation,
-    planet::EARTH,
+    planet::{air, EARTH},
     strip::StripSpec,
 };
+use rayon::prelude::*;
 
-/// Packed two-size shot (packing 0.80) with ammonia in the voids, kg/m3.
-const SLURRY: f64 = 696.;
-const AMMONIA_BOILOFF: f64 = 1.17e6;
+/// The liquids compared, and the rocket mixes, kg of liquid per kg of dust.
+const LIQUIDS: [Diluent; 4] =
+    [Diluent::Ammonia, Diluent::Aqueous(0.33), Diluent::Aqueous(0.15), Diluent::WATER];
+const MIXES: [f64; 7] = [0.05, 0.1, 0.15, 0.2, 0.25, 0.35, 0.5];
+/// The rocket mode's thrust, chamber pressure and exit.
+const ROCKET: (f64, f64, f64) = (250e3, 4e6, 0.6);
 
 #[derive(Clone, Copy)]
 struct Vehicle {
@@ -28,10 +40,11 @@ struct Vehicle {
     reserve: f64,
     /// Propellant for the sortie before landing, kg.
     sortie: f64,
-    internal: f64,
-    conformal: f64,
-    /// Belly area over tanks, m2.
+    tankage: f64,
+    /// Belly area over tanks, m2, and the heat each m2 takes through
+    /// entry, J.
     belly_tanks: f64,
+    soak: f64,
 }
 
 impl Default for Vehicle {
@@ -41,11 +54,40 @@ impl Default for Vehicle {
             tanks_dry: 600.,
             reserve: 150.,
             sortie: 500.,
-            internal: 4.6,
-            conformal: 7.5,
+            tankage: 12.1,
             belly_tanks: 15.,
+            soak: 1.6e6,
         }
     }
+}
+
+/// The liquid's share of the propellant at cruise, kg per kg of dust, and
+/// the cruise's km per tonne and per m3 of tank: Mach 0.9 at 11 km, fan at
+/// full ratio, on the first of a few settings with the thrust for it.
+fn cruise(engine: &EngineSpec, mass: f64) -> Result<(f64, f64, f64)> {
+    let at = air(11000.);
+    let v = 0.9 * at.sound;
+    let q = 0.5 * at.rho * v * v;
+    let drag = Aero::default().drag(0.9, q, mass * 9.80665);
+    let rho = engine.turbopump.diluent.density();
+    for (comp, t4) in [(1., None), (1.5, None), (1.5, Some(1500.)), (2.5, Some(2000.))] {
+        let pt = Point {
+            altitude: 11000.,
+            mach: 0.9,
+            fan_pr: 3.5,
+            compressor_pr: comp,
+            t4,
+            ..Default::default()
+        };
+        let Ok(k) = engine.throttle_for(&pt, drag) else { continue };
+        let r = engine.evaluate(&Point { throttle: k, ..pt })?;
+        return Ok((
+            r.diluent / r.dust,
+            v / (r.diluent + r.dust),
+            v / 1e3 / volume(r.dust, r.diluent, rho),
+        ));
+    }
+    anyhow::bail!("no setting cruises at {mass} kg")
 }
 
 struct Closure {
@@ -54,15 +96,16 @@ struct Closure {
     ascent: Ascent,
     entry_mass: f64,
     deorbit: f64,
-    aboard: f64,
-    capacity: f64,
+    dust: f64,
+    liquid: f64,
+    volume: f64,
 }
 
 fn close(
     v: &Vehicle,
     spec: &AscentSpec,
     table: &Table,
-    entry: &EntrySpec,
+    sortie_mix: f64,
 ) -> Result<Closure> {
     let orbit_mass = v.empty + v.tanks_dry + v.reserve;
     let takeoff = hf_engine::gas::brent(
@@ -73,18 +116,141 @@ fn close(
     )?;
     let ascent = spec.fly(&EARTH, &Aero::default(), table, takeoff);
     let entry_mass = takeoff + v.sortie;
-    let dv = entry.fly(&EARTH, &Aero::default()).deorbit_dv;
+    let dv = EntrySpec::default().fly(&EARTH, &Aero::default()).deorbit_dv;
     let deorbit = entry_mass * ((dv / (spec.rocket_isp * G0)).exp() - 1.);
-    let aboard = entry_mass + deorbit - v.empty - v.tanks_dry;
+    let d = spec.engine.turbopump.diluent;
+    let rocket = ascent.rocket.propellant + deorbit + v.reserve;
+    let r = spec.mix;
+    let dust = ascent.air_dust + rocket / (1. + r) + v.sortie / (1. + sortie_mix);
+    let liquid = ascent.air_diluent
+        + rocket * r / (1. + r)
+        + v.sortie * sortie_mix / (1. + sortie_mix)
+        + v.soak * v.belly_tanks / d.latent();
     Ok(Closure {
         orbit_mass,
         takeoff,
         ascent,
         entry_mass,
         deorbit,
-        aboard,
-        capacity: (v.internal + v.conformal) * SLURRY,
+        dust,
+        liquid,
+        volume: volume(dust, liquid, d.density()),
     })
+}
+
+/// One liquid in the tanks: what it does in each regime, and the mission
+/// on its best rocket mix.
+struct Fill {
+    diluent: Diluent,
+    per_mw: (f64, f64),
+    blades: f64,
+    sls: (f64, f64),
+    cruise: (f64, f64, f64),
+    ramjet: f64,
+    /// (mix, Isp, chamber K, delta-v from the full tankage on the empty
+    /// orbital mass, mission volume) for each mix.
+    mixes: Vec<(f64, f64, f64, f64, f64)>,
+    best: (f64, Closure),
+}
+
+fn fill(v: &Vehicle, d: Diluent) -> Result<Fill> {
+    let engine = EngineSpec {
+        turbopump: TurbopumpSpec { diluent: d, ..TurbopumpSpec::default() },
+        ..EngineSpec::default()
+    };
+    let k = engine.turbopump.per_kg(1.5e6)?;
+    let per_mw = (Turbopump::diluent_per_mw_min(&k), Turbopump::dust_per_mw_min(&k));
+    let dh = coolant_heat(d, engine.turbopump.p_reverter, 2500.)?;
+    let b = blade_heat(&k, 35e6 / k.electric, 4000., dh, false)?;
+    let sls = engine.evaluate(&Point::default())?;
+    let ramjet = engine.evaluate(&Point {
+        altitude: hf_engine::atmos::altitude_for_q(4.5, 50e3),
+        mach: 4.5,
+        mode: hf_engine::cycle::Mode::Ramjet,
+        t4: Some(3000.),
+        ..Default::default()
+    })?;
+    let cr = cruise(&engine, 11000.)?;
+    let table = AscentSpec::new(engine.clone(), ROCKET.0, ROCKET.1, ROCKET.2, 0.25)?
+        .engine_table();
+    let orbit = v.empty + v.tanks_dry + v.reserve;
+    let rho = d.density();
+    let runs: Vec<_> = MIXES
+        .par_iter()
+        .filter_map(|&r| {
+            let spec =
+                AscentSpec::new(engine.clone(), ROCKET.0, ROCKET.1, ROCKET.2, r).ok()?;
+            // All the tankage burnt on the rocket at this mix.
+            let per_m3 = (1. + r) / volume(1., r, rho);
+            let dv = spec.rocket_isp * G0 * (1. + per_m3 * v.tankage / orbit).ln();
+            let c = close(v, &spec, &table, cr.0)
+                .map_err(|e| eprintln!("{d} 1:{r}: {e}"))
+                .ok()?;
+            Some((r, spec.rocket_isp, spec.chamber_t, dv, c))
+        })
+        .collect();
+    let mixes =
+        runs.iter().map(|(r, isp, t, dv, c)| (*r, *isp, *t, *dv, c.volume)).collect();
+    let best = runs
+        .into_iter()
+        .min_by(|a, b| a.4.volume.total_cmp(&b.4.volume))
+        .map(|x| (x.0, x.4))
+        .ok_or_else(|| anyhow::anyhow!("no mix closes for {d}"))?;
+    Ok(Fill {
+        diluent: d,
+        per_mw,
+        blades: b.heat / b.capacity,
+        sls: (sls.thrust, sls.isp),
+        cruise: cr,
+        ramjet: ramjet.isp,
+        mixes,
+        best,
+    })
+}
+
+fn report_fills(v: &Vehicle, fills: &[Fill]) {
+    println!("== What fills {:.1} m3 of tank best: dust shot packed to 80%, a liquid in its gaps and beside it", v.tankage);
+    for f in fills {
+        let d = f.diluent;
+        println!(
+            "  {d}: {:.0} kg/m3, freezes at {:.0} K; gaps filled, {:.0} kg/m3 of tank",
+            d.density(),
+            d.freezing(),
+            filled_density(d.density())
+        );
+        println!(
+            "    turbopump at 5,000 K: {:.2} kg liquid and {:.2} kg dust per MW-minute; blade cooling takes {:.0}% of the liquid",
+            f.per_mw.0,
+            f.per_mw.1,
+            100. * f.blades
+        );
+        println!(
+            "    sea level dry {:.0} kN at {:.0} s; cruise {:.0} km/t, {:.0} km/m3, {:.2} kg liquid per kg dust; ramjet Mach 4.5 {:.0} s",
+            f.sls.0 / 1e3,
+            f.sls.1,
+            f.cruise.1,
+            f.cruise.2,
+            f.cruise.0,
+            f.ramjet
+        );
+        for (r, isp, t, dv, vol) in &f.mixes {
+            println!(
+                "    rocket 1:{r:<4}: {isp:4.0} s, chamber {t:4.0} K; all {:.1} m3 on the rocket: {:.2} km/s; down and back takes {vol:4.1} m3",
+                v.tankage,
+                dv / 1e3
+            );
+        }
+        let (r, c) = &f.best;
+        println!(
+            "    best: 1:{r} — takeoff {:.0} kg, {:.0} kg dust and {:.0} kg liquid, {:.1} m3 of {:.1} ({:.1} spare)",
+            c.takeoff,
+            c.dust,
+            c.liquid,
+            c.volume,
+            v.tankage,
+            v.tankage - c.volume
+        );
+    }
 }
 
 fn peak(name: &str, p: &Peak) {
@@ -127,26 +293,32 @@ fn report_entry(e: &EntryReport, spec: &EntrySpec) {
     println!("    windward flow turbulent from t {:.0} s", e.turbulent_from);
 }
 
-fn main() -> Result<()> {
+fn mission(v: &Vehicle, f: &Fill) -> Result<()> {
     let planet = &EARTH;
     let aero = Aero::default();
-    let v = Vehicle::default();
-    let spec = AscentSpec::new(EngineSpec::default(), 250e3, 4e6, 0.6)?;
+    let d = f.diluent;
+    let (mix, c) = &f.best;
+    let engine = EngineSpec {
+        turbopump: TurbopumpSpec { diluent: d, ..TurbopumpSpec::default() },
+        ..EngineSpec::default()
+    };
+    let spec = AscentSpec::new(engine, ROCKET.0, ROCKET.1, ROCKET.2, *mix)?;
     let table = spec.engine_table();
     let strip = StripSpec::default();
     let curve = StripSpec::engine_curve(&spec.engine);
-    let entry_spec = EntrySpec::default();
 
-    println!("== Down and back, Earth-like, clean but for the laser");
     println!(
-        "  rocket mode: {:.0} kN vacuum at 4 MPa, area ratio {:.1} in a {:.2} m2 exit, {:.0} s on 1:0.24 slurry",
+        "== Down and back on {d}, rocket at 1:{mix}, Earth-like, clean but for the laser"
+    );
+    println!(
+        "  rocket mode: {:.0} kN vacuum at {:.0} MPa, area ratio {:.1} in a {:.2} m2 exit, {:.0} s, chamber {:.0} K",
         spec.rocket_thrust / 1e3,
+        ROCKET.1 / 1e6,
         spec.area_ratio,
         spec.exit_area,
-        spec.rocket_isp
+        spec.rocket_isp,
+        spec.chamber_t
     );
-    let c = close(&v, &spec, &table, &entry_spec)?;
-    let a = &c.ascent;
     println!(
         "  in orbit, empty: {:.0} kg ({:.0} empty, {:.0} tanks, {:.0} reserve)",
         c.orbit_mass, v.empty, v.tanks_dry, v.reserve
@@ -158,14 +330,15 @@ fn main() -> Result<()> {
         c.entry_mass + c.deorbit
     );
     println!(
-        "  propellant aboard leaving orbit: {:.0} kg = {:.1} m3 of {:.1} m3 ({:.0}% of capacity, {:.1} m3 spare)",
-        c.aboard,
-        c.aboard / SLURRY,
-        v.internal + v.conformal,
-        100. * c.aboard / c.capacity,
-        (c.capacity - c.aboard) / SLURRY
+        "  leaving orbit: {:.0} kg of dust and {:.0} kg of {d}, {:.1} m3 of {:.1} ({:.1} spare)",
+        c.dust,
+        c.liquid,
+        c.volume,
+        v.tankage,
+        v.tankage - c.volume
     );
 
+    let a = &c.ascent;
     println!("== Climb, from {:.0} kg", c.takeoff);
     for s in &a.segments {
         println!(
@@ -178,7 +351,7 @@ fn main() -> Result<()> {
         );
     }
     println!(
-        "  air-breathing to Mach {:.2} at {:.0} km: {:.0} s, {:.0} kg ({:.0} ammonia, {:.0} dust)",
+        "  air-breathing to Mach {:.2} at {:.0} km: {:.0} s, {:.0} kg ({:.0} {d}, {:.0} dust)",
         a.handover_mach,
         a.handover_altitude / 1e3,
         a.air_time,
@@ -205,8 +378,10 @@ fn main() -> Result<()> {
     );
 
     println!(
-        "== The strip: 300 m of hard dirt (rolling {}, braking {})",
-        strip.rolling, strip.braking
+        "== The strip: 300 m of hard dirt (rolling {}, braking {}), lift-fan motor {:.0} MW",
+        strip.rolling,
+        strip.braking,
+        strip.fan_max / 1e6
     );
     let to = strip.takeoff(c.takeoff, &curve);
     println!(
@@ -218,20 +393,18 @@ fn main() -> Result<()> {
         to.fan_power / 1e6,
         to.nozzle_angle.to_degrees()
     );
-    let heaviest = strip.heaviest(300., &curve)?;
-    println!("  heaviest takeoff in 300 m: {heaviest:.0} kg");
+    println!("  heaviest takeoff in 300 m: {:.0} kg", strip.heaviest(300., &curve)?);
     let land = strip.land(c.takeoff, &curve);
     println!(
         "  landing at {:.0} kg: touchdown {:.0} m/s, roll {:.0} m",
         c.takeoff, land.touchdown, land.roll
     );
     for (name, s) in [
-        ("fan motor 20 MW", StripSpec { fan_max: 20e6, ..StripSpec::default() }),
+        ("lift-fan motor 14.7 MW", StripSpec { fan_max: 14.7e6, ..StripSpec::default() }),
         (
             "soft dirt, rolling 0.08, braking 0.2",
             StripSpec { rolling: 0.08, braking: 0.2, ..StripSpec::default() },
         ),
-        ("wing CL 0.8 on the run", StripSpec { cl_ground: 0.8, ..StripSpec::default() }),
     ] {
         let t = s.takeoff(c.takeoff, &curve);
         let l = s.land(c.takeoff, &curve);
@@ -252,44 +425,30 @@ fn main() -> Result<()> {
     let es = EntrySpec { mass: c.entry_mass, ..EntrySpec::default() };
     let e = es.fly(planet, &aero);
     report_entry(&e, &es);
-    println!(
-        "  belly tanks behind the 6 m station's skin, held at 300 K by boiling ammonia:"
-    );
+    println!("  belly tanks behind the 6 m station's skin, held at 300 K by their boiling liquid:");
     for t in [0.03, 0.05, 0.10] {
         let ins = Insulation { thickness: t, ..Insulation::default() };
         let s = tank_soak(&e, &ins, 300., 8000., 0.85);
         println!(
-            "    {:2.0} cm of insulation ({:.0} kg/m2): {:5.1} MJ/m2 into the tank, peak {:5.0} W/m2 at t {:4.0} s; {:4.0} kg of ammonia boiled off under {} m2",
+            "    {:2.0} cm of insulation ({:.0} kg/m2): {:5.1} MJ/m2 into the tank, peak {:5.0} W/m2 at t {:4.0} s; {:4.0} kg of {d} boiled off under {} m2",
             t * 100.,
             t * ins.density,
             s.heat / 1e6,
             s.peak_flux,
             s.peak_time,
-            s.heat * v.belly_tanks / AMMONIA_BOILOFF,
+            s.heat * v.belly_tanks / d.latent(),
             v.belly_tanks
-        );
-    }
-    println!("  sharper and blunter:");
-    for (rn, re) in [(0.03, 0.01), (0.05, 0.02), (0.2, 0.05)] {
-        let s = EntrySpec {
-            mass: c.entry_mass,
-            nose_radius: rn,
-            edge_radius: re,
-            ..EntrySpec::default()
-        };
-        let r = s.fly(planet, &aero);
-        println!(
-            "    nose {:2.0} cm: {:4.0} K; edge {:1.0} cm: {:4.0} K",
-            rn * 100.,
-            r.nose.temperature,
-            re * 100.,
-            r.edge.temperature
         );
     }
     for (name, s) in [
         (
-            "steeper: periapsis 0 km",
-            EntrySpec { mass: c.entry_mass, periapsis: 0., ..EntrySpec::default() },
+            "nose 3 cm, edge 1 cm",
+            EntrySpec {
+                mass: c.entry_mass,
+                nose_radius: 0.03,
+                edge_radius: 0.01,
+                ..EntrySpec::default()
+            },
         ),
         (
             "angle of attack 30 deg",
@@ -317,36 +476,34 @@ fn main() -> Result<()> {
 
     println!("== Sensitivity of the budget");
     for (name, vv) in [
-        ("empty +1 t", Vehicle { empty: v.empty + 1000., ..v }),
-        ("empty +2 t", Vehicle { empty: v.empty + 2000., ..v }),
-        ("sortie 1.5 t", Vehicle { sortie: 1500., ..v }),
+        ("empty +1 t", Vehicle { empty: v.empty + 1000., ..*v }),
+        ("empty +2 t", Vehicle { empty: v.empty + 2000., ..*v }),
+        ("sortie 1.5 t", Vehicle { sortie: 1500., ..*v }),
     ] {
-        let c = close(&vv, &spec, &table, &entry_spec)?;
+        let c = close(&vv, &spec, &table, f.cruise.0)?;
         println!(
-            "    {name:14}: takeoff {:5.0} kg, entry {:5.0} kg, aboard {:4.1} m3 of {:.1} ({:3.0}%), 300 m takeoff {}",
+            "    {name:14}: takeoff {:5.0} kg, entry {:5.0} kg, {:4.1} m3 of {:.1}, 300 m takeoff {}",
             c.takeoff,
             c.entry_mass,
-            c.aboard / SLURRY,
-            vv.internal + vv.conformal,
-            100. * c.aboard / c.capacity,
+            c.volume,
+            vv.tankage,
             if strip.takeoff(c.takeoff, &curve).roll <= 300. { "yes" } else { "no" }
         );
     }
-    for (name, s) in [
-        ("rocket 2 MPa", AscentSpec::new(EngineSpec::default(), 250e3, 2e6, 0.6)?),
-        ("rocket 180 kN", AscentSpec::new(EngineSpec::default(), 180e3, 4e6, 0.6)?),
-        ("rocket 350 kN", AscentSpec::new(EngineSpec::default(), 350e3, 4e6, 0.6)?),
-    ] {
-        let t = s.engine_table();
-        let c = close(&v, &s, &t, &entry_spec)?;
-        println!(
-            "    {name:14}: {:4.0} s; takeoff {:5.0} kg, aboard {:4.1} m3 ({:3.0}%), rocket {:.2} km/s",
-            s.rocket_isp,
-            c.takeoff,
-            c.aboard / SLURRY,
-            100. * c.aboard / c.capacity,
-            c.ascent.rocket.dv / 1e3
-        );
+    Ok(())
+}
+
+fn main() -> Result<()> {
+    let v = Vehicle::default();
+    let fills: Vec<Fill> = LIQUIDS.iter().map(|&d| fill(&v, d)).collect::<Result<_>>()?;
+    report_fills(&v, &fills);
+    let best =
+        fills.iter().min_by(|a, b| a.best.1.volume.total_cmp(&b.best.1.volume)).unwrap();
+    mission(&v, best)?;
+    if best.diluent != Diluent::Ammonia
+        && let Some(nh3) = fills.iter().find(|f| f.diluent == Diluent::Ammonia)
+    {
+        mission(&v, nh3)?;
     }
     Ok(())
 }

@@ -156,6 +156,7 @@ pub const DUST_H: f64 = 216e6;
 pub const H_MW: f64 = 1.00794e-3;
 pub const NH3_MW: f64 = 17.03052e-3;
 pub const CH4_MW: f64 = 16.04246e-3;
+pub const H2O_MW: f64 = 18.01528e-3;
 
 pub static THERMO: LazyLock<Thermo> =
     LazyLock::new(|| parse(include_str!("../data/thermo.inp")).expect("data/thermo.inp"));

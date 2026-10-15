@@ -44,7 +44,7 @@ impl Default for StripSpec {
             cl_rollout: 0.1,
             wing: 41.,
             fan_diameter: 1.5,
-            fan_max: 14.7e6,
+            fan_max: 20e6,
             turbopump: 35e6,
             balance: 0.5,
             eta_motor: 0.98,

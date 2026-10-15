@@ -6,6 +6,7 @@
 pub mod aero;
 pub mod ascent;
 pub mod entry;
+pub mod fill;
 pub mod heat;
 pub mod optim;
 pub mod planet;

@@ -17,7 +17,7 @@ fn main() -> anyhow::Result<()> {
         let e = g.eq_s(g.s(), 1.5e6)?;
         println!(
             "{} {x} {p} {} {} {} {} {} {} {} {} {}",
-            d.name(),
+            d,
             f.b[el::H],
             f.b[el::N],
             f.b[el::C],

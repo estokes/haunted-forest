@@ -3,7 +3,7 @@
 //!
 //! Transport properties are Chapman-Enskog with Lennard-Jones parameters
 //! (Neufeld's collision integral), Eucken conductivities, Wilke mixing,
-//! over the major species H, H2, N2, NH3, CH4 and C2H2. Heat flux follows Reynolds'
+//! over the major species H, H2, N2, NH3, CH4, C2H2, H2O, OH and O. Heat flux follows Reynolds'
 //! analogy on enthalpy, St = 1.5 * 0.037 Re_c^-0.2 Pr^-2/3: a turbulent
 //! flat plate raised half again for leading edges and free-stream
 //! turbulence. Driving it with equilibrium enthalpies counts the hydrogen
@@ -16,7 +16,7 @@
 //! 2 x 2 pi r x chord. Each stage is a stator and a rotor.
 
 use crate::{
-    gas::{eq_tp, Gas},
+    gas::{eq_tp, Diluent, Gas},
     parts::{Stage, TurbopumpPerKg, MAX_STAGES},
     thermo::{sp, R, THERMO},
 };
@@ -24,13 +24,16 @@ use anyhow::Result;
 use std::f64::consts::PI;
 
 /// (species, sigma Angstrom, epsilon/k K)
-const LJ: [(usize, f64, f64); 6] = [
+const LJ: [(usize, f64, f64); 9] = [
     (sp::H, 2.708, 37.0),
     (sp::H2, 2.827, 59.7),
     (sp::N2, 3.798, 71.4),
     (sp::NH3, 2.900, 558.3),
     (sp::CH4, 3.758, 148.6),
     (sp::C2H2, 4.033, 231.8),
+    (sp::H2O, 2.641, 809.1),
+    (sp::OH, 3.147, 79.8),
+    (sp::O, 3.050, 106.7),
 ];
 
 /// Viscosity (Pa s) and conductivity (W/m K) of the major species of `g`
@@ -148,4 +151,11 @@ pub fn blade_heat(
         capacity,
         work,
     })
+}
+
+/// J/kg a diluent takes as coolant from its tank to `t` at `p`, cracked
+/// or dissociated to equilibrium on the way.
+pub fn coolant_heat(d: Diluent, p: f64, t: f64) -> Result<f64> {
+    let liquid = d.feed(0.);
+    Ok(eq_tp(&liquid.b, t, p, None)?.h() - liquid.h)
 }

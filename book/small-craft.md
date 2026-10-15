@@ -272,7 +272,7 @@ strip.
 | Fan and compressor | 26 MW at full thrust at sea level |
 | Turbopump | 35 MW: full thrust at sea level and the FEL together |
 | Mach 2, 11 km, on 35 MW | ~130 kN with reheat; ~100 kN dry with the FEL firing; drag ~76 kN |
-| Electric machines | ~0.85 t: generator ~350 kg, engine motors ~350 kg, lift-fan motor ~150 kg |
+| Electric machines | ~0.9 t: generator ~350 kg, engine motors ~350 kg, lift-fan motor ~200 kg |
 
 **It lifts the way the F-35B does**: an electric ~1.5 m fan behind the
 cockpit, with doors above and below and a vane box under it, and the
@@ -284,7 +284,11 @@ two thirds of the weight.
 |---|---|---|
 | Lift fan | ~75 kN | ~14 MW |
 | Engine, nozzle down | ~40 kN | ~5 MW |
-| **Total** | **~115 kN** | **~20 MW, ~20 kg of ammonia and ~12 kg of dust a minute** |
+| **Total, at ~11.5 t** | **~115 kN** | **~20 MW, ~20 kg of ammonia and ~12 kg of dust a minute** |
+
+The lift fan's motor is rated 20 MW. With the rest of the turbopump's
+35 MW in the engine, the fan lifts ~93 kN and the nozzle ~46 kN: the
+fighter can hover at up to ~14 t.
 
 In the hover the engine opens its fan's pitch to a pressure ratio of
 ~1.3 at nearly full airflow and runs its compressor at ~1.5, so the
@@ -337,32 +341,37 @@ strip.
 
 **The tanks.** Its internal tanks, ~4.6 m³, and two conformal tanks on
 its back, ~7.5 m³, hold **dust shot with ammonia in the gaps**: two
-sizes of grain packed to 80%, 0.70 t/m³, one part ammonia to four of
-dust. The conformal tanks ride the lee side through entry, at ~500 K;
-fuel tanks hung under the wings would sit in the hottest flow, and the
-shocks off their pylons would burn through, as the X-15A-2's nearly did
-at Mach 6.7. Filling the gaps with water instead would add ~1% to the
-climb's Δv and put oxidiser in a 4,900 K chamber.
+sizes of grain packed to 80%, 0.56 t/m³ of dust, the gaps a fifth of
+the space. The engine draws dust and ammonia separately, each at the
+rate its regime wants. The conformal tanks ride the lee side through
+entry, at ~500 K; fuel tanks hung under the wings would sit in the
+hottest flow, and the shocks off their pylons would burn through, as
+the X-15A-2's nearly did at Mach 6.7.
 
 | | Mass |
 |---|---|
 | In orbit, empty: airframe, laser, tank structure, reserve | ~8.3 t |
-| Propellant leaving orbit: 10.3 m³ of 12.1 | ~7.2 t, 85% full |
-| Entry | ~15.2 t, 370 kg/m² of wing |
-| Takeoff from the strip, after a 0.5 t sortie | ~14.7 t |
+| Leaving orbit: ~5.5 t of dust, its gaps holding ~1.2 t of ammonia | ~9.9 m³ of 12.1 |
+| Entry | ~14.8 t, 360 kg/m² of wing |
+| Takeoff from the strip, after a 0.5 t sortie | ~14.3 t |
 
 **The climb.** Turbine mode with reheat to Mach ~2.7, its compressor
 unloading as the air warms; the ramjet, its burner at 3,000–3,500 K, to
-Mach ~4.7 at 25 km, on ~0.95 t in 12 minutes. Then the rocket: 250 kN
+Mach ~4.7 at 25 km, on ~0.9 t in 11 minutes. Then the rocket: 250 kN
 from the main combustor as a 4 MPa chamber, through the nozzle opened to
-an area ratio of ~18 in a 0.6 m² exit, at ~1,380 s; 6.9 km/s in five
-minutes on 5.5 t, peaking at 3 g, then a 230 m/s burn to circularise at
-200 km.
+an area ratio of ~18 in a 0.6 m² exit. It burns dust-rich, one part
+ammonia to ten of dust, at ~1,460 s and a ~5,200 K chamber, saving the
+ammonia for the air-breathing legs: 6.9 km/s in five minutes on 5.1 t,
+peaking at 3 g, then a 240 m/s burn to circularise at 200 km. At 4 MPa
+a first-order Bartz estimate puts the throat at a few tens of MW/m²,
+well short of a rocket's usual.
 
 **Entry.** A 50 m/s deorbit burn; then belly-first at 40° angle of
-attack, banking to hold an equilibrium glide, as the Shuttle did. Peak
-heating is at 68 km and 6.2 km/s, ~1.1 g at worst, ~50 minutes and up to
-17,000 km of glide to Mach 2:
+attack, banking to hold an equilibrium glide, as the Shuttle did. At
+that angle the fin is in the wing's shadow, and the reaction jets give
+yaw until the fighter is low and slow; a Mirage 2000 flies to 30°.
+Peak heating is at 68 km and 6.2 km/s, ~1.1 g at worst, ~50 minutes and
+up to 17,000 km of glide to Mach 2:
 
 | Surface | Peak |
 |---|---|
@@ -372,27 +381,44 @@ heating is at 68 km and 6.2 km/s, ~1.1 g at worst, ~50 minutes and up to
 | Belly, 6–10 m back | ~1,100–1,200 K (~1,500 K if its flow trips early) |
 | Back, over the conformal tanks | ~500 K |
 
-The blade skin, good to ~4,000 K and non-catalytic, makes it a hot
-structure that needs nothing after a flight: no ablator, no tiles. It
-even leaves the fighter its sharp edges; a 3 cm nose would run
-~2,500 K. The climb is the hotter half: the nose peaks at ~2,350 K at
-71 km and 7.2 km/s. Behind 5 cm of insulation, ~8 kg/m², a belly tank
-takes ~1.6 MJ/m² through the whole entry and the hours after, which
-boils off ~20 kg of its ammonia.
+The blade skin, good to ~4,000 K, non-catalytic and proof against hot
+oxygen, makes it a hot structure that needs nothing after a flight: no
+ablator, no tiles. It even leaves the fighter its sharp edges; a 3 cm
+nose would run ~2,500 K. At 30° the nose runs ~100 K hotter. The climb
+is the hotter half: the nose peaks at ~2,350 K at 71 km and 7.2 km/s.
+Behind 5 cm of insulation, ~8 kg/m², a belly tank takes ~1.6 MJ/m²
+through the whole entry and the hours after, which boils off ~20 kg of
+its ammonia.
 
-**The strip.** Lifting off at 14.7 t takes ~200 m: reheat on ~20 MW,
-the lift fan on the other ~15 MW, the nozzle 23° down, airborne at
-45 m/s. The heaviest it can lift in 300 m is ~15.8 t. Landing heavy, it
-touches down at ~40 m/s on thrust lift and wing lift and brakes in
-~250 m; on soft dirt, ~360 m, too long. A 20 MW lift-fan motor, ~60 kg
-more, nearly makes it a vertical lander at that weight: a 15 m/s
-touchdown and a 40 m roll.
+**The strip.** At 14.3 t the fighter all but hovers off it: the
+20 MW lift fan and the nozzle, 39° down, carry its weight with the
+engine in reheat on the rest of the turbopump. It could lift ~16.5 t in
+300 m, and lands nearly vertically. With a 14.7 MW lift-fan motor it
+would need ~160 m to take off, and land at ~36 m/s in ~210 m.
 
 **What eats the margin.** Every tonne of empty mass costs ~2 t of
-takeoff mass and ~1.4 m³ of tank. At +1 t the tanks are 97% full and it
-no longer gets off 300 m; at +2 t it cannot make orbit at all. The empty
+takeoff mass and ~1.4 m³ of tank. At +1 t the tanks are 93% full and the
+strip still works; at +2 t the propellant no longer fits. The empty
 7.5 t is still an estimate, so the bottom-up mass of the airframe is
 what decides this mission.
+
+**Water in the gaps.** Water is denser than ammonia, 1.0 t/m³ against
+0.68, and the skin takes hot oxygen anyway, so it was tried in the
+gaps, pure and as ammonia-water, holding the volume fixed:
+
+| Liquid | Down and back takes | Takeoff | All 12.1 m³ on the rocket | Cruise, per m³ | Freezes |
+|---|---|---|---|---|---|
+| Ammonia | 9.9 m³ | 14.3 t | 9.5 km/s | 1,300 km | 195 K |
+| 33% ammonia-water | 9.7 m³ | 14.7 t | 9.5 km/s | 1,370 km | 173 K |
+| Water | 9.7 m³ | 14.9 t | 9.6 km/s | 1,380 km | 273 K |
+
+Water buys ~2% of volume and ~1% of rocket Δv, for ~0.6 t more at
+takeoff: in the air it is dead weight where ammonia is a fuel, and the
+turbopump needs ~25% more of it per megawatt. Once dust and liquid are
+drawn separately the mission has volume to spare and mass is what
+binds, so the fighter carries ammonia. Water also freezes in a cold
+tank, and steam eats carbon in the cooling passages unless they are
+skinned too.
 
 On a world harder than Earth, needing a braking burn on the way in and
 more than ~9 km/s on the way out, there is no down and back: it goes

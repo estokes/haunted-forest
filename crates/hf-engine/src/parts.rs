@@ -211,7 +211,17 @@ impl TurbopumpSpec {
         if t(0.)? < self.tit {
             bail!("pure dust does not reach {} K", self.tit);
         }
-        let x = brent(|x| Ok(t(x)? - self.tit), 0., 100., 1e-7)?;
+        // Widen until the mix is too cold; a mix with no gas state at all
+        // (mostly liquid water) counts as too cold.
+        let cold = |x: f64| t(x).map_or(true, |t| t < self.tit);
+        let mut hi = 0.5;
+        while !cold(hi) {
+            hi *= 2.;
+            if hi > 100. {
+                bail!("no mix of dust and {} is as cold as {} K", self.diluent, self.tit);
+            }
+        }
+        let x = brent(|x| Ok(t(x).unwrap_or(0.) - self.tit), 0., hi, 1e-7)?;
         Ok((x, eq_hp(&feed(x), self.p_reverter, None)?))
     }
 
