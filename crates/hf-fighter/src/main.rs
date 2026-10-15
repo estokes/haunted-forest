@@ -41,6 +41,8 @@ struct Vehicle {
     /// Propellant for the sortie before landing, kg.
     sortie: f64,
     tankage: f64,
+    /// Wing area, m2.
+    wing: f64,
     /// Belly area over tanks, m2, and the heat each m2 takes through
     /// entry, J.
     belly_tanks: f64,
@@ -55,6 +57,7 @@ impl Default for Vehicle {
             reserve: 150.,
             sortie: 500.,
             tankage: 12.1,
+            wing: 41.,
             belly_tanks: 15.,
             soak: 1.6e6,
         }
@@ -108,15 +111,16 @@ fn close(
     sortie_mix: f64,
 ) -> Result<Closure> {
     let orbit_mass = v.empty + v.tanks_dry + v.reserve;
+    let aero = Aero { wing: v.wing, ..Aero::default() };
     let takeoff = hf_engine::gas::brent(
-        |m| Ok(spec.fly(&EARTH, &Aero::default(), table, m).final_mass - orbit_mass),
+        |m| Ok(spec.fly(&EARTH, &aero, table, m).final_mass - orbit_mass),
         orbit_mass + 2000.,
         40000.,
         1e-6,
     )?;
-    let ascent = spec.fly(&EARTH, &Aero::default(), table, takeoff);
+    let ascent = spec.fly(&EARTH, &aero, table, takeoff);
     let entry_mass = takeoff + v.sortie;
-    let dv = EntrySpec::default().fly(&EARTH, &Aero::default()).deorbit_dv;
+    let dv = EntrySpec::default().fly(&EARTH, &aero).deorbit_dv;
     let deorbit = entry_mass * ((dv / (spec.rocket_isp * G0)).exp() - 1.);
     let d = spec.engine.turbopump.diluent;
     let rocket = ascent.rocket.propellant + deorbit + v.reserve;
@@ -493,8 +497,85 @@ fn mission(v: &Vehicle, f: &Fill) -> Result<()> {
     Ok(())
 }
 
+/// The heaviest empty aircraft the down-and-back mission tolerates on
+/// ammonia: before the propellant outgrows the tankage, and before the
+/// takeoff outgrows 300 m of dirt.
+fn limits(v: &Vehicle) -> Result<()> {
+    let engine = EngineSpec::default();
+    let cr = cruise(&engine, 11000.)?;
+    let spec = AscentSpec::new(engine, ROCKET.0, ROCKET.1, ROCKET.2, 0.1)?;
+    let table = spec.engine_table();
+    let strip = StripSpec::default();
+    let curve = StripSpec::engine_curve(&spec.engine);
+    let heaviest = strip.heaviest(300., &curve)?;
+    let at = |empty: f64| close(&Vehicle { empty, ..*v }, &spec, &table, cr.0);
+    let by_volume =
+        hf_engine::gas::brent(|e| Ok(at(e)?.volume - v.tankage), 6000., 12000., 1e-5)?;
+    let by_strip =
+        hf_engine::gas::brent(|e| Ok(at(e)?.takeoff - heaviest), 6000., 12000., 1e-5)?;
+    println!(
+        "== Empty mass the mission tolerates, with {:.0} kg of tank structure and {:.0} kg kept in orbit",
+        v.tanks_dry, v.reserve
+    );
+    println!("  propellant fills the {:.1} m3 at {by_volume:.0} kg empty", v.tankage);
+    println!("  takeoff reaches the {heaviest:.0} kg the strip allows at {by_strip:.0} kg empty");
+    Ok(())
+}
+
+/// The mission for an airframe of this wing area, empty mass (with the
+/// pilot and internal tank walls), conformal-tank structure and tankage,
+/// and turbopump and lift-fan ratings: `--size WING EMPTY TANKS_DRY
+/// TANKAGE [TURBOPUMP_MW FAN_MW]`.
+fn size(v: &Vehicle, turbopump: f64, fan: f64) -> Result<()> {
+    let engine = EngineSpec::default();
+    let cr = cruise(&engine, 11000.)?;
+    let mut spec = AscentSpec::new(engine, ROCKET.0, ROCKET.1, ROCKET.2, 0.1)?;
+    spec.electric = turbopump;
+    let table = spec.engine_table();
+    let strip =
+        StripSpec { wing: v.wing, turbopump, fan_max: fan, ..StripSpec::default() };
+    let curve = StripSpec::engine_curve(&spec.engine);
+    let c = close(v, &spec, &table, cr.0)?;
+    let heaviest = strip.heaviest(300., &curve)?;
+    let to = strip.takeoff(c.takeoff, &curve);
+    let land = strip.land(c.takeoff, &curve);
+    let e = EntrySpec { mass: c.entry_mass, ..EntrySpec::default() }
+        .fly(&EARTH, &Aero { wing: v.wing, ..Aero::default() });
+    println!(
+        "{:.0}/{:.0} MW, wing {:.1} m2, empty {:.0} kg + {:.0} kg tanks: takeoff {:.0} kg (strip allows {heaviest:.0}), roll {:.0} m, landing roll {:.0} m; propellant {:.1} of {:.1} m3; entry {:.0} kg, nose {:.0} K",
+        turbopump / 1e6,
+        fan / 1e6,
+        v.wing,
+        v.empty,
+        v.tanks_dry,
+        c.takeoff,
+        to.roll,
+        land.roll,
+        c.volume,
+        v.tankage,
+        c.entry_mass,
+        e.nose.temperature
+    );
+    Ok(())
+}
+
 fn main() -> Result<()> {
-    let v = Vehicle::default();
+    let mut v = Vehicle::default();
+    let args: Vec<String> = std::env::args().collect();
+    if let Some(i) = args.iter().position(|a| a == "--size") {
+        let n = |k: usize| -> Result<f64> {
+            Ok(args
+                .get(i + k)
+                .ok_or_else(|| anyhow::anyhow!("--size WING EMPTY TANKS_DRY TANKAGE"))?
+                .parse()?)
+        };
+        v = Vehicle { wing: n(1)?, empty: n(2)?, tanks_dry: n(3)?, tankage: n(4)?, ..v };
+        let (tp, fan) = (n(5).unwrap_or(35.) * 1e6, n(6).unwrap_or(20.) * 1e6);
+        return size(&v, tp, fan);
+    }
+    if args.iter().any(|a| a == "--limits") {
+        return limits(&v);
+    }
     let fills: Vec<Fill> = LIQUIDS.iter().map(|&d| fill(&v, d)).collect::<Result<_>>()?;
     report_fills(&v, &fills);
     let best =
