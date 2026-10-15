@@ -87,16 +87,11 @@ def wing(w, y_in, load):
             "root_cover_mm": t0 * 1e3, "gauge_from_y": gauge_from}
 
 
-def section_props(hw, top, bot, n_exp, k=64):
+def section_props(pts):
     """Perimeter, and the second moment about the horizontal axis per metre
-    of wall thickness, of a superelliptic section; and its height."""
-    pts = []
-    for i in range(k):
-        t = 2 * math.pi * i / k
-        c, s = math.cos(t), math.sin(t)
-        y = hw * math.copysign(abs(c) ** (2 / n_exp), c)
-        z = (top if s >= 0 else bot) * math.copysign(abs(s) ** (2 / n_exp), s)
-        pts.append((y, z))
+    of wall thickness, of a section given as a ring of (y, z); and the
+    farthest fibre from its centroid."""
+    k = len(pts)
     zc = sum(z for _, z in pts) / k
     per, i_t = 0.0, 0.0
     for (y0, z0), (y1, z1) in zip(pts, pts[1:] + pts[:1]):
@@ -104,17 +99,18 @@ def section_props(hw, top, bot, n_exp, k=64):
         zm = (z0 + z1) / 2 - zc
         per += ds
         i_t += zm * zm * ds
-    return per, i_t, max(top, bot)
+    return per, i_t, max(abs(z - zc) for _, z in pts)
 
 
-def fuselage(stations, n_exp, masses, lift_x, n_g):
-    """Shell and frames. `stations` are (x, hw, top, bot); `masses` are
-    (kg, x) of everything the fuselage carries; the lift, n_g times their
-    weight, acts at `lift_x`; the bending is what inertia and lift leave."""
+def fuselage(sections, masses, lift_x, n_g):
+    """Shell and frames. `sections` are (x, ring of (y, z)) along the
+    fuselage; `masses` are (kg, x) of everything the fuselage carries; the
+    lift, n_g times their weight, acts at `lift_x`; the bending is what
+    inertia and lift leave."""
     rho = CNT["density"]
     g = 9.80665
     total = sum(m for m, _ in masses)
-    x_end = stations[-1][0]
+    x_end = sections[-1][0]
     n = 80
     xs = [x_end * (i + 0.5) / n for i in range(n)]
     dx = x_end / n
@@ -126,17 +122,12 @@ def fuselage(stations, n_exp, masses, lift_x, n_g):
             mom -= total * n_g * g * (x - lift_x)
         return abs(mom)
 
-    def interp(x):
-        for a, b in zip(stations, stations[1:]):
-            if a[0] <= x <= b[0]:
-                f = (x - a[0]) / (b[0] - a[0])
-                return tuple(a[k] + f * (b[k] - a[k]) for k in range(1, 4))
-        return stations[-1][1:]
+    def nearest(x):
+        return min(sections, key=lambda sec: abs(sec[0] - x))[1]
 
     shell, governed = 0.0, 0
     for x in xs:
-        hw, top, bot = interp(x)
-        per, i_t, zmax = section_props(hw, top, bot, n_exp)
+        per, i_t, zmax = section_props(nearest(x))
         need = moment(x) * zmax / (i_t * sigma("compression")) if i_t > 0 else 0.0
         t = max(MIN_GAUGE * 0.6 + BELLY_GAUGE * 0.4, need)
         governed += need > MIN_GAUGE
@@ -161,7 +152,7 @@ def structure(geo):
     n_g = N_LIMIT * DESIGN_KG / geo["design_mass"] * ULTIMATE
     lift = geo["design_mass"] * 9.80665 * n_g
     w = wing(geo["wing"], geo["y_in"], lift * WING_LIFT_SHARE)
-    f = fuselage(geo["stations"], geo["n_exp"], geo["fuselage_masses"], geo["lift_x"], n_g)
+    f = fuselage(geo["sections"], geo["fuselage_masses"], geo["lift_x"], n_g)
     out = {
         "wing_panels": w["panels"],
         "carry_through": w["carry_through"],

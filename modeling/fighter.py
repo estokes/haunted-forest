@@ -39,24 +39,33 @@ from mathutils.bvhtree import BVHTree
 
 SCALE = 1.0
 
-# (x, half-width, height above the axis, depth below it)
+# The fuselage's stations: (x, half-width, height of the body above the
+# axis, depth below it, height of the dorsal spine above the body, the
+# spine's half-width). Aft of the radome the section is chined: an elliptic
+# top and a flatter belly meet at a sharp edge at the half-width; the spine
+# rides the top over the capsule and the laser. Between stations every
+# parameter runs smoothly (monotone cubic), so the stations are a shape,
+# not a polyline.
 FUSELAGE = [
-    (0.00, 0.03, 0.03, 0.03),
-    (0.60, 0.22, 0.20, 0.20),
-    (1.50, 0.40, 0.36, 0.36),
-    (2.60, 0.56, 0.52, 0.48),
-    (3.60, 0.72, 0.64, 0.58),
-    (4.60, 0.98, 0.76, 0.66),
-    (5.60, 1.35, 0.86, 0.72),
-    (6.80, 1.60, 0.90, 0.74),
-    (8.00, 1.50, 1.10, 0.74),
-    (9.50, 1.25, 1.10, 0.72),
-    (11.00, 1.00, 1.00, 0.66),
-    (12.50, 0.74, 0.92, 0.60),
-    (13.60, 0.58, 0.70, 0.56),
-    (14.20, 0.55, 0.53, 0.53),
+    (0.00, 0.03, 0.03, 0.03, 0.00, 0.00),
+    (0.40, 0.15, 0.15, 0.13, 0.00, 0.00),
+    (1.00, 0.29, 0.29, 0.26, 0.00, 0.00),
+    (1.80, 0.43, 0.42, 0.38, 0.00, 0.00),
+    (2.60, 0.56, 0.51, 0.45, 0.00, 0.00),
+    (3.40, 0.82, 0.58, 0.50, 0.00, 0.00),
+    (4.60, 1.12, 0.68, 0.60, 0.06, 0.45),
+    (5.60, 1.40, 0.76, 0.70, 0.04, 0.45),
+    (6.80, 1.62, 0.82, 0.74, 0.10, 0.55),
+    (8.00, 1.52, 0.84, 0.74, 0.32, 0.75),
+    (9.50, 1.28, 0.84, 0.72, 0.32, 0.75),
+    (11.00, 1.02, 0.80, 0.66, 0.30, 0.65),
+    (12.50, 0.76, 0.70, 0.60, 0.26, 0.55),
+    (13.60, 0.60, 0.56, 0.56, 0.10, 0.40),
+    (14.20, 0.55, 0.53, 0.53, 0.00, 0.00),
 ]
-SECTION_EXP = 2.6  # superellipse exponent: 2 is an ellipse, higher is boxier
+# Superellipse exponents of the top and the belly along x: a round radome,
+# then the chine.
+SECTION = [(0.0, 2.0, 2.0), (2.2, 2.0, 2.0), (4.2, 2.4, 4.0)]
 
 # The wing's sections: (y, thickness/chord, fullness). Fullness 1 is
 # biconvex; lower is fuller, deep over more of the chord. The inner wing is
@@ -73,15 +82,15 @@ CFT = None
 # x of the centre scales with the airframe. "box" size is (dx, dy, dz);
 # "cyl_x" and "cyl_z" are (diameter, length) along X or Z.
 EQUIPMENT = {
-    "radar":           ("cyl_x", (0.50, 0.50), (1.60, 0.0, 0.0), _EQ["radar"], (0.6, 0.6, 0.9)),
-    "avionics":        ("box", (0.50, 0.50, 0.40), (2.40, 0.0, 0.0), _EQ["avionics"], (0.5, 0.5, 0.8)),
-    "nose_gear":       ("box", (1.00, 0.40, 0.40), (3.60, 0.0, -0.30), 0, (0.3, 0.3, 0.3)),
+    "radar":           ("cyl_x", (0.45, 0.45), (2.00, 0.0, 0.02), _EQ["radar"], (0.6, 0.6, 0.9)),
+    "avionics":        ("box", (0.50, 0.50, 0.38), (2.90, 0.0, 0.02), _EQ["avionics"], (0.5, 0.5, 0.8)),
+    "nose_gear":       ("box", (1.00, 0.40, 0.36), (3.70, 0.0, -0.20), 0, (0.3, 0.3, 0.3)),
     # Pilot, ~0.24 m3 of tissue-density breathing liquid, the shell, the
     # oxygenator and scrubber, the BCI: an escape capsule in its own right.
     # It is boarded through a dorsal hatch between the conformal tanks, by
     # a built-in ladder, and ejects upward through it. Drained, its liquid
     # waits in the reservoir.
-    "capsule":         ("box", (2.00, 0.60, 0.50), (8.60, 0.0, 0.78), _EQ["capsule"], (0.95, 0.85, 0.35)),
+    "capsule":         ("box", (2.00, 0.60, 0.50), (8.60, 0.0, 0.72), _EQ["capsule"], (0.95, 0.85, 0.35)),
     "capsule_reservoir": ("box", (0.70, 0.60, 0.60), (5.45, 0.0, 0.35), 0, (0.95, 0.75, 0.45)),
     # The fan's shaft runs skin to skin; its doors are the skin.
     "lift_fan":        ("cyl_z", (1.55, 1.42), (6.60, 0.0, 0.06), _EQ["lift_fan"], (0.2, 0.8, 0.9)),
@@ -91,7 +100,7 @@ EQUIPMENT = {
     "swivel_nozzle":   ("cyl_x", (0.90, 1.70), (13.55, 0.0, -0.05), _EQ["swivel_nozzle"], (0.95, 0.3, 0.15)),
     "turbopump":       ("cyl_x", (0.45, 1.40), (10.20, 0.68, 0.22), _EQ["turbopump"], (0.85, 0.2, 0.6)),
     "power_electronics": ("box", (1.20, 0.45, 0.40), (10.20, -0.68, 0.22), _EQ["power_electronics"], (0.9, 0.9, 0.2)),
-    "fel":             ("box", (3.20, 0.55, 0.40), (11.00, 0.0, 0.68), _EQ["laser"], (0.2, 0.9, 0.3)),
+    "fel":             ("box", (3.00, 0.55, 0.40), (11.20, 0.0, 0.62), _EQ["laser"], (0.2, 0.9, 0.3)),
     "fel_director":    ("cyl_z", (0.60, 0.40), (4.90, 0.0, 0.70), _EQ["laser_turret"], (0.1, 1.0, 0.4)),
     # Stowed beside the engine's belly; the legs swing out to a wide track.
     "main_gear_l":     ("box", (1.30, 0.40, 0.32), (10.30, -0.66, -0.40), 0, (0.3, 0.3, 0.3)),
@@ -107,8 +116,8 @@ EQUIPMENT = {
 EXTERNAL = ("fel_director", "swivel_nozzle")
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
-INLET = {"area": 0.30, "face_x": 8.60}
-DUCT_PATH = [(4.80, 1.30, -0.05), (5.80, 1.30, -0.05), (6.60, 1.22, -0.05), (7.60, 0.90, -0.05), (8.60, 0.25, -0.05)]
+INLET = {"area": 0.30, "face_x": 8.60, "mouth_x": 4.90, "fair_x": 8.60, "fairing_r": 0.42}
+DUCT_PATH = [(4.80, 1.24, -0.05), (5.80, 1.26, -0.05), (6.60, 1.20, -0.05), (7.60, 0.90, -0.05), (8.60, 0.25, -0.05)]
 
 # Tank regions: name -> box (x0, x1, y0, y1, z0, z1), or "wing" for the wing
 # box outboard of the fuselage between these chord fractions.
@@ -176,6 +185,79 @@ def mesh_object(name, verts, faces, coll, color, alpha=1.0):
     return o
 
 
+def pchip(xs, ys, x):
+    """Monotone cubic interpolation (Fritsch-Carlson) of ys over xs at x."""
+    n = len(xs)
+    if x <= xs[0]:
+        return ys[0]
+    if x >= xs[-1]:
+        return ys[-1]
+    h = [xs[i + 1] - xs[i] for i in range(n - 1)]
+    d = [(ys[i + 1] - ys[i]) / h[i] for i in range(n - 1)]
+    m = [d[0]] + [0.0] * (n - 2) + [d[-1]]
+    for i in range(1, n - 1):
+        if d[i - 1] * d[i] > 0:
+            w1, w2 = 2 * h[i] + h[i - 1], h[i] + 2 * h[i - 1]
+            m[i] = (w1 + w2) / (w1 / d[i - 1] + w2 / d[i])
+    i = max(j for j in range(n - 1) if xs[j] <= x)
+    t = (x - xs[i]) / h[i]
+    h00, h10 = 2 * t ** 3 - 3 * t * t + 1, t ** 3 - 2 * t * t + t
+    h01, h11 = -2 * t ** 3 + 3 * t * t, t ** 3 - t * t
+    return h00 * ys[i] + h10 * h[i] * m[i] + h01 * ys[i + 1] + h11 * h[i] * m[i + 1]
+
+
+def station(x, s=1.0):
+    """The fuselage's (hw, top, bot, spine height, spine half-width, top
+    exponent, belly exponent) at x."""
+    xs = [st[0] * s for st in FUSELAGE]
+    shape = tuple(pchip(xs, [st[k] * s for st in FUSELAGE], x) for k in range(1, 6))
+    xe = [st[0] * s for st in SECTION]
+    return shape + tuple(pchip(xe, [st[k] for st in SECTION], x) for k in (1, 2))
+
+
+def fuselage_section(hw, top, bot, spine_h, spine_w, n_top, n_belly, k=72):
+    """The section, a ring of (y, z) from the starboard chine over the top
+    and back under the belly."""
+    pts, n = [], k // 2
+    for i in range(n):
+        u = math.cos(math.pi * i / n)
+        z = top * (1 - abs(u) ** n_top) ** (1 / n_top)
+        if spine_w > 0:
+            z += spine_h * max(0.0, 1 - (hw * u / spine_w) ** 2) ** 1.5
+        pts.append((hw * u, z))
+    for i in range(n):
+        u = -math.cos(math.pi * i / n)
+        pts.append((hw * u, -bot * (1 - abs(u) ** n_belly) ** (1 / n_belly)))
+    return pts
+
+
+def fuselage_stations(s, count=90):
+    """x of each lofted ring, close together at the nose and tail."""
+    end = FUSELAGE[-1][0] * s
+    return [end * (1 - math.cos(math.pi * i / (count - 1))) / 2 for i in range(count)]
+
+
+def ring_loft(name, rings, coll, color, alpha=1.0):
+    """Closed mesh through rings of 3D points, all of one length."""
+    k = len(rings[0])
+    verts = [p for ring in rings for p in ring]
+    faces = []
+    for j in range(len(rings) - 1):
+        for i in range(k):
+            a, b = j * k + i, j * k + (i + 1) % k
+            faces.append((a, b, b + k, a + k))
+    faces.append(tuple(reversed(range(k))))
+    last = (len(rings) - 1) * k
+    faces.append(tuple(range(last, last + k)))
+    return mesh_object(name, verts, faces, coll, color, alpha)
+
+
+def duct_point(x, s):
+    """The inlet duct's centreline (y, z) at x, starboard."""
+    xs = [p[0] * s for p in DUCT_PATH]
+    return pchip(xs, [p[1] for p in DUCT_PATH], x), pchip(xs, [p[2] for p in DUCT_PATH], x)
+
+
 def superellipse(hw, top, bot, n, k):
     pts = []
     for i in range(k):
@@ -187,11 +269,11 @@ def superellipse(hw, top, bot, n, k):
     return pts
 
 
-def loft(name, stations, coll, color, k=48, alpha=1.0, offset=(0, 0, 0)):
+def loft(name, stations, coll, color, k=48, alpha=1.0, offset=(0, 0, 0), n=2.5):
     """Closed mesh through superelliptic sections (x, hw, top, bot)."""
     verts, faces = [], []
     for x, hw, top, bot in stations:
-        for y, z in superellipse(hw, top, bot, SECTION_EXP, k):
+        for y, z in superellipse(hw, top, bot, n, k):
             verts.append((x + offset[0], y + offset[1], z + offset[2]))
     for j in range(len(stations) - 1):
         for i in range(k):
@@ -334,7 +416,22 @@ def build(scale):
     tanks = collection("FIGHTER_tanks")
     ducts = collection("FIGHTER_ducts")
 
-    fus = loft("fuselage", [(x * s, hw * s, t * s, b * s) for x, hw, t, b in FUSELAGE], skin, C_SKIN)
+    rings = []
+    for x in fuselage_stations(s):
+        rings.append([(x, y, z) for y, z in fuselage_section(*station(x, s))])
+    fus = ring_loft("fuselage", rings, skin, C_SKIN)
+    # Half-cone inlets on the flanks: a fairing round each duct from its
+    # mouth, sinking into the body as the duct turns in to the engine.
+    nacelles = []
+    for side in (-1, 1):
+        nrings = []
+        for i in range(24):
+            x = (INLET["mouth_x"] + (INLET["fair_x"] - INLET["mouth_x"]) * i / 23) * s
+            y, z = duct_point(x, s)
+            r = INLET["fairing_r"] * s
+            nrings.append([(x, side * y + r * math.cos(t), z + r * math.sin(t))
+                           for t in [2 * math.pi * j / 36 for j in range(36)]])
+        nacelles.append(ring_loft(f"inlet_{side}", nrings, skin, C_SKIN))
     w = WING
     tan = math.tan(math.radians(w["sweep_le"]))
     chord_at = lambda y: max(0.3, w["root"] - abs(y) * tan) * s
@@ -350,8 +447,8 @@ def build(scale):
         ((f["root_x"] + f["height"] * ftan) * s, (f["z"] + f["height"]) * s,
          max(0.5, f["root"] - f["height"] * ftan) * s, f["tc"], (0, 0, 0), 1.0),
     ], skin, C_SKIN, vertical=True)
-    oml = union("airframe", [fus, wing, fin], skin, C_SKIN, 0.25)
-    for o in (fus, wing, fin):
+    oml = union("airframe", [fus, *nacelles, wing, fin], skin, C_SKIN, 0.25)
+    for o in (fus, *nacelles, wing, fin):
         o.hide_set(True)
         o.hide_render = True
     oml_v, oml_a = volume(oml)
@@ -487,8 +584,7 @@ def build(scale):
             "landing_mass": LANDING_KG,
             "wing": {k: (v * s if k in ("apex", "root", "semispan") else v) for k, v in w.items()},
             "y_in": hw_at(9.0 * s, s),
-            "stations": [(x * s, hw * s, t * s, b * s) for x, hw, t, b in FUSELAGE],
-            "n_exp": SECTION_EXP,
+            "sections": [(x, fuselage_section(*station(x, s))) for x in fuselage_stations(s, 60)],
             "fuselage_masses": lay + [(max(0.0, DESIGN_KG - empty_guess), fuel_x)],
             "lift_x": None,
             "fin_area": fin_area,
@@ -595,11 +691,7 @@ def build(scale):
 
 def hw_at(x, s):
     """Fuselage half-width at station x."""
-    st = [(a * s, b * s) for a, b, *_ in FUSELAGE]
-    for (x0, h0), (x1, h1) in zip(st, st[1:]):
-        if x0 <= x <= x1:
-            return h0 + (x - x0) / (x1 - x0) * (h1 - h0)
-    return st[-1][1]
+    return station(x, s)[0]
 
 
 def planform(s):
@@ -654,17 +746,22 @@ def frame_and_render(directory):
     bpy.ops.render.render(write_still=True)
 
 
-opts = args()
-if "--sweep" in sys.argv:
-    for sc in (0.85, 0.9, 0.95, 1.0, 1.1):
-        r = build(sc)
-        print(f"scale {sc}: {r['length']:.1f} m, wing {r['wing_area']:.0f} m2, wetted {r['wetted_area']:.0f} m2, "
-              f"tanks {r['internal_tank_volume']:.1f} + {r['cft_volume']:.1f} m3, empty {r['empty_with_pilot']:.0f} "
-              f"+ {r['cft_dry']:.0f} kg, outside {r['outside']}")
-result = build(opts["scale"])
-for k, v in result.items():
-    print(f"{k}: {v}")
-if opts["save"]:
-    bpy.ops.wm.save_as_mainfile(filepath=opts["save"])
-if opts["render"]:
-    frame_and_render(opts["render"])
+def main():
+    opts = args()
+    if "--sweep" in sys.argv:
+        for sc in (0.85, 0.9, 0.95, 1.0, 1.1):
+            r = build(sc)
+            print(f"scale {sc}: {r['length']:.1f} m, wing {r['wing_area']:.0f} m2, wetted {r['wetted_area']:.0f} m2, "
+                  f"tanks {r['internal_tank_volume']:.1f} + {r['cft_volume']:.1f} m3, empty {r['empty_with_pilot']:.0f} "
+                  f"+ {r['cft_dry']:.0f} kg, outside {r['outside']}")
+    result = build(opts["scale"])
+    for k, v in result.items():
+        print(f"{k}: {v}")
+    if opts["save"]:
+        bpy.ops.wm.save_as_mainfile(filepath=opts["save"])
+    if opts["render"]:
+        frame_and_render(opts["render"])
+
+
+if __name__ == "__main__":
+    main()
