@@ -69,6 +69,37 @@ power — and it stays liquid at modest pressure, with no cryogenics.
 splits. The Isp is ~90% of the ideal of an area-ratio-100 nozzle:
 1,840, 1,330 and 1,110 s.)
 
+### Ammonia or Methane
+
+Liquid methane could do ammonia's jobs. It is a quarter hydrogen by mass
+against ammonia's sixth, it soaks up more heat cracking, it burns in air
+at 50 MJ/kg against 18.6, and it is as common. Side by side in the
+fighter's engine:
+
+| | Ammonia | Methane |
+|---|---|---|
+| Liquid | 0.68 t/m³ at 240 K; storable under ~10 bar | 0.42 t/m³ at 112 K; cryogenic |
+| For 5,000 K, per kg of dust | 1.65 kg | 0.96 kg |
+| Turbopump, per MW-minute | 1.9 kg, and 1.1 kg of dust | 1.2 kg, and 1.2 kg of dust |
+| Sea level, dry | 115 kN at 9,700 s | 121 kN at 12,700 s |
+| Cruise | 2,200 km per tonne; 1,400 km per m³ of tank | 2,900 km per tonne; 1,430 km per m³ |
+| Hover, a minute | 20 kg and 12 kg of dust | 13 kg and 13 kg of dust |
+| Rocket, 1:1, vacuum, ideal | 1,330 s, clean | 1,310 s, the exhaust 30% soot |
+| Cooling the turbine | cracks cleanly to gas; ~60% of its flow carries the blades' heat | cracks to soot: kept below the ~900 K where it cokes its passages, all of it could carry a fifth of the heat |
+
+Methane is a third better by mass and no better by volume, and a fighter
+runs short of volume first. It cannot cool the turbopump, which is what
+the engine's temperature rests on. Cooling the blades with ammonia and
+diluting with methane would save about a quarter of the diluent's mass,
+for a second fluid in a cryogenic tank. Its rocket plume is sooty: two-
+phase losses the ideal Isp leaves out, and a bright infrared signature.
+In its favour, its gas is saturated with carbon, so hot hydrogen in it
+does not eat carbon blades; and at 5,000 K, or once it burns in air, it
+holds no soot.
+
+Small craft run on ammonia. Methane suits craft short of mass rather
+than volume, with no turbine to cool.
+
 ## The Hybrid Engine
 
 Atmosphere-capable craft fly one engine in three modes. It is an
@@ -138,7 +169,9 @@ dust.
 
 - **Fan and compressor**: CNT blades, each rotor on its own motor at its
   own speed. Fan pressure ratio ~3.5, overall ~12, bypass ~0.4. As Mach
-  rises the compressor slows, to keep its discharge below ~850 K.
+  rises the compressor slows, to keep its discharge below ~850 K. The
+  fan's blades are variable-pitch, so it can pass full airflow at a low
+  pressure ratio.
 - **Main combustor**: compressed air meets the turbopump's exhaust and,
   if it has oxygen, burns it; more dust can be injected directly. No
   turbine follows it, so it can run near stoichiometric.
@@ -250,15 +283,14 @@ two thirds of the weight.
 | In the hover | Thrust | Power |
 |---|---|---|
 | Lift fan | ~75 kN | ~14 MW |
-| Engine, nozzle down | ~40 kN | ~6 MW |
-| **Total** | **~115 kN** | **~20 MW, ~22 kg of ammonia and ~13 kg of dust a minute** |
+| Engine, nozzle down | ~40 kN | ~5 MW |
+| **Total** | **~115 kN** | **~20 MW, ~20 kg of ammonia and ~12 kg of dust a minute** |
 
-In the hover the engine runs its fan slow, at a pressure ratio of ~2.5,
-and its compressor idle, so the nozzle passes a lot of air at ~1,400 K
-and ~760 m/s. Run at full pressure ratios it would make the same thrust
-from a quarter of the air, at ~3,200 K. Variable-pitch fan blades,
-passing still more air at a pressure ratio of ~1.3, would bring the jet
-to ~950 K.
+In the hover the engine opens its fan's pitch to a pressure ratio of
+~1.3 at nearly full airflow and runs its compressor at ~1.5, so the
+nozzle passes ~80 kg/s at ~950 K and ~490 m/s. At full pressure ratios
+it would make the same thrust from a quarter of the air, at ~3,200 K; a
+fixed-pitch fan, slowed, would manage ~1,400 K.
 
 - **No shaft, no clutch.** The F-35B drives its fan from the engine
   through a driveshaft and clutch; this fan is wired to the turbopump.
@@ -266,7 +298,7 @@ to ~950 K.
 - **Roll** comes from the wingtip thrusters the fighter uses in space, as
   the Harrier used wingtip puffers. Yaw comes from the fan's vanes and
   the nozzle.
-- **Downwash**: ~190 m/s of cool air from the fan, and a ~1,400 K jet
+- **Downwash**: ~190 m/s of cool air from the fan, and a ~950 K jet
   from the nozzle. The fighter lands on a pad, or on ground it can afford
   to scorch.
 - **The wings are tanks.** One fan in the fuselage instead of three
@@ -472,8 +504,9 @@ A courier cannot dodge, but it is a hard thing to approach:
 - A real heat-transfer model of the turbopump's blades: the first-order
   one puts ~90 MW/m² on the first stage, and the skin's catalytic
   behaviour doubles or halves it.
-- The fighter's drag above Mach 2, which decides where the ramjet stops
-  holding level flight.
+- The fighter's drag above Mach 2 and its inlet's size, which decide
+  where the ramjet stops holding level flight: settled with the full
+  aircraft design.
 - The fighter's airframe heating at Mach 6.
 - Antimatter-boosted dust (~3,000 s, gas core, a gamma lamp) and an
   open-ended fusion mirror for in-system craft.

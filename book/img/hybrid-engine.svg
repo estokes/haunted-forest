@@ -134,7 +134,7 @@
   <path d="M1168,432 L1154,490 L1162,548" fill="none" stroke="#555" stroke-width="2.5" stroke-dasharray="7 5"/>
   <line x1="1130" y1="500" x2="1130" y2="582" stroke="#d9601c" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#a-hot2)"/>
   <text x="1080" y="562" text-anchor="end" font-size="13">hover: nozzle swivels down</text>
-  <text x="1080" y="580" text-anchor="end" font-size="13">(~40 kN, ~1,400 K jet)</text>
+  <text x="1080" y="580" text-anchor="end" font-size="13">(~40 kN, ~950 K jet)</text>
 
   <!-- ============ TOP LABELS ============ -->
   <g font-size="13" stroke="#888" stroke-width="1">
@@ -154,7 +154,7 @@
     <text x="880" y="96">main combustor</text>
     <text x="1130" y="96">three-bearing swivel duct</text>
     <text x="200" y="126" fill="#b0303a">ramjet entry doors</text>
-    <text x="370" y="126">CNT fan · PR ~3.5</text>
+    <text x="370" y="126">CNT fan · variable pitch</text>
     <text x="663" y="126" fill="#b0303a">bypass doors (open in ramjet)</text>
     <text x="990" y="126">reheat · dust + NH₃ injectors</text>
     <text x="1240" y="126">nozzle</text>

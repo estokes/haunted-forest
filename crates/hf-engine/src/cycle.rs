@@ -12,10 +12,8 @@
 
 use crate::{
     atmos::{isa, Air},
-    gas::{brent, eq_hp, Feed, Gas},
-    parts::{
-        burn, burn_to, compress, exit_velocity, mix, Stream, Turbopump, TurbopumpSpec, G0,
-    },
+    gas::{brent, eq_hp, Diluent, Feed, Gas},
+    parts::{burn, burn_to, compress, expand, mix, Stream, Turbopump, TurbopumpSpec, G0},
 };
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -122,7 +120,7 @@ pub struct PointReport {
     /// W, from the turbopump.
     pub electric: f64,
     /// kg/s
-    pub nh3: f64,
+    pub diluent: f64,
     pub dust: f64,
     /// s, on all propellant and on dust alone.
     pub isp: f64,
@@ -136,6 +134,8 @@ pub struct PointReport {
     pub turbopump_exit_t: f64,
     /// Fraction of the propellant's flow that goes through the turbopump.
     pub turbopump_share: f64,
+    /// Mass fraction of the exhaust that is soot, at the nozzle exit.
+    pub soot: f64,
 }
 
 /// Inlet total-pressure recovery (MIL-E-5008B) with a 3% subsonic loss.
@@ -189,45 +189,48 @@ impl EngineSpec {
             + self.systems
             + pt.extra_power;
         let tp = Turbopump::run(&self.turbopump, electric, g3.p)?;
-        let carrier = self.turbopump.carrier;
+        let slurry = self.turbopump.slurry();
+        let carrier = slurry.carrier;
         let p4 = g3.p * self.burner_loss;
         let core_parts = [(m_core, g3.feed()), tp.exhaust.part()];
         let (s4, d4) = match pt.t4 {
-            Some(t) => burn_to(&core_parts, p4, t, carrier)?,
+            Some(t) => burn_to(&core_parts, p4, t, slurry)?,
             None => (burn(&core_parts, p4)?, 0.),
         };
         let bypass = Stream { m: m_bypass, gas: g13 };
-        let (thrust_flow, t7, v_jet, d7) = if pt.mixed {
+        let (thrust_flow, t7, v_jet, d7, soot) = if pt.mixed {
             let s6 = mix(&s4, &bypass, self.mixer_mach)?;
             let (s7, d7) = match pt.t7 {
-                Some(t) => {
-                    burn_to(&[s6.part()], s6.gas.p * self.burner_loss, t, carrier)?
-                }
+                Some(t) => burn_to(&[s6.part()], s6.gas.p * self.burner_loss, t, slurry)?,
                 None => (s6, 0.),
             };
-            let v = exit_velocity(&s7.gas, fs.p, self.nozzle_eta)?;
-            (s7.m * v, s7.gas.t, v, d7)
+            let (v, ge) = expand(&s7.gas, fs.p, self.nozzle_eta)?;
+            (s7.m * v, s7.gas.t, v, d7, ge.soot())
         } else {
             let (s7, d7) = match pt.t7 {
-                Some(t) => {
-                    burn_to(&[s4.part()], s4.gas.p * self.burner_loss, t, carrier)?
-                }
+                Some(t) => burn_to(&[s4.part()], s4.gas.p * self.burner_loss, t, slurry)?,
                 None => (s4, 0.),
             };
-            let vc = exit_velocity(&s7.gas, fs.p, self.nozzle_eta)?;
-            let vb = exit_velocity(&g13, fs.p, self.nozzle_eta)?;
-            (s7.m * vc + m_bypass * vb, s7.gas.t, vc, d7)
+            let (vc, ge) = expand(&s7.gas, fs.p, self.nozzle_eta)?;
+            let vb = expand(&g13, fs.p, self.nozzle_eta)?.0;
+            (
+                s7.m * vc + m_bypass * vb,
+                s7.gas.t,
+                vc,
+                d7,
+                ge.soot() * s7.m / (s7.m + m_bypass),
+            )
         };
         let thrust = thrust_flow - m * fs.v;
-        let nh3 = tp.nh3 + carrier * (d4 + d7);
+        let diluent = tp.diluent + carrier * (d4 + d7);
         let dust = tp.dust + d4 + d7;
         Ok(PointReport {
             airflow: m,
             thrust,
             electric,
-            nh3,
+            diluent,
             dust,
-            isp: thrust / ((nh3 + dust) * G0),
+            isp: thrust / ((diluent + dust) * G0),
             isp_dust: thrust / (dust * G0),
             t3: g3.t,
             t4: s4.gas.t,
@@ -235,7 +238,8 @@ impl EngineSpec {
             p3: g3.p,
             v_jet,
             turbopump_exit_t: tp.exhaust.gas.t,
-            turbopump_share: (tp.nh3 + tp.dust) / (nh3 + dust),
+            turbopump_share: (tp.diluent + tp.dust) / (diluent + dust),
+            soot,
         })
     }
 
@@ -245,24 +249,26 @@ impl EngineSpec {
         let p_duct = fs.face.p * self.duct_loss;
         let electric = self.systems + pt.extra_power;
         let tp = Turbopump::run(&self.turbopump, electric, p_duct)?;
-        let carrier = self.turbopump.carrier;
+        let slurry = self.turbopump.slurry();
+        let carrier = slurry.carrier;
         let parts = [(m, fs.face.feed()), tp.exhaust.part()];
         let p4 = p_duct * self.burner_loss;
         let (s4, d4) = match pt.t4 {
-            Some(t) => burn_to(&parts, p4, t, carrier)?,
+            Some(t) => burn_to(&parts, p4, t, slurry)?,
             None => (burn(&parts, p4)?, 0.),
         };
-        let v = exit_velocity(&s4.gas, fs.p, self.nozzle_eta)?;
+        let (v, ge) = expand(&s4.gas, fs.p, self.nozzle_eta)?;
+        let soot = ge.soot();
         let thrust = s4.m * v - m * fs.v;
-        let nh3 = tp.nh3 + carrier * d4;
+        let diluent = tp.diluent + carrier * d4;
         let dust = tp.dust + d4;
         Ok(PointReport {
             airflow: m,
             thrust,
             electric,
-            nh3,
+            diluent,
             dust,
-            isp: thrust / ((nh3 + dust) * G0),
+            isp: thrust / ((diluent + dust) * G0),
             isp_dust: thrust / (dust * G0),
             t3: fs.face.t,
             t4: s4.gas.t,
@@ -270,7 +276,8 @@ impl EngineSpec {
             p3: fs.face.p,
             v_jet: v,
             turbopump_exit_t: tp.exhaust.gas.t,
-            turbopump_share: (tp.nh3 + tp.dust) / (nh3 + dust),
+            turbopump_share: (tp.diluent + tp.dust) / (diluent + dust),
+            soot,
         })
     }
 
@@ -309,12 +316,15 @@ pub struct Rocket {
     /// Vacuum specific impulse, s, shifting equilibrium, ideal nozzle.
     pub isp_vacuum: f64,
     pub exit_p: f64,
+    /// Mass fraction of soot at the exit.
+    pub soot: f64,
 }
 
-/// A dust rocket burning `mix` kg of ammonia per kg of dust at chamber
-/// pressure `pc`, through a nozzle of area ratio `area_ratio`.
-pub fn rocket(mix: f64, pc: f64, area_ratio: f64) -> Result<Rocket> {
-    let feed = Feed::blend(&[(1., Feed::dust()), (mix, Feed::ammonia(0.))]);
+/// A dust rocket burning `mix` kg of diluent per kg of dust at chamber
+/// pressure `pc`, through a nozzle of area ratio `area_ratio`. Soot, if
+/// any, keeps pace with the gas: two-phase losses are not counted.
+pub fn rocket(diluent: Diluent, mix: f64, pc: f64, area_ratio: f64) -> Result<Rocket> {
+    let feed = Feed::blend(&[(1., Feed::dust()), (mix, diluent.feed(0.))]);
     let gc = eq_hp(&feed, pc, None)?;
     let (h0, s0) = (gc.h(), gc.s());
     let flux = |p: f64| -> Result<(f64, Gas, f64)> {
@@ -345,5 +355,6 @@ pub fn rocket(mix: f64, pc: f64, area_ratio: f64) -> Result<Rocket> {
         chamber_t: gc.t,
         isp_vacuum: (ve + ge.p / (ge.rho() * ve)) / G0,
         exit_p: ge.p,
+        soot: ge.soot(),
     })
 }

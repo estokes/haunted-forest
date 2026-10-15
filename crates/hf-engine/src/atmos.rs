@@ -32,7 +32,7 @@ impl Air {
         }
         let th = &*crate::thermo::THERMO;
         let mw: f64 = (0..NS).map(|j| x[j] * th.gas[j].mw).sum();
-        Gas { n: std::array::from_fn(|j| x[j] / mw), t, p }
+        Gas { n: std::array::from_fn(|j| x[j] / mw), t, p, ..Default::default() }
     }
 }
 

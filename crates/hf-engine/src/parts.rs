@@ -3,7 +3,7 @@
 //! their composition frozen, and expansions (turbine, nozzles) shift
 //! equilibrium as they go.
 
-use crate::gas::{brent, eq_hp, Feed, Gas};
+use crate::gas::{brent, eq_hp, Diluent, Feed, Gas};
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 
@@ -21,9 +21,18 @@ impl Stream {
     }
 }
 
-/// Dust slurried in liquid ammonia, `carrier` kg of ammonia per kg of dust.
-pub fn slurry(carrier: f64) -> Feed {
-    Feed::blend(&[(1., Feed::dust()), (carrier, Feed::ammonia(0.))])
+/// Dust slurried in its diluent, `carrier` kg of diluent per kg of dust.
+#[derive(Clone, Copy, Debug)]
+pub struct Slurry {
+    pub diluent: Diluent,
+    pub carrier: f64,
+}
+
+impl Slurry {
+    /// Per kg of slurry.
+    pub fn feed(self) -> Feed {
+        Feed::blend(&[(1., Feed::dust()), (self.carrier, self.diluent.feed(0.))])
+    }
 }
 
 /// Compress frozen-composition gas by `pr` at isentropic efficiency `eta`;
@@ -51,26 +60,27 @@ pub fn burn_to(
     parts: &[(f64, Feed)],
     p: f64,
     t: f64,
-    carrier: f64,
+    slurry: Slurry,
 ) -> Result<(Stream, f64)> {
     let base = burn(parts, p)?;
     if base.gas.t >= t {
         return Ok((base, 0.));
     }
-    let (m, feed, fuel) = (base.m, Feed::blend(parts), slurry(carrier));
+    let (m, feed, fuel, carrier) =
+        (base.m, Feed::blend(parts), slurry.feed(), slurry.carrier);
     let with = |d: f64| burn(&[(m, feed), (d * (1. + carrier), fuel)], p);
     let d = brent(|d| Ok(with(d)?.gas.t - t), 0., base.m, 1e-6)?;
     Ok((with(d)?, d))
 }
 
-/// Fully expanded exit velocity from stagnation state `g` to `p`, with
-/// shifting equilibrium and kinetic-energy efficiency `eta`.
-pub fn exit_velocity(g: &Gas, p: f64, eta: f64) -> Result<f64> {
+/// Fully expanded exit velocity and exit gas from stagnation state `g` to
+/// `p`, with shifting equilibrium and kinetic-energy efficiency `eta`.
+pub fn expand(g: &Gas, p: f64, eta: f64) -> Result<(f64, Gas)> {
     if p >= g.p {
-        return Ok(0.);
+        return Ok((0., *g));
     }
-    let he = g.eq_s(g.s(), p)?.h();
-    Ok((2. * eta * (g.h() - he)).sqrt())
+    let ge = g.eq_s(g.s(), p)?;
+    Ok(((2. * eta * (g.h() - ge.h())).sqrt(), ge))
 }
 
 /// Mix a core and a bypass stream at constant static pressure, set by the
@@ -129,9 +139,10 @@ pub struct TurbopumpSpec {
     /// Dust slurry injected through the stator rows to bring each stage
     /// back to `tit`.
     pub reheat: bool,
-    /// kg of ammonia carrying each kg of slurried dust.
+    pub diluent: Diluent,
+    /// kg of diluent carrying each kg of slurried dust.
     pub carrier: f64,
-    /// J per kg of ammonia picked up cooling the hot section before it
+    /// J per kg of diluent picked up cooling the hot section before it
     /// reaches the reverter.
     pub regen_heat: f64,
     pub eta_generator: f64,
@@ -148,6 +159,7 @@ impl Default for TurbopumpSpec {
             stages: 6,
             eta_stage: 0.88,
             reheat: false,
+            diluent: Diluent::Ammonia,
             carrier: 0.56,
             regen_heat: 0.,
             eta_generator: 0.98,
@@ -170,13 +182,13 @@ pub struct Stage {
 /// reverter.
 #[derive(Clone, Copy, Debug)]
 pub struct TurbopumpPerKg {
-    /// kg of ammonia per kg of dust in the reverter.
+    /// kg of diluent per kg of dust in the reverter.
     pub mix: f64,
     /// Each stage's gas entering its rotor (after reheat), its flow, and
     /// its work, J; the first `n_stages` are filled.
     pub stages: [Stage; MAX_STAGES],
     pub n_stages: usize,
-    pub nh3: f64,
+    pub diluent: f64,
     pub dust: f64,
     /// Electricity, J.
     pub electric: f64,
@@ -185,11 +197,15 @@ pub struct TurbopumpPerKg {
 }
 
 impl TurbopumpSpec {
-    /// The reverter's gas: `mix` kg of ammonia per kg of dust burnt to
+    pub fn slurry(&self) -> Slurry {
+        Slurry { diluent: self.diluent, carrier: self.carrier }
+    }
+
+    /// The reverter's gas: `mix` kg of diluent per kg of dust burnt to
     /// `tit` at `p_reverter`.
     pub fn reverter(&self) -> Result<(f64, Gas)> {
         let feed = |x: f64| {
-            Feed::blend(&[(1., Feed::dust()), (x, Feed::ammonia(self.regen_heat))])
+            Feed::blend(&[(1., Feed::dust()), (x, self.diluent.feed(self.regen_heat))])
         };
         let t = |x: f64| -> Result<f64> { Ok(eq_hp(&feed(x), self.p_reverter, None)?.t) };
         if t(0.)? < self.tit {
@@ -202,9 +218,9 @@ impl TurbopumpSpec {
     pub fn per_kg(&self, p_exit: f64) -> Result<TurbopumpPerKg> {
         let (x, mut g) = self.reverter()?;
         let mut m = 1.;
-        let (mut dust, mut nh3) = (1. / (1. + x), x / (1. + x));
+        let (mut dust, mut diluent) = (1. / (1. + x), x / (1. + x));
         let pr = (self.p_reverter / p_exit).powf(1. / self.stages as f64);
-        let fuel = slurry(self.carrier);
+        let fuel = self.slurry().feed();
         if self.stages > MAX_STAGES {
             bail!("at most {MAX_STAGES} stages");
         }
@@ -224,7 +240,7 @@ impl TurbopumpSpec {
                     g = heated(d)?;
                     m += d * (1. + self.carrier);
                     dust += d;
-                    nh3 += d * self.carrier;
+                    diluent += d * self.carrier;
                 }
             }
             let inlet = g;
@@ -236,14 +252,14 @@ impl TurbopumpSpec {
             work += m * (h_in - h_out);
             stages[k] = Stage { inlet, m, work: m * (h_in - h_out) };
         }
-        let pump = (dust + nh3) * (self.p_reverter - 0.5e6)
+        let pump = (dust + diluent) * (self.p_reverter - 0.5e6)
             / self.slurry_density
             / self.eta_pump;
         Ok(TurbopumpPerKg {
             mix: x,
             stages,
             n_stages: self.stages,
-            nh3,
+            diluent,
             dust,
             electric: (work - pump) * self.eta_generator,
             exhaust: Stream { m, gas: g },
@@ -254,7 +270,7 @@ impl TurbopumpSpec {
 /// A turbopump making `electric` W into a combustor at `p_exit`.
 #[derive(Clone, Copy, Debug)]
 pub struct Turbopump {
-    pub nh3: f64,
+    pub diluent: f64,
     pub dust: f64,
     pub exhaust: Stream,
     pub per_kg: TurbopumpPerKg,
@@ -269,16 +285,21 @@ impl Turbopump {
     pub fn scale(per_kg: TurbopumpPerKg, electric: f64) -> Self {
         let k = electric / per_kg.electric;
         Self {
-            nh3: per_kg.nh3 * k,
+            diluent: per_kg.diluent * k,
             dust: per_kg.dust * k,
             exhaust: Stream { m: per_kg.exhaust.m * k, gas: per_kg.exhaust.gas },
             per_kg,
         }
     }
 
-    /// kg of ammonia per MW-minute of electricity.
-    pub fn nh3_per_mw_min(per_kg: &TurbopumpPerKg) -> f64 {
-        per_kg.nh3 / per_kg.electric * 1e6 * 60.
+    /// kg of diluent per MW-minute of electricity.
+    pub fn diluent_per_mw_min(per_kg: &TurbopumpPerKg) -> f64 {
+        per_kg.diluent / per_kg.electric * 6e7
+    }
+
+    /// kg of dust per MW-minute of electricity.
+    pub fn dust_per_mw_min(per_kg: &TurbopumpPerKg) -> f64 {
+        per_kg.dust / per_kg.electric * 6e7
     }
 }
 

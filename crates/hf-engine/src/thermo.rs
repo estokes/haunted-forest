@@ -4,6 +4,8 @@
 //!
 //! Enthalpies are absolute in the CEA sense: zero for the reference
 //! elements at 298.15 K, so heats of reaction come out of differences.
+//! Graphite is the one condensed product, for the soot that cracked
+//! methane can drop.
 
 use anyhow::{bail, Context, Result};
 use std::sync::LazyLock;
@@ -22,7 +24,7 @@ pub mod el {
     pub const C: usize = 4;
 }
 
-pub const NS: usize = 25;
+pub const NS: usize = 42;
 pub const GASES: [&str; NS] = [
     "H",
     "H2",
@@ -49,7 +51,27 @@ pub const GASES: [&str; NS] = [
     "HCN",
     "CN",
     "C2H2,acetylene",
+    "C2",
+    "C3",
+    "CH",
+    "CH2",
+    "CH3",
+    "C2H",
+    "C2H4",
+    "C4",
+    "C5",
+    "C4H2,butadiyne",
+    "C6H2",
+    "C2N2",
+    "HCCN",
+    "HNC",
+    "CCN",
+    "CNC",
+    "NCN",
 ];
+
+pub const NC: usize = 1;
+pub const CONDENSED: [&str; NC] = ["C(gr)"];
 pub mod sp {
     pub const H: usize = 0;
     pub const H2: usize = 1;
@@ -64,6 +86,8 @@ pub mod sp {
     pub const AR: usize = 17;
     pub const CO: usize = 19;
     pub const CO2: usize = 20;
+    pub const CH4: usize = 21;
+    pub const C2H2: usize = 24;
 }
 
 #[derive(Clone, Copy, Default)]
@@ -120,14 +144,18 @@ impl Species {
 
 pub struct Thermo {
     pub gas: [Species; NS],
+    pub condensed: [Species; NC],
     /// Liquid ammonia at its 1 atm boiling point, 239.72 K: J/kg.
     pub nh3_liquid_h: f64,
+    /// Liquid methane at its 1 atm boiling point, 111.64 K: J/kg.
+    pub ch4_liquid_h: f64,
 }
 
 /// Dust reverting to molecular hydrogen at 298 K releases 216 MJ/kg.
 pub const DUST_H: f64 = 216e6;
 pub const H_MW: f64 = 1.00794e-3;
 pub const NH3_MW: f64 = 17.03052e-3;
+pub const CH4_MW: f64 = 16.04246e-3;
 
 pub static THERMO: LazyLock<Thermo> =
     LazyLock::new(|| parse(include_str!("../data/thermo.inp")).expect("data/thermo.inp"));
@@ -145,7 +173,9 @@ fn parse(text: &str) -> Result<Thermo> {
     let lines: Vec<&str> = text.lines().collect();
     let mut gas = [Species::default(); NS];
     let mut found = [false; NS];
-    let mut nh3_liquid_h = None;
+    let mut condensed = [Species::default(); NC];
+    let mut found_c = [false; NC];
+    let (mut nh3_liquid_h, mut ch4_liquid_h) = (None, None);
     let mut i = 0;
     while i < lines.len() {
         let name = lines[i].split_whitespace().next().context("species name")?;
@@ -162,11 +192,14 @@ fn parse(text: &str) -> Result<Thermo> {
                 ELEMENTS.iter().position(|e| *e == sym).with_context(|| sym.clone())?;
             atoms[e] = count;
         }
+        let phase = num(&hdr[50..52])?;
         let mw = num(&hdr[52..65])? * 1e-3;
         let hf = num(&hdr[65..80])?;
         if n_int == 0 {
-            if name == "NH3(L)" {
-                nh3_liquid_h = Some(hf / mw);
+            match name {
+                "NH3(L)" => nh3_liquid_h = Some(hf / mw),
+                "CH4(L)" => ch4_liquid_h = Some(hf / mw),
+                _ => (),
             }
             i += 3;
             continue;
@@ -186,7 +219,12 @@ fn parse(text: &str) -> Result<Thermo> {
             iv.b[0] = num(&l2[48..64])?;
             iv.b[1] = num(&l2[64..80])?;
         }
-        if let Some(j) = GASES.iter().position(|g| *g == name) {
+        if phase != 0. {
+            if let Some(j) = CONDENSED.iter().position(|g| *g == name) {
+                condensed[j] = sp;
+                found_c[j] = true;
+            }
+        } else if let Some(j) = GASES.iter().position(|g| *g == name) {
             gas[j] = sp;
             found[j] = true;
         }
@@ -195,7 +233,15 @@ fn parse(text: &str) -> Result<Thermo> {
     if let Some(j) = found.iter().position(|f| !f) {
         bail!("species {} missing from thermo data", GASES[j]);
     }
-    Ok(Thermo { gas, nh3_liquid_h: nh3_liquid_h.context("NH3(L) missing")? })
+    if let Some(j) = found_c.iter().position(|f| !f) {
+        bail!("species {} missing from thermo data", CONDENSED[j]);
+    }
+    Ok(Thermo {
+        gas,
+        condensed,
+        nh3_liquid_h: nh3_liquid_h.context("NH3(L) missing")?,
+        ch4_liquid_h: ch4_liquid_h.context("CH4(L) missing")?,
+    })
 }
 
 #[cfg(test)]
@@ -214,5 +260,8 @@ mod tests {
         // Hf(H2O, g) = -241.826 kJ/mol
         assert!((th.gas[sp::H2O].h_rt(298.15) * R * 298.15 + 241826.).abs() < 50.);
         assert!((th.nh3_liquid_h * NH3_MW + 71555.).abs() < 1.);
+        assert!((th.ch4_liquid_h * CH4_MW + 89233.).abs() < 1.);
+        // Graphite is the reference state of carbon: zero at 298 K.
+        assert!(th.condensed[0].h_rt(298.15).abs() < 1e-3);
     }
 }

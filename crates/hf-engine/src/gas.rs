@@ -1,12 +1,15 @@
-//! Ideal-gas mixtures and chemical equilibrium.
+//! Ideal-gas mixtures, with condensed graphite, and chemical equilibrium.
 //!
 //! Equilibrium at fixed temperature and pressure minimises Gibbs energy
 //! under element conservation by the iteration of CEA (Gordon & McBride,
-//! NASA RP-1311, eqs. 2.24-2.26, with its step control, eqs. 3.1-3.2).
+//! NASA RP-1311, eqs. 2.24-2.26 and 2.36, with its step control, eqs.
+//! 3.1-3.2, and its tests for adding and removing condensed species).
 //! Fixed enthalpy or entropy is a root find on temperature around it.
+//! Condensed carbon is taken to move with the gas at its temperature.
 
-use crate::thermo::{el, DUST_H, H_MW, NE, NH3_MW, NS, P0, R, THERMO};
+use crate::thermo::{el, CH4_MW, DUST_H, H_MW, NC, NE, NH3_MW, NS, P0, R, THERMO};
 use anyhow::{bail, Result};
+use serde::{Deserialize, Serialize};
 
 /// What a reacting mixture conserves: element totals (mol/kg) and
 /// specific enthalpy (J/kg).
@@ -23,14 +26,6 @@ impl Feed {
         Self { b, h: DUST_H }
     }
 
-    /// Liquid ammonia from the tank, plus `heat` J/kg picked up on the way.
-    pub fn ammonia(heat: f64) -> Self {
-        let mut b = [0.; NE];
-        b[el::H] = 3. / NH3_MW;
-        b[el::N] = 1. / NH3_MW;
-        Self { b, h: THERMO.nh3_liquid_h + heat }
-    }
-
     /// The mass-weighted blend of `(kg, feed)` parts, per kg of the blend.
     pub fn blend(parts: &[(f64, Feed)]) -> Self {
         let m: f64 = parts.iter().map(|(m, _)| m).sum();
@@ -45,20 +40,82 @@ impl Feed {
     }
 }
 
-/// An ideal-gas mixture: mol/kg of each species, temperature, pressure.
-#[derive(Clone, Copy, Debug, Default)]
+/// The liquid that carries, cools and dilutes the dust.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Diluent {
+    #[default]
+    Ammonia,
+    Methane,
+}
+
+impl Diluent {
+    pub const ALL: [Diluent; 2] = [Diluent::Ammonia, Diluent::Methane];
+
+    /// The liquid from its tank, plus `heat` J/kg picked up on the way.
+    pub fn feed(self, heat: f64) -> Feed {
+        let mut b = [0.; NE];
+        let h = match self {
+            Diluent::Ammonia => {
+                b[el::H] = 3. / NH3_MW;
+                b[el::N] = 1. / NH3_MW;
+                THERMO.nh3_liquid_h
+            }
+            Diluent::Methane => {
+                b[el::H] = 4. / CH4_MW;
+                b[el::C] = 1. / CH4_MW;
+                THERMO.ch4_liquid_h
+            }
+        };
+        Feed { b, h: h + heat }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Diluent::Ammonia => "ammonia",
+            Diluent::Methane => "methane",
+        }
+    }
+
+    /// kg/m3, liquid at its 1 atm boiling point.
+    pub fn density(self) -> f64 {
+        match self {
+            Diluent::Ammonia => 682.,
+            Diluent::Methane => 422.,
+        }
+    }
+
+    /// K, the 1 atm boiling point it is stored at.
+    pub fn boiling(self) -> f64 {
+        match self {
+            Diluent::Ammonia => 239.7,
+            Diluent::Methane => 111.6,
+        }
+    }
+}
+
+/// An ideal-gas mixture, with condensed species: mol/kg of each,
+/// temperature, pressure.
+#[derive(Clone, Copy, Debug)]
 pub struct Gas {
     pub n: [f64; NS],
+    pub nc: [f64; NC],
     pub t: f64,
     pub p: f64,
 }
 
+impl Default for Gas {
+    fn default() -> Self {
+        Self { n: [0.; NS], nc: [0.; NC], t: 0., p: 0. }
+    }
+}
+
 impl Gas {
+    /// Moles of gas per kg of mixture.
     pub fn n_total(&self) -> f64 {
         self.n.iter().sum()
     }
 
-    /// kg/mol
+    /// kg of mixture per mole of gas.
     pub fn mw(&self) -> f64 {
         1. / self.n_total()
     }
@@ -67,10 +124,18 @@ impl Gas {
         self.n[j] / self.n_total()
     }
 
+    /// Mass fraction of condensed carbon.
+    pub fn soot(&self) -> f64 {
+        let th = &*THERMO;
+        (0..NC).map(|c| self.nc[c] * th.condensed[c].mw).sum()
+    }
+
     /// J/kg
     pub fn h(&self) -> f64 {
         let th = &*THERMO;
-        (0..NS).map(|j| self.n[j] * th.gas[j].h_rt(self.t)).sum::<f64>() * R * self.t
+        let gas: f64 = (0..NS).map(|j| self.n[j] * th.gas[j].h_rt(self.t)).sum();
+        let cond: f64 = (0..NC).map(|c| self.nc[c] * th.condensed[c].h_rt(self.t)).sum();
+        (gas + cond) * R * self.t
     }
 
     /// J/kg K
@@ -83,13 +148,18 @@ impl Gas {
                 s += self.n[j] * (th.gas[j].s_r(self.t) - (self.n[j] / nt).ln() - lp);
             }
         }
+        for c in 0..NC {
+            s += self.nc[c] * th.condensed[c].s_r(self.t);
+        }
         s * R
     }
 
     /// Frozen heat capacity, J/kg K.
     pub fn cp(&self) -> f64 {
         let th = &*THERMO;
-        (0..NS).map(|j| self.n[j] * th.gas[j].cp_r(self.t)).sum::<f64>() * R
+        let gas: f64 = (0..NS).map(|j| self.n[j] * th.gas[j].cp_r(self.t)).sum();
+        let cond: f64 = (0..NC).map(|c| self.nc[c] * th.condensed[c].cp_r(self.t)).sum();
+        (gas + cond) * R
     }
 
     pub fn gamma(&self) -> f64 {
@@ -97,6 +167,7 @@ impl Gas {
         cp / (cp - self.n_total() * R)
     }
 
+    /// kg of mixture per m3.
     pub fn rho(&self) -> f64 {
         self.p * self.mw() / (R * self.t)
     }
@@ -104,10 +175,9 @@ impl Gas {
     pub fn feed(&self) -> Feed {
         let th = &*THERMO;
         let mut b = [0.; NE];
-        for j in 0..NS {
-            for e in 0..NE {
-                b[e] += th.gas[j].atoms[e] * self.n[j];
-            }
+        for e in 0..NE {
+            b[e] = (0..NS).map(|j| th.gas[j].atoms[e] * self.n[j]).sum::<f64>()
+                + (0..NC).map(|c| th.condensed[c].atoms[e] * self.nc[c]).sum::<f64>();
         }
         Feed { b, h: self.h() }
     }
@@ -119,13 +189,13 @@ impl Gas {
 
     /// Frozen composition at enthalpy `h` and pressure `p`.
     pub fn frozen_h(self, h: f64, p: f64) -> Result<Self> {
-        let t = brent(|t| Ok(self.at(t, p).h() - h), 100., 20000., 1e-6)?;
+        let t = brent(|t| Ok(self.at(t, p).h() - h), 50., 20000., 1e-6)?;
         Ok(self.at(t, p))
     }
 
     /// Frozen composition at entropy `s` and pressure `p`.
     pub fn frozen_s(self, s: f64, p: f64) -> Result<Self> {
-        let t = brent(|t| Ok(self.at(t, p).s() - s), 100., 20000., 1e-6)?;
+        let t = brent(|t| Ok(self.at(t, p).s() - s), 50., 20000., 1e-6)?;
         Ok(self.at(t, p))
     }
 
@@ -187,7 +257,58 @@ pub fn eq_hp(feed: &Feed, p: f64, start: Option<&Gas>) -> Result<Gas> {
 const LN_TRACE: f64 = -18.420681;
 
 /// Equilibrium at fixed temperature and pressure for element totals `b`.
+/// A condensed species joins when its Gibbs energy is below what the
+/// element potentials allow it, and leaves when its amount goes negative.
 pub fn eq_tp(b: &[f64; NE], t: f64, p: f64, start: Option<&Gas>) -> Result<Gas> {
+    let th = &*THERMO;
+    let present: [bool; NE] = std::array::from_fn(|e| b[e] > 1e-12);
+    let possible: [bool; NC] = std::array::from_fn(|c| {
+        (0..NE).all(|e| th.condensed[c].atoms[e] == 0. || present[e])
+    });
+    let mut included: [bool; NC] =
+        std::array::from_fn(|c| possible[c] && start.is_some_and(|s| s.nc[c] > 0.));
+    let mut start = start.copied();
+    for _ in 0..2 * NC + 2 {
+        // A warm start carrying a condensed phase the state no longer
+        // holds can fail to converge; start cold without it and retest.
+        let (gas, pi) = match newton(b, t, p, start.as_ref(), &included) {
+            Ok(r) => r,
+            Err(_) => {
+                included = [false; NC];
+                newton(b, t, p, None, &included)?
+            }
+        };
+        let mut changed = false;
+        for c in 0..NC {
+            if included[c] && gas.nc[c] <= 0. {
+                included[c] = false;
+                changed = true;
+            } else if !included[c] && possible[c] {
+                let allowed: f64 =
+                    (0..NE).map(|e| th.condensed[c].atoms[e] * pi[e]).sum();
+                if th.condensed[c].g_rt(t) - allowed < -1e-8 {
+                    included[c] = true;
+                    changed = true;
+                }
+            }
+        }
+        if !changed {
+            return Ok(gas);
+        }
+        start = Some(Gas { nc: [0.; NC], ..gas });
+    }
+    bail!("condensed phases did not settle at {t:.0} K, {p:.3e} Pa")
+}
+
+/// The CEA iteration with the condensed species in `included`. Returns
+/// the mixture and the element potentials (Lagrange multipliers).
+fn newton(
+    b: &[f64; NE],
+    t: f64,
+    p: f64,
+    start: Option<&Gas>,
+    included: &[bool; NC],
+) -> Result<(Gas, [f64; NE])> {
     let th = &*THERMO;
     let present: [bool; NE] = std::array::from_fn(|e| b[e] > 1e-12);
     let mut active = [false; NS];
@@ -196,23 +317,31 @@ pub fn eq_tp(b: &[f64; NE], t: f64, p: f64, start: Option<&Gas>) -> Result<Gas> 
         active[j] = (0..NE).all(|e| th.gas[j].atoms[e] == 0. || present[e]);
         n_active += active[j] as usize;
     }
-    let elems: [usize; NE] = {
-        let mut v = [0; NE];
-        let mut k = 0;
-        for e in 0..NE {
-            if present[e] {
-                v[k] = e;
-                k += 1;
-            }
+    let mut elems = [0; NE];
+    let mut l = 0;
+    for e in 0..NE {
+        if present[e] {
+            elems[l] = e;
+            l += 1;
         }
-        v
-    };
-    let l = present.iter().filter(|p| **p).count();
+    }
+    let mut conds = [0; NC];
+    let mut nci = 0;
+    for c in 0..NC {
+        if included[c] {
+            conds[nci] = c;
+            nci += 1;
+        }
+    }
+    let size = l + nci + 1;
+    let last = size - 1;
     let g0: [f64; NS] = std::array::from_fn(|j| th.gas[j].g_rt(t));
+    let gc: [f64; NC] = std::array::from_fn(|c| th.condensed[c].g_rt(t));
     let lp = (p / P0).ln();
     let b_scale = b.iter().cloned().fold(0., f64::max);
     let mut ln_nj = [f64::NEG_INFINITY; NS];
     let mut ln_n;
+    let mut nc = [0.; NC];
     match start {
         Some(s) if (0..NS).all(|j| !active[j] || s.n[j] > 0.) => {
             for j in 0..NS {
@@ -221,6 +350,11 @@ pub fn eq_tp(b: &[f64; NE], t: f64, p: f64, start: Option<&Gas>) -> Result<Gas> 
                 }
             }
             ln_n = s.n_total().ln();
+            for c in 0..NC {
+                if included[c] {
+                    nc[c] = s.nc[c].max(0.);
+                }
+            }
         }
         _ => {
             let n0 = b.iter().sum::<f64>() / 2.;
@@ -243,7 +377,7 @@ pub fn eq_tp(b: &[f64; NE], t: f64, p: f64, start: Option<&Gas>) -> Result<Gas> 
                 0.
             }
         });
-        let mut m = [[0.; NE + 2]; NE + 1];
+        let mut m = [[0.; NE + NC + 2]; NE + NC + 1];
         for (r, &k) in elems[..l].iter().enumerate() {
             let mut rhs = b[k];
             for j in 0..NS {
@@ -254,10 +388,21 @@ pub fn eq_tp(b: &[f64; NE], t: f64, p: f64, start: Option<&Gas>) -> Result<Gas> 
                 for (c, &i) in elems[..l].iter().enumerate() {
                     m[r][c] += akj * th.gas[j].atoms[i] * nj[j];
                 }
-                m[r][l] += akj * nj[j];
+                m[r][last] += akj * nj[j];
                 rhs += akj * nj[j] * (mu[j] - 1.);
             }
-            m[r][l + 1] = rhs;
+            for (ci, &c) in conds[..nci].iter().enumerate() {
+                let akc = th.condensed[c].atoms[k];
+                m[r][l + ci] = akc;
+                rhs -= akc * nc[c];
+            }
+            m[r][size] = rhs;
+        }
+        for (ci, &c) in conds[..nci].iter().enumerate() {
+            for (col, &i) in elems[..l].iter().enumerate() {
+                m[l + ci][col] = th.condensed[c].atoms[i];
+            }
+            m[l + ci][size] = gc[c];
         }
         let sum_n: f64 = nj.iter().sum();
         let mut rhs = n - sum_n;
@@ -266,14 +411,14 @@ pub fn eq_tp(b: &[f64; NE], t: f64, p: f64, start: Option<&Gas>) -> Result<Gas> 
                 continue;
             }
             for (c, &i) in elems[..l].iter().enumerate() {
-                m[l][c] += th.gas[j].atoms[i] * nj[j];
+                m[last][c] += th.gas[j].atoms[i] * nj[j];
             }
             rhs += nj[j] * mu[j];
         }
-        m[l][l] = sum_n - n;
-        m[l][l + 1] = rhs;
-        let x = solve(&mut m, l + 1)?;
-        let dln_n = x[l];
+        m[last][last] = sum_n - n;
+        m[last][size] = rhs;
+        let x = solve(&mut m, size)?;
+        let dln_n = x[last];
         let mut dln = [0.; NS];
         let mut lam1_den = 5. * dln_n.abs();
         let mut lam2 = f64::INFINITY;
@@ -304,16 +449,25 @@ pub fn eq_tp(b: &[f64; NE], t: f64, p: f64, start: Option<&Gas>) -> Result<Gas> 
                 ln_nj[j] = (ln_nj[j] + lam * dln[j]).max(ln_n - 200.);
             }
         }
+        for (ci, &c) in conds[..nci].iter().enumerate() {
+            converged &= x[l + ci].abs() / sum_n <= 0.5e-5;
+            nc[c] += lam * x[l + ci];
+        }
         ln_n += lam * dln_n;
         if converged {
             let gas = Gas {
                 n: std::array::from_fn(|j| if active[j] { ln_nj[j].exp() } else { 0. }),
+                nc,
                 t,
                 p,
             };
             let fb = gas.feed().b;
             if (0..NE).all(|e| (fb[e] - b[e]).abs() <= 1e-6 * b_scale) {
-                return Ok(gas);
+                let mut pi = [0.; NE];
+                for (c, &e) in elems[..l].iter().enumerate() {
+                    pi[e] = x[c];
+                }
+                return Ok((gas, pi));
             }
         }
     }
@@ -322,7 +476,10 @@ pub fn eq_tp(b: &[f64; NE], t: f64, p: f64, start: Option<&Gas>) -> Result<Gas> 
 
 /// Gaussian elimination with partial pivoting on an n x (n+1) augmented
 /// matrix.
-fn solve(m: &mut [[f64; NE + 2]; NE + 1], n: usize) -> Result<[f64; NE + 1]> {
+fn solve(
+    m: &mut [[f64; NE + NC + 2]; NE + NC + 1],
+    n: usize,
+) -> Result<[f64; NE + NC + 1]> {
     for c in 0..n {
         let piv =
             (c..n).max_by(|a, b| m[*a][c].abs().total_cmp(&m[*b][c].abs())).unwrap();
@@ -337,7 +494,7 @@ fn solve(m: &mut [[f64; NE + 2]; NE + 1], n: usize) -> Result<[f64; NE + 1]> {
             }
         }
     }
-    let mut x = [0.; NE + 1];
+    let mut x = [0.; NE + NC + 1];
     for r in (0..n).rev() {
         let s: f64 = (r + 1..n).map(|k| m[r][k] * x[k]).sum();
         x[r] = (m[r][n] - s) / m[r][r];
@@ -425,5 +582,15 @@ mod tests {
         let g = eq_hp(&Feed { b, h }, 101325., None).unwrap();
         assert!((g.t - 2390.).abs() < 20., "{}", g.t);
         assert!(g.x(sp::H2O) > 0.29 && g.x(sp::H2O) < 0.33);
+    }
+
+    #[test]
+    fn methane_drops_soot() {
+        // Methane at 1,500 K and 1 bar is nearly all graphite and hydrogen.
+        let f = Diluent::Methane.feed(0.);
+        let g = eq_tp(&f.b, 1500., 1e5, None).unwrap();
+        let c_frac = 12.0107e-3 / CH4_MW;
+        assert!(g.soot() > 0.95 * c_frac, "soot {}", g.soot());
+        assert!(g.x(sp::H2) > 0.95);
     }
 }
