@@ -1,0 +1,10 @@
+[package]
+name = "hf-engine"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+rayon = "1"
+serde.workspace = true
+serde_json.workspace = true

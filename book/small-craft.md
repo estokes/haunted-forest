@@ -7,7 +7,10 @@ the same IS metal the couriers carry, as a chemical fuel — and the
 cruiser, which flies on the [ICF drive](icf-drive.md).
 
 Numbers here are first-order, from energy balances and textbook engine
-physics, not from a model.
+physics. The dust chemistry and the hybrid engine's come from
+`crates/hf-engine` (`cargo run -p hf-engine`): NASA thermodynamic data,
+chemical equilibrium with dissociation (checked against Cantera), and a
+cycle model of the engine.
 
 ## The Fuel
 
@@ -34,35 +37,37 @@ kilotons.
 
 ## Dust Rockets
 
-Pure dust reverting in a chamber runs at **~6,000 K** and gives ~1,700 s
-of specific impulse (Silvera & Cole, 2010). No wall likes 6,000 K. Small
-craft carry **ammonia** alongside the dust, for three jobs:
+Pure dust reverting in a chamber runs at **~5,600 K** and gives ~1,700 s
+of specific impulse (Silvera & Cole, 2010, put it near 6,000 K). No wall
+likes 5,600 K. Small craft carry **ammonia** alongside the dust, for
+three jobs:
 
 - **Coolant.** Liquid ammonia runs through the walls of every hot part,
   boils, and cracks into nitrogen and hydrogen, soaking up ~12 MJ/kg on
   its way to 2,500 K. Then it is injected as propellant, so the heat is
   not lost. Its products do not attack carbon; steam would.
 - **Diluent.** Mixed into the gas, it pulls the temperature down, but
-  slowly. Dust carries so much energy that a 1:1 mix still runs above
-  4,000 K, and holding the gas to 3,000 K takes 12 kg of ammonia per
-  kilogram of dust.
+  slowly. Dust carries so much energy that a 1:1 mix still runs at
+  5,200 K, and holding the gas to 3,000 K takes 11 kg of ammonia per
+  kilogram of dust. Above ~4,000 K much of the energy sits in hydrogen
+  split into atoms, which recombine as the gas expands and give it back.
 - **Fuel.** In air, cracked ammonia burns (18.6 MJ/kg), so it is not dead
   weight.
 
 It is everywhere — outer-system ices, or made from air, water, and
 power — and it stays liquid at modest pressure, with no cryogenics.
 
-| Mix, dust : ammonia | Gas | Vacuum Isp | Used for |
+| Mix, dust : ammonia | Gas at 10 MPa | Vacuum Isp | Used for |
 |---|---|---|---|
-| Pure dust | ~6,000 K | ~1,700 s | military performance; needs an exotic chamber |
-| 1 : 1 | above 4,000 K | ~1,200 s | the standard rocket mix, with ammonia film along the walls |
-| 1 : 2 | above 4,000 K | ~1,000 s | cheap lift |
-| 1 : 5.6 | 5,000 K | — | the turbine gas of the hybrid engine |
-| 1 : 12 | 3,000 K | — | |
+| Pure dust | ~5,600 K | ~1,700 s | military performance; needs an exotic chamber |
+| 1 : 1 | ~5,200 K | ~1,200 s | the standard rocket mix, with ammonia film along the walls |
+| 1 : 1.65 | 5,000 K | — | the turbine gas of the hybrid engine |
+| 1 : 2 | ~4,900 K | ~1,000 s | cheap lift |
+| 1 : 11 | 3,000 K | — | |
 
-(Temperatures from an energy balance on JANAF data; above 4,000 K
-hydrogen dissociates and a chemistry model is needed. Isp scaled from
-pure dust by energy per kilogram.)
+(Equilibrium temperatures; hotter at higher pressure, where less hydrogen
+splits. The Isp is ~90% of the ideal of an area-ratio-100 nozzle:
+1,840, 1,330 and 1,110 s.)
 
 ## The Hybrid Engine
 
@@ -72,6 +77,8 @@ the power comes from a **turbopump**, a turbogenerator that runs in gas
 from the dust **reverter** and never touches air. Nothing turns in the
 hot air downstream.
 
+![The electric air turbo-rocket](img/hybrid-engine.svg)
+
 CNT is ideal for the fan and compressor — cold, and strong enough for
 very high tip speeds, so a few light stages give a high pressure ratio.
 It is the wrong thing to put in hot air: carbon oxidizes above ~900 K.
@@ -80,36 +87,52 @@ its blades can be CNT too.
 
 ### The Turbopump
 
-- **Feed**: dust slurried in liquid ammonia, pumped to ~50 MPa by the
+- **Feed**: dust slurried in liquid ammonia, pumped to ~10 MPa by the
   turbopump's own pump. More ammonia joins it at the reverter, after
-  cooling the hot section.
+  cooling the turbine's blades and the hot section.
 - **Reverter**: the dust reverts, the ammonia cracks, and the gas leaves
-  at **5,000 K**, with 5.6 kg of ammonia to each kilogram of dust. It is
-  ~90% hydrogen by moles.
-- **Turbine**: several stages expand the gas ~33:1, down to the main
-  combustor's pressure. The stator vanes inject more dust, which reverts
-  in the passage and lifts the gas back to 5,000 K before each rotor, so
-  the turbine expands at nearly constant temperature. Dust can do this
-  because it needs no oxidizer.
+  at **5,000 K**, with 1.65 kg of ammonia to each kilogram of dust.
+  Nearly half its molecules are hydrogen atoms; they recombine through
+  the turbine, and much of its work comes from them.
+- **Turbine**: six stages expand the gas ~7:1, down to the main
+  combustor's pressure. It is small and fast: ~7 cm in radius at
+  ~190,000 rpm, its first blades 7 mm long.
 - **Blades**: CNT, under an insulating refractory-carbide skin, cooled
   from inside by ammonia. The stators return their coolant to the
   reverter's feed; the rotors bleed theirs out of their trailing edges.
 - **Generator**: superconducting, on the turbopump shaft, at ~100 kW/kg.
-- **Exhaust**: hydrogen and nitrogen at ~5,000 K and ~1.5 MPa, into the
+- **Exhaust**: hydrogen and nitrogen at ~4,000 K and ~1.5 MPa, into the
   main combustor.
 
-**Each megawatt of electricity costs ~2.4 kg of ammonia a minute**, and
-a little dust. The exhaust burns downstream, so its energy is not lost;
-the ammonia is the price of the work, because the turbine can only take
-so much work from each kilogram of gas.
+**Each megawatt of electricity costs ~1.9 kg of ammonia and ~1.1 kg of
+dust a minute.** The exhaust burns downstream, so its energy is not
+lost; the ammonia is the price of the work, because the turbine can only
+take so much work from each kilogram of gas.
 
 **Why 5,000 K.** The blade's CNT survives ~3,000 K. Its skin, of the
-highest-melting materials known, survives ~4,000 K. Cooling lets the gas
-run ~1,000 K hotter than the skin, as today's turbines run hotter than
-their coatings and rockets run far hotter than their walls. Hydrogen and
-nitrogen are nearly transparent, so the blades take little radiant heat.
-Hotter would need a skin near 5,000 K, which no known material survives.
-At 3,000 K the same turbine would need twice the ammonia per megawatt.
+highest-melting materials known, survives ~4,000 K. Cooling holds the
+gas ~1,000 K hotter than the skin, as today's turbines run hotter than
+their coatings and rockets run far hotter than their walls. Two things
+make that possible:
+
+- **The skin is non-catalytic**: hydrogen atoms that reach it do not
+  recombine on it, so it does not take their energy. A catalytic skin
+  would take twice the heat.
+- **The reverter runs at 10 MPa**, not higher. Dense hot hydrogen
+  carries heat into a surface very well: at 50 MPa the first blades
+  would take ~500 MW/m², and at 10 MPa they take ~90 MW/m², what a
+  rocket's throat takes. The whole turbine sheds ~9 MW into its blades,
+  and ~60% of its own ammonia, heated to 2,500 K, carries that away.
+
+Hydrogen and nitrogen are nearly transparent, so the blades take little
+radiant heat. Hotter would need a skin near 5,000 K, which no known
+material survives. At 3,000 K the turbine would need nearly six times
+the ammonia per megawatt.
+
+There is no reheat between the turbine's stages. Dust needs no oxidizer,
+so stator vanes could inject it and lift the gas back to 5,000 K before
+each rotor; at 10 MPa that saves only ~15% of the ammonia, for twice the
+dust.
 
 ### The Air Path
 
@@ -119,8 +142,10 @@ At 3,000 K the same turbine would need twice the ammonia per megawatt.
 - **Main combustor**: compressed air meets the turbopump's exhaust and,
   if it has oxygen, burns it; more dust can be injected directly. No
   turbine follows it, so it can run near stoichiometric.
-- **Reheat**: the bypass air joins the core flow, and secondary dust and
-  ammonia injectors burn the bypass air's oxygen.
+- **Reheat**: the bypass air joins the core flow at the bypass's
+  pressure, and secondary dust and ammonia injectors burn the bypass
+  air's oxygen. Mixed, the two streams give 2–4% more thrust than
+  separate nozzles would.
 - **Cooling**: the whole hot section is ammonia-cooled, and that
   ammonia, cracked and hot, feeds the reverter.
 
@@ -128,14 +153,24 @@ At 3,000 K the same turbine would need twice the ammonia per megawatt.
 
 | Mode | Speed | Isp, all propellant | Doors |
 |---|---|---|---|
-| **Turbine** | 0 to Mach ~3.5 | ~6,500–10,000 s | fan and compressor in the flow |
-| **Ramjet** | Mach ~3.5 to ~6 | ~8,000 s | fan face closed; inlet air runs down the bypass duct and through doors into the main combustor |
-| **Rocket** | above Mach ~6, and in space | 1,000–1,700 s | all closed; the main combustor and reheat are the chamber, and the turbopump runs only for the electricity needed |
+| **Turbine** | 0 to Mach ~3.5 | ~6,500–13,000 s | fan and compressor in the flow |
+| **Ramjet** | Mach ~3.5 to ~5 | ~7,500–8,800 s | fan face closed; doors in the inlet duct ahead of it open into the bypass duct, which opens through more doors into the main combustor |
+| **Rocket** | above Mach ~5, and in space | 900–1,700 s | all closed; the main combustor and reheat are the chamber, and the turbopump runs only for the electricity needed |
+
+Turbine mode's best is cruise; its worst is Mach 2, where ram doubles
+the airflow and the fan and compressor would want 49 MW. The ramjet holds
+level flight to about Mach 4.5 with its burner at 3,000 K; beyond that
+drag outgrows it, and Mach 6 is a dash on the rocket.
 
 In ramjet mode the stopped compressor sits beside duct walls at
-~1,300 K, so its cavity is purged with cracked ammonia: hot CNT cannot
-burn in it. In an atmosphere with no oxygen the engine still works, as a
-pure heat-addition jet, at about two thirds of the thrust.
+1,100–1,800 K, so its cavity is purged with cracked ammonia: hot CNT
+cannot burn in it. In an atmosphere with no oxygen the engine still
+works, as a pure heat-addition jet: it makes the same thrust by burning
+more dust, at 70–80% of the fuel efficiency.
+
+The rocket mode is a poor rocket. The main combustor is a low-pressure
+chamber, ~2 MPa, and the aircraft nozzle opens to an area ratio of only
+~5–20, so a 1:2 mix gives 900–1,000 s, not 1,100.
 
 There is no scramjet stage. The rocket mode is good enough that one would
 save only another ~10% of dust for a great deal of complexity.
@@ -177,7 +212,7 @@ About **20 t fully loaded**, built to land almost anywhere.
   cryogenics and the machines are light. Differences in fan thrust hold
   attitude in the hover without reaction jets, and losing one fan is not
   fatal. Hovering takes 10–16 MW, which the turbopump makes for
-  ~30–45 kg of propellant a minute, most of it ammonia.
+  ~30–50 kg of propellant a minute, 60% of it ammonia.
 - **Backup**: the rocket can land the shuttle if the fans fail, at ~1 t of
   propellant a minute and a scorched landing site.
 
@@ -200,10 +235,11 @@ strip.
 | Engine | |
 |---|---|
 | Airflow | ~90 kg/s |
-| Thrust, sea level | ~105 kN dry, ~140 kN with reheat |
-| Fan and compressor | 27 MW at full thrust |
-| Turbopump | ~35 MW, enough for full thrust and the FEL together |
-| Electric machines | ~0.75 t: generator ~350 kg, engine motors ~270 kg, lift-fan motor ~130 kg |
+| Thrust, sea level | ~115 kN dry, ~135 kN with reheat |
+| Fan and compressor | 26 MW at full thrust at sea level |
+| Turbopump | 35 MW: full thrust at sea level and the FEL together |
+| Mach 2, 11 km, on 35 MW | ~130 kN with reheat; ~100 kN dry with the FEL firing; drag ~76 kN |
+| Electric machines | ~0.85 t: generator ~350 kg, engine motors ~350 kg, lift-fan motor ~150 kg |
 
 **It lifts the way the F-35B does**: an electric ~1.5 m fan behind the
 cockpit, with doors above and below and a vane box under it, and the
@@ -213,9 +249,16 @@ two thirds of the weight.
 
 | In the hover | Thrust | Power |
 |---|---|---|
-| Lift fan | ~75 kN | ~13 MW |
-| Engine, nozzle down | ~40 kN | ~10 MW |
-| **Total** | **~115 kN** | **~25 MW, ~60 kg of ammonia a minute** |
+| Lift fan | ~75 kN | ~14 MW |
+| Engine, nozzle down | ~40 kN | ~6 MW |
+| **Total** | **~115 kN** | **~20 MW, ~22 kg of ammonia and ~13 kg of dust a minute** |
+
+In the hover the engine runs its fan slow, at a pressure ratio of ~2.5,
+and its compressor idle, so the nozzle passes a lot of air at ~1,400 K
+and ~760 m/s. Run at full pressure ratios it would make the same thrust
+from a quarter of the air, at ~3,200 K. Variable-pitch fan blades,
+passing still more air at a pressure ratio of ~1.3, would bring the jet
+to ~950 K.
 
 - **No shaft, no clutch.** The F-35B drives its fan from the engine
   through a driveshaft and clutch; this fan is wired to the turbopump.
@@ -223,7 +266,7 @@ two thirds of the weight.
 - **Roll** comes from the wingtip thrusters the fighter uses in space, as
   the Harrier used wingtip puffers. Yaw comes from the fan's vanes and
   the nozzle.
-- **Downwash**: ~190 m/s of cool air from the fan, and a ~1,500 K jet
+- **Downwash**: ~190 m/s of cool air from the fan, and a ~1,400 K jet
   from the nozzle. The fighter lands on a pad, or on ground it can afford
   to scorch.
 - **The wings are tanks.** One fan in the fuselage instead of three
@@ -239,14 +282,16 @@ two thirds of the weight.
 | Ammonia | ~2 t |
 | **Loaded** | **~12 t** |
 
-- **Range**: at Mach 0.9 it cruises on ~0.14 kg/s of propellant, about
-  2,000 km per tonne, three to four times a Mirage 2000's. On internal
-  tanks that is thousands of kilometres.
+- **Range**: at Mach 0.9 it cruises on ~0.12 kg/s of propellant, its fan
+  at full ratio and its compressor idle: about 2,200 km per tonne, three
+  times a Mirage 2000's. On internal tanks that is thousands of
+  kilometres.
 - **Rocket mode**: ~3 km/s from the internal tanks — zoom climbs,
   suborbital hops, a strike from above the atmosphere. Orbit needs
   external tanks with ~5 t more dust.
-- **Ramjet mode**: Mach 6, briefly. The delta is a sound shape for it;
-  the airframe's heat is the limit.
+- **Ramjet mode**: level flight to about Mach 4.5, and Mach 6 briefly
+  on the rocket. The delta is a sound shape for it; the airframe's heat
+  is the limit.
 
 ## Logistics and Austere Operations
 
@@ -299,7 +344,7 @@ A beam spreads with distance, so the director's aperture sets the range:
 | Gunboat | ~1.5 m | ~20 MW | ~1,000 km | several thousand km |
 
 Power is what separates the sizes. A fighter's FEL draws ~8 MW from its
-turbopump, and ten minutes of fire costs ~200 kg of ammonia and ~40 kg
+turbopump, and ten minutes of fire costs ~150 kg of ammonia and ~90 kg
 of dust. A gunboat carries an annihilation APU, like a courier's, for
 endurance.
 
@@ -424,10 +469,11 @@ A courier cannot dodge, but it is a hard thing to approach:
 ## Open Questions
 
 - Chamber design for pure dust at ~6,000 K.
-- A chemistry model for the dust-ammonia mixes and the air-breathing
-  modes, with dissociation.
-- Heat transfer to the turbopump's blades at 5,000 K, and the ammonia it
-  takes to carry it.
+- A real heat-transfer model of the turbopump's blades: the first-order
+  one puts ~90 MW/m² on the first stage, and the skin's catalytic
+  behaviour doubles or halves it.
+- The fighter's drag above Mach 2, which decides where the ramjet stops
+  holding level flight.
 - The fighter's airframe heating at Mach 6.
 - Antimatter-boosted dust (~3,000 s, gas core, a gamma lamp) and an
   open-ended fusion mirror for in-system craft.
