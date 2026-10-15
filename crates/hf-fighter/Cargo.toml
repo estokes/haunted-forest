@@ -1,0 +1,9 @@
+[package]
+name = "hf-fighter"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+hf-engine = { path = "../hf-engine" }
+rayon = "1"

@@ -6031,6 +6031,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "hf-fighter"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "hf-engine",
+ "rayon",
+]
+
+[[package]]
 name = "hf-game"
 version = "0.1.0"
 dependencies = [

@@ -23,7 +23,7 @@ itself. In air the hydrogen it becomes can then burn as well.
 |---|---|---|---|
 | Jet fuel | 43 MJ/kg | 0.8 t/m³ | oxygen |
 | Liquid hydrogen | 120 MJ/kg | 0.07 t/m³ | oxygen, cryogenics |
-| **Dust, in any gas** | **216 MJ/kg** | **0.6 t/m³ packed** | nothing |
+| **Dust, in any gas** | **216 MJ/kg** | **0.56 t/m³ packed** | nothing |
 | **Dust, in oxygen air** | **~336 MJ/kg** | | oxygen for the second half |
 
 Dust is the best chemical fuel there is, eight times jet fuel by mass,
@@ -319,11 +319,84 @@ fixed-pitch fan, slowed, would manage ~1,400 K.
   times a Mirage 2000's. On internal tanks that is thousands of
   kilometres.
 - **Rocket mode**: ~3 km/s from the internal tanks — zoom climbs,
-  suborbital hops, a strike from above the atmosphere. Orbit needs
-  external tanks with ~5 t more dust.
+  suborbital hops, a strike from above the atmosphere. Orbit takes the
+  conformal tanks below.
 - **Ramjet mode**: level flight to about Mach 4.5, and Mach 6 briefly
   on the rocket. The delta is a sound shape for it; the airframe's heat
   is the limit.
+
+### Down and Back
+
+The fighter's hardest mission: from orbit, down through entry, a
+sortie, a landing on 300 m of hard dirt, and back up to orbit on what it
+brought down. It flies it clean but for its laser, and it is on the
+edge of possible on an Earth-like world. `crates/hf-fighter`
+(`cargo run -p hf-fighter`) flies it: entry and ascent over a rotating
+planet in the US76 atmosphere, the engine from `hf-engine`, and the
+strip.
+
+**The tanks.** Its internal tanks, ~4.6 m³, and two conformal tanks on
+its back, ~7.5 m³, hold **dust shot with ammonia in the gaps**: two
+sizes of grain packed to 80%, 0.70 t/m³, one part ammonia to four of
+dust. The conformal tanks ride the lee side through entry, at ~500 K;
+fuel tanks hung under the wings would sit in the hottest flow, and the
+shocks off their pylons would burn through, as the X-15A-2's nearly did
+at Mach 6.7. Filling the gaps with water instead would add ~1% to the
+climb's Δv and put oxidiser in a 4,900 K chamber.
+
+| | Mass |
+|---|---|
+| In orbit, empty: airframe, laser, tank structure, reserve | ~8.3 t |
+| Propellant leaving orbit: 10.3 m³ of 12.1 | ~7.2 t, 85% full |
+| Entry | ~15.2 t, 370 kg/m² of wing |
+| Takeoff from the strip, after a 0.5 t sortie | ~14.7 t |
+
+**The climb.** Turbine mode with reheat to Mach ~2.7, its compressor
+unloading as the air warms; the ramjet, its burner at 3,000–3,500 K, to
+Mach ~4.7 at 25 km, on ~0.95 t in 12 minutes. Then the rocket: 250 kN
+from the main combustor as a 4 MPa chamber, through the nozzle opened to
+an area ratio of ~18 in a 0.6 m² exit, at ~1,380 s; 6.9 km/s in five
+minutes on 5.5 t, peaking at 3 g, then a 230 m/s burn to circularise at
+200 km.
+
+**Entry.** A 50 m/s deorbit burn; then belly-first at 40° angle of
+attack, banking to hold an equilibrium glide, as the Shuttle did. Peak
+heating is at 68 km and 6.2 km/s, ~1.1 g at worst, ~50 minutes and up to
+17,000 km of glide to Mach 2:
+
+| Surface | Peak |
+|---|---|
+| Nose, 10 cm radius | ~2,200 K, 1.1 MW/m² |
+| Wing leading edge, 3 cm | ~2,150 K |
+| Belly, 1 m back | ~1,400 K |
+| Belly, 6–10 m back | ~1,100–1,200 K (~1,500 K if its flow trips early) |
+| Back, over the conformal tanks | ~500 K |
+
+The blade skin, good to ~4,000 K and non-catalytic, makes it a hot
+structure that needs nothing after a flight: no ablator, no tiles. It
+even leaves the fighter its sharp edges; a 3 cm nose would run
+~2,500 K. The climb is the hotter half: the nose peaks at ~2,350 K at
+71 km and 7.2 km/s. Behind 5 cm of insulation, ~8 kg/m², a belly tank
+takes ~1.6 MJ/m² through the whole entry and the hours after, which
+boils off ~20 kg of its ammonia.
+
+**The strip.** Lifting off at 14.7 t takes ~200 m: reheat on ~20 MW,
+the lift fan on the other ~15 MW, the nozzle 23° down, airborne at
+45 m/s. The heaviest it can lift in 300 m is ~15.8 t. Landing heavy, it
+touches down at ~40 m/s on thrust lift and wing lift and brakes in
+~250 m; on soft dirt, ~360 m, too long. A 20 MW lift-fan motor, ~60 kg
+more, nearly makes it a vertical lander at that weight: a 15 m/s
+touchdown and a 40 m roll.
+
+**What eats the margin.** Every tonne of empty mass costs ~2 t of
+takeoff mass and ~1.4 m³ of tank. At +1 t the tanks are 97% full and it
+no longer gets off 300 m; at +2 t it cannot make orbit at all. The empty
+7.5 t is still an estimate, so the bottom-up mass of the airframe is
+what decides this mission.
+
+On a world harder than Earth, needing a braking burn on the way in and
+more than ~9 km/s on the way out, there is no down and back: it goes
+down one way, or refuels on the ground.
 
 ## Logistics and Austere Operations
 
@@ -507,6 +580,10 @@ A courier cannot dodge, but it is a hard thing to approach:
 - The fighter's drag above Mach 2 and its inlet's size, which decide
   where the ramjet stops holding level flight: settled with the full
   aircraft design.
+- The fighter's empty mass, bottom up: the down-and-back mission turns
+  on it.
+- Takeoff from dirt: debris thrown by the lift fan and nozzle, and hot
+  gas ingested, neither modelled.
 - The fighter's airframe heating at Mach 6.
 - Antimatter-boosted dust (~3,000 s, gas core, a gamma lamp) and an
   open-ended fusion mirror for in-system craft.

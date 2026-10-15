@@ -316,6 +316,10 @@ pub struct Rocket {
     /// Vacuum specific impulse, s, shifting equilibrium, ideal nozzle.
     pub isp_vacuum: f64,
     pub exit_p: f64,
+    /// m/s
+    pub exit_v: f64,
+    /// kg/s per m2 of throat.
+    pub throat_flux: f64,
     /// Mass fraction of soot at the exit.
     pub soot: f64,
 }
@@ -355,6 +359,8 @@ pub fn rocket(diluent: Diluent, mix: f64, pc: f64, area_ratio: f64) -> Result<Ro
         chamber_t: gc.t,
         isp_vacuum: (ve + ge.p / (ge.rho() * ve)) / G0,
         exit_p: ge.p,
+        exit_v: ve,
+        throat_flux: g_throat,
         soot: ge.soot(),
     })
 }
