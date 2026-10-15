@@ -46,7 +46,7 @@ impl Default for StripSpec {
             fan_diameter: 1.5,
             fan_max: 20e6,
             turbopump: 35e6,
-            balance: 0.5,
+            balance: 0.55,
             eta_motor: 0.98,
         }
     }

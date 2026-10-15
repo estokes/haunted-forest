@@ -3,7 +3,7 @@
 # and the bottom-up mass that the down-and-back mission (crates/hf-fighter)
 # turns on.
 #
-# Headless:  blender -b --factory-startup --python modeling/fighter.py -- [--scale S] [--save FILE] [--render DIR]
+# Headless:  blender -b --factory-startup --python modeling/fighter.py -- [--scale S] [--gauge MM] [--sweep] [--save FILE] [--render DIR]
 # Live:      exec(open('/home/eric/proj/haunted-forest/modeling/fighter.py').read())
 #
 # X runs aft from the nose, Y to starboard, Z up; metres. The airframe
@@ -13,13 +13,21 @@
 # biconvex section, one piece through the fuselage. Tank regions are shapes
 # of their own: what each holds is its volume clipped to the skin, less
 # what equipment it overlaps, times a fill factor for frames and plumbing.
-# Every equipment block is checked against the skin.
+# Every equipment block is checked against the skin. There is no canopy:
+# the pilot rides a liquid-filled capsule in the spine, near the centre of
+# gravity, and sees through the sensors. The structure is sized from the
+# loads by modeling/fighter_structure.py.
 
 import math
 import sys
 
+import os
+
 import bmesh
 import bpy
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fighter_structure  # noqa: E402
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
@@ -31,14 +39,14 @@ FUSELAGE = [
     (0.60, 0.22, 0.20, 0.20),
     (1.50, 0.40, 0.36, 0.36),
     (2.60, 0.56, 0.52, 0.48),
-    (3.60, 0.70, 0.98, 0.58),
-    (4.60, 0.95, 1.05, 0.66),
-    (5.60, 1.35, 0.95, 0.72),
-    (6.80, 1.60, 0.88, 0.74),
-    (8.00, 1.50, 0.95, 0.74),
-    (9.50, 1.25, 0.95, 0.72),
-    (11.00, 1.00, 0.85, 0.66),
-    (12.50, 0.74, 0.66, 0.60),
+    (3.60, 0.72, 0.64, 0.58),
+    (4.60, 0.98, 0.76, 0.66),
+    (5.60, 1.35, 0.86, 0.72),
+    (6.80, 1.60, 0.90, 0.74),
+    (8.00, 1.50, 1.05, 0.74),
+    (9.50, 1.25, 1.05, 0.72),
+    (11.00, 1.00, 0.95, 0.66),
+    (12.50, 0.74, 0.80, 0.60),
     (13.60, 0.58, 0.56, 0.56),
     (14.20, 0.55, 0.53, 0.53),
 ]
@@ -47,7 +55,7 @@ SECTION_EXP = 2.6  # superellipse exponent: 2 is an ellipse, higher is boxier
 WING = {"apex": 5.0, "root": 8.6, "semispan": 4.6, "sweep_le": 58.0, "tc": 0.05, "z": -0.15}
 FIN = {"root_x": 9.6, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, "z": 0.6}
 # Conformal tanks on the back, each side of the dorsal spine: (x0, x1, y, half-width, height)
-CFT = {"x0": 5.9, "x1": 13.2, "y": 0.82, "hw": 0.62, "h": 0.74, "z": 0.60}
+CFT = {"x0": 5.9, "x1": 13.2, "y": 0.98, "hw": 0.58, "h": 0.74, "z": 0.58}
 
 # Machines at 100 kW/kg: a 50 MW turbopump (generator ~500 kg), a 30 MW
 # lift-fan motor (~300 kg), and their electronics.
@@ -55,19 +63,26 @@ CFT = {"x0": 5.9, "x1": 13.2, "y": 0.82, "hw": 0.62, "h": 0.74, "z": 0.60}
 # x of the centre scales with the airframe. "box" size is (dx, dy, dz);
 # "cyl_x" and "cyl_z" are (diameter, length) along X or Z.
 EQUIPMENT = {
-    "radar":           ("cyl_x", (0.60, 0.80), (1.10, 0.0, 0.0), 150, (0.6, 0.6, 0.9)),
-    "avionics":        ("box", (0.80, 0.70, 0.60), (2.10, 0.0, -0.02), 300, (0.5, 0.5, 0.8)),
-    "nose_gear":       ("box", (1.00, 0.40, 0.45), (3.00, 0.0, -0.30), 0, (0.3, 0.3, 0.3)),
-    "cockpit":         ("box", (2.00, 0.90, 1.35), (3.85, 0.0, 0.35), 400, (0.95, 0.85, 0.35)),
+    "radar":           ("cyl_x", (0.55, 0.70), (1.75, 0.0, 0.0), 150, (0.6, 0.6, 0.9)),
+    "avionics":        ("box", (0.80, 0.70, 0.55), (2.70, 0.0, 0.0), 300, (0.5, 0.5, 0.8)),
+    "nose_gear":       ("box", (1.00, 0.40, 0.40), (3.60, 0.0, -0.30), 0, (0.3, 0.3, 0.3)),
+    # Pilot, ~0.24 m3 of tissue-density breathing liquid, the shell, the
+    # oxygenator and scrubber, the BCI: an escape capsule in its own right.
+    # It is boarded through a dorsal hatch between the conformal tanks, by
+    # a built-in ladder, and ejects upward through it. Drained, its liquid
+    # waits in the reservoir.
+    "capsule":         ("box", (2.00, 0.60, 0.50), (8.60, 0.0, 0.78), 500, (0.95, 0.85, 0.35)),
+    "capsule_reservoir": ("box", (0.70, 0.60, 0.60), (5.45, 0.0, 0.35), 0, (0.95, 0.75, 0.45)),
     "lift_fan":        ("cyl_z", (1.55, 1.55), (6.60, 0.0, 0.05), 700, (0.2, 0.8, 0.9)),
     "engine":          ("cyl_x", (1.00, 4.10), (10.65, 0.0, -0.05), 1250, (0.9, 0.45, 0.2)),
     "swivel_nozzle":   ("cyl_x", (0.90, 1.70), (13.55, 0.0, -0.05), 250, (0.95, 0.3, 0.15)),
-    "turbopump":       ("cyl_x", (0.45, 1.40), (10.20, 0.62, -0.25), 650, (0.85, 0.2, 0.6)),
-    "power_electronics": ("box", (1.20, 0.45, 0.40), (10.20, -0.62, -0.25), 500, (0.9, 0.9, 0.2)),
-    "fel":             ("box", (3.60, 0.55, 0.45), (9.70, 0.0, 0.70), 1000, (0.2, 0.9, 0.3)),
-    "fel_director":    ("cyl_z", (0.60, 0.45), (7.70, 0.0, 1.05), 200, (0.1, 1.0, 0.4)),
-    "main_gear_l":     ("box", (1.40, 0.55, 0.55), (10.00, -1.15, -0.35), 0, (0.3, 0.3, 0.3)),
-    "main_gear_r":     ("box", (1.40, 0.55, 0.55), (10.00, 1.15, -0.35), 0, (0.3, 0.3, 0.3)),
+    "turbopump":       ("cyl_x", (0.45, 1.40), (10.20, 0.68, 0.22), 650, (0.85, 0.2, 0.6)),
+    "power_electronics": ("box", (1.20, 0.45, 0.40), (10.20, -0.68, 0.22), 500, (0.9, 0.9, 0.2)),
+    "fel":             ("box", (3.40, 0.55, 0.42), (11.30, 0.0, 0.66), 1000, (0.2, 0.9, 0.3)),
+    "fel_director":    ("cyl_z", (0.60, 0.40), (4.90, 0.0, 0.70), 200, (0.1, 1.0, 0.4)),
+    # Stowed beside the engine's belly; the legs swing out to a wide track.
+    "main_gear_l":     ("box", (1.30, 0.42, 0.38), (10.30, -0.74, -0.40), 0, (0.3, 0.3, 0.3)),
+    "main_gear_r":     ("box", (1.30, 0.42, 0.38), (10.30, 0.74, -0.40), 0, (0.3, 0.3, 0.3)),
 }
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
@@ -77,21 +92,19 @@ DUCT_PATH = [(4.80, 1.30, -0.05), (5.80, 1.30, -0.05), (6.60, 1.22, -0.05), (7.6
 # Tank regions: name -> box (x0, x1, y0, y1, z0, z1), or "wing" for the wing
 # box outboard of the fuselage between these chord fractions.
 TANKS = {
-    "forward":   ("box", (4.85, 5.85, -1.3, 1.3, -0.7, 0.95)),
+    "forward":   ("box", (3.10, 5.85, -1.3, 1.3, -0.7, 0.95)),
     "saddle":    ("box", (8.65, 12.6, -1.4, 1.4, -0.75, 0.95)),
     "wing":      ("wing", (0.15, 0.75)),
 }
 TANK_FILL = 0.75  # of a tank region's free volume: frames, baffles, feeds, and the systems that thread between
 
-# Mass, kg, of what the equipment list does not hold.
-STRUCTURE_KG_M2 = 16.0     # CNT airframe per m2 of wetted skin: ~half a Mirage 2000's ~30
-HOT_SKIN_KG_M2 = 6.0       # carbide skin and insulation, per m2 of windward and leading-edge skin
-TANK_KG_M3 = 50.0          # internal tank walls, liners, insulation, per m3 held
-CFT_KG_M3 = 80.0           # conformal tank structure and insulation, per m3 held
-GEAR_FRACTION = 0.045      # rough-field gear, of maximum takeoff mass
-MTOW = 16500.0
-FIXED = {"pilot": 100, "inlets_and_ducts": 350, "propellant_system": 250,
-         "flight_controls_and_rcs": 250, "thermal": 200, "electrical": 150}
+# Equipment the list does not place, kg, taken at the centre of gravity.
+# Flush hardpoints: no pylons in the flow on entry.
+FIXED = {"inlets_and_ducts": 350, "propellant_system": 250, "flight_controls_and_rcs": 250,
+         "thermal": 200, "electrical": 150, "hardpoints": 60}
+# The design manoeuvre's mass, and the heaviest the aircraft lands at.
+DESIGN_KG = fighter_structure.DESIGN_KG
+LANDING_KG = 21000.0
 
 C_SKIN = (0.55, 0.62, 0.70)
 C_TANK = (0.25, 0.45, 0.95)
@@ -103,6 +116,9 @@ def args():
     a = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     out = {"scale": SCALE, "save": None, "render": None}
     for i, k in enumerate(a):
+        if k == "--gauge":
+            fighter_structure.MIN_GAUGE = float(a[i + 1]) * 1e-3
+            fighter_structure.BELLY_GAUGE = max(fighter_structure.BELLY_GAUGE, fighter_structure.MIN_GAUGE)
         if k == "--scale":
             out["scale"] = float(a[i + 1])
         elif k == "--save":
@@ -425,23 +441,54 @@ def build(scale):
         tank[name] = {"volume": v * TANK_FILL, "x": cx}
 
     # Mass and balance.
-    windward = 2 * 41.0 * s * s * 0.5 + 0.0  # lower half of the planform
-    gear_kg = GEAR_FRACTION * MTOW
     tanks_v = sum(t["volume"] for t in tank.values())
-    items = {n: (e["mass"], e["x"]) for n, e in eq.items() if e["mass"]}
-    items["structure"] = (STRUCTURE_KG_M2 * oml_a, oml_v and centroid_x(oml))
-    items["hot_skin"] = (HOT_SKIN_KG_M2 * (planform(s) + 6.0 * s), centroid_x(oml) - 0.5 * s)
-    items["landing_gear"] = (gear_kg, 9.0 * s)
-    items["internal_tanks"] = (TANK_KG_M3 * tanks_v, weighted_x(tank))
-    for n, m in FIXED.items():
-        items[n] = (m, 9.0 * s)
-    cft_kg = CFT_KG_M3 * cft_v * TANK_FILL
-    empty = sum(m for m, _ in items.values())
-    cg_empty = sum(m * x for m, x in items.values()) / empty
-    # Full: the tanks hold dust shot with ammonia in its gaps, 0.70 t/m3.
+    eq_mass = sum(e["mass"] for e in eq.values()) + sum(FIXED.values())
     cft_x = sum(centroid_x(o) for o in cfts) / 2
-    prop = 696.0 * (tanks_v + cft_v * TANK_FILL)
-    prop_x = (696.0 * tanks_v * weighted_x(tank) + 696.0 * cft_v * TANK_FILL * cft_x) / prop
+    ext_v = cft_v * TANK_FILL
+    # At the design manoeuvre the fuselage carries its equipment and the
+    # propellant that brings the aircraft to the design mass, in the tanks.
+    lay = [(e["mass"], e["x"]) for e in eq.values() if e["mass"]]
+    lay += [(m, centroid_x(oml)) for m in FIXED.values()]
+    fuel_x = (tanks_v * weighted_x(tank) + ext_v * cft_x) / (tanks_v + ext_v)
+    fin_area = (f["root"] + max(0.5, f["root"] - f["height"] * ftan)) / 2 * f["height"] * s * s
+
+    def structure_for(empty_guess):
+        geo = {
+            "design_mass": DESIGN_KG,
+            "landing_mass": LANDING_KG,
+            "wing": {k: (v * s if k in ("apex", "root", "semispan") else v) for k, v in w.items()},
+            "y_in": hw_at(9.0 * s, s),
+            "stations": [(x * s, hw * s, t * s, b * s) for x, hw, t, b in FUSELAGE],
+            "n_exp": SECTION_EXP,
+            "fuselage_masses": lay + [(max(0.0, DESIGN_KG - empty_guess), fuel_x)],
+            "lift_x": None,
+            "fin_area": fin_area,
+            "internal_tank_surface": sum(6 * max(t["volume"], 0.01) ** (2 / 3) for t in tank.values()),
+            "cft_surface": cft_a,
+            "wetted": oml_a + cft_a,
+            "equipment_mass": eq_mass,
+        }
+        total = sum(m for m, _ in geo["fuselage_masses"])
+        geo["lift_x"] = sum(m * x for m, x in geo["fuselage_masses"]) / total
+        return fighter_structure.structure(geo)
+
+    empty = eq_mass + 3000.0
+    for _ in range(6):
+        parts, diag = structure_for(empty)
+        empty = eq_mass + sum(parts.values())
+    struct_x = centroid_x(oml)
+    items = {n: (e["mass"], e["x"]) for n, e in eq.items() if e["mass"]}
+    for n, m in FIXED.items():
+        items[n] = (m, struct_x)
+    for n, m in parts.items():
+        x = {"cft_walls": cft_x, "internal_tank_walls": weighted_x(tank)}.get(n, struct_x)
+        items[n] = (m, x)
+    cft_kg = parts["cft_walls"]
+    empty = sum(m for m, _ in items.values()) - cft_kg
+    cg_empty = (sum(m * x for m, x in items.values()) - cft_kg * cft_x) / empty
+    # Full: the tanks hold dust shot with ammonia in its gaps, 0.70 t/m3.
+    prop = 696.0 * (tanks_v + ext_v)
+    prop_x = (696.0 * tanks_v * weighted_x(tank) + 696.0 * ext_v * cft_x) / prop
     full = empty + cft_kg + prop
     cg_full = (empty * cg_empty + cft_kg * cft_x + prop * prop_x) / full
     fan_x = EQUIPMENT["lift_fan"][2][0] * s
@@ -463,6 +510,7 @@ def build(scale):
         "masses": {n: round(m) for n, (m, _) in sorted(items.items(), key=lambda kv: -kv[1][0])},
         "empty_with_pilot": empty,
         "cft_dry": cft_kg,
+        "structure": {k: round(v, 2) if isinstance(v, float) else v for k, v in diag.items()},
         "cg_empty": cg_empty,
         "cg_full": cg_full,
         "full_mass": full,
@@ -470,6 +518,15 @@ def build(scale):
         "nozzle_x": nozzle_x,
         "nozzle_per_fan_thrust": (round(split(cg_empty), 2), round(split(cg_full), 2)),
     }
+
+
+def hw_at(x, s):
+    """Fuselage half-width at station x."""
+    st = [(a * s, b * s) for a, b, *_ in FUSELAGE]
+    for (x0, h0), (x1, h1) in zip(st, st[1:]):
+        if x0 <= x <= x1:
+            return h0 + (x - x0) / (x1 - x0) * (h1 - h0)
+    return st[-1][1]
 
 
 def planform(s):
