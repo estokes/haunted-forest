@@ -2599,6 +2599,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cargo_toml"
+version = "0.22.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "374b7c592d9c00c1f4972ea58390ac6b18cbb6ab79011f3bdc90a0b82ca06b77"
+dependencies = [
+ "serde",
+ "toml 0.9.12+spec-1.1.0",
+]
+
+[[package]]
 name = "caseless"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3753,7 +3763,7 @@ dependencies = [
  "serde_json",
  "spin",
  "thiserror 2.0.18",
- "toml",
+ "toml 1.0.4+spec-1.1.0",
  "tracing",
  "variadics_please",
  "wasm-bindgen-futures",
@@ -4059,20 +4069,6 @@ dependencies = [
  "darling_core 0.23.0",
  "quote",
  "syn 2.0.117",
-]
-
-[[package]]
-name = "dashmap"
-version = "6.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6361d5c062261c78a176addb82d4c821ae42bed6089de0e12603cd25de2059c"
-dependencies = [
- "cfg-if",
- "crossbeam-utils",
- "hashbrown 0.14.5",
- "lock_api",
- "once_cell",
- "parking_lot_core",
 ]
 
 [[package]]
@@ -5469,7 +5465,7 @@ dependencies = [
  "anyhow",
  "arcstr",
  "bytes",
- "graphix-types",
+ "graphix-compiler",
  "netidx-core",
  "walkdir",
 ]
@@ -5482,16 +5478,18 @@ dependencies = [
  "anyhow",
  "arcstr",
  "bytes",
+ "chrono",
+ "combine",
  "compact_str",
  "cranelift-codegen",
  "cranelift-frontend",
  "cranelift-jit",
  "cranelift-module",
  "cranelift-native",
- "dashmap",
+ "derive_builder",
  "enumflags2",
+ "escaping",
  "futures",
- "graphix-types",
  "immutable-chunkmap",
  "indexmap",
  "log",
@@ -5501,21 +5499,28 @@ dependencies = [
  "nohash",
  "parking_lot",
  "poolshark",
- "rayon",
+ "rand 0.10.0",
+ "regex",
+ "serde",
+ "serde_derive",
  "smallvec",
  "stacker",
  "tokio",
  "triomphe",
+ "uuid",
 ]
 
 [[package]]
 name = "graphix-derive"
 version = "0.9.0"
 dependencies = [
+ "cargo_toml",
+ "graphix-compiler",
  "proc-macro2",
  "quote",
  "syn 2.0.117",
  "toml_edit 0.25.4+spec-1.1.0",
+ "walkdir",
 ]
 
 [[package]]
@@ -5531,7 +5536,6 @@ dependencies = [
  "cp_r",
  "crates_io_api",
  "dirs",
- "enumflags2",
  "fd-lock",
  "flate2",
  "graphix-compiler",
@@ -5541,14 +5545,14 @@ dependencies = [
  "indexmap",
  "netidx-core",
  "netidx-value",
+ "nohash",
  "reqwest 0.13.2",
  "semver",
  "serde_json",
  "tar",
  "tokio",
- "toml",
+ "toml 1.0.4+spec-1.1.0",
  "toml_edit 0.25.4+spec-1.1.0",
- "triomphe",
  "walkdir",
  "which",
 ]
@@ -5560,7 +5564,6 @@ dependencies = [
  "ahash 0.8.12",
  "anyhow",
  "arcstr",
- "bytes",
  "compact_str",
  "graphix-ast-pack",
  "graphix-compiler",
@@ -5571,7 +5574,6 @@ dependencies = [
  "log",
  "netidx",
  "netidx-core",
- "netidx-derive",
  "netidx-value",
  "nohash",
  "poolshark",
@@ -5591,7 +5593,6 @@ dependencies = [
  "compact_str",
  "enumflags2",
  "env_logger",
- "futures",
  "graphix-ast-pack",
  "graphix-compiler",
  "graphix-derive",
@@ -5601,13 +5602,10 @@ dependencies = [
  "log",
  "netidx",
  "netidx-core",
- "netidx-derive",
  "netidx-value",
  "nohash",
  "parking_lot",
  "poolshark",
- "serde",
- "serde_derive",
  "smallvec",
  "tempfile",
  "tokio",
@@ -5626,7 +5624,6 @@ dependencies = [
  "bytes",
  "chrono",
  "compact_str",
- "enumflags2",
  "futures",
  "graphix-ast-pack",
  "graphix-compiler",
@@ -5655,8 +5652,6 @@ dependencies = [
  "poolshark",
  "regex",
  "resvg 0.47.0",
- "serde",
- "serde_derive",
  "smallvec",
  "tokio",
  "triomphe",
@@ -5693,7 +5688,6 @@ dependencies = [
  "ahash 0.8.12",
  "anyhow",
  "arcstr",
- "bytes",
  "compact_str",
  "escaping",
  "graphix-ast-pack",
@@ -5704,10 +5698,8 @@ dependencies = [
  "graphix-rt",
  "netidx",
  "netidx-core",
- "netidx-derive",
  "netidx-value",
  "nohash",
- "poolshark",
  "smallvec",
  "tokio",
  "triomphe",
@@ -5724,7 +5716,6 @@ dependencies = [
  "chrono",
  "compact_str",
  "dirs",
- "dunce",
  "enumflags2",
  "extended-notify",
  "futures",
@@ -5788,41 +5779,6 @@ dependencies = [
  "smallvec",
  "tokio",
  "triomphe",
-]
-
-[[package]]
-name = "graphix-types"
-version = "0.9.0"
-dependencies = [
- "ahash 0.8.12",
- "anyhow",
- "arcstr",
- "bytes",
- "combine",
- "compact_str",
- "crc32fast",
- "dirs",
- "enumflags2",
- "escaping",
- "futures",
- "imhm",
- "immutable-chunkmap",
- "indexmap",
- "log",
- "netidx-core",
- "netidx-derive",
- "netidx-value",
- "nohash",
- "parking_lot",
- "poolshark",
- "serde",
- "serde_derive",
- "serde_json",
- "smallvec",
- "stacker",
- "tokio",
- "triomphe",
- "uuid",
 ]
 
 [[package]]
@@ -5944,12 +5900,6 @@ checksum = "43a3c133739dddd0d2990f9a4bdf8eb4b21ef50e4851ca85ab661199821d510e"
 dependencies = [
  "ahash 0.8.12",
 ]
-
-[[package]]
-name = "hashbrown"
-version = "0.14.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1"
 
 [[package]]
 name = "hashbrown"
@@ -6081,19 +6031,6 @@ dependencies = [
  "half",
  "log",
  "memmap2",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "hf-nozzle"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "glam 0.30.10",
- "rand 0.9.2",
- "rand_distr 0.5.1",
- "rayon",
  "serde",
  "serde_json",
 ]
@@ -6582,21 +6519,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09e54e57b4c48b40f7aec75635392b12b3421fa26fe8b4332e63138ed278459c"
 
 [[package]]
-name = "imhm"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fface6bccf2e9ad69a14e853d2c00bf13d40ed59ab63d07dde555a67acb67220"
-dependencies = [
- "anyhow",
- "rustc-hash 2.1.1",
- "triomphe",
-]
-
-[[package]]
 name = "immutable-chunkmap"
-version = "2.1.4"
+version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da5fe4d67d09ce2c08ff406f6758ec716206c28be92357ae5d5f798c2ef4b548"
+checksum = "9a3e98b1520e49e252237edc238a39869da9f3241f2ec19dc788c1d24694d1e4"
 dependencies = [
  "arrayvec",
  "fxhash",
@@ -8298,9 +8224,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.21.4"
+version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
+checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
 name = "once_cell_polyfill"
@@ -8707,9 +8633,9 @@ dependencies = [
 
 [[package]]
 name = "poolshark"
-version = "0.2.10"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b2d6d18512fd71e0aac9826c354b4dfd7a5fe7ebd6d1c69c289ae346568cd4e"
+checksum = "76d7d4c131ef23790ea2b6f5cd3f7eee5f41b0ba98f52d8cb880aaa7ee56dfc0"
 dependencies = [
  "ahash 0.8.12",
  "crossbeam-queue",
@@ -10032,12 +9958,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sha1_smol"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbfa15b3dddfee50a0fff136974b3e1bde555604ba463834a7eb7deb6417705d"
-
-[[package]]
 name = "sha2"
 version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10829,6 +10749,21 @@ dependencies = [
 
 [[package]]
 name = "toml"
+version = "0.9.12+spec-1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf92845e79fc2e2def6a5d828f0801e29a2f8acc037becc5ab08595c7d5e9863"
+dependencies = [
+ "indexmap",
+ "serde_core",
+ "serde_spanned",
+ "toml_datetime 0.7.5+spec-1.1.0",
+ "toml_parser",
+ "toml_writer",
+ "winnow",
+]
+
+[[package]]
+name = "toml"
 version = "1.0.4+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c94c3321114413476740df133f0d8862c61d87c8d26f04c6841e033c8c80db47"
@@ -11131,9 +11066,9 @@ dependencies = [
 
 [[package]]
 name = "triomphe"
-version = "0.1.17"
+version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d15f4f5898bcfc5d8a8e45ed30b2f108d710c1a2e5489dbf80e078f707181bc"
+checksum = "dd69c5aa8f924c7519d6372789a74eac5b94fb0f8fcf0d4a97eb0bfc3e785f39"
 dependencies = [
  "serde",
  "stable_deref_trait",
@@ -11435,7 +11370,6 @@ dependencies = [
  "getrandom 0.4.2",
  "js-sys",
  "serde_core",
- "sha1_smol",
  "wasm-bindgen",
 ]
 
