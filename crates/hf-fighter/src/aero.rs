@@ -1,5 +1,5 @@
-//! The fighter's aerodynamics, Mirage 2000-like: 41 m2 of delta wing,
-//! aspect ratio ~2, plus conformal tanks. Below Mach 5 a drag polar: zero-
+//! The fighter's aerodynamics, Mirage 2000-like: 45 m2 of delta wing,
+//! aspect ratio ~1.9, with bays in its wing roots. Below Mach 5 a drag polar: zero-
 //! lift drag 0.022 subsonic, skin friction plus wave drag falling as
 //! 1/sqrt(M^2 - 1) supersonic, and drag due to lift from the subsonic
 //! polar or linear supersonic theory, whichever is larger. Hypersonic,
@@ -10,7 +10,7 @@ use std::f64::consts::PI;
 pub struct Aero {
     pub wing: f64,
     pub aspect: f64,
-    /// Zero-lift drag the conformal tanks add.
+    /// Zero-lift drag the aircraft adds to the polar: bays, tanks.
     pub cd0_tanks: f64,
     /// Peak pressure coefficient behind a normal shock, hypersonic.
     pub cp_max: f64,
@@ -18,7 +18,7 @@ pub struct Aero {
 
 impl Default for Aero {
     fn default() -> Self {
-        Self { wing: 41., aspect: 2.03, cd0_tanks: 0.002, cp_max: 1.84 }
+        Self { wing: 45., aspect: 1.88, cd0_tanks: 0.001, cp_max: 1.84 }
     }
 }
 

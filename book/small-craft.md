@@ -258,43 +258,109 @@ About **20 t fully loaded**, built to land almost anywhere.
 
 ## Fighter
 
-**About 7.5 t empty and ~12 t loaded, with the lines of a Mirage 2000:**
-a tailless delta, one fin, half-cone side inlets, one engine, but with a
-broader forward fuselage to hold a lift fan. The inlet cones translate,
-as the Mirage's do, but much further, to set up the inlet for the
-ramjet. The delta's big wing gives it a low landing speed when it uses a
-strip.
+**About 8.3 t empty, 14.2 m long, with the lines of a Mirage 2000:** a
+tailless delta, one fin, half-cone side inlets, one engine; but a
+broader forward body, to hold a lift fan, and no canopy. The inlet cones
+translate, as the Mirage's do, but much further, to set up the inlet for
+the ramjet. `modeling/fighter.py` builds it in Blender, places what it
+carries, and works out its volumes, masses and balance; it is a greybox
+to get the layout right, not a finished shape.
+
+| | |
+|---|---|
+| Length, span | 14.2 m, 9.2 m |
+| Wing | 45 m², a 58° cropped delta; 55 m² of planform with the body |
+| Inside the skin | ~41 m³, ~141 m² of skin |
+| Tanks | 12.7 m³: forward 4.4, around the engine 6.2, wing box 2.2 |
+| Bays | two, in the wing roots, for four missiles |
+| Empty | ~8.3 t |
+| Full internal tanks and four missiles | ~17.5 t |
+
+**From the nose back**: the radar and avionics; the nose gear; the
+forward tank, with the laser's turret on top of it; the lift fan's shaft,
+1.5 m across and skin to skin, 6.6 m back, with the inlet ducts curving
+round it; the pilot's capsule in the spine above the engine face; the
+laser along the spine behind it; the engine, from 8.6 m to the tail, with
+the turbopump and its electronics beside it and the main gear stowed
+under them; tanks wrapped round all of it and in the wing box; the
+missile bays in the wing roots; the swivel nozzle at the tail.
+
+**The pilot rides a capsule, not a cockpit.** There is no canopy: the
+pilot sees through the sensors and speaks through a BCI. The capsule,
+~0.6 m³ and ~0.5 t with its pilot, holds ~0.25 m³ of an oxygenated liquid
+of the body's own density, which the pilot breathes. With no air in the
+lungs or anywhere else in the body, high g has nothing to collapse;
+bone, denser than the rest, is what is left to limit it, near 20–25 g
+sustained. The liquid needs no pressurisation, and life support is a
+loop through an oxygenator and a CO₂ scrubber. The pilot boards through
+a hatch in the spine, by a built-in ladder, with no one to help: the
+capsule fills, takes the pilot through the change to liquid breathing,
+and on landing drains to a reservoir, tilts the pilot head down and
+clears the lungs. The liquid has to clear fast by itself, or a pilot
+alone on a colony world is in trouble. The capsule is also the ejection
+seat: it leaves upward through the hatch, and someone in liquid survives
+a far harder kick than someone strapped to a seat.
+
+**Structure.** Near-ideal CNT, ~30 GPa in tension and ~8 GPa in
+compression, knocked down by a third, sized from the loads by
+`modeling/fighter_structure.py`: 20 g limit and 30 g ultimate at 15 t,
+less when heavier. The loads almost never ask for more than minimum
+gauge, 0.6 mm (1 mm on the belly, against gravel off dirt strips): the
+wing root would need 0.36 mm. The primary structure is ~0.3 t; the rest
+of the airframe's mass is its carbide skin, its insulation, its gear and
+the mounts for its equipment. What sets it is minimum gauge: 2 mm
+everywhere would add ~0.8 t.
+
+The 20 g is the instantaneous turn's: lifting 20 g at ~15 t takes
+~70 kPa of dynamic pressure, Mach ~1 at sea level or ~2 at 11 km, and
+there the drag is several times the engine's thrust, so the fighter
+sheds speed at ~5 g while it pulls. Sustained turns are thrust-limited,
+~6–8 g. At 20 g in a fast pull the rotors twist, the turbopump at
+~190,000 rpm and the fan and compressor with it: their bearings and
+mounts are sized by gyroscopic loads.
+
+| Empty | Mass |
+|---|---|
+| Engine: fan, compressor, combustor, reheat, motors for ~45 MW | ~1.35 t |
+| Laser and its turret | ~1.2 t |
+| Landing gear, for dirt | ~0.7 t |
+| Lift fan and its 30 MW motor | ~0.7 t |
+| Turbopump and its 50 MW generator | ~0.65 t |
+| Power electronics | ~0.5 t |
+| Capsule and pilot | ~0.5 t |
+| Inlets and ducts, swivel nozzle | ~0.6 t |
+| Primary structure and tank walls | ~0.35 t |
+| Skin coating, insulation, equipment mounts | ~0.5 t |
+| Radar, avionics, flight controls, RCS, thermal, electrical, propellant system, bays | ~1.1 t |
+| **Empty** | **~8.3 t** |
 
 | Engine | |
 |---|---|
 | Airflow | ~90 kg/s |
 | Thrust, sea level | ~115 kN dry, ~135 kN with reheat |
-| Fan and compressor | 26 MW at full thrust at sea level |
-| Turbopump | 35 MW: full thrust at sea level and the FEL together |
-| Mach 2, 11 km, on 35 MW | ~130 kN with reheat; ~100 kN dry with the FEL firing; drag ~76 kN |
-| Electric machines | ~0.9 t: generator ~350 kg, engine motors ~350 kg, lift-fan motor ~200 kg |
+| Fan and compressor | 26 MW at full thrust at sea level; ~49 MW at Mach 2 |
+| Turbopump | 50 MW: full thrust at Mach 2, or full thrust at sea level with the laser |
+| Electric machines | ~1.25 t: generator ~500 kg, engine motors ~450 kg, lift-fan motor ~300 kg |
 
 **It lifts the way the F-35B does**: an electric ~1.5 m fan behind the
-cockpit, with doors above and below and a vane box under it, and the
-main engine's nozzle swivelled straight down on a three-bearing duct.
-The nozzle sits far aft on a tailless delta, so the fan carries about
-two thirds of the weight.
+nose, with doors above and below and a vane box under it, and the main
+engine's nozzle swivelled straight down on a three-bearing duct. Its
+motor is rated 30 MW: it lifts ~122 kN, at the F-35B fan's disk loading,
+and the nozzle another ~67 kN, so the fighter hovers at up to ~19 t,
+fully fuelled.
 
-| In the hover | Thrust | Power |
+| In the hover, at ~11.5 t | Thrust | Power |
 |---|---|---|
 | Lift fan | ~75 kN | ~14 MW |
 | Engine, nozzle down | ~40 kN | ~5 MW |
-| **Total, at ~11.5 t** | **~115 kN** | **~20 MW, ~20 kg of ammonia and ~12 kg of dust a minute** |
-
-The lift fan's motor is rated 20 MW. With the rest of the turbopump's
-35 MW in the engine, the fan lifts ~93 kN and the nozzle ~46 kN: the
-fighter can hover at up to ~14 t.
+| **Total** | **~115 kN** | **~20 MW, ~20 kg of ammonia and ~12 kg of dust a minute** |
 
 In the hover the engine opens its fan's pitch to a pressure ratio of
 ~1.3 at nearly full airflow and runs its compressor at ~1.5, so the
 nozzle passes ~80 kg/s at ~950 K and ~490 m/s. At full pressure ratios
-it would make the same thrust from a quarter of the air, at ~3,200 K; a
-fixed-pitch fan, slowed, would manage ~1,400 K.
+it would make the same thrust from a quarter of the air, at ~3,200 K;
+each rotor on its own motor at its own speed, with its own pitch, is
+what makes the difference.
 
 - **No shaft, no clutch.** The F-35B drives its fan from the engine
   through a driveshaft and clutch; this fan is wired to the turbopump.
@@ -305,26 +371,36 @@ fixed-pitch fan, slowed, would manage ~1,400 K.
 - **Downwash**: ~190 m/s of cool air from the fan, and a ~950 K jet
   from the nozzle. The fighter lands on a pad, or on ground it can afford
   to scorch.
-- **The wings are tanks.** One fan in the fuselage instead of three
-  leaves the wing roots free.
 - **A fan or the turbopump lost in the hover** is a hard upset, as it was
-  for every lift-fan aircraft. The seat goes.
+  for every lift-fan aircraft. The capsule goes.
 
-| | Mass |
-|---|---|
-| Empty | ~7.5 t |
-| Weapons | ~1.5 t |
-| Dust | ~1 t |
-| Ammonia | ~2 t |
-| **Loaded** | **~12 t** |
+**Balance.** The fighter is unstable by design and flown by wire, so its
+centre of gravity is set for trim drag, not stability. Subsonic, the
+wing's lift acts ~9.2 m back; supersonic and hypersonic, near the
+planform's centroid, ~9.7 m. Full, the centre of gravity is at ~9.0 m;
+empty, ~9.5 m. The forward tank, ~3 t of propellant 4.3 m ahead of the
+centre of gravity, is the trim tank, as Concorde's aft tanks were:
+draining it moves the centre of gravity aft by ~0.9 m, for supersonic
+flight and for entry, and filling it moves it forward, which the hover
+likes. The rest of the tankage sits at or behind the centre of lift, and
+dust and ammonia can be moved between tanks in flight. In the hover the
+nozzle carries 0.5–0.9 of the fan's thrust, depending on the load.
+
+**Weapons.** The laser, and four dust missiles, ~90 kg each, 2.4 m by
+0.18 m, two to a bay in each wing root, reaching ~200 km. Nothing hangs
+outside: pylons in the flow would burn on entry and cost cruise. Stealth
+missions carry the laser alone. In air the laser is a line-of-sight
+weapon, strongest in clear high air and crippled by cloud and low
+altitude; the missiles work in any weather and past the horizon. In
+space the laser is heat-limited: it cannot fire continuously.
 
 - **Range**: at Mach 0.9 it cruises on ~0.12 kg/s of propellant, its fan
   at full ratio and its compressor idle: about 2,200 km per tonne, three
   times a Mirage 2000's. On internal tanks that is thousands of
   kilometres.
-- **Rocket mode**: ~3 km/s from the internal tanks — zoom climbs,
-  suborbital hops, a strike from above the atmosphere. Orbit takes the
-  conformal tanks below.
+- **Rocket mode**: ~3 km/s on a few tonnes of internal propellant — zoom
+  climbs, suborbital hops, a strike from above the atmosphere — and
+  orbit on full tanks.
 - **Ramjet mode**: level flight to about Mach 4.5, and Mach 6 briefly
   on the rocket. The delta is a sound shape for it; the airframe's heat
   is the limit.
@@ -333,36 +409,38 @@ fixed-pitch fan, slowed, would manage ~1,400 K.
 
 The fighter's hardest mission: from orbit, down through entry, a
 sortie, a landing on 300 m of hard dirt, and back up to orbit on what it
-brought down. It flies it clean but for its laser, and it is on the
-edge of possible on an Earth-like world. `crates/hf-fighter`
+brought down, with no help on the ground. It flies it clean but for its
+laser, on an Earth-like world. `crates/hf-fighter`
 (`cargo run -p hf-fighter`) flies it: entry and ascent over a rotating
 planet in the US76 atmosphere, the engine from `hf-engine`, and the
 strip.
 
-**The tanks.** Its internal tanks, ~4.6 m³, and two conformal tanks on
-its back, ~7.5 m³, hold **dust shot with ammonia in the gaps**: two
-sizes of grain packed to 80%, 0.56 t/m³ of dust, the gaps a fifth of
-the space. The engine draws dust and ammonia separately, each at the
-rate its regime wants. The conformal tanks ride the lee side through
-entry, at ~500 K; fuel tanks hung under the wings would sit in the
-hottest flow, and the shocks off their pylons would burn through, as
-the X-15A-2's nearly did at Mach 6.7.
+**The tanks** hold **dust shot with ammonia in the gaps**: two sizes of
+grain packed to 80%, 0.56 t/m³ of dust, the gaps a fifth of the space.
+The engine draws dust and ammonia separately, each at the rate its
+regime wants. Everything is inside: tanks hung under the wings would sit
+in the hottest flow, and the shocks off their pylons would burn
+through, as the X-15A-2's nearly did at Mach 6.7.
 
 | | Mass |
 |---|---|
-| In orbit, empty: airframe, laser, tank structure, reserve | ~8.3 t |
-| Leaving orbit: ~5.5 t of dust, its gaps holding ~1.2 t of ammonia | ~9.9 m³ of 12.1 |
-| Entry | ~14.8 t, 360 kg/m² of wing |
-| Takeoff from the strip, after a 0.5 t sortie | ~14.3 t |
+| In orbit, empty, with a reserve | ~8.4 t |
+| Leaving orbit: ~5.7 t of dust, its gaps holding ~1.2 t of ammonia | ~10.2 m³ of 12.7 |
+| Entry | ~15.1 t, 340 kg/m² of wing |
+| Takeoff from the strip, after a 0.5 t sortie | ~14.6 t |
+
+It loads the propellant aft first, keeping only ~2 m³ in the forward
+tank, so that it enters with its centre of gravity near the hypersonic
+centre of lift and its elevons nearly neutral, out of the worst heat.
 
 **The climb.** Turbine mode with reheat to Mach ~2.7, its compressor
 unloading as the air warms; the ramjet, its burner at 3,000–3,500 K, to
-Mach ~4.7 at 25 km, on ~0.9 t in 11 minutes. Then the rocket: 250 kN
+Mach ~4.5 at 24 km, on ~0.9 t in 11 minutes. Then the rocket: 250 kN
 from the main combustor as a 4 MPa chamber, through the nozzle opened to
 an area ratio of ~18 in a 0.6 m² exit. It burns dust-rich, one part
 ammonia to ten of dust, at ~1,460 s and a ~5,200 K chamber, saving the
-ammonia for the air-breathing legs: 6.9 km/s in five minutes on 5.1 t,
-peaking at 3 g, then a 240 m/s burn to circularise at 200 km. At 4 MPa
+ammonia for the air-breathing legs: 7.0 km/s in five minutes on 5.3 t,
+peaking at 3 g, then a 300 m/s burn to circularise at 200 km. At 4 MPa
 a first-order Bartz estimate puts the throat at a few tens of MW/m²,
 well short of a rocket's usual.
 
@@ -370,55 +448,55 @@ well short of a rocket's usual.
 attack, banking to hold an equilibrium glide, as the Shuttle did. At
 that angle the fin is in the wing's shadow, and the reaction jets give
 yaw until the fighter is low and slow; a Mirage 2000 flies to 30°.
-Peak heating is at 68 km and 6.2 km/s, ~1.1 g at worst, ~50 minutes and
+Peak heating is at 69 km and 6.2 km/s, ~1.1 g at worst, ~50 minutes and
 up to 17,000 km of glide to Mach 2:
 
 | Surface | Peak |
 |---|---|
-| Nose, 10 cm radius | ~2,200 K, 1.1 MW/m² |
-| Wing leading edge, 3 cm | ~2,150 K |
-| Belly, 1 m back | ~1,400 K |
-| Belly, 6–10 m back | ~1,100–1,200 K (~1,500 K if its flow trips early) |
-| Back, over the conformal tanks | ~500 K |
+| Nose, 10 cm radius | ~2,150 K, 1.05 MW/m² |
+| Wing leading edge, 3 cm | ~2,100 K |
+| Belly, 1 m back | ~1,350 K |
+| Belly, 6–10 m back | ~1,100 K (~1,450 K if its flow trips early) |
+| Back | ~500 K |
 
 The blade skin, good to ~4,000 K, non-catalytic and proof against hot
 oxygen, makes it a hot structure that needs nothing after a flight: no
 ablator, no tiles. It even leaves the fighter its sharp edges; a 3 cm
 nose would run ~2,500 K. At 30° the nose runs ~100 K hotter. The climb
-is the hotter half: the nose peaks at ~2,350 K at 71 km and 7.2 km/s.
-Behind 5 cm of insulation, ~8 kg/m², a belly tank takes ~1.6 MJ/m²
-through the whole entry and the hours after, which boils off ~20 kg of
-its ammonia.
+is the hotter half: the nose peaks at ~2,450 K at 69 km and 7.2 km/s.
+The belly's bay doors and gear doors seal against hot gas, as the
+Shuttle's gear doors did. Behind 5 cm of insulation, ~8 kg/m², a belly
+tank takes ~1.6 MJ/m² through the whole entry and the hours after,
+which boils off ~20 kg of its ammonia.
 
-**The strip.** At 14.3 t the fighter all but hovers off it: the
-20 MW lift fan and the nozzle, 39° down, carry its weight with the
-engine in reheat on the rest of the turbopump. It could lift ~16.5 t in
-300 m, and lands nearly vertically. With a 14.7 MW lift-fan motor it
-would need ~160 m to take off, and land at ~36 m/s in ~210 m.
+**The strip.** At 14.6 t the fighter hovers off it and lands on it
+vertically: the 30 MW lift fan and the nozzle carry its weight with the
+engine on the rest of the turbopump. In 300 m it could lift ~22 t. On a
+35 MW turbopump and a 20 MW fan it would still lift vertically, and
+~17 t in 300 m.
 
 **What eats the margin.** Every tonne of empty mass costs ~2 t of
-takeoff mass and ~1.4 m³ of tank. At +1 t the tanks are 93% full and the
-strip still works; at +2 t the propellant no longer fits. The empty
-7.5 t is still an estimate, so the bottom-up mass of the airframe is
-what decides this mission.
+takeoff mass and ~1.4 m³ of tank. At +1 t the tanks are 91% full; at
++2 t the propellant no longer fits. The engine, the laser, the gear and
+the fan are the biggest guesses in the empty mass, and the margin is
+about a tonne and a half of them.
 
 **Water in the gaps.** Water is denser than ammonia, 1.0 t/m³ against
 0.68, and the skin takes hot oxygen anyway, so it was tried in the
 gaps, pure and as ammonia-water, holding the volume fixed:
 
-| Liquid | Down and back takes | Takeoff | All 12.1 m³ on the rocket | Cruise, per m³ | Freezes |
+| Liquid | Down and back takes | Takeoff | All 12.7 m³ on the rocket | Cruise, per m³ | Freezes |
 |---|---|---|---|---|---|
-| Ammonia | 9.9 m³ | 14.3 t | 9.5 km/s | 1,300 km | 195 K |
-| 33% ammonia-water | 9.7 m³ | 14.7 t | 9.5 km/s | 1,370 km | 173 K |
-| Water | 9.7 m³ | 14.9 t | 9.6 km/s | 1,380 km | 273 K |
+| Ammonia | 10.2 m³ | 14.6 t | 9.7 km/s | 1,300 km | 195 K |
+| 33% ammonia-water | 10.0 m³ | 15.0 t | 9.7 km/s | 1,370 km | 173 K |
+| Water | 9.9 m³ | 15.2 t | 9.8 km/s | 1,380 km | 273 K |
 
-Water buys ~2% of volume and ~1% of rocket Δv, for ~0.6 t more at
+Water buys ~3% of volume and ~1% of rocket Δv, for ~0.6 t more at
 takeoff: in the air it is dead weight where ammonia is a fuel, and the
-turbopump needs ~25% more of it per megawatt. Once dust and liquid are
-drawn separately the mission has volume to spare and mass is what
-binds, so the fighter carries ammonia. Water also freezes in a cold
-tank, and steam eats carbon in the cooling passages unless they are
-skinned too.
+turbopump needs ~25% more of it per megawatt. The mission has volume to
+spare, and mass is what binds, so the fighter carries ammonia. Water
+also freezes in a cold tank, and steam eats carbon in the cooling
+passages unless they are skinned too.
 
 On a world harder than Earth, needing a braking burn on the way in and
 more than ~9 km/s on the way out, there is no down and back: it goes
@@ -606,8 +684,11 @@ A courier cannot dodge, but it is a hard thing to approach:
 - The fighter's drag above Mach 2 and its inlet's size, which decide
   where the ramjet stops holding level flight: settled with the full
   aircraft design.
-- The fighter's empty mass, bottom up: the down-and-back mission turns
-  on it.
+- The fighter's equipment, sized from its parts: engine, laser, gear,
+  lift fan. The down-and-back mission's margin is about a tonne and a
+  half of them.
+- The breathing liquid: the body's density, and lungs that clear of it
+  fast.
 - Takeoff from dirt: debris thrown by the lift fan and nozzle, and hot
   gas ingested, neither modelled.
 - The fighter's airframe heating at Mach 6.

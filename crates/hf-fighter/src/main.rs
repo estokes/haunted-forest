@@ -43,6 +43,9 @@ struct Vehicle {
     tankage: f64,
     /// Wing area, m2.
     wing: f64,
+    /// Zero-lift drag the aircraft adds to the polar: its wing-root bays,
+    /// or conformal tanks if it has them.
+    cd0_extra: f64,
     /// Belly area over tanks, m2, and the heat each m2 takes through
     /// entry, J.
     belly_tanks: f64,
@@ -52,12 +55,13 @@ struct Vehicle {
 impl Default for Vehicle {
     fn default() -> Self {
         Self {
-            empty: 7500.,
-            tanks_dry: 600.,
+            empty: 8250.,
+            tanks_dry: 0.,
             reserve: 150.,
             sortie: 500.,
-            tankage: 12.1,
-            wing: 41.,
+            tankage: 12.7,
+            wing: 45.,
+            cd0_extra: 0.001,
             belly_tanks: 15.,
             soak: 1.6e6,
         }
@@ -109,10 +113,9 @@ fn close(
     spec: &AscentSpec,
     table: &Table,
     sortie_mix: f64,
-    cd0_tanks: f64,
 ) -> Result<Closure> {
     let orbit_mass = v.empty + v.tanks_dry + v.reserve;
-    let aero = Aero { wing: v.wing, cd0_tanks, ..Aero::default() };
+    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, ..Aero::default() };
     let takeoff = hf_engine::gas::brent(
         |m| Ok(spec.fly(&EARTH, &aero, table, m).final_mass - orbit_mass),
         orbit_mass + 2000.,
@@ -166,7 +169,7 @@ fn fill(v: &Vehicle, d: Diluent) -> Result<Fill> {
     let k = engine.turbopump.per_kg(1.5e6)?;
     let per_mw = (Turbopump::diluent_per_mw_min(&k), Turbopump::dust_per_mw_min(&k));
     let dh = coolant_heat(d, engine.turbopump.p_reverter, 2500.)?;
-    let b = blade_heat(&k, 35e6 / k.electric, 4000., dh, false)?;
+    let b = blade_heat(&k, 50e6 / k.electric, 4000., dh, false)?;
     let sls = engine.evaluate(&Point::default())?;
     let ramjet = engine.evaluate(&Point {
         altitude: hf_engine::atmos::altitude_for_q(4.5, 50e3),
@@ -188,7 +191,7 @@ fn fill(v: &Vehicle, d: Diluent) -> Result<Fill> {
             // All the tankage burnt on the rocket at this mix.
             let per_m3 = (1. + r) / volume(1., r, rho);
             let dv = spec.rocket_isp * G0 * (1. + per_m3 * v.tankage / orbit).ln();
-            let c = close(v, &spec, &table, cr.0, 0.002)
+            let c = close(v, &spec, &table, cr.0)
                 .map_err(|e| eprintln!("{d} 1:{r}: {e}"))
                 .ok()?;
             Some((r, spec.rocket_isp, spec.chamber_t, dv, c))
@@ -405,7 +408,10 @@ fn mission(v: &Vehicle, f: &Fill) -> Result<()> {
         c.takeoff, land.touchdown, land.roll
     );
     for (name, s) in [
-        ("lift-fan motor 14.7 MW", StripSpec { fan_max: 14.7e6, ..StripSpec::default() }),
+        (
+            "35 MW turbopump, 20 MW lift fan",
+            StripSpec { turbopump: 35e6, fan_max: 20e6, ..StripSpec::default() },
+        ),
         (
             "soft dirt, rolling 0.08, braking 0.2",
             StripSpec { rolling: 0.08, braking: 0.2, ..StripSpec::default() },
@@ -485,7 +491,7 @@ fn mission(v: &Vehicle, f: &Fill) -> Result<()> {
         ("empty +2 t", Vehicle { empty: v.empty + 2000., ..*v }),
         ("sortie 1.5 t", Vehicle { sortie: 1500., ..*v }),
     ] {
-        let c = close(&vv, &spec, &table, f.cruise.0, 0.002)?;
+        let c = close(&vv, &spec, &table, f.cruise.0)?;
         println!(
             "    {name:14}: takeoff {:5.0} kg, entry {:5.0} kg, {:4.1} m3 of {:.1}, 300 m takeoff {}",
             c.takeoff,
@@ -509,7 +515,7 @@ fn limits(v: &Vehicle) -> Result<()> {
     let strip = StripSpec::default();
     let curve = StripSpec::engine_curve(&spec.engine);
     let heaviest = strip.heaviest(300., &curve)?;
-    let at = |empty: f64| close(&Vehicle { empty, ..*v }, &spec, &table, cr.0, 0.002);
+    let at = |empty: f64| close(&Vehicle { empty, ..*v }, &spec, &table, cr.0);
     let by_volume =
         hf_engine::gas::brent(|e| Ok(at(e)?.volume - v.tankage), 6000., 12000., 1e-5)?;
     let by_strip =
@@ -526,9 +532,8 @@ fn limits(v: &Vehicle) -> Result<()> {
 /// The mission for an airframe of this wing area, empty mass (with the
 /// pilot and internal tank walls), conformal-tank structure and tankage,
 /// and turbopump and lift-fan ratings: `--size WING EMPTY TANKS_DRY
-/// TANKAGE [TURBOPUMP_MW FAN_MW CD0_TANKS]`, the last the zero-lift drag
-/// the tanks, or the glove that replaces them, add.
-fn size(v: &Vehicle, turbopump: f64, fan: f64, cd0_tanks: f64) -> Result<()> {
+/// TANKAGE [TURBOPUMP_MW FAN_MW CD0_EXTRA]`.
+fn size(v: &Vehicle, turbopump: f64, fan: f64) -> Result<()> {
     let engine = EngineSpec::default();
     let cr = cruise(&engine, 11000.)?;
     let mut spec = AscentSpec::new(engine, ROCKET.0, ROCKET.1, ROCKET.2, 0.1)?;
@@ -537,7 +542,7 @@ fn size(v: &Vehicle, turbopump: f64, fan: f64, cd0_tanks: f64) -> Result<()> {
     let strip =
         StripSpec { wing: v.wing, turbopump, fan_max: fan, ..StripSpec::default() };
     let curve = StripSpec::engine_curve(&spec.engine);
-    let c = close(v, &spec, &table, cr.0, cd0_tanks)?;
+    let c = close(v, &spec, &table, cr.0)?;
     let heaviest = strip.heaviest(300., &curve)?;
     let to = strip.takeoff(c.takeoff, &curve);
     let land = strip.land(c.takeoff, &curve);
@@ -571,9 +576,16 @@ fn main() -> Result<()> {
                 .ok_or_else(|| anyhow::anyhow!("--size WING EMPTY TANKS_DRY TANKAGE"))?
                 .parse()?)
         };
-        v = Vehicle { wing: n(1)?, empty: n(2)?, tanks_dry: n(3)?, tankage: n(4)?, ..v };
-        let (tp, fan) = (n(5).unwrap_or(35.) * 1e6, n(6).unwrap_or(20.) * 1e6);
-        return size(&v, tp, fan, n(7).unwrap_or(0.002));
+        v = Vehicle {
+            wing: n(1)?,
+            empty: n(2)?,
+            tanks_dry: n(3)?,
+            tankage: n(4)?,
+            cd0_extra: n(7).unwrap_or(v.cd0_extra),
+            ..v
+        };
+        let (tp, fan) = (n(5).unwrap_or(50.) * 1e6, n(6).unwrap_or(30.) * 1e6);
+        return size(&v, tp, fan);
     }
     if args.iter().any(|a| a == "--limits") {
         return limits(&v);

@@ -43,11 +43,11 @@ FUSELAGE = [
     (4.60, 0.98, 0.76, 0.66),
     (5.60, 1.35, 0.86, 0.72),
     (6.80, 1.60, 0.90, 0.74),
-    (8.00, 1.50, 1.05, 0.74),
-    (9.50, 1.25, 1.05, 0.72),
-    (11.00, 1.00, 0.95, 0.66),
-    (12.50, 0.74, 0.80, 0.60),
-    (13.60, 0.58, 0.56, 0.56),
+    (8.00, 1.50, 1.10, 0.74),
+    (9.50, 1.25, 1.10, 0.72),
+    (11.00, 1.00, 1.00, 0.66),
+    (12.50, 0.74, 0.92, 0.60),
+    (13.60, 0.58, 0.70, 0.56),
     (14.20, 0.55, 0.53, 0.53),
 ]
 SECTION_EXP = 2.6  # superellipse exponent: 2 is an ellipse, higher is boxier
@@ -79,22 +79,28 @@ EQUIPMENT = {
     # waits in the reservoir.
     "capsule":         ("box", (2.00, 0.60, 0.50), (8.60, 0.0, 0.78), 500, (0.95, 0.85, 0.35)),
     "capsule_reservoir": ("box", (0.70, 0.60, 0.60), (5.45, 0.0, 0.35), 0, (0.95, 0.75, 0.45)),
-    "lift_fan":        ("cyl_z", (1.55, 1.55), (6.60, 0.0, 0.05), 700, (0.2, 0.8, 0.9)),
-    "engine":          ("cyl_x", (1.00, 4.10), (10.65, 0.0, -0.05), 1250, (0.9, 0.45, 0.2)),
+    # The fan's shaft runs skin to skin; its doors are the skin.
+    "lift_fan":        ("cyl_z", (1.55, 1.42), (6.60, 0.0, 0.06), 700, (0.2, 0.8, 0.9)),
+    # Fan, compressor, casings, combustor, reheat, ~0.9 t, and motors for
+    # ~45 MW, what the fan and compressor want at Mach 2.
+    "engine":          ("cyl_x", (1.00, 4.10), (10.65, 0.0, -0.05), 1350, (0.9, 0.45, 0.2)),
     "swivel_nozzle":   ("cyl_x", (0.90, 1.70), (13.55, 0.0, -0.05), 250, (0.95, 0.3, 0.15)),
     "turbopump":       ("cyl_x", (0.45, 1.40), (10.20, 0.68, 0.22), 650, (0.85, 0.2, 0.6)),
     "power_electronics": ("box", (1.20, 0.45, 0.40), (10.20, -0.68, 0.22), 500, (0.9, 0.9, 0.2)),
-    "fel":             ("box", (3.40, 0.55, 0.42), (11.30, 0.0, 0.66), 1000, (0.2, 0.9, 0.3)),
+    "fel":             ("box", (3.20, 0.55, 0.40), (11.00, 0.0, 0.68), 1000, (0.2, 0.9, 0.3)),
     "fel_director":    ("cyl_z", (0.60, 0.40), (4.90, 0.0, 0.70), 200, (0.1, 1.0, 0.4)),
     # Stowed beside the engine's belly; the legs swing out to a wide track.
-    "main_gear_l":     ("box", (1.30, 0.42, 0.38), (10.30, -0.74, -0.40), 0, (0.3, 0.3, 0.3)),
-    "main_gear_r":     ("box", (1.30, 0.42, 0.38), (10.30, 0.74, -0.40), 0, (0.3, 0.3, 0.3)),
+    "main_gear_l":     ("box", (1.30, 0.40, 0.32), (10.30, -0.66, -0.40), 0, (0.3, 0.3, 0.3)),
+    "main_gear_r":     ("box", (1.30, 0.40, 0.32), (10.30, 0.66, -0.40), 0, (0.3, 0.3, 0.3)),
     # Two dust missiles side by side in each wing root, ~2.4 m x 0.18 m and
     # ~90 kg each; doors on the belly, sealed for entry like the Shuttle's
     # gear doors. Mass: doors, ejectors, hot seals.
     "bay_l":           ("box", (2.60, 0.50, 0.24), (11.10, -1.85, -0.15), 40, (0.95, 0.55, 0.1)),
     "bay_r":           ("box", (2.60, 0.50, 0.24), (11.10, 1.85, -0.15), 40, (0.95, 0.55, 0.1)),
 }
+# Equipment meant to stand proud of the skin: the laser's turret and the
+# nozzle's exit.
+EXTERNAL = ("fel_director", "swivel_nozzle")
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
 INLET = {"area": 0.30, "face_x": 8.60}
@@ -563,7 +569,8 @@ def build(scale):
         "internal_tank_volume": tanks_v,
         "cft_volume": cft_v * TANK_FILL,
         "bay_volume": bay_v,
-        "outside": {n: f'{100 * e["outside"]:.0f}%' for n, e in eq.items() if e["outside"] > 0.02},
+        "outside": {n: f'{100 * e["outside"]:.0f}%' for n, e in eq.items()
+                    if e["outside"] > 0.02 and n not in EXTERNAL},
         "masses": {n: round(m) for n, (m, _) in sorted(items.items(), key=lambda kv: -kv[1][0])},
         "empty_with_pilot": empty,
         "cft_dry": cft_kg,

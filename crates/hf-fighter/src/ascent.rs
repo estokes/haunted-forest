@@ -72,7 +72,7 @@ impl AscentSpec {
         }
         Ok(Self {
             engine,
-            electric: 35e6,
+            electric: 50e6,
             q_climb: 40e3,
             t3_max: 860.,
             rocket_thrust,
