@@ -52,10 +52,16 @@ FUSELAGE = [
 ]
 SECTION_EXP = 2.6  # superellipse exponent: 2 is an ellipse, higher is boxier
 
-WING = {"apex": 5.0, "root": 8.6, "semispan": 4.6, "sweep_le": 58.0, "tc": 0.05, "z": -0.15}
+# The wing's sections: (y, thickness/chord, fullness). Fullness 1 is
+# biconvex; lower is fuller, deep over more of the chord. The inner wing is
+# a full, thick glove holding a missile bay each side; outboard it thins to
+# a 5% biconvex.
+WING = {"apex": 5.0, "root": 8.6, "semispan": 4.6, "sweep_le": 58.0, "tc": 0.06, "z": -0.15,
+        "sections": [(0.0, 0.060, 0.35), (2.8, 0.090, 0.35), (3.4, 0.050, 1.0), (4.6, 0.050, 1.0)]}
 FIN = {"root_x": 9.6, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, "z": 0.6}
-# Conformal tanks on the back, each side of the dorsal spine: (x0, x1, y, half-width, height)
-CFT = {"x0": 5.9, "x1": 13.2, "y": 0.98, "hw": 0.58, "h": 0.74, "z": 0.58}
+# Conformal tanks on the back, each side of the dorsal spine, or None:
+# (x0, x1, y, half-width, height)
+CFT = None
 
 # Machines at 100 kW/kg: a 50 MW turbopump (generator ~500 kg), a 30 MW
 # lift-fan motor (~300 kg), and their electronics.
@@ -83,6 +89,11 @@ EQUIPMENT = {
     # Stowed beside the engine's belly; the legs swing out to a wide track.
     "main_gear_l":     ("box", (1.30, 0.42, 0.38), (10.30, -0.74, -0.40), 0, (0.3, 0.3, 0.3)),
     "main_gear_r":     ("box", (1.30, 0.42, 0.38), (10.30, 0.74, -0.40), 0, (0.3, 0.3, 0.3)),
+    # Two missiles side by side in each wing root, ~3.5 m x 0.25 m and
+    # ~375 kg each; doors on the belly, sealed for entry like the
+    # Shuttle's gear doors. Mass: doors, ejectors, hot seals.
+    "bay_l":           ("box", (3.70, 0.75, 0.36), (11.10, -1.85, -0.15), 60, (0.95, 0.55, 0.1)),
+    "bay_r":           ("box", (3.70, 0.75, 0.36), (11.10, 1.85, -0.15), 60, (0.95, 0.55, 0.1)),
 }
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
@@ -101,7 +112,7 @@ TANK_FILL = 0.75  # of a tank region's free volume: frames, baffles, feeds, and 
 # Equipment the list does not place, kg, taken at the centre of gravity.
 # Flush hardpoints: no pylons in the flow on entry.
 FIXED = {"inlets_and_ducts": 350, "propellant_system": 250, "flight_controls_and_rcs": 250,
-         "thermal": 200, "electrical": 150, "hardpoints": 60}
+         "thermal": 200, "electrical": 150}
 # The design manoeuvre's mass, and the heaviest the aircraft lands at.
 DESIGN_KG = fighter_structure.DESIGN_KG
 LANDING_KG = 21000.0
@@ -182,17 +193,24 @@ def loft(name, stations, coll, color, k=48, alpha=1.0, offset=(0, 0, 0)):
     return mesh_object(name, verts, faces, coll, color, alpha)
 
 
-def biconvex(chord, tc, n=24):
-    """Upper surface of a biconvex section, (x, z) from leading to trailing edge."""
-    return [(chord * i / n, 2 * tc * chord * (i / n) * (1 - i / n)) for i in range(n + 1)]
+def half_thickness(chord, tc, fullness, u):
+    """Half the section's thickness at chord fraction u: biconvex at
+    fullness 1, fuller below."""
+    return 0.5 * tc * chord * (4 * u * (1 - u)) ** fullness
+
+
+def section(chord, tc, fullness, n=24):
+    """Upper surface, (x, z) from leading to trailing edge."""
+    return [(chord * i / n, half_thickness(chord, tc, fullness, i / n)) for i in range(n + 1)]
 
 
 def surface(name, sections, coll, color, vertical=False, alpha=1.0):
-    """Closed mesh through airfoil sections: (x_le, span, chord, tc, base)."""
+    """Closed mesh through airfoil sections: (x_le, span, chord, tc, base,
+    fullness)."""
     verts, faces = [], []
     n = 24
-    for x_le, s, chord, tc, base in sections:
-        up = biconvex(chord, tc, n)
+    for x_le, s, chord, tc, base, fullness in sections:
+        up = section(chord, tc, fullness, n)
         ring = [(x_le + x, z) for x, z in up] + [(x_le + x, -z) for x, z in reversed(up[1:-1])]
         for x, z in ring:
             verts.append((x, z + base[1], s) if vertical else (x, s, z + base[2]))
@@ -309,19 +327,18 @@ def build(scale):
     fus = loft("fuselage", [(x * s, hw * s, t * s, b * s) for x, hw, t, b in FUSELAGE], skin, C_SKIN)
     w = WING
     tan = math.tan(math.radians(w["sweep_le"]))
-    tip_le = (w["apex"] + w["semispan"] * tan) * s
-    tip_chord = max(0.3, w["root"] - w["semispan"] * tan) * s
-    wing = surface("wing", [
-        (tip_le, -w["semispan"] * s, tip_chord, w["tc"], (0, 0, w["z"] * s)),
-        (w["apex"] * s, 0.0, w["root"] * s, w["tc"], (0, 0, w["z"] * s)),
-        (tip_le, w["semispan"] * s, tip_chord, w["tc"], (0, 0, w["z"] * s)),
-    ], skin, C_SKIN)
+    chord_at = lambda y: max(0.3, w["root"] - abs(y) * tan) * s
+    le_at = lambda y: (w["apex"] + abs(y) * tan) * s
+    half = [(y * s, tc, p) for y, tc, p in w["sections"]]
+    spanwise = [(-y, tc, p) for y, tc, p in reversed(half[1:])] + half
+    wing = surface("wing", [(le_at(y / s), y, chord_at(y / s), tc, (0, 0, w["z"] * s), p)
+                            for y, tc, p in spanwise], skin, C_SKIN)
     f = FIN
     ftan = math.tan(math.radians(f["sweep_le"]))
     fin = surface("fin", [
-        (f["root_x"] * s, f["z"] * s, f["root"] * s, f["tc"], (0, 0, 0)),
+        (f["root_x"] * s, f["z"] * s, f["root"] * s, f["tc"], (0, 0, 0), 1.0),
         ((f["root_x"] + f["height"] * ftan) * s, (f["z"] + f["height"]) * s,
-         max(0.5, f["root"] - f["height"] * ftan) * s, f["tc"], (0, 0, 0)),
+         max(0.5, f["root"] - f["height"] * ftan) * s, f["tc"], (0, 0, 0), 1.0),
     ], skin, C_SKIN, vertical=True)
     oml = union("airframe", [fus, wing, fin], skin, C_SKIN, 0.25)
     for o in (fus, wing, fin):
@@ -330,15 +347,17 @@ def build(scale):
     oml_v, oml_a = volume(oml)
     tree = bvh(oml)
 
-    c = CFT
-    cft_st = []
-    for i in range(9):
-        u = i / 8
-        x = (c["x0"] + u * (c["x1"] - c["x0"])) * s
-        taper = math.sin(math.pi * u) ** 0.5 if 0 < u < 1 else 0.05
-        cft_st.append((x, c["hw"] * s * taper, c["h"] * s * taper, c["h"] * s * 0.35 * taper))
-    cfts = [loft(f"cft_{side}", cft_st, tanks, C_CFT, alpha=0.8, offset=(0, side * c["y"] * s, c["z"] * s))
-            for side in (-1, 1)]
+    cfts = []
+    if CFT:
+        c = CFT
+        cft_st = []
+        for i in range(9):
+            u = i / 8
+            x = (c["x0"] + u * (c["x1"] - c["x0"])) * s
+            taper = math.sin(math.pi * u) ** 0.5 if 0 < u < 1 else 0.05
+            cft_st.append((x, c["hw"] * s * taper, c["h"] * s * taper, c["h"] * s * 0.35 * taper))
+        cfts = [loft(f"cft_{side}", cft_st, tanks, C_CFT, alpha=0.8, offset=(0, side * c["y"] * s, c["z"] * s))
+                for side in (-1, 1)]
     cft_v = sum(volume(o)[0] for o in cfts)
     cft_a = sum(volume(o)[1] for o in cfts)
 
@@ -422,34 +441,34 @@ def build(scale):
             v, cx = sample_volume(tree, *region, 0.1, keep=lambda p: not occupied(p))
             box(f"tank_{name}", *region, tanks, C_TANK, alpha=0.35)
         else:
+            # The wing box outboard of the fuselage, inside the skin, less
+            # the bays and whatever else is in it.
             f0, f1 = spec
-            v, m = 0.0, 0.0
             y_in = 1.35 * s
-            steps = 20
-            for i in range(steps):
-                y = y_in + (w["semispan"] * s - y_in) * (i + 0.5) / steps
-                le = (w["apex"] + abs(y / s) * tan) * s
-                chord = (w["root"] - abs(y / s) * tan) * s
-                if chord <= 0.3 * s:
-                    continue
-                # Biconvex: mean thickness between f0 and f1 of chord.
-                thick = sum(4 * w["tc"] * chord * u * (1 - u) for u in [f0 + (f1 - f0) * (j + 0.5) / 10 for j in range(10)]) / 10
-                dv = thick * chord * (f1 - f0) * (w["semispan"] * s - y_in) / steps * 2
-                v += dv
-                m += dv * (le + chord * (f0 + f1) / 2)
-            cx = m / v
+
+            def in_box(p):
+                y = abs(p[1])
+                if y < y_in or occupied(p):
+                    return False
+                u = (p[0] - le_at(y / s)) / chord_at(y / s)
+                return f0 <= u <= f1
+            zc = w["z"] * s
+            v, cx = sample_volume(tree, w["apex"] * s, (w["apex"] + w["root"]) * s, -w["semispan"] * s,
+                                  w["semispan"] * s, zc - 0.35 * s, zc + 0.35 * s, 0.08, keep=in_box)
         tank[name] = {"volume": v * TANK_FILL, "x": cx}
 
     # Mass and balance.
     tanks_v = sum(t["volume"] for t in tank.values())
     eq_mass = sum(e["mass"] for e in eq.values()) + sum(FIXED.values())
-    cft_x = sum(centroid_x(o) for o in cfts) / 2
+    cft_x = sum(centroid_x(o) for o in cfts) / 2 if cfts else 0.0
     ext_v = cft_v * TANK_FILL
     # At the design manoeuvre the fuselage carries its equipment and the
     # propellant that brings the aircraft to the design mass, in the tanks.
     lay = [(e["mass"], e["x"]) for e in eq.values() if e["mass"]]
     lay += [(m, centroid_x(oml)) for m in FIXED.values()]
     fuel_x = (tanks_v * weighted_x(tank) + ext_v * cft_x) / (tanks_v + ext_v)
+    bays = [e for n, e in eq.items() if n.startswith("bay")]
+    bay_v = sum(e["volume"] for e in bays)
     fin_area = (f["root"] + max(0.5, f["root"] - f["height"] * ftan)) / 2 * f["height"] * s * s
 
     def structure_for(empty_guess):
@@ -506,6 +525,7 @@ def build(scale):
         "tanks": {n: (round(t["volume"], 2), round(t["x"], 2)) for n, t in tank.items()},
         "internal_tank_volume": tanks_v,
         "cft_volume": cft_v * TANK_FILL,
+        "bay_volume": bay_v,
         "outside": {n: f'{100 * e["outside"]:.0f}%' for n, e in eq.items() if e["outside"] > 0.02},
         "masses": {n: round(m) for n, (m, _) in sorted(items.items(), key=lambda kv: -kv[1][0])},
         "empty_with_pilot": empty,
