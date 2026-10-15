@@ -12,7 +12,7 @@ use crate::{
         flat_plate, leading_edge, radiative_equilibrium, stagnation, Insulation, Soak,
         SIGMA,
     },
-    planet::{air, Planet, State},
+    planet::{Planet, State},
 };
 
 pub struct EntrySpec {
@@ -36,6 +36,9 @@ pub struct EntrySpec {
     pub lee: f64,
     /// Damping of the flight-path angle in the glide, 1/s.
     pub glide_gain: f64,
+    /// A rocket burn against the motion at the entry interface, m/s, to
+    /// enter slower on a harder world.
+    pub braking: f64,
     pub dt: f64,
 }
 
@@ -56,6 +59,7 @@ impl Default for EntrySpec {
             transition: 2e6,
             lee: 0.03,
             glide_gain: 0.05,
+            braking: 0.,
             dt: 0.2,
         }
     }
@@ -128,7 +132,13 @@ impl EntrySpec {
         let ri = planet.radius + self.interface;
         let v = (planet.mu * (2. / ri - 1. / a)).sqrt();
         let vt = ra * v_apo / ri;
-        let mut s = State { r: ri, theta: 0., vr: -(v * v - vt * vt).sqrt(), vt };
+        let slow = (v - self.braking).max(0.) / v;
+        let mut s = State {
+            r: ri,
+            theta: 0.,
+            vr: -(v * v - vt * vt).sqrt() * slow,
+            vt: vt * slow,
+        };
         rep.interface_speed = s.airspeed(planet);
         rep.interface_gamma = s.gamma(planet);
         rep.turbulent_from = f64::INFINITY;
@@ -136,7 +146,7 @@ impl EntrySpec {
         let mut t = 0.;
         loop {
             let h = s.altitude(planet);
-            let at = air(h);
+            let at = planet.air(h);
             let v = s.airspeed(planet);
             let mach = v / at.sound;
             if mach < 2. || h < 15e3 || t > 4000. {
@@ -190,7 +200,7 @@ impl EntrySpec {
             s = s.step(planet, dt, |st| {
                 let (vr, vt) = st.relative(planet);
                 let vv = vr.hypot(vt);
-                let at = air(st.altitude(planet));
+                let at = planet.air(st.altitude(planet));
                 let q = 0.5 * at.rho * vv * vv;
                 let mach = vv / at.sound;
                 let (cl, cd) = aero.newtonian(mach, self.alpha(mach));

@@ -1,19 +1,39 @@
-//! An Earth-like planet: gravity, rotation, and the US76 atmosphere.
+//! A planet: gravity, rotation, and its air, the US76 atmosphere's
+//! stretched or squeezed by its gravity.
 
 use hf_engine::atmos::isa;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Planet {
     pub radius: f64,
     /// Gravitational parameter, m3/s2.
     pub mu: f64,
     /// Rotation, rad/s.
     pub omega: f64,
+    /// Its air at height z is Earth's at z times this.
+    pub air_scale: f64,
 }
 
 pub const EARTH: Planet =
-    Planet { radius: 6.371e6, mu: 3.986004418e14, omega: 7.2921159e-5 };
+    Planet { radius: 6.371e6, mu: 3.986004418e14, omega: 7.2921159e-5, air_scale: 1.0 };
 
 impl Planet {
+    /// A world of Earth's density and day with `g` times Earth's surface
+    /// gravity: g times Earth's radius, and Earth's surface air thinning
+    /// with height g times as fast, its scale height shrunk by its gravity.
+    pub fn earthlike(g: f64) -> Planet {
+        Planet {
+            radius: EARTH.radius * g,
+            mu: EARTH.mu * g.powi(3),
+            omega: EARTH.omega,
+            air_scale: g,
+        }
+    }
+
+    pub fn air(&self, z: f64) -> Air {
+        air(z * self.air_scale)
+    }
+
     pub fn circular_speed(&self, altitude: f64) -> f64 {
         (self.mu / (self.radius + altitude)).sqrt()
     }

@@ -31,6 +31,8 @@ pub struct StripSpec {
     pub turbopump: f64,
     pub balance: f64,
     pub eta_motor: f64,
+    /// Surface gravity, m/s2.
+    pub gravity: f64,
 }
 
 impl Default for StripSpec {
@@ -48,6 +50,7 @@ impl Default for StripSpec {
             turbopump: 50e6,
             balance: 0.55,
             eta_motor: 0.98,
+            gravity: 9.80665,
         }
     }
 }
@@ -96,7 +99,7 @@ impl StripSpec {
     }
 
     fn roll(&self, mass: f64, engine: &PointReport, fan_power: f64) -> Takeoff {
-        let w = mass * 9.80665;
+        let w = mass * self.gravity;
         let tf = self.fan_thrust(fan_power);
         let fan_jet = (tf / (RHO_SL * self.fan_area())).sqrt();
         let fan_flow = tf / fan_jet.max(1.);
@@ -154,7 +157,7 @@ impl StripSpec {
     /// Land at `mass`: the slowest touchdown thrust lift and wing lift
     /// hold, then the braked roll.
     pub fn land(&self, mass: f64, curve: &[(f64, PointReport)]) -> Landing {
-        let w = mass * 9.80665;
+        let w = mass * self.gravity;
         let thrust_lift = curve
             .iter()
             .filter(|(p, _)| *p < self.turbopump)

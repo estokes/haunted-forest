@@ -169,20 +169,33 @@ impl AscentSpec {
         self.rocket_thrust - p * self.exit_area
     }
 
-    /// Fly from a standing start at mass `m0` to orbit.
-    pub fn fly(&self, planet: &Planet, aero: &Aero, table: &Table, m0: f64) -> Ascent {
+    /// Fly to orbit at mass `m0`, from a standing start or from flight at
+    /// Mach `from`. The schedule's altitudes are Earth's: on another planet
+    /// the same air is lower by its `air_scale`.
+    pub fn fly(
+        &self,
+        planet: &Planet,
+        aero: &Aero,
+        table: &Table,
+        m0: f64,
+        from: f64,
+    ) -> Ascent {
         let sched = self.schedule();
         let g = planet.surface_gravity();
+        let k = planet.air_scale;
         let mut out = Ascent::default();
         let mut m = m0;
         let mut gamma = 0.;
         let mut handover = sched[sched.len() - 1];
         for (i, (mid, settings)) in table.iter().enumerate() {
             let (a, b) = (sched[i], sched[i + 1]);
+            if a.0 < from {
+                continue;
+            }
             let at = air(mid.1);
             let v = mid.0 * at.sound;
             let q = 0.5 * at.rho * v * v;
-            let lift = m * (g - v * v / (planet.radius + mid.1));
+            let lift = m * (g - v * v / (planet.radius + mid.1 / k));
             let drag = aero.drag(mid.0, q, lift.max(0.));
             let best = settings
                 .iter()
@@ -198,7 +211,7 @@ impl AscentSpec {
                 break;
             };
             let (va, vb) = (a.0 * air(a.1).sound, b.0 * air(b.1).sound);
-            let de = g * (b.1 - a.1) + (vb * vb - va * va) / 2.;
+            let de = g * (b.1 - a.1) / k + (vb * vb - va * va) / 2.;
             if de > 0. {
                 let prop = m * de / e;
                 let dt = m * de / ((r.thrust - drag) * v);
@@ -206,7 +219,7 @@ impl AscentSpec {
                 out.air_diluent += prop * r.diluent / (r.diluent + r.dust);
                 out.air_dust += prop * r.dust / (r.diluent + r.dust);
                 m -= prop;
-                gamma = ((b.1 - a.1) / (v * dt)).clamp(-1., 1.).asin();
+                gamma = ((b.1 - a.1) / k / (v * dt)).clamp(-1., 1.).asin();
             }
             out.segments.push((b.0, b.1, *label, r.thrust, drag));
             handover = b;
@@ -216,11 +229,12 @@ impl AscentSpec {
         out.handover_mass = m;
         let at = air(handover.1);
         let v = handover.0 * at.sound;
+        let r = planet.radius + handover.1 / k;
         let start = State {
-            r: planet.radius + handover.1,
+            r,
             theta: 0.,
             vr: v * gamma.sin(),
-            vt: v * gamma.cos() + planet.omega * (planet.radius + handover.1),
+            vt: v * gamma.cos() + planet.omega * r,
         };
         let cost = |p: [f64; 2]| -> f64 {
             let b = self.burn(planet, aero, start, m, p[0], p[1]);
@@ -265,7 +279,7 @@ impl AscentSpec {
                 break;
             }
             let pitch = (p0.tan() - c * t).atan();
-            let at = air(h);
+            let at = planet.air(h);
             let thrust = self.rocket_thrust_at(at.p).max(0.);
             let v = s.airspeed(planet);
             let q = 0.5 * at.rho * v * v;

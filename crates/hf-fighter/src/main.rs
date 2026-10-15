@@ -19,7 +19,7 @@ use hf_fighter::{
     entry::{tank_soak, EntryReport, EntrySpec, Peak},
     fill::{filled_density, volume},
     heat::Insulation,
-    planet::{air, EARTH},
+    planet::{air, Planet, EARTH},
     strip::StripSpec,
 };
 use rayon::prelude::*;
@@ -55,7 +55,7 @@ struct Vehicle {
 impl Default for Vehicle {
     fn default() -> Self {
         Self {
-            empty: 8250.,
+            empty: 5450.,
             tanks_dry: 0.,
             reserve: 150.,
             sortie: 500.,
@@ -97,6 +97,22 @@ fn cruise(engine: &EngineSpec, mass: f64) -> Result<(f64, f64, f64)> {
     anyhow::bail!("no setting cruises at {mass} kg")
 }
 
+/// Where the fighter flies the mission, and how: on which planet, whether
+/// it climbs back out from a standing start (it landed) or from flight at
+/// Mach `from` (it never landed), and any braking burn before entry.
+#[derive(Clone, Copy)]
+struct Mission {
+    planet: Planet,
+    from: f64,
+    braking: f64,
+}
+
+impl Default for Mission {
+    fn default() -> Self {
+        Self { planet: EARTH, from: 0., braking: 0. }
+    }
+}
+
 struct Closure {
     orbit_mass: f64,
     takeoff: f64,
@@ -108,23 +124,37 @@ struct Closure {
     volume: f64,
 }
 
-fn close(
+/// The climb back to orbit: the mass it starts at, and how it goes.
+fn climb(
     v: &Vehicle,
     spec: &AscentSpec,
     table: &Table,
-    sortie_mix: f64,
-) -> Result<Closure> {
+    mission: &Mission,
+) -> Result<(f64, Ascent)> {
     let orbit_mass = v.empty + v.tanks_dry + v.reserve;
     let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, ..Aero::default() };
+    let fly = |m| spec.fly(&mission.planet, &aero, table, m, mission.from);
     let takeoff = hf_engine::gas::brent(
-        |m| Ok(spec.fly(&EARTH, &aero, table, m).final_mass - orbit_mass),
-        orbit_mass + 2000.,
-        40000.,
+        |m| Ok(fly(m).final_mass - orbit_mass),
+        orbit_mass + 500.,
+        60000.,
         1e-6,
     )?;
-    let ascent = spec.fly(&EARTH, &aero, table, takeoff);
+    Ok((takeoff, fly(takeoff)))
+}
+
+/// The whole mission on a climb already flown.
+fn close_on(
+    v: &Vehicle,
+    spec: &AscentSpec,
+    sortie_mix: f64,
+    mission: &Mission,
+    (takeoff, ascent): (f64, Ascent),
+) -> Closure {
+    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, ..Aero::default() };
     let entry_mass = takeoff + v.sortie;
-    let dv = EntrySpec::default().fly(&EARTH, &aero).deorbit_dv;
+    let dv =
+        EntrySpec::default().fly(&mission.planet, &aero).deorbit_dv + mission.braking;
     let deorbit = entry_mass * ((dv / (spec.rocket_isp * G0)).exp() - 1.);
     let d = spec.engine.turbopump.diluent;
     let rocket = ascent.rocket.propellant + deorbit + v.reserve;
@@ -134,8 +164,8 @@ fn close(
         + rocket * r / (1. + r)
         + v.sortie * sortie_mix / (1. + sortie_mix)
         + v.soak * v.belly_tanks / d.latent();
-    Ok(Closure {
-        orbit_mass,
+    Closure {
+        orbit_mass: v.empty + v.tanks_dry + v.reserve,
         takeoff,
         ascent,
         entry_mass,
@@ -143,7 +173,130 @@ fn close(
         dust,
         liquid,
         volume: volume(dust, liquid, d.density()),
-    })
+    }
+}
+
+fn close(
+    v: &Vehicle,
+    spec: &AscentSpec,
+    table: &Table,
+    sortie_mix: f64,
+) -> Result<Closure> {
+    let m = Mission::default();
+    Ok(close_on(v, spec, sortie_mix, &m, climb(v, spec, table, &m)?))
+}
+
+/// On worlds of Earth's density and heavier gravity, the most the fighter
+/// can spend down in the air and still climb back to orbit, flying from a
+/// landing or never landing; and the braking burn its entry needs to keep
+/// its nose below NOSE_MAX.
+fn worlds(v: &Vehicle) -> Result<()> {
+    const NOSE_MAX: f64 = 2900.;
+    let engine = EngineSpec::default();
+    let cr = cruise(&engine, 11000.)?;
+    let spec = AscentSpec::new(engine, ROCKET.0, ROCKET.1, ROCKET.2, 0.1)?;
+    let table = spec.engine_table();
+    let curve = StripSpec::engine_curve(&spec.engine);
+    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, ..Aero::default() };
+    println!(
+        "== The sortie budget: what is left of {:.1} m3 for the work down in the air, empty {:.0} kg",
+        v.tankage, v.empty
+    );
+    println!("  g     radius   orbit    mission      climb from  budget        braking  nose     landing");
+    let mut g = 1.0;
+    while g < 2.05 {
+        let planet = Planet::earthlike(g);
+        for (name, from) in [("lands", 0.0), ("never lands", 0.95)] {
+            let mut mission = Mission { planet, from, braking: 0. };
+            let c = match climb(v, &spec, &table, &mission) {
+                Ok(c) => c,
+                Err(_) => {
+                    println!("  {g:.1}   {name}: cannot climb to orbit");
+                    continue;
+                }
+            };
+            let mut budget = 0.;
+            let mut nose = 0.;
+            let mut ok = true;
+            for _ in 0..3 {
+                let at = |s: f64| {
+                    close_on(
+                        &Vehicle { sortie: s, ..*v },
+                        &spec,
+                        cr.0,
+                        &mission,
+                        c.clone(),
+                    )
+                };
+                if at(0.).volume > v.tankage {
+                    ok = false;
+                    break;
+                }
+                budget = hf_engine::gas::brent(
+                    |s| Ok(at(s).volume - v.tankage),
+                    0.,
+                    30000.,
+                    1e-6,
+                )?;
+                let entry = at(budget).entry_mass;
+                let fly = |b: f64| {
+                    EntrySpec { mass: entry, braking: b, ..EntrySpec::default() }
+                        .fly(&planet, &aero)
+                };
+                nose = fly(mission.braking).nose.temperature;
+                if nose <= NOSE_MAX + 5.
+                    && (mission.braking == 0. || nose >= NOSE_MAX - 30.)
+                {
+                    break;
+                }
+                mission.braking = if fly(0.).nose.temperature <= NOSE_MAX {
+                    0.
+                } else {
+                    hf_engine::gas::brent(
+                        |b| Ok(fly(b).nose.temperature - NOSE_MAX),
+                        0.,
+                        6000.,
+                        1e-4,
+                    )?
+                };
+            }
+            let landing = if from > 0. {
+                "-".to_string()
+            } else {
+                let strip = StripSpec { gravity: 9.80665 * g, ..StripSpec::default() };
+                let to = strip.takeoff(c.0, &curve);
+                if to.roll < 1. {
+                    "vertical".to_string()
+                } else if to.roll <= 300. {
+                    format!("{:.0} m roll", to.roll)
+                } else {
+                    "needs a runway".to_string()
+                }
+            };
+            let orbit = planet.circular_speed(200e3);
+            if !ok {
+                println!(
+                    "  {g:.1}  {:6.0} km {:4.1} km/s {name:12} {:5.1} t      no budget: the climb alone overfills the tanks",
+                    planet.radius / 1e3,
+                    orbit / 1e3,
+                    c.0 / 1e3
+                );
+                continue;
+            }
+            println!(
+                "  {g:.1}  {:6.0} km {:4.1} km/s {name:12} {:5.1} t    {:5.2} t (~{:5.0} km) {:5.0} m/s {:5.0} K  {landing}",
+                planet.radius / 1e3,
+                orbit / 1e3,
+                c.0 / 1e3,
+                budget / 1e3,
+                budget / 1e3 * 2200. / g,
+                mission.braking,
+                nose
+            );
+        }
+        g += 0.1;
+    }
+    Ok(())
 }
 
 /// One liquid in the tanks: what it does in each regime, and the mission
@@ -586,6 +739,9 @@ fn main() -> Result<()> {
         };
         let (tp, fan) = (n(5).unwrap_or(50.) * 1e6, n(6).unwrap_or(30.) * 1e6);
         return size(&v, tp, fan);
+    }
+    if args.iter().any(|a| a == "--worlds") {
+        return worlds(&v);
     }
     if args.iter().any(|a| a == "--limits") {
         return limits(&v);
