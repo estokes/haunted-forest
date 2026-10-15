@@ -54,10 +54,10 @@ SECTION_EXP = 2.6  # superellipse exponent: 2 is an ellipse, higher is boxier
 
 # The wing's sections: (y, thickness/chord, fullness). Fullness 1 is
 # biconvex; lower is fuller, deep over more of the chord. The inner wing is
-# a full, thick glove holding a missile bay each side; outboard it thins to
-# a 5% biconvex.
+# a little fuller and thicker, 5.5-6%, to hold a missile bay each side;
+# outboard it is a 5% biconvex.
 WING = {"apex": 5.0, "root": 8.6, "semispan": 4.6, "sweep_le": 58.0, "tc": 0.06, "z": -0.15,
-        "sections": [(0.0, 0.060, 0.35), (2.8, 0.090, 0.35), (3.4, 0.050, 1.0), (4.6, 0.050, 1.0)]}
+        "sections": [(0.0, 0.055, 0.5), (2.8, 0.060, 0.5), (3.4, 0.050, 1.0), (4.6, 0.050, 1.0)]}
 FIN = {"root_x": 9.6, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, "z": 0.6}
 # Conformal tanks on the back, each side of the dorsal spine, or None:
 # (x0, x1, y, half-width, height)
@@ -69,8 +69,8 @@ CFT = None
 # x of the centre scales with the airframe. "box" size is (dx, dy, dz);
 # "cyl_x" and "cyl_z" are (diameter, length) along X or Z.
 EQUIPMENT = {
-    "radar":           ("cyl_x", (0.55, 0.70), (1.75, 0.0, 0.0), 150, (0.6, 0.6, 0.9)),
-    "avionics":        ("box", (0.80, 0.70, 0.55), (2.70, 0.0, 0.0), 300, (0.5, 0.5, 0.8)),
+    "radar":           ("cyl_x", (0.50, 0.50), (1.60, 0.0, 0.0), 100, (0.6, 0.6, 0.9)),
+    "avionics":        ("box", (0.50, 0.50, 0.40), (2.40, 0.0, 0.0), 100, (0.5, 0.5, 0.8)),
     "nose_gear":       ("box", (1.00, 0.40, 0.40), (3.60, 0.0, -0.30), 0, (0.3, 0.3, 0.3)),
     # Pilot, ~0.24 m3 of tissue-density breathing liquid, the shell, the
     # oxygenator and scrubber, the BCI: an escape capsule in its own right.
@@ -89,11 +89,11 @@ EQUIPMENT = {
     # Stowed beside the engine's belly; the legs swing out to a wide track.
     "main_gear_l":     ("box", (1.30, 0.42, 0.38), (10.30, -0.74, -0.40), 0, (0.3, 0.3, 0.3)),
     "main_gear_r":     ("box", (1.30, 0.42, 0.38), (10.30, 0.74, -0.40), 0, (0.3, 0.3, 0.3)),
-    # Two missiles side by side in each wing root, ~3.5 m x 0.25 m and
-    # ~375 kg each; doors on the belly, sealed for entry like the
-    # Shuttle's gear doors. Mass: doors, ejectors, hot seals.
-    "bay_l":           ("box", (3.70, 0.75, 0.36), (11.10, -1.85, -0.15), 60, (0.95, 0.55, 0.1)),
-    "bay_r":           ("box", (3.70, 0.75, 0.36), (11.10, 1.85, -0.15), 60, (0.95, 0.55, 0.1)),
+    # Two dust missiles side by side in each wing root, ~2.4 m x 0.18 m and
+    # ~90 kg each; doors on the belly, sealed for entry like the Shuttle's
+    # gear doors. Mass: doors, ejectors, hot seals.
+    "bay_l":           ("box", (2.60, 0.50, 0.24), (11.10, -1.85, -0.15), 40, (0.95, 0.55, 0.1)),
+    "bay_r":           ("box", (2.60, 0.50, 0.24), (11.10, 1.85, -0.15), 40, (0.95, 0.55, 0.1)),
 }
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
@@ -513,6 +513,43 @@ def build(scale):
     fan_x = EQUIPMENT["lift_fan"][2][0] * s
     nozzle_x = EQUIPMENT["swivel_nozzle"][2][0] * s
     split = lambda cg: (cg - fan_x) / (nozzle_x - cg)
+
+    # Trim. Subsonic, the wing's aerodynamic centre: a quarter of its mean
+    # chord. Supersonic and hypersonic, near the centroid of the whole
+    # planform, body and all (linear theory on a delta; Newtonian flow on a
+    # flat underside). The centre of gravity full, empty, and with one tank
+    # drained at a time.
+    lam = max(0.3, w["root"] - w["semispan"] * tan) / w["root"]
+    mac = 2 / 3 * w["root"] * s * (1 + lam + lam * lam) / (1 + lam)
+    y_mac = w["semispan"] * s / 3 * (1 + 2 * lam) / (1 + lam)
+    ac_sub = le_at(y_mac / s) + 0.25 * mac
+    area, mx = 0.0, 0.0
+    step = 0.05
+    x = step / 2
+    while x < (FUSELAGE[-1][0] + 0.5) * s:
+        y = -w["semispan"] * s + step / 2
+        while y < w["semispan"] * s:
+            if tree.ray_cast(Vector((x, y, 10.0)), Vector((0, 0, -1)))[0] is not None:
+                area += step * step
+                mx += x * step * step
+            y += step
+        x += step
+    cp_high = mx / area
+
+    def cg_with(drained):
+        m = empty * cg_empty + cft_kg * cft_x
+        tot = empty + cft_kg
+        for n, t in tank.items():
+            if n not in drained:
+                m += 696.0 * t["volume"] * t["x"]
+                tot += 696.0 * t["volume"]
+        return m / tot
+    margins = {}
+    for label, drained in [("full", ()), ("forward drained", ("forward",)), ("saddle drained", ("saddle",)),
+                           ("wing drained", ("wing",)), ("empty", tuple(tank))]:
+        cg = cg_with(drained)
+        margins[label] = (round(cg, 2), round(100 * (ac_sub - cg) / mac), round(100 * (cp_high - cg) / mac),
+                          round(split(cg), 2))
     return {
         "scale": s,
         "length": FUSELAGE[-1][0] * s,
@@ -537,6 +574,11 @@ def build(scale):
         "fan_x": fan_x,
         "nozzle_x": nozzle_x,
         "nozzle_per_fan_thrust": (round(split(cg_empty), 2), round(split(cg_full), 2)),
+        "planform_m2": area,
+        "mac": mac,
+        "ac_subsonic": ac_sub,
+        "cp_super_hyper": cp_high,
+        "trim (cg, subsonic margin %MAC, high-speed margin %MAC, nozzle/fan)": margins,
     }
 
 
