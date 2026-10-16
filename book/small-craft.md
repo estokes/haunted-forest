@@ -718,6 +718,102 @@ turbopump, and ten minutes of fire costs ~150 kg of ammonia and ~90 kg
 of dust. A gunboat carries an annihilation APU, like a courier's, for
 endurance.
 
+**Divergence.** The director is diffraction limited: the first dark ring
+sits at 1.22·λ·R/D and carries 84% of the beam. The FEL tunes from near-IR
+to UV, and the spot follows the wavelength:
+
+| λ (µm) | divergence (µrad) | spot Ø at 100 km |
+|---|---|---|
+| 0.30 | 0.7 | 0.15 m |
+| 0.40 | 1.0 | 0.20 m |
+| 0.50 | 1.2 | 0.24 m |
+| 0.70 | 1.7 | 0.34 m |
+| 1.00 | 2.4 | 0.49 m |
+| 1.50 | 3.7 | 0.73 m |
+
+**The atmosphere is the other half of the range.** Through 100 km of clear
+air at 50% relative humidity:
+
+| λ (µm) | air-to-air, both at 10 km | air-to-ground, 100 km out |
+|---|---|---|
+| 0.30 | 0.7% | <0.1% |
+| 0.50 | 51% | 1.3% |
+| 0.76 | 82% | 14% |
+| 1.06 | 96% | 36% |
+| 1.38 | 93% | 2.1% |
+| 1.43 | 92% | 0.9% |
+| 1.55 | 97% | 21% |
+
+Two asymmetries set the whole mission. A shot between fighters at 10 km
+pays only ~2 dB for the entire atmosphere: the aerosols die out below
+~2 km and the high air is clean. A shot at the ground pays the boundary
+layer, and the water bands at 1.38 and 1.43 µm swallow the beam — 2%
+through, against 36% at 1.06 µm. "IR is always good" is wrong in wet
+air.
+
+**Wavelength choice.** The targeting computer trades divergence against
+absorption and picks the wavelength that maximises what lands on the aim
+point. Close in, in clean high air, blue and near-UV win, where the spot
+is smallest. As range grows the λ⁴ Rayleigh penalty takes over and the
+beam drifts red, parking at the 1.0–1.2 µm windows for ground shots. The
+optimum is flat — the top three wavelengths are within ~5% of each other —
+so the choice is robust. A ground shot lands as an ellipse stretched by
+1/sin(elevation), ×10 at 100 km from 10 km, which is why the ground
+numbers fall so fast:
+
+| R (km) | A2A: λ* | A2A: I (MW/m²) | ground: λ* | ground: I (MW/m²) |
+|---|---|---|---|---|
+| 25 | 0.38 | 725 | 0.55 | 82 |
+| 50 | 0.45 | 128 | 0.72 | 5.8 |
+| 100 | 0.53 | 22 | 1.03 | 0.35 |
+| 200 | 0.64 | 3.9 | 1.22 | 0.018 |
+| 300 | 0.71 | 1.4 | 1.23 | 0.002 |
+| 1,000 | 1.01 | 0.065 | — | — |
+
+**What the ranges mean in dwell.** Damage is energy per square metre:
+~100 MJ/m² punches a millimetre of steel through, or a dust tank past
+~1000 K; a kilowatt into a 0.25 m² sensor blinds it. Wavelength optimised,
+in clear air:
+
+| effect | A2A @10 km | ground @10 km | ground, dusty |
+|---|---|---|---|
+| blinding, ≥1 kW into a 0.25 m² sensor | ~2,900 km | 270 km | 45 km |
+| sensor destroyed, ≥10 kW | ~1,200 km | 170 km | 33 km |
+| kill a soft target in 5 s | 100 km | 35 km | 12 km |
+| kill a soft target in 30 s | 210 km | 57 km | ~18 km |
+| 1 cm of armour in 5 s | 40 km | 20 km | ~6 km |
+
+The table's "100–300 km lethal" is a 1–3 minute dwell budget: 5 s at
+100 km, 30 s at 210 km, two minutes near 500 km. The ~1,000 km blinding
+in the table above is the ~10 kW sensor-destroyed case; soft blinding
+at 1 kW reaches ~3,000 km. The laser out-ranges its own kill: it blinds an
+enemy's director — its telescope — far outside its own kill range, and an
+enemy it has blinded cannot see to shoot back.
+
+**What the model says about missions.**
+- **Clear high air is the weapon.** A2A at 10–15 km: an instant-kill core
+  to ~100 km, a short-dwell core to ~200 km, blinding out past 1,000 km.
+  Haze barely touches it (the 5 s kill stays at ~100 km).
+- **The ground shot is a clear-weather, short-range weapon.** ~35 km in
+  the clear, ~20 km in haze, ~12 km in dust for a 5 s kill, and dead
+  through a single kilometre of cloud, which cuts a 100 km shot from 35%
+  to under 0.3%. That is why the 200 km missiles remain the all-weather
+  answer.
+- **Low altitude is its own weather.** From 3 km the 5 s ground range
+  falls from ~35 to ~20 km.
+- **Above the atmosphere only pays as a steep dive.** A shallow shot from
+  30 km still grazes the whole column and transmits barely more than one
+  from 10 km; a near-vertical dive from 30 km transmits ~90%.
+- **The spot outruns the missile.** A fighter (~15 m²) covers the whole
+  beam out to ~900 km at 1 µm, but a 0.43 m² missile stops being bigger
+  than the first-dark ring at ~150 km: past that the beam is bigger than
+  the target and the missile catches a fraction of it, whatever the
+  atmosphere allows.
+
+`modeling/fel_range.py` computes the divergence, transmission and
+optimised tables above; `modeling/fel_extras.py` the low-altitude,
+above-atmosphere and vacuum cases.
+
 ## The Anti-Dust Coilgun
 
 Anti-grains superconduct, so a field gradient pushes them without
