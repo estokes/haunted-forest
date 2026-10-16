@@ -108,6 +108,7 @@ def items():
     out["propellant_system"] = (150, 250, "magnetic dust feed, ammonia pumps, transfer between tanks, gauging")
     out["bays"] = (80, 120, "two bays' doors, ejectors and hot seals")
     out["slats_and_strakes"] = (55, 90, "four leading-edge slat segments and their actuators; two strakes")
+    out["canards"] = (165, 270, "two all-moving canards, ~3 m2 each, their pivots and actuators")
     # Sensors: six or more wide-angle windows round the airframe, imaging
     # and IR, for the pilot's view all round and missile warning; the
     # laser's 0.5 m directors double as the targeting telescopes.

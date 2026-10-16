@@ -14,7 +14,7 @@ use hf_engine::{
     parts::{Turbopump, TurbopumpSpec, G0},
 };
 use hf_fighter::{
-    aero::{Aero, WAVE},
+    aero::{Aero, Canard, WAVE},
     ascent::{Ascent, AscentSpec, Table},
     entry::{tank_soak, EntryReport, EntrySpec, Peak},
     fill::{filled_density, volume},
@@ -52,6 +52,10 @@ struct Vehicle {
     /// The wing's leading-edge sweep, degrees, and aspect ratio.
     sweep: f64,
     aspect: f64,
+    /// Close-coupled canards, or tailless with strakes.
+    canard: Option<Canard>,
+    /// Centre of gravity, m from the nose, empty and with every tank full.
+    cg: (f64, f64),
     /// Belly area over tanks, m2, and the heat each m2 takes through
     /// entry, J.
     belly_tanks: f64,
@@ -61,16 +65,18 @@ struct Vehicle {
 impl Default for Vehicle {
     fn default() -> Self {
         Self {
-            empty: 6220.,
+            empty: 6385.,
             tanks_dry: 0.,
             reserve: 150.,
             sortie: 500.,
-            tankage: 25.3,
-            wing: 55.35,
-            drag_area: 0.209,
+            tankage: 24.7,
+            wing: 55.37,
+            drag_area: 0.229,
             wave: WAVE,
-            sweep: 58.,
-            aspect: 1.88,
+            sweep: 68.,
+            aspect: 1.21,
+            canard: Some(Canard::default()),
+            cg: (12.25, 11.72),
             belly_tanks: 15.,
             soak: 1.6e6,
         }
@@ -79,14 +85,26 @@ impl Default for Vehicle {
 
 impl Vehicle {
     fn aero(&self) -> Aero {
-        Aero {
+        let a = Aero {
             wing: self.wing,
             drag_area: self.drag_area,
             wave: self.wave,
             sweep: self.sweep,
             aspect: self.aspect,
+            cg: (self.cg.0 + self.cg.1) / 2.,
             ..Aero::default()
+        };
+        match self.canard {
+            Some(c) => Aero { canard: Some(c), ..a },
+            None => a.tailless(),
         }
+    }
+
+    /// Centre of gravity at `mass` kg, the tanks filling evenly.
+    fn cg_at(&self, mass: f64) -> f64 {
+        let full = self.empty + self.tankage * 700.;
+        let t = ((mass - self.empty) / (full - self.empty)).clamp(0., 1.);
+        self.cg.0 + (self.cg.1 - self.cg.0) * t
     }
 
     fn entry(&self) -> EntrySpec {
@@ -775,21 +793,25 @@ fn size(v: &Vehicle, turbopump: f64, fan: f64) -> Result<()> {
     Ok(())
 }
 
-/// How hard the fighter turns at `mass` kg: instantaneous, on the wing's
-/// maximum lift or the structure's 20 g at 15 t, whichever binds; and
-/// sustained, where full thrust meets the drag; in g and degrees a second,
-/// as built and with a plain wing, no slats or strakes.
+/// How hard the fighter turns at `mass` kg: instantaneous, on its
+/// trimmed maximum lift or the structure's 20 g at 15 t, whichever binds;
+/// and sustained, where full thrust meets the trimmed drag; in g and
+/// degrees a second. Propellant moved between tanks puts the centre of
+/// gravity where each turn wants it, within TRIM_RANGE of where the tanks
+/// leave it.
 fn turn(v: &Vehicle) -> Result<()> {
     const N_STRUCT: (f64, f64) = (20., 15000.);
+    const TRIM_RANGE: f64 = 0.6;
     let spec = AscentSpec::new(EngineSpec::default(), ROCKET.0, ROCKET.1, ROCKET.2, 0.1)?;
-    let built = v.aero();
-    let plain = Aero { ..built }.plain();
     println!(
-        "== Turning, wing {:.0} m2: instantaneous and sustained g and deg/s; as built | plain wing",
-        v.wing
+        "== Turning, {}, wing {:.0} m2 at {:.0}°: instantaneous and sustained, g and deg/s",
+        if v.canard.is_some() { "canards" } else { "tailless" },
+        v.wing,
+        v.sweep
     );
     for mass in [11000., 16000., 22000.] {
-        println!("  {:.0} t, {:.0} kg/m2 of wing", mass / 1e3, mass / v.wing);
+        let aero = Aero { cg: v.cg_at(mass), ..v.aero() };
+        println!("  {:.0} t, {:.0} kg/m2 of wing, centre of gravity {:.2} m", mass / 1e3, mass / v.wing, aero.cg);
         for (mach, z) in [(0.5, 3000.), (0.9, 3000.), (0.9, 10000.), (1.5, 11000.), (2.0, 15000.)] {
             let at = air(z);
             let speed = mach * at.sound;
@@ -801,22 +823,39 @@ fn turn(v: &Vehicle) -> Result<()> {
                 .map(|(_, r)| r.thrust)
                 .fold(0., f64::max);
             let rate = |n: f64| (9.80665 * (n * n - 1.).max(0.).sqrt() / speed).to_degrees();
-            let turns = |aero: &Aero| {
-                let structure = N_STRUCT.0 * N_STRUCT.1 / mass;
-                let inst = (q * v.wing * aero.cl_max() / weight).min(structure);
-                let (mut lo, mut hi) = (0., aero.cl_max());
+            let at_cg = |cg: f64| {
+                let a = Aero { cg, ..aero };
+                let cl_max = a.trimmed_cl_max(mach);
+                let inst = (q * v.wing * cl_max / weight).min(N_STRUCT.0 * N_STRUCT.1 / mass);
+                let (mut lo, mut hi) = (0., cl_max);
                 for _ in 0..60 {
                     let cl = (lo + hi) / 2.;
-                    if aero.drag(mach, q, q * v.wing * cl) < thrust {
+                    if a.drag(mach, q, q * v.wing * cl) < thrust {
                         lo = cl;
                     } else {
                         hi = cl;
                     }
                 }
-                let sus = (q * v.wing * lo / weight).min(inst);
-                format!("{inst:4.1} g {:4.1}/s, {sus:4.1} g {:4.1}/s", rate(inst), rate(sus))
+                (inst, (q * v.wing * lo / weight).min(inst), cl_max)
             };
-            println!("    Mach {mach:.1} at {z:5.0} m: {} | {}", turns(&built), turns(&plain));
+            let cgs: Vec<f64> =
+                (0..=24).map(|i| aero.cg - TRIM_RANGE + 2. * TRIM_RANGE * i as f64 / 24.).collect();
+            let best = |k: usize| {
+                cgs.iter()
+                    .map(|&cg| (at_cg(cg), cg))
+                    .max_by(|a, b| {
+                        let f = |r: &((f64, f64, f64), f64)| [r.0.0, r.0.1][k];
+                        f(a).total_cmp(&f(b))
+                    })
+                    .unwrap()
+            };
+            let ((inst, _, cl_max), cg_i) = best(0);
+            let ((_, sus, _), cg_s) = best(1);
+            println!(
+                "    Mach {mach:.1} at {z:5.0} m: {inst:4.1} g {:4.1}/s (CLmax {cl_max:.2}, cg {cg_i:.2}), sustained {sus:4.1} g {:4.1}/s (cg {cg_s:.2})",
+                rate(inst),
+                rate(sus)
+            );
         }
     }
     Ok(())
@@ -825,6 +864,25 @@ fn turn(v: &Vehicle) -> Result<()> {
 fn main() -> Result<()> {
     let mut v = Vehicle::default();
     let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|a| a == "--tailless") {
+        v.canard = None;
+    }
+    if let Some(i) = args.iter().position(|a| a == "--canard") {
+        let n = |k: usize| -> Result<f64> {
+            Ok(args
+                .get(i + k)
+                .ok_or_else(|| anyhow::anyhow!("--canard AREA ASPECT X_AC"))?
+                .parse()?)
+        };
+        v.canard =
+            Some(Canard { area: n(1)?, aspect: n(2)?, x_ac: n(3)?, ..Canard::default() });
+    }
+    if let Some(i) = args.iter().position(|a| a == "--cg") {
+        let n = |k: usize| -> Result<f64> {
+            Ok(args.get(i + k).ok_or_else(|| anyhow::anyhow!("--cg EMPTY FULL"))?.parse()?)
+        };
+        v.cg = (n(1)?, n(2)?);
+    }
     if let Some(i) = args.iter().position(|a| a == "--planform") {
         let n = |k: usize| -> Result<f64> {
             Ok(args

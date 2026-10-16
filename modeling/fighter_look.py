@@ -144,6 +144,9 @@ def build(scale=1.0):
             p.material_index = 1
     smooth(oml)
     oml.color = (*COATING, 1)
+    for o in [o for o in bpy.data.objects if o.name.startswith("canard_")]:
+        link(o, skin_m, look)
+        smooth(o, 30)
     tree = fighter.bvh(oml)
 
     # Inlet cones, the Mirage's souris: half-cones on the splitter plate,

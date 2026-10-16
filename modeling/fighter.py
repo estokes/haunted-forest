@@ -73,12 +73,12 @@ SECTION = [(0.00, 2.00, 2.00), (4.23, 2.00, 2.00), (6.48, 2.20, 3.00), (9.58, 2.
 # biconvex; lower is fuller, deep over more of the chord. The thickest
 # point is at `peak` of the chord: forward of half, so that the straight
 # trailing edge does not stack the whole span's thickness at the tail. The
-# inner wing is a little thicker, ~5-5.4%, to hold a missile bay each
-# side; outboard it is 4.5%. The wing is low, its underside the belly's
+# inner wing is a little thicker, ~4-4.4%, to hold a missile bay each
+# side; outboard it is 3.6%. The wing is low, its underside the belly's
 # plane. Its leading edge is slatted, two segments a side, flush when
 # retracted; `tc` is the box's for the structure.
-WING = {"apex": 7.65, "root": 9.51, "semispan": 5.09, "sweep_le": 58.0, "tc": 0.05, "z": -0.48, "peak": 0.4,
-        "sections": [(0.00, 0.0497, 1.0), (3.10, 0.0543, 1.0), (3.76, 0.0452, 1.0), (5.09, 0.0452, 1.0)]}
+WING = {"apex": 6.51, "root": 11.83, "semispan": 4.09, "sweep_le": 68.0, "tc": 0.040, "z": -0.48, "peak": 0.4,
+        "sections": [(0.00, 0.0400, 1.0), (2.49, 0.0437, 1.0), (3.02, 0.0363, 1.0), (4.09, 0.0363, 1.0)]}
 FIN = {"root_x": 13.52, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, "z": 0.6}
 # Conformal tanks on the back, each side of the dorsal spine, or None:
 # (x0, x1, y, half-width, height)
@@ -118,8 +118,8 @@ EQUIPMENT = {
     # Two dust missiles side by side in each wing root, ~2.4 m x 0.18 m and
     # ~90 kg each; doors on the belly, sealed for entry like the Shuttle's
     # gear doors. Mass: doors, ejectors, hot seals.
-    "bay_l":           ("box", (2.60, 0.50, 0.24), (13.40, -1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
-    "bay_r":           ("box", (2.60, 0.50, 0.24), (13.40, 1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_l":           ("box", (2.60, 0.50, 0.24), (14.17, -1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_r":           ("box", (2.60, 0.50, 0.24), (14.17, 1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
     # The second director, stowed behind belly doors for entry and let down
     # below the belly to strike the ground.
     "laser_turret_ventral": ("cyl_z", (0.60, 0.40), (11.40, 0.0, -0.50), _EQ["laser_turret_ventral"], (0.1, 1.0, 0.4)),
@@ -146,7 +146,7 @@ EXTERNAL = ("fel_director", "swivel_nozzle", "ew_pod")
 # for a flush window to see ahead. The tail is watched from the fin-tip
 # pod's aft end.
 SENSORS = [(0.16, 45, 35), (0.16, -45, 35), (0.16, 135, 35), (0.16, -135, 35), (0.55, 0, 0), (0.55, 180, 0),
-           (0.80, 80, 0), (0.80, -80, 0), (0.85, 125, 0), (0.85, -125, 0)]
+           (0.80, 80, 0), (0.80, -80, 0), (0.92, 135, 0), (0.92, -135, 0)]
 SENSOR_HALF_ANGLE = 65.0
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
@@ -162,6 +162,13 @@ SENSOR_HALF_ANGLE = 65.0
 # at high angles of attack. (x behind the mouth, length, span, height
 # above the duct's axis.)
 STRAKE = {"from": 1.0, "length": 0.9, "span": 0.25, "z": 0.22}
+# Canards, or None: all-moving, close-coupled as on the Rafale, on the
+# intake trunks just behind their lips, ahead of the wing's root and above
+# it; their vortices do the strakes' work, so they replace them. (x of the
+# root's leading edge, root chord, exposed semispan from `root_y`,
+# leading-edge sweep, taper, thickness/chord, height.)
+CANARD = {"x": 7.10, "root": 2.30, "span": 1.95, "root_y": 1.20, "sweep": 50.0, "taper": 0.35,
+          "tc": 0.04, "z": 0.22}
 INLET = {"area": 0.30, "gap": 0.07, "diverter": (0.30, 1.20), "face_x": 12.95, "mouth_x": 6.90, "fair_x": 11.00, "lip": 0.025}
 DUCT_PATH = [(6.76, 1.24, -0.05), (8.17, 1.26, -0.05), (9.30, 1.20, -0.05), (10.70, 0.90, -0.05), (12.11, 0.40, -0.05), (12.95, 0.20, -0.05)]
 
@@ -534,6 +541,8 @@ def build(scale):
             if side < 0:
                 rings = [list(reversed(q)) for q in rings]
             nacelles.append(ring_loft(f"inlet_{name}_{side}", rings, skin, C_SKIN))
+        if CANARD:
+            continue
         st = STRAKE
         sx0 = x0 + st["from"] * s
         srings = []
@@ -568,6 +577,26 @@ def build(scale):
         o.hide_render = True
     oml_v, oml_a = volume(oml)
     tree = bvh(oml)
+
+    # Canards: separate surfaces, so that the wing-body's centre of lift
+    # stays the wing's; their own lift is the aero model's to place.
+    canards, canard = [], None
+    if CANARD:
+        c = CANARD
+        ctan = math.tan(math.radians(c["sweep"]))
+        tip = c["root"] * c["taper"]
+        y0, y1 = c["root_y"] * s, (c["root_y"] + c["span"]) * s
+        root_s = (c["x"] * s, y0, c["root"] * s, c["tc"], (0, 0, c["z"] * s), 1.0)
+        tip_s = ((c["x"] + c["span"] * ctan) * s, y1, tip * s, c["tc"], (0, 0, c["z"] * s), 1.0)
+        for side in (-1, 1):
+            secs = [root_s, tip_s] if side > 0 else [(tip_s[0], -y1, *tip_s[2:]), (root_s[0], -y0, *root_s[2:])]
+            canards.append(surface(f"canard_{side}", secs, skin, C_SKIN))
+        area_c = 2 * (c["root"] + tip) / 2 * c["span"] * s * s
+        ymac_c = c["span"] / 3 * (1 + 2 * c["taper"]) / (1 + c["taper"])
+        mac_c = 2 / 3 * c["root"] * (1 + c["taper"] + c["taper"] ** 2) / (1 + c["taper"])
+        canard = {"area": area_c, "aspect": (2 * c["span"] * s) ** 2 / area_c, "sweep": c["sweep"],
+                  "x_ac": (c["x"] + ymac_c * ctan + 0.25 * mac_c) * s}
+    canard_a = sum(volume(o)[1] for o in canards)
 
     cfts = []
     if CFT:
@@ -688,6 +717,9 @@ def build(scale):
     # propellant that brings the aircraft to the design mass, in the tanks.
     lay = [(e["mass"], e["x"]) for e in eq.values() if e["mass"]]
     lay += [(m, centroid_x(oml)) for m in FIXED.values()]
+    if canard:
+        lay.append((_EQ["canards"], canard["x_ac"]))
+        eq_mass += _EQ["canards"]
     fuel_x = (tanks_v * weighted_x(tank) + ext_v * cft_x) / (tanks_v + ext_v)
     bays = [e for n, e in eq.items() if n.startswith("bay")]
     bay_v = sum(e["volume"] for e in bays)
@@ -705,7 +737,7 @@ def build(scale):
             "fin_area": fin_area,
             "internal_tank_surface": sum(6 * max(t["volume"], 0.01) ** (2 / 3) for t in tank.values()),
             "cft_surface": cft_a,
-            "wetted": oml_a + cft_a,
+            "wetted": oml_a + cft_a + canard_a,
             "equipment_mass": eq_mass,
         }
         total = sum(m for m, _ in geo["fuselage_masses"])
@@ -718,6 +750,8 @@ def build(scale):
         empty = eq_mass + sum(parts.values())
     struct_x = centroid_x(oml)
     items = {n: (e["mass"], e["x"]) for n, e in eq.items() if e["mass"]}
+    if canard:
+        items["canards"] = (_EQ["canards"], canard["x_ac"])
     for n, m in FIXED.items():
         items[n] = (m, struct_x)
     for n, m in parts.items():
@@ -775,7 +809,7 @@ def build(scale):
     length = max((nozzle.matrix_world @ Vector(c)).x for c in nozzle.bound_box)
 
     # What the pilot and the directors can see past the airframe.
-    blockers = [tree, bvh(nozzle), bvh(eq["ew_pod"]["obj"])]
+    blockers = [tree, bvh(nozzle), bvh(eq["ew_pod"]["obj"]), *[bvh(o) for o in canards]]
     eyes = []
     for f, a, tilt in SENSORS:
         p, n = on_skin(tree, f * FUSELAGE[-1][0] * s, a)
@@ -792,7 +826,7 @@ def build(scale):
         base, _ = on_skin(tree, cx * s, 0.0 if up > 0 else 180.0)
         point = base + Vector((0.0, 0.0, 0.25 * up))
         regard[name] = tuple(round(v, 2) for v in field_of_regard(blockers, point, Vector((0, 0, up)), dirs))
-    dist = area_distribution([fus, *nacelles, wing, fin, nozzle, eq["fel_director"]["obj"]], length)
+    dist = area_distribution([fus, *nacelles, wing, fin, *canards, nozzle, eq["fel_director"]["obj"]], length)
     dq, dq_sh, v_eff = wave_drag(dist, 2 * INLET["area"], INLET["mouth_x"] * s, length)
     return {
         "scale": s,
@@ -800,7 +834,7 @@ def build(scale):
         "span": 2 * w["semispan"] * s,
         "wing_area": planform(s),
         "airframe_volume": oml_v,
-        "wetted_area": oml_a + cft_a,
+        "wetted_area": oml_a + cft_a + canard_a,
         "equipment_volume": sum(e["volume"] for e in eq.values()),
         "duct_volume": duct_v,
         "tanks": {n: (round(t["volume"], 2), round(t["x"], 2)) for n, t in tank.items()},
@@ -821,6 +855,8 @@ def build(scale):
         "nozzle_per_fan_thrust": (round(split(cg_empty), 2), round(split(cg_full), 2)),
         "planform_m2": area,
         "mac": mac,
+        "elevon_x": le_at(y_mac / s) + 0.89 * mac,
+        "canard": canard,
         "ac_subsonic": ac_sub,
         "cp_super_hyper": cp_high,
         "trim (cg, subsonic margin %MAC, high-speed margin %MAC, nozzle/fan)": margins,
