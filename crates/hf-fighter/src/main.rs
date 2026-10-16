@@ -65,18 +65,18 @@ struct Vehicle {
 impl Default for Vehicle {
     fn default() -> Self {
         Self {
-            empty: 6385.,
+            empty: 6380.,
             tanks_dry: 0.,
             reserve: 150.,
             sortie: 500.,
-            tankage: 24.7,
+            tankage: 24.6,
             wing: 55.37,
-            drag_area: 0.229,
+            drag_area: 0.220,
             wave: WAVE,
             sweep: 68.,
             aspect: 1.21,
             canard: Some(Canard::default()),
-            cg: (12.25, 11.72),
+            cg: (12.16, 11.62),
             belly_tanks: 15.,
             soak: 1.6e6,
         }

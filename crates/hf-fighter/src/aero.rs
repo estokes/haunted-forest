@@ -45,7 +45,7 @@ use std::f64::consts::PI;
 
 /// The airframe's Mach-1 wave drag, D/q, m2, as modeling/fighter.py
 /// measures it.
-pub const WAVE: f64 = 1.04;
+pub const WAVE: f64 = 1.00;
 /// Zero-lift drag area but wave drag, D/q m2, subsonic and supersonic.
 const FRICTION: (f64, f64) = (0.022 * 45., 0.017 * 45.);
 /// Where Raymer's fit gives way to linear theory.
@@ -109,8 +109,8 @@ impl Default for Aero {
             taper: 0.144,
             suction: (0.85, 0.7),
             devices: 0.25,
-            ac: (12.32, 12.98),
-            elevon: 17.46,
+            ac: (12.32, 12.62),
+            elevon: 16.71,
             cg: 12.0,
             canard: Some(Canard::default()),
         }

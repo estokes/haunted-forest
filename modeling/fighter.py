@@ -76,8 +76,12 @@ SECTION = [(0.00, 2.00, 2.00), (4.23, 2.00, 2.00), (6.48, 2.20, 3.00), (9.58, 2.
 # inner wing is a little thicker, ~4-4.4%, to hold a missile bay each
 # side; outboard it is 3.6%. The wing is low, its underside the belly's
 # plane. Its leading edge is slatted, two segments a side, flush when
-# retracted; `tc` is the box's for the structure.
-WING = {"apex": 6.51, "root": 11.83, "semispan": 4.09, "sweep_le": 68.0, "tc": 0.040, "z": -0.48, "peak": 0.4,
+# retracted; `tc` is the box's for the structure. Its centre of lift,
+# subsonic, is `ac` of the mean chord back from the leading edge there, as
+# cfd/vlm.py finds it for the wing and body: a slender delta's lies well
+# aft of a straight wing's quarter chord.
+WING = {"apex": 5.76, "root": 11.83, "semispan": 4.09, "sweep_le": 68.0, "tc": 0.040, "z": -0.48, "peak": 0.4,
+        "ac": 0.344,
         "sections": [(0.00, 0.0400, 1.0), (2.49, 0.0437, 1.0), (3.02, 0.0363, 1.0), (4.09, 0.0363, 1.0)]}
 FIN = {"root_x": 13.52, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, "z": 0.6}
 # Conformal tanks on the back, each side of the dorsal spine, or None:
@@ -118,8 +122,8 @@ EQUIPMENT = {
     # Two dust missiles side by side in each wing root, ~2.4 m x 0.18 m and
     # ~90 kg each; doors on the belly, sealed for entry like the Shuttle's
     # gear doors. Mass: doors, ejectors, hot seals.
-    "bay_l":           ("box", (2.60, 0.50, 0.24), (14.17, -1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
-    "bay_r":           ("box", (2.60, 0.50, 0.24), (14.17, 1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_l":           ("box", (2.60, 0.50, 0.24), (13.42, -1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_r":           ("box", (2.60, 0.50, 0.24), (13.42, 1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
     # The second director, stowed behind belly doors for entry and let down
     # below the belly to strike the ground.
     "laser_turret_ventral": ("cyl_z", (0.60, 0.40), (11.40, 0.0, -0.50), _EQ["laser_turret_ventral"], (0.1, 1.0, 0.4)),
@@ -777,7 +781,7 @@ def build(scale):
     lam = max(0.3, w["root"] - w["semispan"] * tan) / w["root"]
     mac = 2 / 3 * w["root"] * s * (1 + lam + lam * lam) / (1 + lam)
     y_mac = w["semispan"] * s / 3 * (1 + 2 * lam) / (1 + lam)
-    ac_sub = le_at(y_mac / s) + 0.25 * mac
+    ac_sub = le_at(y_mac / s) + w["ac"] * mac
     area, mx = 0.0, 0.0
     step = 0.05
     x = step / 2
