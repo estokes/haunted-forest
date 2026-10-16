@@ -381,7 +381,9 @@ and on landing drains to a reservoir, tilts the pilot head down and
 clears the lungs. The liquid has to clear fast by itself, or a pilot
 alone on a colony world is in trouble. The capsule is also the ejection
 seat: it leaves upward through the hatch, and someone in liquid survives
-a far harder kick than someone strapped to a seat.
+a far harder kick than someone strapped to a seat. What the BCI shows the
+pilot is a cockpit, spatial and laid out to a standard: see
+[The Cockpit](cockpit.md).
 
 **Structure.** Near-ideal CNT, ~30 GPa in tension and ~8 GPa in
 compression, knocked down by a third, sized from the loads by

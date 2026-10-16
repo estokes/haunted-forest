@@ -645,6 +645,69 @@ cool the engine. They can stay in slow-time indefinitely. This is their
 primary combat advantage — not that they think faster for a burst,
 but that they can sustain it.
 
+### Slow Time in Multiplayer
+
+Alone, a player slows the world for themselves. With other players
+there is one world, and a mind that thinks a hundred times faster has to
+get its extra time from somewhere. It gets it from everyone it can
+affect: **when any player accelerates, the world slows for everyone
+within reach of them**, as EVE Online's time dilation slows a whole star
+system under load.
+
+**Rates, not a switch.** Each player has a thinking rate \(r\): 1
+baseline, 2 augmented, 10 heavily augmented, 100 an AI person, as in the
+table above. A slowed region runs at \(1/R\) of real time, where \(R\) is
+the highest rate among the players accelerating in it.
+
+**Everyone perceives and acts at their own rate, in game time.** That is
+the whole rule, and it is what would happen physically. At 1/100 speed a
+real second is 10 ms of game time, far below a baseline human's ~0.2 s
+reaction time: a baseline pilot could not have answered within it, and
+so cannot. A player whose rate \(r\) is below \(R\):
+
+- **sees the world strobe.** Frames come at the player's own perception
+  rate in game time, so a baseline pilot in a 1/100 world sees a new
+  moment about every 1.7 real seconds, smeared, as the world would look
+  to a mind that cannot keep up.
+- **acts no faster, in game time, than they could at real speed.** Their
+  inputs hold until their own reaction latency, \(\tau/r\) of game time,
+  has passed. In a 1/100 world a baseline pilot keeps their last stick
+  and throttle; an augmented one acts every ~10 real seconds, a heavily
+  augmented one every ~2; at \(r = R\), freely.
+
+The slower players gain real seconds of waiting but neither information
+nor reaction speed, which are what slow time is for. They do know that
+someone near them went fast, which is fair: in the world they would
+sense it too.
+
+**The reach is the causal bubble.** The slowed region is everything that
+could affect, or be affected by, the accelerated player within the
+slowed stretch of game time. For material things that is small: ten
+real seconds at 1/100 is 0.1 s of game time, in which two aircraft
+closing at Mach 3 cover ~100 m. But sensors, lasers and radio work at
+the speed of light, and anyone in sensor or weapon contact can affect
+the fight within that 0.1 s. So in practice **a bubble is the whole
+engagement**: everyone in contact with anyone in it. Players elsewhere,
+out of contact, run at real time.
+
+**Bubbles are simulation islands, kept in step by light.** Two regions
+\(d\) apart can be out of step in game time by up to \(d/c\) without
+anything in one being able to tell, because nothing travels faster than
+light. That is the lookahead of a conservative parallel discrete-event
+simulation, given by physics rather than tuned: each island advances
+only as far as it can without needing the other's future. When a bubble
+would come within reach of another region, they merge, and the one
+ahead waits for the one behind. No interaction ever crosses a bubble's
+edge, so nothing has to be reconciled after the fact.
+
+**Slow time has a budget.** For biological minds it is the thermal limit
+above. An AI person's is unlimited alone, but in multiplayer its slow
+time is paid in other players' real seconds. So each bubble has a cap: its
+rate, averaged over any real minute, stays above a floor (1/10, say). An
+AI person can still go to 1/100 when it matters and stay there longer
+than anyone, but cannot hold a fight frozen indefinitely. The budget
+makes slow time a resource to spend, not a mode to live in.
+
 
 ## Integration Model
 
@@ -733,4 +796,6 @@ system with their own.
   it priced? Subscription? Per-query? Bundled with game purchase?
 - Multiplayer implications — if two players are in the same system,
   do their netidx hierarchies interact? Can one player subscribe to
-  another ship's published (non-classified) values?
+  another ship's published (non-classified) values? Slow time is
+  settled in [Slow Time in Multiplayer](#slow-time-in-multiplayer),
+  except the bubble's rate floor, which wants playtesting.

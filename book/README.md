@@ -14,6 +14,7 @@ pushed to its limits and the questions that follow.
    - [Courier — Engine Design Notes](courier.md) — why antimatter, the nozzle, scaling, the models
    - [Station Power](station-power.md) — the D-³He plant that powers stations and colonies
    - [Small Craft](small-craft.md) — dust-burning shuttles, fighters, gunboats, missiles, the hybrid engine
+   - [The Cockpit](cockpit.md) — the BCI cockpit: spatial panels that unfold in place, frames, needles and tapes, rewriting it in flight
    - [Sensors and Stealth](sensors.md) — passive and active sensing, cold faces, ammonia heat sinks
    - [ICF Drive](icf-drive.md) — deuterium–helium-3 pulse drive, and the cruiser built on it
 7. **[Architecture](architecture.md)** — Game technical design: simulations, netidx, Graphix, LLMs
