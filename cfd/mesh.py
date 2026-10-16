@@ -6,7 +6,9 @@
 # Boundaries: wall, inflow (the inlets' capture faces), exhaust (the base
 # at the tail), farfield.
 #
-# ~/.local/opt/cfd-venv/bin/python cfd/mesh.py IN.stl OUT.su2 [--body 0.1] [--edge 0.05] [--far 5]
+# ~/.local/opt/cfd-venv/bin/python cfd/mesh.py IN.stl OUT.su2 [--body 0.1] [--edge 0.05] [--far 5] [--near 0.2]
+#
+# --near is how far, m, the body's cell size holds before the cells grow.
 
 import math
 import os
@@ -37,7 +39,7 @@ def remesh(stl, size, out):
 
 def main():
     stl, out = sys.argv[1], sys.argv[2]
-    body, edge, far = opt("--body", 0.1), opt("--edge", 0.05), opt("--far", 5.0)
+    body, edge, far, near = opt("--body", 0.1), opt("--edge", 0.05), opt("--far", 5.0), opt("--near", 0.2)
     clean = os.path.splitext(out)[0] + "-surface.stl"
     remesh(stl, body, clean)
     gmsh.initialize()
@@ -93,7 +95,7 @@ def main():
     f.setNumber(t_body, "InField", d_body)
     f.setNumber(t_body, "SizeMin", body)
     f.setNumber(t_body, "SizeMax", half / 8)
-    f.setNumber(t_body, "DistMin", 0.2)
+    f.setNumber(t_body, "DistMin", near)
     f.setNumber(t_body, "DistMax", half)
     d_edge = f.add("Distance")
     f.setNumbers(d_edge, "CurvesList", sorted(set(abs(c) for c in curves)))
