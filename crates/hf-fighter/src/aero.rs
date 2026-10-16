@@ -1,8 +1,10 @@
 //! The fighter's aerodynamics, Mirage 2000-like: 45 m2 of delta wing,
 //! aspect ratio ~1.9, with bays in its wing roots. Below Mach 5 a drag polar: zero-
-//! lift drag 0.022 subsonic and 0.017 of skin friction supersonic, plus
-//! wave drag; and drag due to lift from the subsonic polar or linear
-//! supersonic theory, whichever is larger. Hypersonic, modified Newtonian
+//! lift drag, as a drag area that does not scale with the wing, of
+//! ~0.99 m2 subsonic and ~0.77 m2 of skin friction supersonic for the
+//! 14.2 m airframe with a 45 m2 wing the polar was set for, what the
+//! aircraft adds to that, and wave drag; and drag due to lift from the
+//! subsonic polar or linear supersonic theory, whichever is larger. Hypersonic, modified Newtonian
 //! flow on the lower surface at the angle of attack.
 //!
 //! The wave drag is the airframe's own: its Mach-1 D/q, from its area
@@ -17,14 +19,16 @@ use std::f64::consts::PI;
 /// The airframe's Mach-1 wave drag, D/q, m2, as modeling/fighter.py
 /// measures it.
 pub const WAVE: f64 = 1.03;
+/// Zero-lift drag area but wave drag, D/q m2, subsonic and supersonic.
+const FRICTION: (f64, f64) = (0.022 * 45., 0.017 * 45.);
 /// Where Raymer's fit gives way to linear theory.
 const FIT_MACH: f64 = 2.5;
 
 pub struct Aero {
     pub wing: f64,
     pub aspect: f64,
-    /// Zero-lift drag the aircraft adds to the polar: bays, tanks.
-    pub cd0_tanks: f64,
+    /// Zero-lift drag area the aircraft adds to the polar's, D/q, m2.
+    pub drag_area: f64,
     /// Peak pressure coefficient behind a normal shock, hypersonic.
     pub cp_max: f64,
     /// Wave drag at Mach 1, D/q, m2.
@@ -35,13 +39,13 @@ pub struct Aero {
 
 impl Default for Aero {
     fn default() -> Self {
-        Self { wing: 45., aspect: 1.88, cd0_tanks: 0.001, cp_max: 1.84, wave: WAVE, sweep: 58. }
+        Self { wing: 45., aspect: 1.88, drag_area: 0.045, cp_max: 1.84, wave: WAVE, sweep: 58. }
     }
 }
 
 impl Aero {
     pub fn cd0(&self, mach: f64) -> f64 {
-        let friction = 0.022 - 0.005 * ((mach - 1.) / 0.2).clamp(0., 1.);
+        let friction = FRICTION.0 - (FRICTION.0 - FRICTION.1) * ((mach - 1.) / 0.2).clamp(0., 1.);
         let rise = if mach < 1. { 5. * (mach - 0.9).max(0.) } else { 0.5 + 10. * (mach - 1.) };
         let fit = |m: f64| {
             1. - 0.386
@@ -54,7 +58,7 @@ impl Aero {
             fit(FIT_MACH) * ((FIT_MACH * FIT_MACH - 1.) / (mach * mach - 1.)).sqrt()
         };
         let wave = self.wave * rise.min(1.) * fall.max(0.);
-        self.cd0_tanks + friction + wave / self.wing
+        (friction + self.drag_area + wave) / self.wing
     }
 
     pub fn k(&self, mach: f64) -> f64 {

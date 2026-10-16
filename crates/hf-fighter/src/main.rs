@@ -43,10 +43,10 @@ struct Vehicle {
     tankage: f64,
     /// Wing area, m2.
     wing: f64,
-    /// Zero-lift drag the aircraft adds to the polar: its skin beyond the
-    /// 14.2 m airframe the polar was set for (~0.0035 of friction per m2,
-    /// over the wing's area), its wing-root bays.
-    cd0_extra: f64,
+    /// Zero-lift drag area the aircraft adds to the polar's, D/q, m2: its
+    /// skin beyond the 14.2 m airframe the polar was set for, at ~0.0035
+    /// of friction per m2, and its wing-root bays.
+    drag_area: f64,
     /// Wave drag at Mach 1, D/q, m2.
     wave: f64,
     /// Belly area over tanks, m2, and the heat each m2 takes through
@@ -64,7 +64,7 @@ impl Default for Vehicle {
             sortie: 500.,
             tankage: 24.3,
             wing: 45.,
-            cd0_extra: 0.0034,
+            drag_area: 0.152,
             wave: WAVE,
             belly_tanks: 15.,
             soak: 1.6e6,
@@ -136,7 +136,7 @@ fn climb(
     mission: &Mission,
 ) -> Result<(f64, Ascent)> {
     let orbit_mass = v.empty + v.tanks_dry + v.reserve;
-    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, wave: v.wave, ..Aero::default() };
+    let aero = Aero { wing: v.wing, drag_area: v.drag_area, wave: v.wave, ..Aero::default() };
     let fly = |m| spec.fly(&mission.planet, &aero, table, m, mission.from);
     let takeoff = hf_engine::gas::brent(
         |m| Ok(fly(m).final_mass - orbit_mass),
@@ -155,7 +155,7 @@ fn close_on(
     mission: &Mission,
     (takeoff, ascent): (f64, Ascent),
 ) -> Closure {
-    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, wave: v.wave, ..Aero::default() };
+    let aero = Aero { wing: v.wing, drag_area: v.drag_area, wave: v.wave, ..Aero::default() };
     let entry_mass = takeoff + v.sortie;
     let dv =
         EntrySpec::default().fly(&mission.planet, &aero).deorbit_dv + mission.braking;
@@ -201,7 +201,7 @@ fn worlds(v: &Vehicle) -> Result<()> {
     let spec = AscentSpec::new(engine, ROCKET.0, ROCKET.1, ROCKET.2, 0.1)?;
     let table = spec.engine_table();
     let curve = StripSpec::engine_curve(&spec.engine);
-    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, wave: v.wave, ..Aero::default() };
+    let aero = Aero { wing: v.wing, drag_area: v.drag_area, wave: v.wave, ..Aero::default() };
     println!(
         "== The sortie budget: what is left of {:.1} m3 for the work down in the air, empty {:.0} kg",
         v.tankage, v.empty
@@ -718,7 +718,7 @@ fn limits(v: &Vehicle) -> Result<()> {
 /// The mission for an airframe of this wing area, empty mass (with the
 /// pilot and internal tank walls), conformal-tank structure and tankage,
 /// and turbopump and lift-fan ratings: `--size WING EMPTY TANKS_DRY
-/// TANKAGE [TURBOPUMP_MW FAN_MW CD0_EXTRA]`; with `--worlds`, its sortie
+/// TANKAGE [TURBOPUMP_MW FAN_MW DRAG_AREA]`; with `--worlds`, its sortie
 /// budget on each world instead.
 fn size(v: &Vehicle, turbopump: f64, fan: f64) -> Result<()> {
     let engine = EngineSpec::default();
@@ -753,6 +753,49 @@ fn size(v: &Vehicle, turbopump: f64, fan: f64) -> Result<()> {
     Ok(())
 }
 
+/// How hard the fighter turns at `mass` kg: instantaneous, on the wing's
+/// lift at CL_MAX or the structure's 20 g at 15 t, whichever binds; and
+/// sustained, where full thrust meets the drag; in g and degrees a second.
+fn turn(v: &Vehicle) -> Result<()> {
+    const CL_MAX: f64 = 1.1;
+    const N_STRUCT: (f64, f64) = (20., 15000.);
+    let spec = AscentSpec::new(EngineSpec::default(), ROCKET.0, ROCKET.1, ROCKET.2, 0.1)?;
+    let aero = Aero { wing: v.wing, drag_area: v.drag_area, wave: v.wave, ..Aero::default() };
+    println!(
+        "== Turning, wing {:.0} m2: instantaneous g and deg/s, sustained g and deg/s",
+        v.wing
+    );
+    for mass in [11000., 16000., 22000.] {
+        println!("  {:.0} t, {:.0} kg/m2 of wing", mass / 1e3, mass / v.wing);
+        for (mach, z) in [(0.5, 3000.), (0.9, 3000.), (0.9, 10000.), (1.5, 11000.), (2.0, 15000.)] {
+            let at = air(z);
+            let speed = mach * at.sound;
+            let q = 0.5 * at.rho * speed * speed;
+            let weight = mass * 9.80665;
+            let thrust = spec
+                .settings(mach, z)
+                .iter()
+                .map(|(_, r)| r.thrust)
+                .fold(0., f64::max);
+            let inst = (q * v.wing * CL_MAX / weight).min(N_STRUCT.0 * N_STRUCT.1 / mass);
+            let spare = thrust / (q * v.wing) - aero.cd0(mach);
+            let sus = if spare > 0. {
+                (q * v.wing * (spare / aero.k(mach)).sqrt() / weight).min(inst)
+            } else {
+                0.
+            };
+            let rate = |n: f64| (9.80665 * (n * n - 1.).max(0.).sqrt() / speed).to_degrees();
+            println!(
+                "    Mach {mach:.1} at {:5.0} m: {inst:4.1} g {:5.1} deg/s, sustained {sus:4.1} g {:5.1} deg/s",
+                z,
+                rate(inst),
+                rate(sus)
+            );
+        }
+    }
+    Ok(())
+}
+
 fn main() -> Result<()> {
     let mut v = Vehicle::default();
     let args: Vec<String> = std::env::args().collect();
@@ -771,16 +814,19 @@ fn main() -> Result<()> {
             empty: n(2)?,
             tanks_dry: n(3)?,
             tankage: n(4)?,
-            cd0_extra: n(7).unwrap_or(v.cd0_extra),
+            drag_area: n(7).unwrap_or(v.drag_area),
             ..v
         };
         let (tp, fan) = (n(5).unwrap_or(50.) * 1e6, n(6).unwrap_or(30.) * 1e6);
-        if !args.iter().any(|a| a == "--worlds") {
+        if !args.iter().any(|a| a == "--worlds" || a == "--turn") {
             return size(&v, tp, fan);
         }
     }
     if args.iter().any(|a| a == "--worlds") {
         return worlds(&v);
+    }
+    if args.iter().any(|a| a == "--turn") {
+        return turn(&v);
     }
     if args.iter().any(|a| a == "--limits") {
         return limits(&v);

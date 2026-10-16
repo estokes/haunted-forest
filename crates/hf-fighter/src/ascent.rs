@@ -104,7 +104,7 @@ impl AscentSpec {
 
     /// Every engine setting worth trying at Mach `m`, altitude `z`, at full
     /// power within the turbopump's rating.
-    fn settings(&self, m: f64, z: f64) -> Vec<(&'static str, PointReport)> {
+    pub fn settings(&self, m: f64, z: f64) -> Vec<(&'static str, PointReport)> {
         let e = &self.engine;
         let mut out = Vec::new();
         for (fan, comp) in
