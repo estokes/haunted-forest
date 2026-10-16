@@ -196,7 +196,8 @@ def build(scale=1.0):
         skin_line(tree, f"bay_split_{side}", [(bx - 1.32, side * 1.85), (bx + 1.32, side * 1.85)], False, look, lines_m)
         gx = fighter.EQUIPMENT["main_gear_r"][2][0] * scale
         skin_line(tree, f"gear_{side}", rect(gx - 0.68, gx + 0.68, side * 0.44, side * 0.90), False, look, lines_m)
-    skin_line(tree, "nose_gear", rect(3.05 * scale, 4.15 * scale, -0.22, 0.22), False, look, lines_m)
+    nx = fighter.EQUIPMENT["nose_gear"][2][0] * scale
+    skin_line(tree, "nose_gear", rect(nx - 0.55, nx + 0.55, -0.22, 0.22), False, look, lines_m)
 
     w = fighter.WING
     tan = math.tan(math.radians(w["sweep_le"]))

@@ -14,7 +14,7 @@ use hf_engine::{
     parts::{Turbopump, TurbopumpSpec, G0},
 };
 use hf_fighter::{
-    aero::Aero,
+    aero::{Aero, WAVE},
     ascent::{Ascent, AscentSpec, Table},
     entry::{tank_soak, EntryReport, EntrySpec, Peak},
     fill::{filled_density, volume},
@@ -46,6 +46,8 @@ struct Vehicle {
     /// Zero-lift drag the aircraft adds to the polar: its wing-root bays,
     /// or conformal tanks if it has them.
     cd0_extra: f64,
+    /// Wave drag at Mach 1, D/q, m2.
+    wave: f64,
     /// Belly area over tanks, m2, and the heat each m2 takes through
     /// entry, J.
     belly_tanks: f64,
@@ -62,6 +64,7 @@ impl Default for Vehicle {
             tankage: 12.7,
             wing: 45.,
             cd0_extra: 0.001,
+            wave: WAVE,
             belly_tanks: 15.,
             soak: 1.6e6,
         }
@@ -132,7 +135,7 @@ fn climb(
     mission: &Mission,
 ) -> Result<(f64, Ascent)> {
     let orbit_mass = v.empty + v.tanks_dry + v.reserve;
-    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, ..Aero::default() };
+    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, wave: v.wave, ..Aero::default() };
     let fly = |m| spec.fly(&mission.planet, &aero, table, m, mission.from);
     let takeoff = hf_engine::gas::brent(
         |m| Ok(fly(m).final_mass - orbit_mass),
@@ -151,7 +154,7 @@ fn close_on(
     mission: &Mission,
     (takeoff, ascent): (f64, Ascent),
 ) -> Closure {
-    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, ..Aero::default() };
+    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, wave: v.wave, ..Aero::default() };
     let entry_mass = takeoff + v.sortie;
     let dv =
         EntrySpec::default().fly(&mission.planet, &aero).deorbit_dv + mission.braking;
@@ -197,7 +200,7 @@ fn worlds(v: &Vehicle) -> Result<()> {
     let spec = AscentSpec::new(engine, ROCKET.0, ROCKET.1, ROCKET.2, 0.1)?;
     let table = spec.engine_table();
     let curve = StripSpec::engine_curve(&spec.engine);
-    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, ..Aero::default() };
+    let aero = Aero { wing: v.wing, cd0_tanks: v.cd0_extra, wave: v.wave, ..Aero::default() };
     println!(
         "== The sortie budget: what is left of {:.1} m3 for the work down in the air, empty {:.0} kg",
         v.tankage, v.empty
@@ -700,7 +703,7 @@ fn size(v: &Vehicle, turbopump: f64, fan: f64) -> Result<()> {
     let to = strip.takeoff(c.takeoff, &curve);
     let land = strip.land(c.takeoff, &curve);
     let e = EntrySpec { mass: c.entry_mass, ..EntrySpec::default() }
-        .fly(&EARTH, &Aero { wing: v.wing, ..Aero::default() });
+        .fly(&EARTH, &Aero { wing: v.wing, wave: v.wave, ..Aero::default() });
     println!(
         "{:.0}/{:.0} MW, wing {:.1} m2, empty {:.0} kg + {:.0} kg tanks: takeoff {:.0} kg (strip allows {heaviest:.0}), roll {:.0} m, landing roll {:.0} m; propellant {:.1} of {:.1} m3; entry {:.0} kg, nose {:.0} K",
         turbopump / 1e6,
@@ -722,6 +725,9 @@ fn size(v: &Vehicle, turbopump: f64, fan: f64) -> Result<()> {
 fn main() -> Result<()> {
     let mut v = Vehicle::default();
     let args: Vec<String> = std::env::args().collect();
+    if let Some(i) = args.iter().position(|a| a == "--wave") {
+        v.wave = args.get(i + 1).ok_or_else(|| anyhow::anyhow!("--wave D/Q"))?.parse()?;
+    }
     if let Some(i) = args.iter().position(|a| a == "--size") {
         let n = |k: usize| -> Result<f64> {
             Ok(args

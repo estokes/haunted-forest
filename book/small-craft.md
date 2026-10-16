@@ -192,8 +192,8 @@ dust.
 
 Turbine mode's best is cruise; its worst is Mach 2, where ram doubles
 the airflow and the fan and compressor would want 49 MW. The ramjet holds
-level flight to about Mach 4.5 with its burner at 3,000 K; beyond that
-drag outgrows it, and Mach 6 is a dash on the rocket.
+level flight to about Mach 4 with its burner at 3,000–3,500 K; beyond
+that drag outgrows it, and Mach 6 is a dash on the rocket.
 
 In ramjet mode the stopped compressor sits beside duct walls at
 1,100–1,800 K, so its cavity is purged with cracked ammonia: hot CNT
@@ -259,31 +259,49 @@ About **20 t fully loaded**, built to land almost anywhere.
 ## Fighter
 
 **About 5.5 t empty, 14.2 m long, with the lines of a Mirage 2000:** a
-tailless delta, one fin, half-cone side inlets, one engine; but a
-broader forward body, to hold a lift fan, and no canopy. The inlet cones
-translate, as the Mirage's do, but much further, to set up the inlet for
-the ramjet. `modeling/fighter.py` builds it in Blender, places what it
-carries, and works out its volumes, masses and balance; it is a greybox
-to get the layout right, not a finished shape.
+tailless delta set low, its underside flush with a flat belly; one fin,
+half-cone inlets in D-shaped trunks on the flanks, one engine; a round
+radome and, where the canopy would be, a low hump over the pilot's
+capsule; but a body broader amidships, where the inlet ducts pass round a
+lift fan. The inlet cones translate, as the Mirage's do, but much
+further, to set up the inlet for the ramjet. `modeling/fighter.py`
+builds it in Blender, places what it carries, and works out its volumes,
+masses, balance and wave drag; `modeling/fighter_look.py` dresses and
+renders it.
 
 | | |
 |---|---|
 | Length, span | 14.2 m, 9.2 m |
 | Wing | 45 m², a 58° cropped delta; 55 m² of planform with the body |
-| Inside the skin | ~41 m³, ~141 m² of skin |
-| Tanks | 12.7 m³: forward 4.4, around the engine 6.2, wing box 2.2 |
+| Inside the skin | ~40 m³, ~144 m² of skin |
+| Tanks | 12.7 m³: forward 4.3, around the engine 6.3, wing box 2.1 |
 | Bays | two, in the wing roots, for four missiles |
 | Empty | ~5.5 t (~8.7 t if its equipment came out as heavy as today's practice) |
 | Full internal tanks and four missiles | ~14.7 t |
 
-**From the nose back**: the radar and avionics; the nose gear; the
-forward tank, with the laser's turret on top of it; the lift fan's shaft,
-1.5 m across and skin to skin, 6.6 m back, with the inlet ducts curving
-round it; the pilot's capsule in the spine above the engine face; the
-laser along the spine behind it; the engine, from 8.6 m to the tail, with
-the turbopump and its electronics beside it and the main gear stowed
-under them; tanks wrapped round all of it and in the wing box; the
-missile bays in the wing roots; the swivel nozzle at the tail.
+**From the nose back**: the radar and avionics in the radome; the
+pilot's capsule under its hump, where a cockpit would be, with the nose
+gear and the capsule's reservoir below it and the forward tank round it;
+the inlets; the lift fan's shaft, 1.5 m across and skin to skin, 6.4 m
+back, with the inlet ducts curving round it; the laser's turret just
+behind it, and the laser along the spine over the engine face; the
+engine, from 8.6 m to the tail, with the turbopump and its electronics
+beside it, dense and so aft, and the main gear stowed under them; tanks
+wrapped round all of it and in the wing box; the missile bays in the
+wing roots; the swivel nozzle at the tail.
+
+**Shape and wave drag.** The wing's section is thickest at 40% of its
+chord, not half: its trailing edge is straight, so a section thick to
+the back would stack the whole span's thickness in the last two metres
+and pile area on the tail. Measured from the model's cross-sections, the
+Mach-1 wave drag is ~2.4 m² of D/q, twice a Sears-Haack body's of the
+same length and volume, about a usual fighter's. It is high in absolute
+terms because the fighter is fat for its length, ~40 m³ inside to a
+Mirage's ~25, and wave drag goes with the square of volume; the volume
+is the tanks. Area ruling harder costs tank faster than it saves drag:
+a 4.5% wing would save ~0.26 m² and lose ~0.56 m³ of tank and the bays;
+moving the saddle tanks forward to slim the tail lost 1.5 m³ for almost
+nothing. The mission sim takes the measured figure.
 
 **The pilot rides a capsule, not a cockpit.** There is no canopy: the
 pilot sees through the sensors and speaks through a BCI. The capsule,
@@ -384,15 +402,15 @@ what makes the difference.
 
 **Balance.** The fighter is unstable by design and flown by wire, so its
 centre of gravity is set for trim drag, not stability. Subsonic, the
-wing's lift acts ~9.2 m back; supersonic and hypersonic, near the
-planform's centroid, ~9.7 m. Full, the centre of gravity is at ~8.9 m;
-empty, ~9.4 m. The forward tank, ~3 t of propellant 4.2 m ahead of the
+wing's lift acts ~8.8 m back; supersonic and hypersonic, near the
+planform's centroid, ~9.4 m. Full, the centre of gravity is at ~8.6 m;
+empty, ~8.9 m. The forward tank, ~3 t of propellant 4.2 m ahead of the
 centre of gravity, is the trim tank, as Concorde's aft tanks were:
 draining it moves the centre of gravity aft by ~1.1 m, for supersonic
 flight and for entry, and filling it moves it forward, which the hover
 likes. The rest of the tankage sits at or behind the centre of lift, and
 dust and ammonia can be moved between tanks in flight. In the hover the
-nozzle carries 0.5–0.9 of the fan's thrust, depending on the load.
+nozzle carries 0.4–0.85 of the fan's thrust, depending on the load.
 
 **Weapons.** The laser, and four dust missiles, ~90 kg each, 2.4 m by
 0.18 m, two to a bay in each wing root, reaching ~200 km. Nothing hangs
@@ -409,7 +427,7 @@ space the laser is heat-limited: it cannot fire continuously.
 - **Rocket mode**: ~3 km/s on a few tonnes of internal propellant — zoom
   climbs, suborbital hops, a strike from above the atmosphere — and
   orbit on full tanks.
-- **Ramjet mode**: level flight to about Mach 4.5, and Mach 6 briefly
+- **Ramjet mode**: level flight to about Mach 4, and Mach 6 briefly
   on the rocket. The delta is a sound shape for it; the airframe's heat
   is the limit.
 
@@ -433,15 +451,15 @@ through, as the X-15A-2's nearly did at Mach 6.7.
 **The sortie budget.** What the mission is worth is how much the
 fighter can spend down in the air before it must climb back: a planner
 always wants more. On an Earth-like world, with its 12.7 m³ full, the
-climb back costs ~4.0 t of propellant from a 9.6 t start, and the
-deorbit burn a little; **~4.6 t is left for the sortie**, some ten hours
+climb back costs ~4.7 t of propellant from a 10.3 t start, and the
+deorbit burn a little; **~3.9 t is left for the sortie**, some nine hours
 of subsonic cruise.
 
 | | Mass |
 |---|---|
 | In orbit, empty, with a 150 kg reserve | ~5.6 t |
-| Climb back to orbit, from the ground or from flight | ~4.0 t |
-| Sortie budget | ~4.6 t |
+| Climb back to orbit, from the ground or from flight | ~4.7 t |
+| Sortie budget | ~3.9 t |
 | Entry, budget unspent | ~14.2 t, ~315 kg/m² of wing |
 
 It loads the climb's propellant aft first and keeps the forward tank for
@@ -449,16 +467,21 @@ the sortie, so that it enters with its centre of gravity near the
 hypersonic centre of lift and its elevons nearly neutral, out of the
 worst heat.
 
-**The climb.** Turbine mode with reheat to Mach ~2.7, its compressor
-unloading as the air warms; the ramjet, its burner at 3,000–3,500 K, to
-Mach ~5 at 25 km, on ~0.6 t in eight minutes. Then the rocket: 250 kN
-from the main combustor as a 4 MPa chamber, through the nozzle opened to
-an area ratio of ~18 in a 0.6 m² exit. It burns dust-rich, one part
-ammonia to ten of dust, at ~1,460 s and a ~5,200 K chamber, saving the
-ammonia for the air-breathing legs: 6.7 km/s in three minutes on 3.3 t,
-peaking at ~4.4 g, then a ~350 m/s burn to circularise at 200 km. At
-4 MPa a first-order Bartz estimate puts the throat at a few tens of
+**The climb.** Turbine mode to Mach 0.95 at 10 km, ~0.1 t in a minute
+and a half; then the rocket: 250 kN from the main combustor as a 4 MPa
+chamber, through the nozzle opened to an area ratio of ~18 in a 0.6 m²
+exit. It burns dust-rich, about one part ammonia to seven of dust, at
+~1,430 s and a ~5,200 K chamber: ~4.7 t over about three minutes and
+the burn to circularise at 200 km, 8.5 km/s in all, peaking near 3.8 g.
+At 4 MPa a first-order Bartz estimate puts the throat at a few tens of
 MW/m², well short of a rocket's usual.
+
+The ramjet does not pay on the way up. Against a rocket of ~1,430 s it
+wins only by a little, and the fighter's wave drag takes that: the
+climb optimiser leaves the air at Mach 0.95 at the measured ~2.4 m² of
+D/q, goes on to Mach 2.2 at ~1.4 m², and only below ~1 m² rides the
+ramjet to Mach ~4.5 at 23 km first, which would save ~0.5 t. A fighter
+area-ruled that well would be longer, or carry less.
 
 **Entry.** A 50 m/s deorbit burn; then belly-first at 40° angle of
 attack, banking to hold an equilibrium glide, as the Shuttle did. At
@@ -485,7 +508,7 @@ Behind 5 cm of insulation, ~8 kg/m², a belly tank takes ~1.5 MJ/m²
 through the whole entry and the hours after, which boils off ~15–20 kg
 of its ammonia.
 
-**The strip.** At 9.6 t, and at anything up to ~19 t, the fighter hovers
+**The strip.** At 10.3 t, and at anything up to ~19 t, the fighter hovers
 off it and lands on it vertically: the 30 MW lift fan and the nozzle
 carry its weight with the engine on the rest of the turbopump.
 
@@ -494,19 +517,18 @@ with Earth's air at the surface thinning faster with height:
 
 | Surface gravity | Orbital speed | Sortie budget | Nose on entry | Landing |
 |---|---|---|---|---|
-| 1.0 g | 7.8 km/s | ~4.6 t | ~2,150 K | vertical |
-| 1.2 g | 9.4 km/s | ~3.4 t | ~2,400 K | vertical |
-| 1.3 g | 10.2 km/s | ~2.7 t | ~2,550 K | vertical |
-| **1.4 g** | **11.0 km/s** | **~1.8 t** | **~2,700 K** | **vertical** |
-| 1.5 g | 11.7 km/s | ~0.1–0.3 t | ~2,800 K | a 60 m roll |
-| 1.6 g and up | 12.5 km/s and up | none: the climb alone overfills the tanks | | |
+| 1.0 g | 7.8 km/s | ~3.9 t | ~2,150 K | vertical |
+| 1.1 g | 8.6 km/s | ~3.2–3.3 t | ~2,300 K | vertical |
+| 1.2 g | 9.4 km/s | ~2.5–2.6 t | ~2,400 K | vertical |
+| **1.3 g** | **10.2 km/s** | **~1.6–1.8 t** | **~2,550 K** | **vertical** |
+| 1.4 g and up | 11.0 km/s and up | none: the climb alone overfills the tanks | | |
 
-Never landing saves only ~0.1 t: the climb from the ground is cheap
-next to the rocket's. **About 1.4 g is the practical limit**, with a
-couple of hours of work down in the air; 1.5 g is a stunt with minutes
-of it; beyond that it goes down one way, or refuels on the ground. Entry
-never needs a braking burn while the climb is possible: the nose stays
-under ~2,900 K to 1.5 g.
+Landing or not changes the budget by only ~0.1–0.2 t: the climb from
+the ground is cheap next to the rocket's. **About 1.3 g is the practical
+limit**, with a few hours of work down in the air; beyond it the fighter
+goes down one way, or refuels on the ground. Entry never needs a braking
+burn while the climb is possible: the nose stays under ~2,600 K to
+1.3 g.
 
 **Water in the gaps.** Water is denser than ammonia, 1.0 t/m³ against
 0.68, and the skin takes hot oxygen anyway, so it was tried in the
@@ -526,9 +548,8 @@ spare, and mass is what binds, so the fighter carries ammonia. Water
 also freezes in a cold tank, and steam eats carbon in the cooling
 passages unless they are skinned too.
 
-On a world harder than Earth, needing a braking burn on the way in and
-more than ~9 km/s on the way out, there is no down and back: it goes
-down one way, or refuels on the ground.
+On a world harder than ~1.3 g, more than ~10 km/s to orbit, there is no
+down and back: it goes down one way, or refuels on the ground.
 
 ## Logistics and Austere Operations
 

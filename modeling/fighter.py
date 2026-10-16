@@ -9,14 +9,15 @@
 # X runs aft from the nose, Y to starboard, Z up; metres. The airframe
 # (fuselage stations, wing, fin, conformal tanks) scales with SCALE; the
 # equipment keeps its size and moves with the stations. The fuselage is
-# lofted through superelliptic sections; the wing is a cropped delta with a
-# biconvex section, one piece through the fuselage. Tank regions are shapes
-# of their own: what each holds is its volume clipped to the skin, less
-# what equipment it overlaps, times a fill factor for frames and plumbing.
-# Every equipment block is checked against the skin. There is no canopy:
-# the pilot rides a liquid-filled capsule in the spine, near the centre of
-# gravity, and sees through the sensors. The structure is sized from the
-# loads by modeling/fighter_structure.py.
+# lofted through smooth stations; the wing is a low cropped delta, one
+# piece through the fuselage. Tank regions are shapes of their own: what
+# each holds is its volume clipped to the skin, less what equipment it
+# overlaps, times a fill factor for frames and plumbing. Every equipment
+# block is checked against the skin. There is no canopy: the pilot rides
+# a liquid-filled capsule under a hump where a cockpit would be, and sees
+# through the sensors. The structure is sized from the loads by
+# modeling/fighter_structure.py; the Mach-1 wave drag, which
+# crates/hf-fighter takes as aero::WAVE, from the area distribution.
 
 import math
 import sys
@@ -41,38 +42,41 @@ SCALE = 1.0
 
 # The fuselage's stations: (x, half-width, height of the body above the
 # axis, depth below it, height of the dorsal spine above the body, the
-# spine's half-width). Aft of the radome the section is chined: an elliptic
-# top and a flatter belly meet at a sharp edge at the half-width; the spine
-# rides the top over the capsule and the laser. Between stations every
+# spine's half-width). Round at the radome; aft of it the section is
+# chined, an elliptic top and a flatter belly meeting at a sharp edge at
+# the half-width, the belly flat where the low wing meets it. The spine
+# rides the top: a hump over the capsule, then over the laser and tanks. Between stations every
 # parameter runs smoothly (monotone cubic), so the stations are a shape,
 # not a polyline.
 FUSELAGE = [
     (0.00, 0.03, 0.03, 0.03, 0.00, 0.00),
-    (0.40, 0.15, 0.15, 0.13, 0.00, 0.00),
-    (1.00, 0.29, 0.29, 0.26, 0.00, 0.00),
-    (1.80, 0.43, 0.42, 0.38, 0.00, 0.00),
-    (2.60, 0.56, 0.51, 0.45, 0.00, 0.00),
-    (3.40, 0.82, 0.58, 0.50, 0.00, 0.00),
-    (4.60, 1.12, 0.68, 0.60, 0.06, 0.45),
-    (5.60, 1.40, 0.76, 0.70, 0.04, 0.45),
-    (6.80, 1.62, 0.82, 0.74, 0.10, 0.55),
-    (8.00, 1.52, 0.84, 0.74, 0.32, 0.75),
-    (9.50, 1.28, 0.84, 0.72, 0.32, 0.75),
-    (11.00, 1.02, 0.80, 0.66, 0.30, 0.65),
-    (12.50, 0.76, 0.70, 0.60, 0.26, 0.55),
-    (13.60, 0.60, 0.56, 0.56, 0.10, 0.40),
+    (0.40, 0.15, 0.15, 0.14, 0.00, 0.00),
+    (1.00, 0.29, 0.29, 0.27, 0.00, 0.00),
+    (1.80, 0.42, 0.42, 0.39, 0.00, 0.00),
+    (2.40, 0.50, 0.50, 0.46, 0.00, 0.00),
+    (3.40, 0.72, 0.64, 0.58, 0.20, 0.45),
+    (4.60, 0.96, 0.72, 0.66, 0.24, 0.45),
+    (5.60, 1.22, 0.76, 0.70, 0.14, 0.45),
+    (6.80, 1.58, 0.82, 0.74, 0.06, 0.45),
+    (8.00, 1.52, 0.84, 0.74, 0.22, 0.75),
+    (9.50, 1.28, 0.84, 0.72, 0.24, 0.75),
+    (11.00, 1.02, 0.80, 0.66, 0.22, 0.65),
+    (12.50, 0.76, 0.70, 0.60, 0.16, 0.55),
+    (13.60, 0.60, 0.56, 0.56, 0.04, 0.40),
     (14.20, 0.55, 0.53, 0.53, 0.00, 0.00),
 ]
 # Superellipse exponents of the top and the belly along x: a round radome,
 # then the chine.
-SECTION = [(0.0, 2.0, 2.0), (2.2, 2.0, 2.0), (4.2, 2.4, 4.0)]
+SECTION = [(0.0, 2.0, 2.0), (3.0, 2.0, 2.0), (4.6, 2.2, 3.0), (6.8, 2.4, 4.0)]
 
 # The wing's sections: (y, thickness/chord, fullness). Fullness 1 is
-# biconvex; lower is fuller, deep over more of the chord. The inner wing is
-# a little fuller and thicker, 5.5-6%, to hold a missile bay each side;
-# outboard it is a 5% biconvex.
-WING = {"apex": 5.0, "root": 8.6, "semispan": 4.6, "sweep_le": 58.0, "tc": 0.06, "z": -0.15,
-        "sections": [(0.0, 0.055, 0.5), (2.8, 0.060, 0.5), (3.4, 0.050, 1.0), (4.6, 0.050, 1.0)]}
+# biconvex; lower is fuller, deep over more of the chord. The thickest
+# point is at `peak` of the chord: forward of half, so that the straight
+# trailing edge does not stack the whole span's thickness at the tail. The
+# inner wing is a little thicker, 5.5-6%, to hold a missile bay each side;
+# outboard it is 5%. The wing is low, its underside the belly's plane.
+WING = {"apex": 4.6, "root": 8.6, "semispan": 4.6, "sweep_le": 58.0, "tc": 0.06, "z": -0.48, "peak": 0.4,
+        "sections": [(0.0, 0.055, 1.0), (2.8, 0.060, 1.0), (3.4, 0.050, 1.0), (4.6, 0.050, 1.0)]}
 FIN = {"root_x": 9.6, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, "z": 0.6}
 # Conformal tanks on the back, each side of the dorsal spine, or None:
 # (x0, x1, y, half-width, height)
@@ -82,48 +86,52 @@ CFT = None
 # x of the centre scales with the airframe. "box" size is (dx, dy, dz);
 # "cyl_x" and "cyl_z" are (diameter, length) along X or Z.
 EQUIPMENT = {
-    "radar":           ("cyl_x", (0.45, 0.45), (2.00, 0.0, 0.02), _EQ["radar"], (0.6, 0.6, 0.9)),
-    "avionics":        ("box", (0.50, 0.50, 0.38), (2.90, 0.0, 0.02), _EQ["avionics"], (0.5, 0.5, 0.8)),
-    "nose_gear":       ("box", (1.00, 0.40, 0.36), (3.70, 0.0, -0.20), 0, (0.3, 0.3, 0.3)),
+    "radar":           ("cyl_x", (0.45, 0.45), (1.45, 0.0, 0.0), _EQ["radar"], (0.6, 0.6, 0.9)),
+    "avionics":        ("box", (0.50, 0.50, 0.38), (2.05, 0.0, 0.0), _EQ["avionics"], (0.5, 0.5, 0.8)),
+    "nose_gear":       ("box", (1.00, 0.40, 0.36), (3.50, 0.0, -0.25), 0, (0.3, 0.3, 0.3)),
     # Pilot, ~0.24 m3 of tissue-density breathing liquid, the shell, the
-    # oxygenator and scrubber, the BCI: an escape capsule in its own right.
-    # It is boarded through a dorsal hatch between the conformal tanks, by
-    # a built-in ladder, and ejects upward through it. Drained, its liquid
-    # waits in the reservoir.
-    "capsule":         ("box", (2.00, 0.60, 0.50), (8.60, 0.0, 0.72), _EQ["capsule"], (0.95, 0.85, 0.35)),
-    "capsule_reservoir": ("box", (0.70, 0.60, 0.60), (5.45, 0.0, 0.35), 0, (0.95, 0.75, 0.45)),
+    # oxygenator and scrubber, the BCI: an escape capsule in its own right,
+    # where a cockpit would be. It is boarded through a dorsal hatch, by a
+    # built-in ladder, and ejects upward through it. Drained, its liquid
+    # waits in the reservoir under it.
+    "capsule":         ("box", (2.00, 0.60, 0.50), (4.60, 0.0, 0.42), _EQ["capsule"], (0.95, 0.85, 0.35)),
+    "capsule_reservoir": ("box", (0.70, 0.60, 0.50), (4.95, 0.0, -0.25), 0, (0.95, 0.75, 0.45)),
     # The fan's shaft runs skin to skin; its doors are the skin.
-    "lift_fan":        ("cyl_z", (1.55, 1.42), (6.60, 0.0, 0.06), _EQ["lift_fan"], (0.2, 0.8, 0.9)),
+    "lift_fan":        ("cyl_z", (1.55, 1.42), (6.40, 0.0, 0.06), _EQ["lift_fan"], (0.2, 0.8, 0.9)),
     # Fan, compressor, casings, hot section, nozzle, and motors for ~45 MW,
     # what the fan and compressor want at Mach 2.
     "engine":          ("cyl_x", (1.00, 4.10), (10.65, 0.0, -0.05), _EQ["engine"] + _EQ["engine_motors"], (0.9, 0.45, 0.2)),
     "swivel_nozzle":   ("cyl_x", (0.90, 1.70), (13.55, 0.0, -0.05), _EQ["swivel_nozzle"], (0.95, 0.3, 0.15)),
+    # Dense, so aft, where they balance the capsule and the forward tank
+    # without bulk in the tail.
     "turbopump":       ("cyl_x", (0.45, 1.40), (10.20, 0.68, 0.22), _EQ["turbopump"], (0.85, 0.2, 0.6)),
     "power_electronics": ("box", (1.20, 0.45, 0.40), (10.20, -0.68, 0.22), _EQ["power_electronics"], (0.9, 0.9, 0.2)),
-    "fel":             ("box", (3.00, 0.55, 0.40), (11.20, 0.0, 0.62), _EQ["laser"], (0.2, 0.9, 0.3)),
-    "fel_director":    ("cyl_z", (0.60, 0.40), (4.90, 0.0, 0.70), _EQ["laser_turret"], (0.1, 1.0, 0.4)),
+    # The laser along the spine over the engine face, its turret at the
+    # front, just aft of the lift fan.
+    "fel":             ("box", (3.00, 0.55, 0.40), (9.40, 0.0, 0.66), _EQ["laser"], (0.2, 0.9, 0.3)),
+    "fel_director":    ("cyl_z", (0.60, 0.40), (7.75, 0.0, 0.98), _EQ["laser_turret"], (0.1, 1.0, 0.4)),
     # Stowed beside the engine's belly; the legs swing out to a wide track.
     "main_gear_l":     ("box", (1.30, 0.40, 0.32), (10.30, -0.66, -0.40), 0, (0.3, 0.3, 0.3)),
     "main_gear_r":     ("box", (1.30, 0.40, 0.32), (10.30, 0.66, -0.40), 0, (0.3, 0.3, 0.3)),
     # Two dust missiles side by side in each wing root, ~2.4 m x 0.18 m and
     # ~90 kg each; doors on the belly, sealed for entry like the Shuttle's
     # gear doors. Mass: doors, ejectors, hot seals.
-    "bay_l":           ("box", (2.60, 0.50, 0.24), (11.10, -1.85, -0.15), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
-    "bay_r":           ("box", (2.60, 0.50, 0.24), (11.10, 1.85, -0.15), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_l":           ("box", (2.60, 0.50, 0.24), (9.96, -1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_r":           ("box", (2.60, 0.50, 0.24), (9.96, 1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
 }
 # Equipment meant to stand proud of the skin: the laser's turret and the
 # nozzle's exit.
 EXTERNAL = ("fel_director", "swivel_nozzle")
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
-INLET = {"area": 0.30, "face_x": 8.60, "mouth_x": 4.90, "fair_x": 8.60, "fairing_r": 0.42}
+INLET = {"area": 0.30, "face_x": 8.60, "mouth_x": 4.90, "fair_x": 8.60, "fairing": (0.40, 0.52)}
 DUCT_PATH = [(4.80, 1.24, -0.05), (5.80, 1.26, -0.05), (6.60, 1.20, -0.05), (7.60, 0.90, -0.05), (8.60, 0.25, -0.05)]
 
 # Tank regions: name -> box (x0, x1, y0, y1, z0, z1), or "wing" for the wing
 # box outboard of the fuselage between these chord fractions.
 TANKS = {
-    "forward":   ("box", (3.10, 5.85, -1.3, 1.3, -0.7, 0.95)),
-    "saddle":    ("box", (8.65, 12.6, -1.4, 1.4, -0.75, 0.95)),
+    "forward":   ("box", (2.32, 5.85, -1.3, 1.3, -0.7, 0.95)),
+    "saddle":    ("box", (8.65, 12.6, -1.4, 1.4, -0.75, 1.10)),
     "wing":      ("wing", (0.15, 0.75)),
 }
 TANK_FILL = 0.75  # of a tank region's free volume: frames, baffles, feeds, and the systems that thread between
@@ -285,24 +293,25 @@ def loft(name, stations, coll, color, k=48, alpha=1.0, offset=(0, 0, 0), n=2.5):
     return mesh_object(name, verts, faces, coll, color, alpha)
 
 
-def half_thickness(chord, tc, fullness, u):
+def half_thickness(chord, tc, fullness, u, peak=0.5):
     """Half the section's thickness at chord fraction u: biconvex at
-    fullness 1, fuller below."""
-    return 0.5 * tc * chord * (4 * u * (1 - u)) ** fullness
+    fullness 1, fuller below; thickest at `peak` of the chord."""
+    v = u ** (math.log(0.5) / math.log(peak))
+    return 0.5 * tc * chord * (4 * v * (1 - v)) ** fullness
 
 
-def section(chord, tc, fullness, n=24):
+def section(chord, tc, fullness, peak, n=24):
     """Upper surface, (x, z) from leading to trailing edge."""
-    return [(chord * i / n, half_thickness(chord, tc, fullness, i / n)) for i in range(n + 1)]
+    return [(chord * i / n, half_thickness(chord, tc, fullness, i / n, peak)) for i in range(n + 1)]
 
 
-def surface(name, sections, coll, color, vertical=False, alpha=1.0):
+def surface(name, sections, coll, color, vertical=False, alpha=1.0, peak=0.5):
     """Closed mesh through airfoil sections: (x_le, span, chord, tc, base,
     fullness)."""
     verts, faces = [], []
     n = 24
     for x_le, s, chord, tc, base, fullness in sections:
-        up = section(chord, tc, fullness, n)
+        up = section(chord, tc, fullness, peak, n)
         ring = [(x_le + x, z) for x, z in up] + [(x_le + x, -z) for x, z in reversed(up[1:-1])]
         for x, z in ring:
             verts.append((x, z + base[1], s) if vertical else (x, s, z + base[2]))
@@ -420,17 +429,25 @@ def build(scale):
     for x in fuselage_stations(s):
         rings.append([(x, y, z) for y, z in fuselage_section(*station(x, s))])
     fus = ring_loft("fuselage", rings, skin, C_SKIN)
-    # Half-cone inlets on the flanks: a fairing round each duct from its
-    # mouth, sinking into the body as the duct turns in to the engine.
+    # Half-cone inlets on the flanks: a D-shaped trunk round each duct from
+    # its mouth, its outer face a tall half-ellipse, its top and bottom
+    # running flat into the body; it sinks into the body as the duct turns
+    # in to the engine.
     nacelles = []
+    ry, rz = (r * s for r in INLET["fairing"])
     for side in (-1, 1):
         nrings = []
         for i in range(24):
             x = (INLET["mouth_x"] + (INLET["fair_x"] - INLET["mouth_x"]) * i / 23) * s
             y, z = duct_point(x, s)
-            r = INLET["fairing_r"] * s
-            nrings.append([(x, side * y + r * math.cos(t), z + r * math.sin(t))
-                           for t in [2 * math.pi * j / 36 for j in range(36)]])
+            ring = [(y + ry * math.cos(t), z + rz * math.sin(t))
+                    for t in [math.pi * (j / 24 - 0.5) for j in range(25)]]
+            ring += [(y - 0.6 * s * j / 6, z + rz) for j in range(1, 6)]
+            ring += [(y - 0.6 * s, z + rz * (1 - 2 * j / 6)) for j in range(7)]
+            ring += [(y - 0.6 * s * (1 - j / 6), z - rz) for j in range(1, 6)]
+            nrings.append([(x, side * a, b) for a, b in ring])
+        if side < 0:
+            nrings = [list(reversed(r)) for r in nrings]
         nacelles.append(ring_loft(f"inlet_{side}", nrings, skin, C_SKIN))
     w = WING
     tan = math.tan(math.radians(w["sweep_le"]))
@@ -439,7 +456,7 @@ def build(scale):
     half = [(y * s, tc, p) for y, tc, p in w["sections"]]
     spanwise = [(-y, tc, p) for y, tc, p in reversed(half[1:])] + half
     wing = surface("wing", [(le_at(y / s), y, chord_at(y / s), tc, (0, 0, w["z"] * s), p)
-                            for y, tc, p in spanwise], skin, C_SKIN)
+                            for y, tc, p in spanwise], skin, C_SKIN, peak=w["peak"])
     f = FIN
     ftan = math.tan(math.radians(f["sweep_le"]))
     fin = surface("fin", [
@@ -656,6 +673,10 @@ def build(scale):
         cg = cg_with(drained)
         margins[label] = (round(cg, 2), round(100 * (ac_sub - cg) / mac), round(100 * (cp_high - cg) / mac),
                           round(split(cg), 2))
+    nozzle = eq["swivel_nozzle"]["obj"]
+    length = max((nozzle.matrix_world @ Vector(c)).x for c in nozzle.bound_box)
+    dist = area_distribution([oml, nozzle, eq["fel_director"]["obj"]], length)
+    dq, dq_sh, v_eff = wave_drag(dist, 2 * INLET["area"], INLET["mouth_x"] * s, length)
     return {
         "scale": s,
         "length": FUSELAGE[-1][0] * s,
@@ -686,7 +707,72 @@ def build(scale):
         "ac_subsonic": ac_sub,
         "cp_super_hyper": cp_high,
         "trim (cg, subsonic margin %MAC, high-speed margin %MAC, nozzle/fan)": margins,
+        "area_peak": max(dist, key=lambda d: d[1]),
+        "wave_drag (D/q Mach 1 m2, Sears-Haack, E_WD)": (round(dq, 2), round(dq_sh, 2), round(dq / dq_sh, 2)),
+        "area_distribution": dist,
     }
+
+
+def area_distribution(objs, x_end, dx=0.05, dz=0.02):
+    """Cross-sectional area of the union of `objs` at stations dx apart,
+    from rays along y in rows dz apart: [(x, m2)]."""
+    trees = []
+    for o in objs:
+        bb = [o.matrix_world @ Vector(c) for c in o.bound_box]
+        trees.append((bvh(o), min(v.x for v in bb), max(v.x for v in bb),
+                      min(v.z for v in bb), max(v.z for v in bb)))
+
+    def chords(t, x, z):
+        hits, origin = [], Vector((x, -10.0, z))
+        while len(hits) < 40:
+            h = t.ray_cast(origin, Vector((0, 1, 0)))
+            if h[0] is None:
+                break
+            hits.append(h[0].y)
+            origin = Vector((x, h[0].y + 1e-5, z))
+        return [(hits[i], hits[i + 1]) for i in range(0, len(hits) - 1, 2)]
+
+    out = []
+    for i in range(int(x_end / dx) + 2):
+        x, area = i * dx, 0.0
+        live = [t for t in trees if t[1] <= x <= t[2]]
+        if live:
+            z = min(t[3] for t in live) + dz / 2
+            while z < max(t[4] for t in live):
+                spans = sorted(c for t in live if t[3] <= z <= t[4] for c in chords(t[0], x, z))
+                end = -1e9
+                for a, b in spans:
+                    area += max(0.0, b - max(a, end)) * dz
+                    end = max(end, b)
+                z += dz
+        out.append((x, area))
+    return out
+
+
+def wave_drag(dist, capture, mouth_x, length, terms=16):
+    """Mach-1 wave drag, D/q in m2, of the area distribution less the inlet
+    capture aft of the mouth (the stream tube is not the body), by von
+    Karman's slender-body series; and of the Sears-Haack body of the same
+    length and volume."""
+    xs = [x for x, _ in dist if x <= length]
+    a = [max(0.0, s - (capture if x >= mouth_x else 0.0)) for x, s in dist[:len(xs)]]
+    vol = sum((a[i] + a[i + 1]) / 2 * (xs[i + 1] - xs[i]) for i in range(len(xs) - 1))
+    slope = [(a[min(i + 1, len(a) - 1)] - a[max(i - 1, 0)]) / (xs[min(i + 1, len(a) - 1)] - xs[max(i - 1, 0)])
+             for i in range(len(a))]
+    k = 2000
+    th = [math.pi * j / k for j in range(k + 1)]
+    f = []
+    for t in th:
+        x = length / 2 * (1 - math.cos(t))
+        i = min(int(x / (xs[1] - xs[0])), len(xs) - 2)
+        u = (x - xs[i]) / (xs[i + 1] - xs[i])
+        f.append(slope[i] * (1 - u) + slope[i + 1] * u)
+    dq = 0.0
+    for n in range(1, terms + 1):
+        b = 2 / math.pi * sum((f[j] * math.sin(n * th[j]) + f[j + 1] * math.sin(n * th[j + 1])) / 2 * (th[1] - th[0])
+                              for j in range(k))
+        dq += math.pi / 4 * n * b * b
+    return dq, 128 * vol * vol / (math.pi * length ** 4), vol
 
 
 def hw_at(x, s):
@@ -756,7 +842,8 @@ def main():
                   f"+ {r['cft_dry']:.0f} kg, outside {r['outside']}")
     result = build(opts["scale"])
     for k, v in result.items():
-        print(f"{k}: {v}")
+        if k != "area_distribution":
+            print(f"{k}: {v}")
     if opts["save"]:
         bpy.ops.wm.save_as_mainfile(filepath=opts["save"])
     if opts["render"]:
