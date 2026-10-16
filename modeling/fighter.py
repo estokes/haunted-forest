@@ -73,10 +73,12 @@ SECTION = [(0.00, 2.00, 2.00), (4.23, 2.00, 2.00), (6.48, 2.20, 3.00), (9.58, 2.
 # biconvex; lower is fuller, deep over more of the chord. The thickest
 # point is at `peak` of the chord: forward of half, so that the straight
 # trailing edge does not stack the whole span's thickness at the tail. The
-# inner wing is a little thicker, 5.5-6%, to hold a missile bay each side;
-# outboard it is 5%. The wing is low, its underside the belly's plane.
-WING = {"apex": 8.10, "root": 8.6, "semispan": 4.6, "sweep_le": 58.0, "tc": 0.06, "z": -0.48, "peak": 0.4,
-        "sections": [(0.0, 0.055, 1.0), (2.8, 0.060, 1.0), (3.4, 0.050, 1.0), (4.6, 0.050, 1.0)]}
+# inner wing is a little thicker, ~5-5.4%, to hold a missile bay each
+# side; outboard it is 4.5%. The wing is low, its underside the belly's
+# plane. Its leading edge is slatted, two segments a side, flush when
+# retracted; `tc` is the box's for the structure.
+WING = {"apex": 7.65, "root": 9.51, "semispan": 5.09, "sweep_le": 58.0, "tc": 0.05, "z": -0.48, "peak": 0.4,
+        "sections": [(0.00, 0.0497, 1.0), (3.10, 0.0543, 1.0), (3.76, 0.0452, 1.0), (5.09, 0.0452, 1.0)]}
 FIN = {"root_x": 13.52, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, "z": 0.6}
 # Conformal tanks on the back, each side of the dorsal spine, or None:
 # (x0, x1, y, half-width, height)
@@ -116,8 +118,8 @@ EQUIPMENT = {
     # Two dust missiles side by side in each wing root, ~2.4 m x 0.18 m and
     # ~90 kg each; doors on the belly, sealed for entry like the Shuttle's
     # gear doors. Mass: doors, ejectors, hot seals.
-    "bay_l":           ("box", (2.60, 0.50, 0.24), (13.46, -1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
-    "bay_r":           ("box", (2.60, 0.50, 0.24), (13.46, 1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_l":           ("box", (2.60, 0.50, 0.24), (13.40, -1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    "bay_r":           ("box", (2.60, 0.50, 0.24), (13.40, 1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
     # The second director, stowed behind belly doors for entry and let down
     # below the belly to strike the ground.
     "laser_turret_ventral": ("cyl_z", (0.60, 0.40), (11.40, 0.0, -0.50), _EQ["laser_turret_ventral"], (0.1, 1.0, 0.4)),
@@ -144,7 +146,7 @@ EXTERNAL = ("fel_director", "swivel_nozzle", "ew_pod")
 # for a flush window to see ahead. The tail is watched from the fin-tip
 # pod's aft end.
 SENSORS = [(0.16, 45, 35), (0.16, -45, 35), (0.16, 135, 35), (0.16, -135, 35), (0.55, 0, 0), (0.55, 180, 0),
-           (0.80, 80, 0), (0.80, -80, 0)]
+           (0.80, 80, 0), (0.80, -80, 0), (0.85, 125, 0), (0.85, -125, 0)]
 SENSOR_HALF_ANGLE = 65.0
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
@@ -155,6 +157,11 @@ SENSOR_HALF_ANGLE = 65.0
 # capture and a thin lip, so that the mouth adds no blunt face to the area
 # distribution; a wedge from the body carries it, starting a little
 # behind the lip and spilling the diverted air above and below.
+# Strakes on the intake trunks, as on the Mirage 2000-5: small swept
+# plates whose vortices keep the flow over the wing root and fin in order
+# at high angles of attack. (x behind the mouth, length, span, height
+# above the duct's axis.)
+STRAKE = {"from": 1.0, "length": 0.9, "span": 0.25, "z": 0.22}
 INLET = {"area": 0.30, "gap": 0.07, "diverter": (0.30, 1.20), "face_x": 12.95, "mouth_x": 6.90, "fair_x": 11.00, "lip": 0.025}
 DUCT_PATH = [(6.76, 1.24, -0.05), (8.17, 1.26, -0.05), (9.30, 1.20, -0.05), (10.70, 0.90, -0.05), (12.11, 0.40, -0.05), (12.95, 0.20, -0.05)]
 
@@ -171,7 +178,7 @@ TANK_FILL = 0.75  # of a tank region's free volume: frames, baffles, feeds, and 
 # Equipment the list does not place, kg, taken at the centre of gravity.
 # Flush hardpoints: no pylons in the flow on entry.
 FIXED = {n: _EQ[n] for n in ("inlets_and_ducts", "propellant_system", "flight_controls_and_rcs",
-                              "thermal", "electrical", "sensor_windows")}
+                              "thermal", "electrical", "sensor_windows", "slats_and_strakes")}
 # The design manoeuvre's mass, and the heaviest the aircraft lands at.
 DESIGN_KG = fighter_structure.DESIGN_KG
 LANDING_KG = 21000.0
@@ -527,6 +534,19 @@ def build(scale):
             if side < 0:
                 rings = [list(reversed(q)) for q in rings]
             nacelles.append(ring_loft(f"inlet_{name}_{side}", rings, skin, C_SKIN))
+        st = STRAKE
+        sx0 = x0 + st["from"] * s
+        srings = []
+        for i in range(8):
+            x = sx0 + st["length"] * s * i / 7
+            zs = duct_point(x, s)[1] + st["z"] * s
+            root_y = plate(x) + math.sqrt(max(r * r - (st["z"] * s) ** 2, 0.0)) - 0.05 * s
+            tip = root_y + 0.05 * s + max(0.01, st["span"] * s * i / 7)
+            h = 0.01 * s
+            srings.append([(x, side * a, b) for a, b in ((root_y, zs - h), (tip, zs - h), (tip, zs + h), (root_y, zs + h))])
+        if side < 0:
+            srings = [list(reversed(q)) for q in srings]
+        nacelles.append(ring_loft(f"strake_{side}", srings, skin, C_SKIN))
     w = WING
     tan = math.tan(math.radians(w["sweep_le"]))
     chord_at = lambda y: max(0.3, w["root"] - abs(y) * tan) * s

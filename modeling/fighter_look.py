@@ -229,14 +229,22 @@ def build(scale=1.0):
     tan = math.tan(math.radians(w["sweep_le"]))
     le = lambda y: (w["apex"] + abs(y) * tan) * scale
     chord = lambda y: max(0.3, w["root"] - abs(y) * tan) * scale
+    # Elevons, two a side, and the leading-edge slats, two a side.
+    semi = w["semispan"] * scale
     for side in (-1, 1):
         for from_top in (True, False):
             tag = f"{side}_{'top' if from_top else 'bottom'}"
-            hinge = [(le(y) + 0.78 * chord(y), side * y) for y in [1.9 + 0.2 * i for i in range(13)]]
+            hinge = [(le(y) + 0.78 * chord(y), side * y) for y in [semi * (0.37 + 0.48 * i / 12) for i in range(13)]]
             skin_line(tree, f"elevon_hinge_{tag}", hinge, from_top, look, lines_m, steps=3)
-            for y in (1.9, 3.1, 4.3):
-                skin_line(tree, f"elevon_edge_{tag}_{y}", [(le(y) + 0.78 * chord(y), side * y),
-                                                          (le(y) + chord(y) - 0.01, side * y)],
+            for y in (semi * 0.37, semi * 0.61, semi * 0.85):
+                skin_line(tree, f"elevon_edge_{tag}_{y:.2f}", [(le(y) + 0.78 * chord(y), side * y),
+                                                              (le(y) + chord(y) - 0.01, side * y)],
+                          from_top, look, lines_m, steps=4)
+            slat = [(le(y) + 0.15 * chord(y), side * y) for y in [semi * (0.32 + 0.63 * i / 12) for i in range(13)]]
+            skin_line(tree, f"slat_hinge_{tag}", slat, from_top, look, lines_m, steps=3)
+            for y in (semi * 0.32, semi * 0.635, semi * 0.95):
+                skin_line(tree, f"slat_edge_{tag}_{y:.2f}", [(le(y) + 0.005, side * y),
+                                                            (le(y) + 0.15 * chord(y), side * y)],
                           from_top, look, lines_m, steps=4)
 
     f = fighter.FIN

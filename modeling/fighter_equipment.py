@@ -107,10 +107,11 @@ def items():
     out["electrical"] = (100, 150, "wiring, starting power")
     out["propellant_system"] = (150, 250, "magnetic dust feed, ammonia pumps, transfer between tanks, gauging")
     out["bays"] = (80, 120, "two bays' doors, ejectors and hot seals")
+    out["slats_and_strakes"] = (55, 90, "four leading-edge slat segments and their actuators; two strakes")
     # Sensors: six or more wide-angle windows round the airframe, imaging
     # and IR, for the pilot's view all round and missile warning; the
     # laser's 0.5 m directors double as the targeting telescopes.
-    out["sensor_windows"] = (40, 70, "~9 wide-angle imaging and IR windows, all round, missile warning")
+    out["sensor_windows"] = (40, 70, "~11 wide-angle imaging and IR windows, all round, missile warning")
     out["laser_turret_ventral"] = (120, 200, "a second director under the belly, retracting behind doors for entry")
     # Countermeasures in the air, where the engine cannot be hidden.
     out["ew"] = (60, 100, "receivers and jammer, its antennas in a fin-tip pod as on the Mirage")
