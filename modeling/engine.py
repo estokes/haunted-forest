@@ -1,7 +1,7 @@
 # The fighter's engine in 3D, from hf-engine's design (modeling/turbo.py
 # reads it): the air path's walls, cut away over a quadrant to show the
-# inside; every blade row; each rotor's superconducting motor in the hub,
-# sized by its mass; the fan's pitch trunnions; the combustor's liner, the
+# inside; every blade row; each rotor's superconducting motor in the hub;
+# the fan's pitch trunnions; the combustor's liner, the
 # mixer's lobes, the reheat's flameholder and spray bars, the nozzle; and
 # the turbopump beside the core, its exhaust piped to the combustor.
 #
@@ -18,10 +18,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fighter  # noqa: E402
 import turbo  # noqa: E402
 
-# Machines and their stores are dense: superconducting motor and generator,
-# kg/m3, and the motor's bore over its outside.
-MACHINE_DENSITY = 6000.0
-MOTOR_BORE = 0.6
 # The quadrant cut away, radians, and the lathe's divisions per turn.
 CUT = (math.radians(95), math.radians(195))
 TURN = 96
@@ -100,31 +96,10 @@ def rows(air, coll):
             loft(f"row{i}_{k}", turbo.blade(row, theta), coll, color)
 
 
-def hub_at(inner, x):
-    for (x0, r0), (x1, r1) in zip(inner, inner[1:]):
-        if x0 <= x <= x1:
-            return r0 + (r1 - r0) * (x - x0) / (x1 - x0) if x1 > x0 else min(r0, r1)
-    return inner[-1][1]
-
-
-def motors(air, inner, coll, dx=0.002):
-    """Each rotor's motor, a ring in the hub from its rotor aft, under the
-    stator that follows, tapering with the hub 15 mm inside it, as long as
-    its mass needs; returns the overlaps between neighbours, m."""
-    rotors = [r for r in air["rows"] if r["spin"] != 0]
-    spans = []
-    for row, kg in zip(rotors, air["motors"]):
-        x, vol, outline = row["x_le"], kg / MACHINE_DENSITY, []
-        while vol > 0:
-            r = hub_at(inner, x) - 0.015
-            outline.append((x, r))
-            vol -= math.pi * r * r * (1 - MOTOR_BORE ** 2) * dx
-            x += dx
-        outline.append((x, hub_at(inner, x) - 0.015))
-        bore = [(xx, MOTOR_BORE * r) for xx, r in reversed(outline)]
-        lathe(f"motor_{len(spans)}", outline + bore + outline[:1], coll, C_MOTOR)
-        spans.append((row["x_le"], x))
-    return [max(0.0, a[1] - b[0]) for a, b in zip(spans, spans[1:])]
+def motors(air, coll):
+    """Each rotor's motor, a ring in the hub, as hf-engine places it."""
+    for i, m in enumerate(air["motors"]):
+        ring(f"motor_{i}", m["x0"], m["x1"], m["r_in"], m["r_out"], coll, C_MOTOR)
 
 
 def trunnions(air, coll):
@@ -194,8 +169,7 @@ def turbopump(tp, air, coll):
     c = air["combustor"]
     axis_z = -(air["bypass"]["r_out"] + 0.25)
     r_t = tp["mean_radius"] + tp["blades"][-1] / 2 + 0.02
-    gen_r = 0.16
-    gen_len = tp["generator"] / MACHINE_DENSITY / (math.pi * gen_r ** 2)
+    gen_r, gen_len = tp["generator_radius"], tp["generator_length"]
     rev_r = (tp["reverter"] / (2 * math.pi)) ** (1 / 3)
     x = c["x0"] - 0.6
     parts = [("slurry_pump", 0.07, 0.12, C_TP), ("reverter", rev_r, 2 * rev_r, C_HOT)]
@@ -251,7 +225,7 @@ def main():
         lathe(name, wall, coll, C_CASE)
     lathe("casing_skin", [(x, r + 0.012) for x, r in walls[3]], coll, C_CASE)
     rows(air, coll)
-    overlaps = motors(air, walls[0], coll)
+    motors(air, coll)
     trunnions(air, coll)
     combustor(air, coll)
     mixer(air, coll)
@@ -261,7 +235,6 @@ def main():
     blades = sum(r["blades"] for r in air["rows"])
     print(f"ENGINE length {length:.2f} m from the fan face, casing r {air['rows'][0]['tip'][0]:.3f} m, "
           f"{len(air['rows'])} rows, {blades} blades")
-    print("ENGINE motor overlaps along the hub, m:", [round(o, 3) for o in overlaps])
     print("ENGINE turbopump parts, x:", {k: (round(a, 2), round(b, 2)) for k, (a, b) in tp_parts.items()})
     if opt("--render"):
         os.makedirs(opt("--render"), exist_ok=True)

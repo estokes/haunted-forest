@@ -13,14 +13,14 @@ use hf_engine::{
     atmos::{altitude_for_q, isa, Air},
     blade::{blade_heat, coolant_heat, BladeHeat},
     cycle::{rocket, EngineSpec, Mode, Point, PointReport},
-    flowpath::{FlowpathSpec, MOTOR_SPECIFIC},
+    flowpath::{FlowpathSpec, MACHINE_DENSITY, MOTOR_SPECIFIC},
     gas::{eq_hp, Diluent, Feed, Gas},
     hover::{calibrated_efficiency, lift_fan, Airframe},
     parts::{Turbopump, TurbopumpSpec, G0},
     thermo::{sp, NS, THERMO},
 };
 use rayon::prelude::*;
-use std::{fs::File, io};
+use std::{f64::consts::PI, fs::File, io};
 
 /// The turbopump's rating, W.
 const TURBOPUMP_MAX: f64 = 35e6;
@@ -581,15 +581,18 @@ fn flowpath(spec: &EngineSpec) -> Result<()> {
     );
     println!(
         "  motors, kg: {}",
-        f.motors.iter().map(|m| format!("{m:.0}")).collect::<Vec<_>>().join(", ")
+        f.motors.iter().map(|m| format!("{:.0} ({:.2} m)", m.kg, m.x1 - m.x0)).collect::<Vec<_>>().join(", ")
     );
     let (b, m_gas, _) = turbopump_blades(spec)?;
     let reverter = spec.turbopump.reverter()?.1;
+    let generator = TURBOPUMP_MAX / MOTOR_SPECIFIC;
     let turbopump = TurbopumpGeometry {
         mean_radius: b.mean_radius,
         rpm: b.rpm,
         blades: b.stages[..b.n_stages].iter().map(|s| s.blade).collect(),
-        generator: TURBOPUMP_MAX / MOTOR_SPECIFIC,
+        generator,
+        generator_length: generator / MACHINE_DENSITY / (PI * GENERATOR_RADIUS * GENERATOR_RADIUS),
+        generator_radius: GENERATOR_RADIUS,
         reverter: m_gas * REVERTER_RESIDENCE / reverter.rho(),
         flow: m_gas,
     };
@@ -613,8 +616,9 @@ fn flowpath(spec: &EngineSpec) -> Result<()> {
     Ok(())
 }
 
-/// The reverter holds its gas this long, s.
+/// The reverter holds its gas this long, s. The generator's radius, m.
 const REVERTER_RESIDENCE: f64 = 3e-3;
+const GENERATOR_RADIUS: f64 = 0.16;
 
 #[derive(serde::Serialize)]
 struct TurbopumpGeometry {
@@ -622,8 +626,10 @@ struct TurbopumpGeometry {
     rpm: f64,
     /// Blade height of each stage, m.
     blades: Vec<f64>,
-    /// kg
+    /// kg; m, m
     generator: f64,
+    generator_length: f64,
+    generator_radius: f64,
     /// m3
     reverter: f64,
     /// kg/s

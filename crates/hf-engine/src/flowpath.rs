@@ -91,8 +91,14 @@ const REHEAT: (f64, f64) = (0.25, 1.5);
 /// Axial gap between rows, in chords; wall between streams, m.
 const ROW_GAP: f64 = 0.25;
 const WALL: f64 = 0.03;
-/// Superconducting machines, W/kg.
+/// Superconducting machines: W/kg, and kg/m3 with their cryostats. A
+/// rotor's motor is a ring in the hub from its leading edge aft, its bore
+/// MOTOR_BORE of its outside, MOTOR_GAP inside the hub's wall; the next
+/// rotor stands clear of it.
 pub const MOTOR_SPECIFIC: f64 = 100e3;
+pub const MACHINE_DENSITY: f64 = 6000.;
+const MOTOR_BORE: f64 = 0.6;
+const MOTOR_GAP: f64 = 0.015;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 pub enum Component {
@@ -163,6 +169,15 @@ pub struct Nozzle {
 }
 
 #[derive(Clone, Copy, Debug, Serialize)]
+pub struct Motor {
+    pub kg: f64,
+    pub x0: f64,
+    pub x1: f64,
+    pub r_in: f64,
+    pub r_out: f64,
+}
+
+#[derive(Clone, Copy, Debug, Serialize)]
 pub struct Pitch {
     /// The first rotor's speed over design, and its pitch change at the
     /// mean radius and at the tip, degrees (negative is toward axial).
@@ -185,8 +200,10 @@ pub struct Flowpath {
     /// Isentropic efficiency the meanline's losses give, fan and compressor.
     pub eta: (f64, f64),
     pub pitch: Pitch,
-    /// Motor mass per rotor, kg.
-    pub motors: Vec<f64>,
+    /// One per rotor, rated for the larger of its powers at the design
+    /// point and at full airflow at Mach 2 and 11 km, where ram makes the
+    /// fan and compressor want the most.
+    pub motors: Vec<Motor>,
 }
 
 /// Static state of a stagnation state `g` moving at `v`, frozen.
@@ -252,6 +269,9 @@ struct Builder<'a> {
     /// r V_theta of the flow entering the next row, absolute, in the
     /// first rotor's sense.
     swirl: f64,
+    /// Each rotor's motor, kg.
+    motor_kg: f64,
+    motors: Vec<Motor>,
 }
 
 impl Builder<'_> {
@@ -406,7 +426,11 @@ impl Builder<'_> {
             let rm = ((r1.0 * r1.0 + r1.1 * r1.1) / 2.).sqrt();
             let swirl_out = self.swirl + spin as f64 * (g2.h() - g1.h()) / omega;
             let r2 = self.radii(self.area(&g2, swirl_out, rm), fixed);
-            rows.push(self.row(spin, omega, &g1, &g2, swirl_out, r1, r2, aspect)?);
+            let rotor = self.row(spin, omega, &g1, &g2, swirl_out, r1, r2, aspect)?;
+            let r_out = rotor.hub.1 - MOTOR_GAP;
+            let length = self.motor_kg / MACHINE_DENSITY / (PI * r_out * r_out * (1. - MOTOR_BORE * MOTOR_BORE));
+            let motor = Motor { kg: self.motor_kg, x0: rotor.x_le, x1: rotor.x_le + length, r_in: MOTOR_BORE * r_out, r_out };
+            rows.push(rotor);
             let stator = !counter || k + 1 == self.rotors;
             if stator && swirl_out.abs() > 1e-6 {
                 let r3 = self.radii(self.area(&g2, 0., rm), fixed);
@@ -415,6 +439,8 @@ impl Builder<'_> {
             } else {
                 r1 = r2;
             }
+            self.x = self.x.max(motor.x1 + MOTOR_GAP);
+            self.motors.push(motor);
             g1 = g2;
         }
         Ok(rows)
@@ -442,6 +468,17 @@ impl FlowpathSpec {
         let Stations { face, fan_exit, bypass, compressor_exit, combustor_exit, nozzle_entry, ambient } =
             dry;
         let m = fan_exit.m;
+        let rating = engine.stations(&Point { altitude: 11000., mach: 2., ..Point::default() })?;
+        let motor_kg = |c: Component| {
+            let power = |st: &Stations| match c {
+                Component::Fan => st.fan_exit.m * (st.fan_exit.gas.h() - st.face.h()) / self.fan_rotors as f64,
+                Component::Compressor => {
+                    st.compressor_exit.m * (st.compressor_exit.gas.h() - st.fan_exit.gas.h())
+                        / self.compressor_stages as f64
+                }
+            };
+            power(&dry).max(power(&rating)) / engine.eta_motor / MOTOR_SPECIFIC
+        };
 
         let k = face.gamma();
         let ts = face.t / (1. + (k - 1.) / 2. * self.fan_mach.powi(2));
@@ -458,6 +495,8 @@ impl FlowpathSpec {
             vx,
             x: 0.,
             swirl: 0.,
+            motor_kg: motor_kg(Component::Fan),
+            motors: Vec::new(),
         };
         let mut rows = fan.build(r_tip, self.fan_tip_speed)?;
         let last = rows.last().unwrap();
@@ -481,6 +520,8 @@ impl FlowpathSpec {
             vx: vxc,
             x: split_x + 0.05 + 2. * (r_core - r_mean).abs(),
             swirl: 0.,
+            motor_kg: motor_kg(Component::Compressor),
+            motors: Vec::new(),
         };
         rows.extend(comp.build(r_mean, self.compressor_speed)?);
 
@@ -549,14 +590,7 @@ impl FlowpathSpec {
         );
 
         let pitch = self.pitch(engine, &face, &rows[0], vx, a_face)?;
-        let motors = rows
-            .iter()
-            .filter(|r| r.spin != 0)
-            .map(|r| {
-                let flow = if r.component == Component::Fan { m } else { compressor_exit.m };
-                r.work * flow / engine.eta_motor / MOTOR_SPECIFIC
-            })
-            .collect();
+        let motors = fan.motors.into_iter().chain(comp.motors).collect();
 
         Ok(Flowpath {
             rows,
