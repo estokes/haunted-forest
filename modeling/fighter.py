@@ -77,12 +77,13 @@ SECTION = [(0.00, 2.00, 2.00), (4.23, 2.00, 2.00), (6.48, 2.20, 3.00), (9.58, 2.
 # inner wing is a little thicker, ~4-4.4%, to hold a missile bay each
 # side; outboard it is 3.6%. The wing is low, its underside the belly's
 # plane. Its leading edge is slatted, two segments a side, flush when
-# retracted; `tc` is the box's for the structure. Its centre of lift,
-# subsonic, is `ac` of the mean chord back from the leading edge there, as
-# cfd/vlm.py finds it for the wing and body: a slender delta's lies well
-# aft of a straight wing's quarter chord.
+# retracted; `tc` is the box's for the structure. Its centre of lift, the
+# wing and body's without canards, is `ac` of the mean chord back from the
+# leading edge there subsonic and `ac_super` supersonic, as SU2's Euler
+# solutions find them (cfd/): a slender delta's lies well aft of a straight
+# wing's quarter chord, and moves aft again past Mach 1.
 WING = {"apex": 5.76, "root": 11.83, "semispan": 4.09, "sweep_le": 68.0, "tc": 0.040, "z": -0.48, "peak": 0.4,
-        "ac": 0.344,
+        "ac": 0.359, "ac_super": 0.453,
         "sections": [(0.00, 0.0400, 1.0), (2.49, 0.0437, 1.0), (3.02, 0.0363, 1.0), (4.09, 0.0363, 1.0)]}
 # The slats: from `from` to `to` of the semispan, `chord` of the local
 # chord, drooped `deflection` degrees about their swept hinge, normal to it
@@ -860,15 +861,15 @@ def build(scale):
     nozzle_x = EQUIPMENT["swivel_nozzle"][2][0] * s
     split = lambda cg: (cg - fan_x) / (nozzle_x - cg)
 
-    # Trim. Subsonic, the wing's aerodynamic centre: a quarter of its mean
-    # chord. Supersonic and hypersonic, near the centroid of the whole
-    # planform, body and all (linear theory on a delta; Newtonian flow on a
-    # flat underside). The centre of gravity full, empty, and with one tank
-    # drained at a time.
+    # Trim. Subsonic and supersonic, the wing and body's centres of lift;
+    # hypersonic, near the centroid of the whole planform, body and all
+    # (Newtonian flow on a flat underside). The centre of gravity full,
+    # empty, and with one tank drained at a time.
     lam = max(0.3, w["root"] - w["semispan"] * tan) / w["root"]
     mac = 2 / 3 * w["root"] * s * (1 + lam + lam * lam) / (1 + lam)
     y_mac = w["semispan"] * s / 3 * (1 + 2 * lam) / (1 + lam)
     ac_sub = le_at(y_mac / s) + w["ac"] * mac
+    ac_super = le_at(y_mac / s) + w["ac_super"] * mac
     area, mx = 0.0, 0.0
     step = 0.05
     x = step / 2
@@ -894,8 +895,8 @@ def build(scale):
     for label, drained in [("full", ()), ("forward drained", ("forward",)), ("saddle drained", ("saddle",)),
                            ("wing drained", ("wing",)), ("empty", tuple(tank))]:
         cg = cg_with(drained)
-        margins[label] = (round(cg, 2), round(100 * (ac_sub - cg) / mac), round(100 * (cp_high - cg) / mac),
-                          round(split(cg), 2))
+        margins[label] = (round(cg, 2), round(100 * (ac_sub - cg) / mac), round(100 * (ac_super - cg) / mac),
+                          round(100 * (cp_high - cg) / mac), round(split(cg), 2))
     nozzle = eq["swivel_nozzle"]["obj"]
     length = max((nozzle.matrix_world @ Vector(c)).x for c in nozzle.bound_box)
 
@@ -949,8 +950,9 @@ def build(scale):
         "elevon_x": le_at(y_mac / s) + 0.89 * mac,
         "canard": canard,
         "ac_subsonic": ac_sub,
-        "cp_super_hyper": cp_high,
-        "trim (cg, subsonic margin %MAC, high-speed margin %MAC, nozzle/fan)": margins,
+        "ac_supersonic": ac_super,
+        "cp_hypersonic": cp_high,
+        "trim (cg; wing and body margin %MAC subsonic, supersonic, hypersonic; nozzle/fan)": margins,
         "sensor_coverage": (round(seen, 3), gap_dirs),
         "director_regard (upper, lower hemisphere)": regard,
         "area_peak": max(dist, key=lambda d: d[1]),

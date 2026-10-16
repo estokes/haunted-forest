@@ -166,6 +166,14 @@ pub struct Mixer {
 pub struct Nozzle {
     pub throat: f64,
     pub exit: f64,
+    /// What enters it: kg/s, stagnation K and Pa, frozen gamma, gas
+    /// constant J/kg K; and the static pressure outside, Pa.
+    pub m: f64,
+    pub t0: f64,
+    pub p0: f64,
+    pub gamma: f64,
+    pub r_gas: f64,
+    pub ambient: f64,
 }
 
 #[derive(Clone, Copy, Debug, Serialize)]
@@ -457,7 +465,7 @@ fn nozzle(g: &Gas, m: f64, ambient: f64) -> Nozzle {
     let exit_area = m / (exit.rho() * (2. * g.cp() * (g.t - te)).sqrt());
     let throat = if ambient < star.p { m / (star.rho() * sound(&star)) } else { exit_area };
     let r = |a: f64| (a / PI).sqrt();
-    Nozzle { throat: r(throat), exit: r(exit_area) }
+    Nozzle { throat: r(throat), exit: r(exit_area), m, t0: g.t, p0: g.p, gamma: k, r_gas: R / g.mw(), ambient }
 }
 
 impl FlowpathSpec {

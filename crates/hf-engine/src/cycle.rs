@@ -33,7 +33,9 @@ pub struct EngineSpec {
     pub burner_loss: f64,
     /// Total-pressure ratio of the ramjet's path from inlet to combustor.
     pub duct_loss: f64,
-    /// Kinetic-energy efficiency of the nozzles.
+    /// Kinetic-energy efficiency of the nozzles: the square of the gross
+    /// thrust coefficient, ~0.974, RANS finds for the design's
+    /// convergent-divergent nozzle (cfd/nozzle.py).
     pub nozzle_eta: f64,
     /// Bypass Mach number at the mixer, which sets its pressure.
     pub mixer_mach: f64,
@@ -56,7 +58,7 @@ impl Default for EngineSpec {
             eta_motor: 0.98,
             burner_loss: 0.95,
             duct_loss: 0.95,
-            nozzle_eta: 0.96,
+            nozzle_eta: 0.95,
             mixer_mach: 0.5,
             capture: 0.6,
             systems: 0.5e6,
