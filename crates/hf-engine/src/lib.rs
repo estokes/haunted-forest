@@ -5,6 +5,7 @@
 pub mod atmos;
 pub mod blade;
 pub mod cycle;
+pub mod flowpath;
 pub mod gas;
 pub mod hover;
 pub mod parts;

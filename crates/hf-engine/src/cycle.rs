@@ -138,6 +138,21 @@ pub struct PointReport {
     pub soot: f64,
 }
 
+/// The air path's stagnation states in turbine mode. The nozzle's entry
+/// is the reheat's exit: the mixed stream, or the core alone when the
+/// bypass is nozzled separately.
+#[derive(Clone, Copy, Debug)]
+pub struct Stations {
+    pub face: Gas,
+    pub fan_exit: Stream,
+    pub bypass: Stream,
+    pub compressor_exit: Stream,
+    pub combustor_exit: Stream,
+    pub nozzle_entry: Stream,
+    /// Static pressure outside, Pa.
+    pub ambient: f64,
+}
+
 /// Inlet total-pressure recovery (MIL-E-5008B) with a 3% subsonic loss.
 pub fn recovery(m: f64) -> f64 {
     0.97 * if m <= 1. {
@@ -176,6 +191,15 @@ impl EngineSpec {
     }
 
     fn turbine(&self, pt: &Point) -> Result<PointReport> {
+        Ok(self.turbine_stations(pt)?.1)
+    }
+
+    /// The turbine-mode engine's stations at `pt`.
+    pub fn stations(&self, pt: &Point) -> Result<Stations> {
+        Ok(self.turbine_stations(pt)?.0)
+    }
+
+    fn turbine_stations(&self, pt: &Point) -> Result<(Stations, PointReport)> {
         let fs = freestream(pt, self.capture);
         let face = fs.face;
         let m = pt.throttle
@@ -198,14 +222,14 @@ impl EngineSpec {
             None => (burn(&core_parts, p4)?, 0.),
         };
         let bypass = Stream { m: m_bypass, gas: g13 };
-        let (thrust_flow, t7, v_jet, d7, soot) = if pt.mixed {
+        let (thrust_flow, s7, v_jet, d7, soot) = if pt.mixed {
             let s6 = mix(&s4, &bypass, self.mixer_mach)?;
             let (s7, d7) = match pt.t7 {
                 Some(t) => burn_to(&[s6.part()], s6.gas.p * self.burner_loss, t, slurry)?,
                 None => (s6, 0.),
             };
             let (v, ge) = expand(&s7.gas, fs.p, self.nozzle_eta)?;
-            (s7.m * v, s7.gas.t, v, d7, ge.soot())
+            (s7.m * v, s7, v, d7, ge.soot())
         } else {
             let (s7, d7) = match pt.t7 {
                 Some(t) => burn_to(&[s4.part()], s4.gas.p * self.burner_loss, t, slurry)?,
@@ -213,18 +237,12 @@ impl EngineSpec {
             };
             let (vc, ge) = expand(&s7.gas, fs.p, self.nozzle_eta)?;
             let vb = expand(&g13, fs.p, self.nozzle_eta)?.0;
-            (
-                s7.m * vc + m_bypass * vb,
-                s7.gas.t,
-                vc,
-                d7,
-                ge.soot() * s7.m / (s7.m + m_bypass),
-            )
+            (s7.m * vc + m_bypass * vb, s7, vc, d7, ge.soot() * s7.m / (s7.m + m_bypass))
         };
         let thrust = thrust_flow - m * fs.v;
         let diluent = tp.diluent + carrier * (d4 + d7);
         let dust = tp.dust + d4 + d7;
-        Ok(PointReport {
+        let report = PointReport {
             airflow: m,
             thrust,
             electric,
@@ -234,13 +252,23 @@ impl EngineSpec {
             isp_dust: thrust / (dust * G0),
             t3: g3.t,
             t4: s4.gas.t,
-            t7,
+            t7: s7.gas.t,
             p3: g3.p,
             v_jet,
             turbopump_exit_t: tp.exhaust.gas.t,
             turbopump_share: (tp.diluent + tp.dust) / (diluent + dust),
             soot,
-        })
+        };
+        let stations = Stations {
+            face,
+            fan_exit: Stream { m, gas: g13 },
+            bypass,
+            compressor_exit: Stream { m: m_core, gas: g3 },
+            combustor_exit: s4,
+            nozzle_entry: s7,
+            ambient: fs.p,
+        };
+        Ok((stations, report))
     }
 
     fn ramjet(&self, pt: &Point) -> Result<PointReport> {

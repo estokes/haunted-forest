@@ -1,15 +1,19 @@
 //! Evaluate the fighter's engine against the numbers in book/small-craft.md,
 //! with ammonia and with methane as the diluent, and print the comparison.
 //!
-//! `hf-engine [-|FILE] [--blades]`: with no path the default engine spec,
-//! `-` a spec on stdin, else one from FILE. Missing fields take defaults.
-//! `--blades` sweeps the turbopump blades' heat load instead.
+//! `hf-engine [-|FILE] [--blades] [--flowpath [--fan-rotors N] [--counter]
+//! [--fan-tip U] [--hub-tip H] [--json OUT]]`: with no path the default engine spec, `-`
+//! a spec on stdin, else one from FILE. Missing fields take defaults.
+//! `--blades` sweeps the turbopump blades' heat load instead; `--flowpath`
+//! designs the air path, and writes it as JSON to OUT for
+//! modeling/engine.py.
 
 use anyhow::{Context, Result};
 use hf_engine::{
     atmos::{altitude_for_q, isa, Air},
     blade::{blade_heat, coolant_heat},
     cycle::{rocket, EngineSpec, Mode, Point, PointReport},
+    flowpath::FlowpathSpec,
     gas::{eq_hp, Diluent, Feed, Gas},
     hover::{calibrated_efficiency, lift_fan, Airframe},
     parts::{Turbopump, TurbopumpSpec, G0},
@@ -25,8 +29,22 @@ const DUST_DENSITY: f64 = 600.;
 /// Above this, methane in a cooling passage cracks and lays down coke.
 const COKING_T: f64 = 900.;
 
+/// Flags that take a value.
+const VALUED: [&str; 4] = ["--fan-rotors", "--fan-tip", "--hub-tip", "--json"];
+
+fn flag(name: &str) -> Option<String> {
+    let args: Vec<String> = std::env::args().collect();
+    args.iter().position(|a| a == name).and_then(|i| args.get(i + 1).cloned())
+}
+
 fn read_spec() -> Result<EngineSpec> {
-    Ok(match std::env::args().skip(1).find(|a| !a.starts_with("--")).as_deref() {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let path = args
+        .iter()
+        .enumerate()
+        .find(|(i, a)| !a.starts_with("--") && (*i == 0 || !VALUED.contains(&args[i - 1].as_str())))
+        .map(|(_, a)| a.as_str());
+    Ok(match path {
         None => EngineSpec::default(),
         Some("-") => serde_json::from_reader(io::stdin()).context("spec on stdin")?,
         Some(path) => serde_json::from_reader(File::open(path).context(path.to_owned())?)
@@ -497,10 +515,80 @@ fn compare(sums: &[(Diluent, Summary)]) {
     });
 }
 
+fn flowpath(spec: &EngineSpec) -> Result<()> {
+    let mut fp = FlowpathSpec::default();
+    if let Some(n) = flag("--fan-rotors") {
+        fp.fan_rotors = n.parse()?;
+    }
+    if let Some(u) = flag("--fan-tip") {
+        fp.fan_tip_speed = u.parse()?;
+    }
+    if let Some(h) = flag("--hub-tip") {
+        fp.fan_hub_tip = h.parse()?;
+    }
+    fp.counter_rotating = std::env::args().any(|a| a == "--counter");
+    let f = fp.design(spec)?;
+    println!(
+        "== Air path: {} fan rotor{}{}, tip {:.0} m/s; {} compressor stages at {:.0} m/s",
+        fp.fan_rotors,
+        if fp.fan_rotors > 1 { "s" } else { "" },
+        if fp.counter_rotating { ", counter-rotating" } else { "" },
+        fp.fan_tip_speed,
+        fp.compressor_stages,
+        fp.compressor_speed
+    );
+    println!(
+        "  {:10} {:>4} {:>7} {:>6} {:>6} {:>6} {:>13} {:>13} {:>16} {:>15} {:>15} {:>8}",
+        "row", "Z", "rpm", "chord", "x le", "x te", "hub in/out", "tip in/out", "rel Mach h/m/t", "DF h/m/t", "stagger h/m/t", "ds J/kgK"
+    );
+    for r in &f.rows {
+        let kind = match (r.component, r.spin) {
+            (c, 0) => format!("{c:?} S"),
+            (c, s) => format!("{c:?} R{}", if s < 0 { "-" } else { "" }),
+        };
+        let [h, m, t] = r.sections;
+        println!(
+            "  {kind:10} {:4} {:7.0} {:6.3} {:6.3} {:6.3} {:6.3}/{:6.3} {:6.3}/{:6.3} {:5.2}/{:4.2}/{:4.2} {:4.2}/{:4.2}/{:4.2} {:4.0}/{:4.0}/{:4.0} {:8.2}",
+            r.blades, r.rpm, r.chord, r.x_le, r.x_te, r.hub.0, r.hub.1, r.tip.0, r.tip.1,
+            h.mach, m.mach, t.mach, h.diffusion, m.diffusion, t.diffusion,
+            h.stagger, m.stagger, t.stagger, r.ds
+        );
+    }
+    println!(
+        "  efficiency by the meanline's losses: fan {:.3} (cycle assumes {:.2}), compressor {:.3} ({:.2})",
+        f.eta.0, spec.eta_fan, f.eta.1, spec.eta_compressor
+    );
+    println!(
+        "  splitter at x {:.2} m, r {:.3}; combustor x {:.2}-{:.2}, r {:.3}-{:.3}; bypass duct r {:.3}-{:.3}",
+        f.splitter.0, f.splitter.1, f.combustor.x0, f.combustor.x1, f.combustor.r_in, f.combustor.r_out,
+        f.bypass.r_in, f.bypass.r_out
+    );
+    println!(
+        "  mixer at x {:.2}, r {:.3}; reheat to x {:.2}, r {:.3}; nozzle throat/exit r dry {:.3}/{:.3}, reheat {:.3}/{:.3}",
+        f.mixer.0, f.mixer.1, f.reheat.x1, f.reheat.r_out, f.nozzle.0.throat, f.nozzle.0.exit,
+        f.nozzle.1.throat, f.nozzle.1.exit
+    );
+    println!(
+        "  hover: first rotor at {:.2} of design speed, pitch {:+.1} deg at mean, {:+.1} at tip",
+        f.pitch.speed, f.pitch.mean, f.pitch.tip
+    );
+    println!(
+        "  motors, kg: {}",
+        f.motors.iter().map(|m| format!("{m:.0}")).collect::<Vec<_>>().join(", ")
+    );
+    if let Some(out) = flag("--json") {
+        serde_json::to_writer_pretty(File::create(&out).context(out.clone())?, &f)?;
+    }
+    Ok(())
+}
+
 fn main() -> Result<()> {
     let spec = read_spec()?;
     if std::env::args().any(|a| a == "--blades") {
         return blade_envelope(&spec);
+    }
+    if std::env::args().any(|a| a == "--flowpath") {
+        return flowpath(&spec);
     }
     let mut sums = Vec::new();
     for d in Diluent::ALL {
