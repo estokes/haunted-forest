@@ -118,10 +118,34 @@ EQUIPMENT = {
     # gear doors. Mass: doors, ejectors, hot seals.
     "bay_l":           ("box", (2.60, 0.50, 0.24), (13.46, -1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
     "bay_r":           ("box", (2.60, 0.50, 0.24), (13.46, 1.85, -0.48), _EQ["bays"] / 2, (0.95, 0.55, 0.1)),
+    # The second director, stowed behind belly doors for entry and let down
+    # below the belly to strike the ground.
+    "laser_turret_ventral": ("cyl_z", (0.60, 0.40), (11.40, 0.0, -0.50), _EQ["laser_turret_ventral"], (0.1, 1.0, 0.4)),
+    # Countermeasures. Space decoys under dorsal doors in the middle bay,
+    # the jammers below them dropping through the belly, the towed decoys
+    # paying out of the fin root above the plume, the dispensers flanking
+    # the engine, the jammer's antennas in a fin-tip pod.
+    "space_decoys":    ("box", (1.00, 0.60, 0.60), (9.75, 0.0, 0.25), _EQ["space_decoys"], (1.0, 0.3, 0.3)),
+    "jammer_pods":     ("box", (1.10, 0.55, 0.30), (9.95, 0.0, -0.45), _EQ["jammer_pods"], (1.0, 0.5, 0.3)),
+    "towed_decoys":    ("box", (0.60, 0.25, 0.20), (16.60, 0.0, 0.80), _EQ["towed_decoys"], (1.0, 0.5, 0.5)),
+    "chaff_flares_l":  ("box", (0.50, 0.25, 0.20), (16.60, -0.62, -0.40), _EQ["chaff_flares"] / 2, (1.0, 0.7, 0.3)),
+    "chaff_flares_r":  ("box", (0.50, 0.25, 0.20), (16.60, 0.62, -0.40), _EQ["chaff_flares"] / 2, (1.0, 0.7, 0.3)),
+    "ew_pod":          ("cyl_x", (0.20, 1.10), (17.50, 0.0, 3.22), _EQ["ew"], (1.0, 0.2, 0.2)),
 }
-# Equipment meant to stand proud of the skin: the laser's turret and the
-# nozzle's exit.
-EXTERNAL = ("fel_director", "swivel_nozzle")
+# Equipment meant to stand proud of the skin: the laser's turret, the
+# nozzle's exit, the fin-tip pod.
+EXTERNAL = ("fel_director", "swivel_nozzle", "ew_pod")
+# Sensor windows, wide-angle imaging and IR cameras that give the pilot
+# the view all round and warn of missiles: (x as a share of the length,
+# angle round the body from straight up toward starboard, degrees, and
+# how far forward of the skin's normal it looks). Each sees
+# SENSOR_HALF_ANGLE either side of where it looks; the nose's windows are
+# faceted, angled forward, as the F-35's are, the nose being too slender
+# for a flush window to see ahead. The tail is watched from the fin-tip
+# pod's aft end.
+SENSORS = [(0.16, 45, 35), (0.16, -45, 35), (0.16, 135, 35), (0.16, -135, 35), (0.55, 0, 0), (0.55, 180, 0),
+           (0.80, 80, 0), (0.80, -80, 0)]
+SENSOR_HALF_ANGLE = 65.0
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
 # The capture is a half-circle, its area the duct's, its flat side a
@@ -147,7 +171,7 @@ TANK_FILL = 0.75  # of a tank region's free volume: frames, baffles, feeds, and 
 # Equipment the list does not place, kg, taken at the centre of gravity.
 # Flush hardpoints: no pylons in the flow on entry.
 FIXED = {n: _EQ[n] for n in ("inlets_and_ducts", "propellant_system", "flight_controls_and_rcs",
-                              "thermal", "electrical")}
+                              "thermal", "electrical", "sensor_windows")}
 # The design manoeuvre's mass, and the heaviest the aircraft lands at.
 DESIGN_KG = fighter_structure.DESIGN_KG
 LANDING_KG = 21000.0
@@ -729,6 +753,25 @@ def build(scale):
                           round(split(cg), 2))
     nozzle = eq["swivel_nozzle"]["obj"]
     length = max((nozzle.matrix_world @ Vector(c)).x for c in nozzle.bound_box)
+
+    # What the pilot and the directors can see past the airframe.
+    blockers = [tree, bvh(nozzle), bvh(eq["ew_pod"]["obj"])]
+    eyes = []
+    for f, a, tilt in SENSORS:
+        p, n = on_skin(tree, f * FUSELAGE[-1][0] * s, a)
+        t = math.radians(tilt)
+        eyes.append((p, (n * math.cos(t) + Vector((-1.0, 0.0, 0.0)) * math.sin(t)).normalized()))
+    pod = EQUIPMENT["ew_pod"]
+    eyes.append((Vector((pod[2][0] * s + pod[1][1] / 2 + 0.01, 0.0, pod[2][2])), Vector((1.0, 0.0, 0.0))))
+    dirs = sphere(2000)
+    seen, gaps = coverage(blockers, eyes, SENSOR_HALF_ANGLE, dirs)
+    gap_dirs = [(round(math.degrees(math.atan2(d.y, d.x))), round(math.degrees(math.asin(d.z)))) for d in gaps[:8]]
+    regard = {}
+    for name, up in (("fel_director", 1.0), ("laser_turret_ventral", -1.0)):
+        cx, cy, cz = EQUIPMENT[name][2]
+        base, _ = on_skin(tree, cx * s, 0.0 if up > 0 else 180.0)
+        point = base + Vector((0.0, 0.0, 0.25 * up))
+        regard[name] = tuple(round(v, 2) for v in field_of_regard(blockers, point, Vector((0, 0, up)), dirs))
     dist = area_distribution([fus, *nacelles, wing, fin, nozzle, eq["fel_director"]["obj"]], length)
     dq, dq_sh, v_eff = wave_drag(dist, 2 * INLET["area"], INLET["mouth_x"] * s, length)
     return {
@@ -761,6 +804,8 @@ def build(scale):
         "ac_subsonic": ac_sub,
         "cp_super_hyper": cp_high,
         "trim (cg, subsonic margin %MAC, high-speed margin %MAC, nozzle/fan)": margins,
+        "sensor_coverage": (round(seen, 3), gap_dirs),
+        "director_regard (upper, lower hemisphere)": regard,
         "area_peak": max(dist, key=lambda d: d[1]),
         "wave_drag (D/q Mach 1 m2, Sears-Haack, E_WD)": (round(float(dq), 2), round(float(dq_sh), 2), round(float(dq / dq_sh), 2)),
         "area_distribution": dist,
@@ -848,6 +893,59 @@ def splitter_y(s):
 def inlet_radius(s):
     """The half-circle capture's radius."""
     return math.sqrt(2 * INLET["area"] / math.pi) * s
+
+
+def sphere(n):
+    """n directions spread evenly over the sphere."""
+    out, g = [], math.pi * (3 - math.sqrt(5))
+    for i in range(n):
+        z = 1 - 2 * (i + 0.5) / n
+        r = math.sqrt(1 - z * z)
+        out.append(Vector((r * math.cos(g * i), r * math.sin(g * i), z)))
+    return out
+
+
+def on_skin(tree, x, angle):
+    """The skin's point and outward normal at station x, `angle` degrees
+    round from straight up toward starboard, cast from the axis."""
+    a = math.radians(angle)
+    d = Vector((0.0, math.sin(a), math.cos(a)))
+    origin = Vector((x, 0.0, 0.0))
+    hit, last = tree.ray_cast(origin, d), None
+    while hit[0] is not None:
+        last = hit
+        hit = tree.ray_cast(hit[0] + d * 1e-4, d)
+    n = last[1] if last[1].dot(d) > 0 else -last[1]
+    return last[0], n
+
+
+def visible(trees, point, d):
+    """Is direction d open to the sky from point, past everything in trees?"""
+    return all(t.ray_cast(point + d * 0.03, d)[0] is None for t in trees)
+
+
+def coverage(trees, eyes, half_angle, dirs):
+    """Share of `dirs` that some eye (point, normal) sees within
+    half_angle of its normal, unblocked; and the directions none sees."""
+    c = math.cos(math.radians(half_angle))
+    seen, gaps = 0, []
+    for d in dirs:
+        if any(n.dot(d) >= c and visible(trees, p, d) for p, n in eyes):
+            seen += 1
+        else:
+            gaps.append(d)
+    return seen / len(dirs), gaps
+
+
+def field_of_regard(trees, point, up, dirs, below=10.0):
+    """The share of the upper and of the lower hemisphere a director at
+    `point` can reach: anything within `below` degrees past the plane its
+    mount faces, unblocked."""
+    lim = -math.sin(math.radians(below))
+    reach = [d for d in dirs if d.dot(up) >= lim and visible(trees, point, d)]
+    upper = sum(1 for d in reach if d.z > 0) / sum(1 for d in dirs if d.z > 0)
+    lower = sum(1 for d in reach if d.z < 0) / sum(1 for d in dirs if d.z < 0)
+    return upper, lower
 
 
 def hw_at(x, s):

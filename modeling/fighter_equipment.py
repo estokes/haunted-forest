@@ -23,6 +23,30 @@ LASER_MW = 8.0              # electricity into the laser
 MAX_LANDING_KG = 21000.0
 
 
+def decoy():
+    """A space decoy: kg of dust, film, and the whole, and the burn it can
+    fly. It matches the fighter's acceleration in rocket mode with a small
+    dust engine of the fighter's exhaust speed, and its plume's light with
+    the same engine overdriven: the fighter's exhaust, particle-laden,
+    leaves a 0.6 m2 exit near 2,300 K, ~1 MW as a black body and some
+    10 MW from the plume beyond, so the decoy burns ~10 MW of dust's heat.
+    Its radar and lidar return is a film shell it unfolds to the
+    fighter's size, and a radar repeater."""
+    burn_s, accel, ve = 60.0, 3.0 * 9.80665, 14e3
+    light_w, dust_j = 10e6, 210e6        # W to show; J per kg of dust (a tonne is ~50 t of TNT)
+    dry = 4.0 + 3.0 + 1.5 + 6.0           # engine, electronics and repeater, film, canister and ejector
+    light = light_w * burn_s / dust_j
+    whole = dry + light
+    for _ in range(20):                   # the propellant for its own Δv, at the fighter's exhaust speed
+        prop = whole * (1 - math.exp(-accel * burn_s / ve))
+        whole = dry + light + prop
+    return {"dust_light": light, "propellant": prop, "film": 1.5, "kg": whole, "burn_s": burn_s,
+            "dv": accel * burn_s}
+
+
+DECOY_KG = decoy()["kg"]
+
+
 def skin(area, layers=2, gauge=GAUGE, core=1.3):
     """A sandwich wall of `area` m2, kg."""
     return RHO * area * layers * gauge * core
@@ -83,6 +107,18 @@ def items():
     out["electrical"] = (100, 150, "wiring, starting power")
     out["propellant_system"] = (150, 250, "magnetic dust feed, ammonia pumps, transfer between tanks, gauging")
     out["bays"] = (80, 120, "two bays' doors, ejectors and hot seals")
+    # Sensors: six or more wide-angle windows round the airframe, imaging
+    # and IR, for the pilot's view all round and missile warning; the
+    # laser's 0.5 m directors double as the targeting telescopes.
+    out["sensor_windows"] = (40, 70, "~9 wide-angle imaging and IR windows, all round, missile warning")
+    out["laser_turret_ventral"] = (120, 200, "a second director under the belly, retracting behind doors for entry")
+    # Countermeasures in the air, where the engine cannot be hidden.
+    out["ew"] = (60, 100, "receivers and jammer, its antennas in a fin-tip pod as on the Mirage")
+    out["chaff_flares"] = (70, 100, "two dispensers, ~120 cartridges between them")
+    out["jammer_pods"] = (6 * 12 + 15, 6 * 18 + 25, "six expendable jammers, ~1 m and 12 kg each, flying on batteries, and their launcher")
+    out["towed_decoys"] = (3 * 3 + 15, 3 * 5 + 25, "three towed jammers on fibre, and the reel")
+    # In space: decoys that fly a burn like the fighter's (decoys below).
+    out["space_decoys"] = (4 * DECOY_KG + 20, 4 * DECOY_KG * 1.4 + 30, f"four, {DECOY_KG:.0f} kg each, and their tubes")
     return out
 
 

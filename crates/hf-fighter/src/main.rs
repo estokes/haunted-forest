@@ -43,8 +43,9 @@ struct Vehicle {
     tankage: f64,
     /// Wing area, m2.
     wing: f64,
-    /// Zero-lift drag the aircraft adds to the polar: its wing-root bays,
-    /// or conformal tanks if it has them.
+    /// Zero-lift drag the aircraft adds to the polar: its skin beyond the
+    /// 14.2 m airframe the polar was set for (~0.0035 of friction per m2,
+    /// over the wing's area), its wing-root bays.
     cd0_extra: f64,
     /// Wave drag at Mach 1, D/q, m2.
     wave: f64,
@@ -57,13 +58,13 @@ struct Vehicle {
 impl Default for Vehicle {
     fn default() -> Self {
         Self {
-            empty: 5450.,
+            empty: 6120.,
             tanks_dry: 0.,
             reserve: 150.,
             sortie: 500.,
-            tankage: 12.7,
+            tankage: 24.3,
             wing: 45.,
-            cd0_extra: 0.001,
+            cd0_extra: 0.0034,
             wave: WAVE,
             belly_tanks: 15.,
             soak: 1.6e6,

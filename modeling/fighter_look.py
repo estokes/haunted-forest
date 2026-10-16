@@ -175,15 +175,24 @@ def build(scale=1.0):
     smooth(dome, 80)
     disc("turret_window", top + Vector((-0.09, 0, 0.07)), (-0.6, 0, 1), 0.13, look, glass)
 
-    # Sensor windows where a canopy would be: two each side of the nose, a
-    # chin pair, and two on the spine looking up and back; x as a share of
-    # the length.
+    # Sensor windows where fighter.py puts them, each a small facet turned
+    # the way its camera looks.
     end = fighter.FUSELAGE[-1][0] * scale
-    for x, y, top_side in [(0.155, 0.35, True), (0.155, -0.35, True), (0.24, 0.55, True), (0.24, -0.55, True),
-                           (0.197, 0.25, False), (0.197, -0.25, False), (0.845, 0.25, True), (0.845, -0.25, True)]:
-        p, nn = snap(tree, x * end, y, top_side)
-        if p is not None:
-            disc(f"eye_{x}_{y}", p + nn * 0.004, nn, 0.07, look, glass)
+    for i, (f, a, tilt) in enumerate(fighter.SENSORS):
+        p, nn = fighter.on_skin(tree, f * end, a)
+        t = math.radians(tilt)
+        aim = (nn * math.cos(t) + Vector((-1.0, 0.0, 0.0)) * math.sin(t)).normalized()
+        disc(f"eye_{i}", p + nn * (0.004 + 0.06 * math.sin(t)), aim, 0.09, look, glass)
+
+    # The jammer's fin-tip pod, with the window that watches the tail.
+    _, (pdia, plen), (px, _, pz), *_ = fighter.EQUIPMENT["ew_pod"]
+    rings = [[(px * scale + u * plen / 2, f * pdia / 2 * math.cos(q), pz + f * pdia / 2 * math.sin(q))
+              for q in [2 * math.pi * j / 24 for j in range(24)]]
+             for u, f in [(-1.0, 0.1), (-0.8, 0.7), (-0.5, 1.0), (0.9, 1.0), (1.0, 0.9)]]
+    ew = fighter.ring_loft("ew_pod", rings, look, (0, 0, 0))
+    link(ew, skin_m, look)
+    smooth(ew, 50)
+    disc("eye_tail", Vector((px * scale + plen / 2 + 0.003, 0.0, pz)), (1, 0, 0), 0.07, look, glass)
 
     # Panel lines: lift-fan doors above and below, the capsule hatch, bays,
     # gear doors, elevons, rudder.
@@ -202,6 +211,19 @@ def build(scale=1.0):
         skin_line(tree, f"gear_{side}", rect(gx - 0.68, gx + 0.68, side * 0.44, side * 0.90), False, look, lines_m)
     nx = fighter.EQUIPMENT["nose_gear"][2][0] * scale
     skin_line(tree, "nose_gear", rect(nx - 0.55, nx + 0.55, -0.22, 0.22), False, look, lines_m)
+    # Doors over what is launched or let down: the space decoys on top, the
+    # jammers, the ventral director and the dispensers below, the towed
+    # decoys' port in the fin root.
+    for key, from_top, split in (("space_decoys", True, True), ("jammer_pods", False, True),
+                                 ("laser_turret_ventral", False, True), ("chaff_flares_l", False, False),
+                                 ("chaff_flares_r", False, False), ("towed_decoys", True, False)):
+        kind, size, (cx0, cy0, _), *_ = fighter.EQUIPMENT[key]
+        dx, dy = (size[0], size[1]) if kind == "box" else (size[0], size[0])
+        x0, x1 = cx0 * scale - dx / 2 - 0.04, cx0 * scale + dx / 2 + 0.04
+        y0, y1 = cy0 - dy / 2 - 0.04, cy0 + dy / 2 + 0.04
+        skin_line(tree, f"door_{key}", rect(x0, x1, y0, y1), from_top, look, lines_m)
+        if split:
+            skin_line(tree, f"door_{key}_split", [(x0, cy0), (x1, cy0)], from_top, look, lines_m)
 
     w = fighter.WING
     tan = math.tan(math.radians(w["sweep_le"]))
