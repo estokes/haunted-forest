@@ -6,9 +6,10 @@
 # Boundaries: wall, inflow (the inlets' capture faces), exhaust (the base
 # at the tail), farfield.
 #
-# ~/.local/opt/cfd-venv/bin/python cfd/mesh.py IN.stl OUT.su2 [--body 0.1] [--edge 0.05] [--far 5] [--near 0.2]
+# ~/.local/opt/cfd-venv/bin/python cfd/mesh.py IN.stl OUT.su2 [--body 0.1] [--edge 0.05] [--far 5] [--near 0.2] [--surfdist 0.005]
 #
-# --near is how far, m, the body's cell size holds before the cells grow.
+# --near is how far, m, the body's cell size holds before the cells grow;
+# --surfdist how far, m, the remeshed surface may stand off the original.
 
 import math
 import os
@@ -23,16 +24,16 @@ def opt(name, default):
     return float(a[a.index(name) + 1]) if name in a else default
 
 
-def remesh(stl, size, out):
-    """Even triangles of `size`, sharp edges kept, within 5 mm of the
-    surface."""
+def remesh(stl, size, out, surfdist):
+    """Even triangles of `size`, finer where the surface curves, sharp
+    edges kept, within `surfdist` of the surface."""
     ms = pymeshlab.MeshSet()
     ms.load_new_mesh(stl)
     ms.meshing_merge_close_vertices(threshold=pymeshlab.PureValue(1e-5))
     ms.meshing_remove_duplicate_faces()
     ms.meshing_remove_null_faces()
     ms.meshing_isotropic_explicit_remeshing(iterations=12, targetlen=pymeshlab.PureValue(size), featuredeg=30, adaptive=True,
-                                            checksurfdist=True, maxsurfdist=pymeshlab.PureValue(0.005))
+                                            checksurfdist=True, maxsurfdist=pymeshlab.PureValue(surfdist))
     ms.save_current_mesh(out, binary=False)
     print("REMESH faces", ms.current_mesh().face_number())
 
@@ -41,7 +42,7 @@ def main():
     stl, out = sys.argv[1], sys.argv[2]
     body, edge, far, near = opt("--body", 0.1), opt("--edge", 0.05), opt("--far", 5.0), opt("--near", 0.2)
     clean = os.path.splitext(out)[0] + "-surface.stl"
-    remesh(stl, body, clean)
+    remesh(stl, body, clean, opt("--surfdist", 0.005))
     gmsh.initialize()
     gmsh.option.setNumber("General.Terminal", 1)
     gmsh.merge(clean)

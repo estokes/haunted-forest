@@ -63,10 +63,10 @@ fn ellip_e(k: f64) -> f64 {
     PI / (2. * a) * (1. - sum)
 }
 
-/// The airframe's Mach-1 wave drag, D/q, m2: Euler finds ~0.6 from Mach
-/// 1.05 to 2, where the area rule's slender-body estimate from
-/// modeling/fighter.py is 1.0.
-pub const WAVE: f64 = 0.62;
+/// The airframe's Mach-1 wave drag, D/q, m2: Euler, grid-converged at
+/// 3.3 M nodes, finds ~0.69 at Mach 1.5 and ~0.63 at 2, where the area
+/// rule's slender-body estimate from modeling/fighter.py is 1.0.
+pub const WAVE: f64 = 0.69;
 /// Zero-lift drag area but wave drag, D/q m2, subsonic and supersonic.
 const FRICTION: (f64, f64) = (0.022 * 45., 0.017 * 45.);
 /// Where Raymer's fit gives way to linear theory.

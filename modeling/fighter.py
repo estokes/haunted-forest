@@ -81,9 +81,12 @@ SECTION = [(0.00, 2.00, 2.00), (4.23, 2.00, 2.00), (6.48, 2.20, 3.00), (9.58, 2.
 # wing and body's without canards, is `ac` of the mean chord back from the
 # leading edge there subsonic and `ac_super` supersonic, as SU2's Euler
 # solutions find them (cfd/): a slender delta's lies well aft of a straight
-# wing's quarter chord, and moves aft again past Mach 1.
+# wing's quarter chord, and moves aft again past Mach 1. Its leading edge
+# is rounded, `le_radius` where the section is deep enough, for entry's
+# heat and for the suction that keeps the drag due to lift down; outboard,
+# where the chord is short, as round as a 4% section allows.
 WING = {"apex": 5.76, "root": 11.83, "semispan": 4.09, "sweep_le": 68.0, "tc": 0.040, "z": -0.48, "peak": 0.4,
-        "ac": 0.359, "ac_super": 0.453,
+        "ac": 0.359, "ac_super": 0.453, "le_radius": 0.03,
         "sections": [(0.00, 0.0400, 1.0), (2.49, 0.0437, 1.0), (3.02, 0.0363, 1.0), (4.09, 0.0363, 1.0)]}
 # The slats: from `from` to `to` of the semispan, `chord` of the local
 # chord, drooped `deflection` degrees about their swept hinge, normal to it
@@ -397,16 +400,62 @@ def loft(name, stations, coll, color, k=48, alpha=1.0, offset=(0, 0, 0), n=2.5):
     return mesh_object(name, verts, faces, coll, color, alpha)
 
 
-def half_thickness(chord, tc, fullness, u, peak=0.5):
-    """Half the section's thickness at chord fraction u: biconvex at
-    fullness 1, fuller below; thickest at `peak` of the chord."""
+def det3(m):
+    return (m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+            + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]))
+
+
+def solve3(a, b):
+    """Cramer's rule."""
+    d = det3(a)
+    return [det3([[b[i] if j == k else a[i][j] for j in range(3)] for i in range(3)]) / d for k in range(3)]
+
+
+# NACA's modified 4-digit sections take leading-edge radius indices to ~9;
+# 6 is the standard section's.
+MAX_LE_INDEX = 9.0
+
+
+def naca_modified(u, tc, peak, index):
+    """Half thickness over chord of NACA's modified 4-digit section at chord
+    fraction u: thickest at `peak`, its leading-edge radius 1.1019 (tc
+    index / 6)^2 of the chord, its trailing edge sharp, at NACA's slope for
+    that peak. Forward of the peak a0 sqrt(u) + a1 u + a2 u^2 + a3 u^3, aft a
+    cubic in (1 - u), meeting at the peak in thickness, slope and
+    curvature."""
+    m, s_m = peak, 1 - peak
+    d1 = 5 * tc * (2.24 - 5.42 * m + 12.3 * m * m) / (10 * (1 - 0.878 * m))
+    r1, r2 = tc / 2 - d1 * s_m, -d1
+    det = 3 * s_m ** 4 - 2 * s_m ** 4
+    d2 = (3 * s_m ** 2 * r1 - s_m ** 3 * r2) / det
+    d3 = (s_m ** 2 * r2 - 2 * s_m * r1) / det
+    if u >= m:
+        t = 1 - u
+        return d1 * t + d2 * t * t + d3 * t ** 3
+    a0 = math.sqrt(2 * 1.1019) * tc * index / 6
+    a1, a2, a3 = solve3([[m, m * m, m ** 3], [1, 2 * m, 3 * m * m], [0, 2, 6 * m]],
+                        [tc / 2 - a0 * math.sqrt(m), -a0 / (2 * math.sqrt(m)),
+                         2 * d2 + 6 * d3 * s_m + a0 / (4 * m ** 1.5)])
+    return a0 * math.sqrt(u) + a1 * u + a2 * u * u + a3 * u ** 3
+
+
+def half_thickness(chord, tc, fullness, u, peak=0.5, le=None):
+    """Half the section's thickness at chord fraction u, thickest at `peak`
+    of the chord: with a leading-edge radius `le`, m, NACA's modified
+    4-digit section, its radius held to what MAX_LE_INDEX allows; without,
+    biconvex at fullness 1, fuller below."""
+    if le:
+        index = min(MAX_LE_INDEX, 6 * math.sqrt(le / chord / 1.1019) / tc)
+        return chord * naca_modified(u, tc, peak, index)
     v = u ** (math.log(0.5) / math.log(peak))
     return 0.5 * tc * chord * (4 * v * (1 - v)) ** fullness
 
 
-def section(chord, tc, fullness, peak, n=24):
-    """Upper surface, (x, z) from leading to trailing edge."""
-    return [(chord * i / n, half_thickness(chord, tc, fullness, i / n, peak)) for i in range(n + 1)]
+def section(chord, tc, fullness, peak, n=24, le=None):
+    """Upper surface, (x, z) from leading to trailing edge; spaced closer
+    at the edges, where a round leading edge needs it."""
+    us = [(1 - math.cos(math.pi * i / n)) / 2 if le else i / n for i in range(n + 1)]
+    return [(chord * u, half_thickness(chord, tc, fullness, u, peak, le)) for u in us]
 
 
 def droop(ring, chord, fraction, angle):
@@ -417,14 +466,14 @@ def droop(ring, chord, fraction, angle):
     return [(x, z) if x >= h else (h + (x - h) * c - z * s, z * c + (x - h) * s) for x, z in ring]
 
 
-def surface(name, sections, coll, color, vertical=False, alpha=1.0, peak=0.5, slat=None):
+def surface(name, sections, coll, color, vertical=False, alpha=1.0, peak=0.5, slat=None, le=None):
     """Closed mesh through airfoil sections: (x_le, span, chord, tc, base,
     fullness). `slat(span)`, if given, is the (chord fraction, radians) of
-    the leading edge's droop there."""
+    the leading edge's droop there; `le` its radius, m, sharp if None."""
     verts, faces = [], []
     n = 96
     for x_le, s, chord, tc, base, fullness in sections:
-        up = section(chord, tc, fullness, peak, n)
+        up = section(chord, tc, fullness, peak, n, le)
         ring = [(x, z) for x, z in up] + [(x, -z) for x, z in reversed(up[1:-1])]
         if slat:
             ring = droop(ring, chord, *slat(s))
@@ -642,7 +691,7 @@ def build(scale):
         slat = lambda y: (sl["chord"], angle if y0 - 1e-6 <= abs(y) <= y1 + 1e-6 else 0.0)
     spanwise = [(-y, tc, p) for y, tc, p in reversed(half[1:])] + half
     wing = surface("wing", [(le_at(y / s), y, chord_at(y / s), tc, (0, 0, w["z"] * s), p)
-                            for y, tc, p in spanwise], skin, C_SKIN, peak=w["peak"], slat=slat)
+                            for y, tc, p in spanwise], skin, C_SKIN, peak=w["peak"], slat=slat, le=w["le_radius"])
     f = FIN
     ftan = math.tan(math.radians(f["sweep_le"]))
     fin = surface("fin", [
