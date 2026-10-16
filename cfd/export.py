@@ -5,7 +5,10 @@
 # it exhausts. Beside it, OUT.json: the lifting surfaces' planforms and the
 # centre of gravity, for cfd/vlm.py.
 #
-# Headless:  blender -b --factory-startup --python cfd/export.py -- OUT.stl
+# Headless:  blender -b --factory-startup --python cfd/export.py -- OUT.stl [--bare] [--slats DEG]
+#
+# --bare leaves the canards off, for the wing and body's own centre of lift;
+# --slats droops the slats DEG degrees.
 
 import json
 import os
@@ -54,12 +57,17 @@ def write_stl(path, groups):
 
 
 def main():
-    path = sys.argv[sys.argv.index("--") + 1]
+    args = sys.argv[sys.argv.index("--") + 1:]
+    path = args[0]
+    if "--slats" in args:
+        fighter.SLAT["deflection"] = float(args[args.index("--slats") + 1])
     r = fighter.build(1.0)
     with open(os.path.splitext(path)[0] + ".json", "w") as f:
         json.dump({"wing": fighter.WING, "canard": fighter.CANARD, "fin": fighter.FIN,
                    "cg": (r["cg_empty"], r["cg_full"]), "mac": r["mac"], "ac_subsonic": r["ac_subsonic"]}, f)
-    parts = [bpy.data.objects["airframe"]] + [o for o in bpy.data.objects if o.name.startswith("canard_")]
+    parts = [bpy.data.objects["airframe"]]
+    if "--bare" not in args:
+        parts += [o for o in bpy.data.objects if o.name.startswith("canard_")]
     whole = fighter.union("cfd_body", parts, bpy.context.scene.collection, fighter.C_SKIN, 1.0)
     bm = bmesh.new()
     bm.from_mesh(whole.data)

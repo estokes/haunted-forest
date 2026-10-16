@@ -243,11 +243,13 @@ def build(scale=1.0):
                 skin_line(tree, f"elevon_edge_{tag}_{y:.2f}", [(le(y) + 0.78 * chord(y), side * y),
                                                               (le(y) + chord(y) - 0.01, side * y)],
                           from_top, look, lines_m, steps=4)
-            slat = [(le(y) + 0.15 * chord(y), side * y) for y in [semi * (0.32 + 0.63 * i / 12) for i in range(13)]]
+            sl = fighter.SLAT
+            y0, y1 = semi * sl["from"], semi * sl["to"]
+            slat = [(le(y) + sl["chord"] * chord(y), side * y) for y in [y0 + (y1 - y0) * i / 12 for i in range(13)]]
             skin_line(tree, f"slat_hinge_{tag}", slat, from_top, look, lines_m, steps=3)
-            for y in (semi * 0.32, semi * 0.635, semi * 0.95):
+            for y in (y0, (y0 + y1) / 2, y1):
                 skin_line(tree, f"slat_edge_{tag}_{y:.2f}", [(le(y) + 0.005, side * y),
-                                                            (le(y) + 0.15 * chord(y), side * y)],
+                                                            (le(y) + sl["chord"] * chord(y), side * y)],
                           from_top, look, lines_m, steps=4)
 
     f = fighter.FIN

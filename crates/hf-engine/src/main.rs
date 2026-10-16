@@ -2,7 +2,7 @@
 //! with ammonia and with methane as the diluent, and print the comparison.
 //!
 //! `hf-engine [-|FILE] [--blades] [--flowpath [--fan-rotors N] [--counter]
-//! [--fan-tip U] [--hub-tip H] [--json OUT]]`: with no path the default engine spec, `-`
+//! [--fan-tip U] [--hub-tip H] [--turbopump MW] [--json OUT]]`: with no path the default engine spec, `-`
 //! a spec on stdin, else one from FILE. Missing fields take defaults.
 //! `--blades` sweeps the turbopump blades' heat load instead; `--flowpath`
 //! designs the air path, and writes it as JSON to OUT for
@@ -30,7 +30,7 @@ const DUST_DENSITY: f64 = 600.;
 const COKING_T: f64 = 900.;
 
 /// Flags that take a value.
-const VALUED: [&str; 4] = ["--fan-rotors", "--fan-tip", "--hub-tip", "--json"];
+const VALUED: [&str; 5] = ["--fan-rotors", "--fan-tip", "--hub-tip", "--turbopump", "--json"];
 
 fn flag(name: &str) -> Option<String> {
     let args: Vec<String> = std::env::args().collect();
@@ -396,12 +396,12 @@ fn loads(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
     Ok(())
 }
 
-/// The turbopump's blades at its rating, into 1.5 MPa, non-catalytic
+/// The turbopump's blades at `rating` W, into 1.5 MPa, non-catalytic
 /// surfaces at 4,000 K cooled by diluent cracked to 2,500 K; its gas flow,
 /// kg/s, and the J/kg that coolant takes.
-fn turbopump_blades(spec: &EngineSpec) -> Result<(BladeHeat, f64, f64)> {
+fn turbopump_blades(spec: &EngineSpec, rating: f64) -> Result<(BladeHeat, f64, f64)> {
     let k = spec.turbopump.per_kg(1.5e6)?;
-    let m_gas = TURBOPUMP_MAX / k.electric;
+    let m_gas = rating / k.electric;
     let cracked = coolant_dh(spec.turbopump.diluent, spec.turbopump.p_reverter, 2500., true)?;
     Ok((blade_heat(&k, m_gas, 4000., cracked, false)?, m_gas, cracked))
 }
@@ -414,7 +414,7 @@ fn blades(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
         d,
         TURBOPUMP_MAX / 1e6
     );
-    let (b, _, cracked) = turbopump_blades(spec)?;
+    let (b, _, cracked) = turbopump_blades(spec, TURBOPUMP_MAX)?;
     println!("  mean radius {:.0} mm, {:.0} rpm", b.mean_radius * 1e3, b.rpm);
     for s in &b.stages[..b.n_stages] {
         println!(
@@ -583,9 +583,10 @@ fn flowpath(spec: &EngineSpec) -> Result<()> {
         "  motors, kg: {}",
         f.motors.iter().map(|m| format!("{:.0} ({:.2} m)", m.kg, m.x1 - m.x0)).collect::<Vec<_>>().join(", ")
     );
-    let (b, m_gas, _) = turbopump_blades(spec)?;
+    let rating = flag("--turbopump").map_or(Ok(TURBOPUMP_MAX), |mw| mw.parse::<f64>().map(|mw| mw * 1e6))?;
+    let (b, m_gas, _) = turbopump_blades(spec, rating)?;
     let reverter = spec.turbopump.reverter()?.1;
-    let generator = TURBOPUMP_MAX / MOTOR_SPECIFIC;
+    let generator = rating / MOTOR_SPECIFIC;
     let turbopump = TurbopumpGeometry {
         mean_radius: b.mean_radius,
         rpm: b.rpm,
@@ -597,7 +598,8 @@ fn flowpath(spec: &EngineSpec) -> Result<()> {
         flow: m_gas,
     };
     println!(
-        "  turbopump: {} stages at r {:.0} mm, {:.0} rpm, blades {:.1}-{:.1} mm; generator {:.0} kg; reverter {:.1} L for {:.2} kg/s",
+        "  turbopump at {:.0} MW: {} stages at r {:.0} mm, {:.0} rpm, blades {:.1}-{:.1} mm; generator {:.0} kg; reverter {:.1} L for {:.2} kg/s",
+        rating / 1e6,
         turbopump.blades.len(),
         turbopump.mean_radius * 1e3,
         turbopump.rpm,

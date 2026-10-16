@@ -30,6 +30,7 @@ import bpy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fighter_equipment  # noqa: E402
 import fighter_structure  # noqa: E402
+import turbo  # noqa: E402
 
 # Equipment masses, kg, central or (--high) what today's practice adds back.
 HIGH = "--high" in sys.argv
@@ -83,14 +84,29 @@ SECTION = [(0.00, 2.00, 2.00), (4.23, 2.00, 2.00), (6.48, 2.20, 3.00), (9.58, 2.
 WING = {"apex": 5.76, "root": 11.83, "semispan": 4.09, "sweep_le": 68.0, "tc": 0.040, "z": -0.48, "peak": 0.4,
         "ac": 0.344,
         "sections": [(0.00, 0.0400, 1.0), (2.49, 0.0437, 1.0), (3.02, 0.0363, 1.0), (4.09, 0.0363, 1.0)]}
+# The slats: from `from` to `to` of the semispan, `chord` of the local
+# chord, drooped `deflection` degrees about their swept hinge, normal to it
+# (0 retracted; set for CFD by cfd/export.py --slats).
+SLAT = {"from": 0.32, "to": 0.95, "chord": 0.15, "deflection": 0.0}
 FIN = {"root_x": 13.52, "root": 4.2, "height": 2.6, "sweep_le": 55.0, "tc": 0.05, "z": 0.6}
 # Conformal tanks on the back, each side of the dorsal spine, or None:
 # (x0, x1, y, half-width, height)
 CFT = None
 
+# The swivel nozzle: diameter, length, centre. The engine, as hf-engine
+# designs it (modeling/turbo.py reads the design), from the fan face to
+# the reheat's end, where the swivel nozzle takes its exit: its casing,
+# with a skin, as a solid of revolution.
+SWIVEL = (0.90, 1.70, 19.08)
+_AIR = turbo.load()["air"]
+ENGINE_PROFILE = ([(-0.05, 0.0)] + [(x, r + 0.012) for x, r in turbo.walls(_AIR)[3] if x <= _AIR["reheat"]["x1"] + 1e-9]
+                  + [(_AIR["reheat"]["x1"], 0.0)])
+ENGINE_FACE_X = SWIVEL[2] - SWIVEL[1] / 2 - _AIR["reheat"]["x1"]
+
 # Equipment: name -> (kind, size, centre, mass kg, colour). Sizes are fixed;
 # x of the centre scales with the airframe. "box" size is (dx, dy, dz);
-# "cyl_x" and "cyl_z" are (diameter, length) along X or Z.
+# "cyl_x" and "cyl_z" are (diameter, length) along X or Z; "lathe" is a
+# solid of revolution about X, its (x, r) profile from the centre.
 EQUIPMENT = {
     "radar":           ("cyl_x", (0.45, 0.45), (2.04, 0.0, 0.0), _EQ["radar"], (0.6, 0.6, 0.9)),
     "avionics":        ("box", (0.50, 0.50, 0.38), (2.89, 0.0, 0.0), _EQ["avionics"], (0.5, 0.5, 0.8)),
@@ -104,13 +120,14 @@ EQUIPMENT = {
     "capsule_reservoir": ("box", (0.70, 0.60, 0.50), (6.97, 0.0, -0.25), 0, (0.95, 0.75, 0.45)),
     # The fan's shaft runs skin to skin; its doors are the skin.
     "lift_fan":        ("cyl_z", (1.55, 1.42), (8.30, 0.0, 0.06), _EQ["lift_fan"], (0.2, 0.8, 0.9)),
-    # Fan, compressor, casings, hot section, nozzle, and motors for ~45 MW,
-    # what the fan and compressor want at Mach 2.
-    "engine":          ("cyl_x", (1.00, 4.10), (15.00, 0.0, -0.05), _EQ["engine"] + _EQ["engine_motors"], (0.9, 0.45, 0.2)),
-    "swivel_nozzle":   ("cyl_x", (0.90, 1.70), (19.08, 0.0, -0.05), _EQ["swivel_nozzle"], (0.95, 0.3, 0.15)),
-    # Dense, so aft, where they balance the capsule and the forward tank
-    # without bulk in the tail.
-    "turbopump":       ("cyl_x", (0.45, 1.40), (14.37, 0.68, 0.22), _EQ["turbopump"], (0.85, 0.2, 0.6)),
+    # Fan, compressor, casings, hot section, and motors for what the fan
+    # and compressor want at Mach 2.
+    "engine":          ("lathe", ENGINE_PROFILE, (ENGINE_FACE_X, 0.0, -0.05), _EQ["engine"] + _EQ["engine_motors"], (0.9, 0.45, 0.2)),
+    "swivel_nozzle":   ("cyl_x", SWIVEL[:2], (SWIVEL[2], 0.0, -0.05), _EQ["swivel_nozzle"], (0.95, 0.3, 0.15)),
+    # Beside the engine, its turbine's end at the combustor, so that its
+    # 4,000 K exhaust has no length of pipe to cross; the power
+    # electronics opposite, forward, where cable is all they need.
+    "turbopump":       ("cyl_x", (0.45, 1.40), (ENGINE_FACE_X + _AIR["combustor"]["x0"] - 0.70, 0.64, 0.18), _EQ["turbopump"], (0.85, 0.2, 0.6)),
     "power_electronics": ("box", (1.20, 0.45, 0.40), (14.37, -0.68, 0.22), _EQ["power_electronics"], (0.9, 0.9, 0.2)),
     # The laser along the spine over the engine face, its turret at the
     # front, just aft of the lift fan.
@@ -173,8 +190,11 @@ STRAKE = {"from": 1.0, "length": 0.9, "span": 0.25, "z": 0.22}
 # leading-edge sweep, taper, thickness/chord, height.)
 CANARD = {"x": 7.10, "root": 2.30, "span": 1.95, "root_y": 1.20, "sweep": 50.0, "taper": 0.35,
           "tc": 0.04, "z": 0.22}
-INLET = {"area": 0.30, "gap": 0.07, "diverter": (0.30, 1.20), "face_x": 12.95, "mouth_x": 6.90, "fair_x": 11.00, "lip": 0.025}
-DUCT_PATH = [(6.76, 1.24, -0.05), (8.17, 1.26, -0.05), (9.30, 1.20, -0.05), (10.70, 0.90, -0.05), (12.11, 0.40, -0.05), (12.95, 0.20, -0.05)]
+INLET = {"area": 0.30, "gap": 0.07, "diverter": (0.30, 1.20), "face_x": ENGINE_FACE_X, "mouth_x": 6.90, "fair_x": 11.00, "lip": 0.025}
+# Behind their S-bend the two ducts run on side by side, a bifurcated duct,
+# to the fan face.
+DUCT_PATH = [(6.76, 1.24, -0.05), (8.17, 1.26, -0.05), (9.30, 1.20, -0.05), (10.70, 0.90, -0.05), (12.11, 0.40, -0.05),
+             (12.95, 0.20, -0.05), (ENGINE_FACE_X, 0.20, -0.05)]
 
 # Tank regions: name -> box (x0, x1, y0, y1, z0, z1), or "wing" for the wing
 # box outboard of the fuselage between these chord fractions.
@@ -383,14 +403,26 @@ def section(chord, tc, fullness, peak, n=24):
     return [(chord * i / n, half_thickness(chord, tc, fullness, i / n, peak)) for i in range(n + 1)]
 
 
-def surface(name, sections, coll, color, vertical=False, alpha=1.0, peak=0.5):
+def droop(ring, chord, fraction, angle):
+    """`ring`, (x, z) from the leading edge, its front `fraction` of the
+    chord turned nose down `angle` radians about the hinge there."""
+    h = fraction * chord
+    c, s = math.cos(angle), math.sin(angle)
+    return [(x, z) if x >= h else (h + (x - h) * c - z * s, z * c + (x - h) * s) for x, z in ring]
+
+
+def surface(name, sections, coll, color, vertical=False, alpha=1.0, peak=0.5, slat=None):
     """Closed mesh through airfoil sections: (x_le, span, chord, tc, base,
-    fullness)."""
+    fullness). `slat(span)`, if given, is the (chord fraction, radians) of
+    the leading edge's droop there."""
     verts, faces = [], []
     n = 96
     for x_le, s, chord, tc, base, fullness in sections:
         up = section(chord, tc, fullness, peak, n)
-        ring = [(x_le + x, z) for x, z in up] + [(x_le + x, -z) for x, z in reversed(up[1:-1])]
+        ring = [(x, z) for x, z in up] + [(x, -z) for x, z in reversed(up[1:-1])]
+        if slat:
+            ring = droop(ring, chord, *slat(s))
+        ring = [(x_le + x, z) for x, z in ring]
         if vertical:
             ring.reverse()
         for x, z in ring:
@@ -425,6 +457,32 @@ def cylinder(name, axis, d, length, c, coll, color, k=32):
     faces = [(i, (i + 1) % k, k + (i + 1) % k, k + i) for i in range(k)]
     faces += [tuple(reversed(range(k))), tuple(range(k, 2 * k))]
     return mesh_object(name, verts, faces, coll, color)
+
+
+def lathe(name, profile, coll, color, arc=None, k=48, centre=(0.0, 0.0)):
+    """A surface of revolution about X through (x, r), over the whole turn
+    or over `arc`, (start, sweep) radians; a profile that starts and ends
+    on the axis makes a closed solid."""
+    if arc:
+        angles = [arc[0] + arc[1] * i / k for i in range(k + 1)]
+    else:
+        angles = [2 * math.pi * i / k for i in range(k)]
+    cy, cz = centre
+    verts = [(x, cy + r * math.cos(t), cz + r * math.sin(t)) for t in angles for x, r in profile]
+    n, faces = len(profile), []
+    for j in range(len(angles) - (1 if arc else 0)):
+        a0, a1 = j * n, ((j + 1) % len(angles)) * n
+        for i in range(n - 1):
+            faces.append((a0 + i, a0 + i + 1, a1 + i + 1, a1 + i))
+    return mesh_object(name, verts, faces, coll, color)
+
+
+def radius_at(profile, x):
+    """A lathe profile's radius at x, 0 outside it."""
+    for (x0, r0), (x1, r1) in zip(profile, profile[1:]):
+        if x0 <= x <= x1 and x1 > x0:
+            return r0 + (r1 - r0) * (x - x0) / (x1 - x0)
+    return 0.0
 
 
 def volume(o):
@@ -565,9 +623,20 @@ def build(scale):
     chord_at = lambda y: max(0.3, w["root"] - abs(y) * tan) * s
     le_at = lambda y: (w["apex"] + abs(y) * tan) * s
     half = [(y * s, tc, p) for y, tc, p in w["sections"]]
+    slat = None
+    if SLAT["deflection"]:
+        sl, semi = SLAT, w["semispan"] * s
+        y0, y1 = sl["from"] * semi, sl["to"] * semi
+        between = lambda y, k: next(a[k] + (b[k] - a[k]) * (y - a[0]) / (b[0] - a[0])
+                                    for a, b in zip(half, half[1:]) if a[0] <= y <= b[0])
+        ends = (y0 - 0.02 * semi, y0, y1, y1 + 0.02 * semi)
+        half = sorted(half + [(y, between(y, 1), between(y, 2)) for y in ends])
+        hinge = math.atan((1 - sl["chord"]) * tan)
+        angle = math.atan(math.tan(math.radians(sl["deflection"])) * math.cos(hinge))
+        slat = lambda y: (sl["chord"], angle if y0 - 1e-6 <= abs(y) <= y1 + 1e-6 else 0.0)
     spanwise = [(-y, tc, p) for y, tc, p in reversed(half[1:])] + half
     wing = surface("wing", [(le_at(y / s), y, chord_at(y / s), tc, (0, 0, w["z"] * s), p)
-                            for y, tc, p in spanwise], skin, C_SKIN, peak=w["peak"])
+                            for y, tc, p in spanwise], skin, C_SKIN, peak=w["peak"], slat=slat)
     f = FIN
     ftan = math.tan(math.radians(f["sweep_le"]))
     fin = surface("fin", [
@@ -631,6 +700,15 @@ def build(scale):
             grid = [(cen[0] + (i / 4 - 0.5) * dx, cen[1] + (j / 4 - 0.5) * dy, cen[2] + (k / 4 - 0.5) * dz)
                     for i in range(5) for j in range(5) for k in range(5)]
             vol = dx * dy * dz
+        elif kind == "lathe":
+            prof = [(cen[0] + x, r) for x, r in size]
+            o = lathe(name, prof, gear, color, centre=cen[1:])
+            grid = [(x, cen[1] + f * r * math.cos(t), cen[2] + f * r * math.sin(t))
+                    for x, r in prof for f in (0, 0.5, 1) for t in [i * math.pi / 4 for i in range(8)]]
+            vol = sum(math.pi * (x1 - x0) * (r0 * r0 + r0 * r1 + r1 * r1) / 3
+                      for (x0, r0), (x1, r1) in zip(prof, prof[1:]))
+            cen = (sum(math.pi * (x1 - x0) * (r0 * r0 + r1 * r1) / 2 * (x0 + x1) / 2
+                       for (x0, r0), (x1, r1) in zip(prof, prof[1:])) / vol, *cen[1:])
         else:
             d, L = size
             o = cylinder(name, kind[-1], d, L, cen, gear, color)
@@ -673,6 +751,10 @@ def build(scale):
             elif kind == "cyl_x":
                 d, L = size
                 if abs(x - cx) <= L / 2 and (y - cen[1]) ** 2 + (z - cen[2]) ** 2 <= d * d / 4:
+                    return True
+            elif kind == "lathe":
+                r = radius_at(size, x - cx)
+                if (y - cen[1]) ** 2 + (z - cen[2]) ** 2 <= r * r:
                     return True
             else:
                 d, L = size
@@ -1034,7 +1116,7 @@ def weighted_x(tank):
     return sum(t["volume"] * t["x"] for t in tank.values()) / v
 
 
-def frame_and_render(directory):
+def frame_and_render(directory, length):
     scene = bpy.context.scene
     scene.render.engine = "BLENDER_WORKBENCH"
     scene.display.shading.color_type = "OBJECT"
@@ -1046,9 +1128,10 @@ def frame_and_render(directory):
     cam = bpy.data.objects.new("cam", cam_data)
     scene.collection.objects.link(cam)
     scene.camera = cam
+    mid, wide = length / 2, length * 1.12
     views = {
-        "top": ((7.2, 0.0, 30.0), (0.0, 0.0, 0.0), 16.5),
-        "side": ((7.2, -30.0, 0.5), (math.pi / 2, 0.0, 0.0), 16.5),
+        "top": ((mid, 0.0, 30.0), (0.0, 0.0, 0.0), wide),
+        "side": ((mid, -30.0, 0.5), (math.pi / 2, 0.0, 0.0), wide),
         "front": ((-30.0, 0.0, 0.5), (math.pi / 2, 0.0, -math.pi / 2), 11.0),
     }
     for name, (loc, rot, ortho) in views.items():
@@ -1058,8 +1141,8 @@ def frame_and_render(directory):
         scene.render.filepath = f"{directory}/fighter_{name}.png"
         bpy.ops.render.render(write_still=True)
     cam_data.type = "PERSP"
-    cam.location = (-6.0, -14.0, 9.0)
-    direction = Vector((7.0, 0.0, 0.0)) - cam.location
+    cam.location = (mid - 13.0, -19.0, 12.0)
+    direction = Vector((mid, 0.0, 0.0)) - cam.location
     cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
     scene.render.filepath = f"{directory}/fighter_iso.png"
     bpy.ops.render.render(write_still=True)
@@ -1080,7 +1163,7 @@ def main():
     if opts["save"]:
         bpy.ops.wm.save_as_mainfile(filepath=opts["save"])
     if opts["render"]:
-        frame_and_render(opts["render"])
+        frame_and_render(opts["render"], result["length"])
 
 
 if __name__ == "__main__":

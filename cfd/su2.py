@@ -1,6 +1,8 @@
 # Euler CFD of the fighter with SU2: one case per (Mach, altitude, angle of
 # attack), each in its own directory beside the mesh. The inlets swallow
-# MFR of the air their capture meets, the base exhausts a jet at T0_JET;
+# MFR of the air their capture meets, held at the static pressure that
+# passes it (behind a normal shock, supersonic: pitot inlets), the base
+# exhausts a jet at T0_JET;
 # forces are the walls' alone, as the drag polar books them (the engine's
 # net thrust is the engine's), on the wing's area and mean chord, moments
 # about MOMENT_X. Prints CL, CD, Cm per case.
@@ -15,7 +17,6 @@ import sys
 
 SU2 = os.path.expanduser("~/.local/opt/su2/bin/SU2_CFD")
 REF_AREA, REF_LENGTH, MOMENT_X = 55.37, 8.03, 12.0
-CAPTURE = 0.30          # m2, each inlet
 MFR, T0_JET, P0_JET = 0.85, 850.0, 1.4
 
 
@@ -27,11 +28,28 @@ def isa(z):
     return 216.65, 22632 * math.exp(-(z - 11000) / 6341.6)
 
 
+def flux(m):
+    """Mass flux over the critical, at Mach `m`, isentropic."""
+    return m * (1.2 / (1 + 0.2 * m * m)) ** 3
+
+
+def face_pressure(mach, p0):
+    """Static pressure at the inlets' faces that passes MFR of the
+    capture, its total pressure `p0` less a normal shock's loss."""
+    p0_face = p0
+    if mach > 1:
+        m2 = mach * mach
+        p0_face *= (2.4 * m2 / (0.4 * m2 + 2)) ** 3.5 * (2.4 / (2.8 * m2 - 0.4)) ** 2.5
+    want = MFR * flux(mach) * p0 / p0_face
+    lo, hi = 0.0, 1.0
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if flux(mid) < want else (lo, mid)
+    return p0_face / (1 + 0.2 * lo * lo) ** 3.5
+
+
 def config(mesh, mach, z, alpha, iters, second_order, restart):
     t, p = isa(z)
-    rho = p / (287.053 * t)
-    v = mach * math.sqrt(1.4 * 287.053 * t)
-    mdot = MFR * rho * v * CAPTURE
     p0 = p * (1 + 0.2 * mach * mach) ** 3.5
     return f"""SOLVER= EULER
 MATH_PROBLEM= DIRECT
@@ -51,9 +69,9 @@ MESH_FILENAME= {mesh}
 MESH_FORMAT= SU2
 MARKER_EULER= ( wall )
 MARKER_FAR= ( farfield )
-ENGINE_INFLOW_TYPE= FAN_FACE_MDOT
-MARKER_ENGINE_INFLOW= ( inflow, {mdot:.4f} )
-MARKER_ENGINE_EXHAUST= ( exhaust, {T0_JET}, {P0_JET * p0:.1f} )
+MARKER_OUTLET= ( inflow, {face_pressure(mach, p0):.1f} )
+INLET_TYPE= TOTAL_CONDITIONS
+MARKER_INLET= ( exhaust, {T0_JET}, {P0_JET * p0:.1f}, 1.0, 0.0, 0.0 )
 MARKER_MONITORING= ( wall )
 MARKER_PLOTTING= ( wall )
 NUM_METHOD_GRAD= WEIGHTED_LEAST_SQUARES
@@ -100,6 +118,9 @@ def run(mesh, mach, z, alpha, iters, threads, first=400):
     with open(os.path.join(case, "history.csv")) as f:
         rows = list(csv.reader(f))
     head = [h.strip().strip('"') for h in rows[0]]
+    if rows[-1][0].strip().startswith('"'):
+        print(f"Mach {mach:.2f} at {z:5.0f} m, alpha {alpha:4.1f}: diverged, see {case}", flush=True)
+        return None
     last = dict(zip(head, [float(v) for v in rows[-1]]))
     print(f"Mach {mach:.2f} at {z:5.0f} m, alpha {alpha:4.1f}: CL {last['CL']:.4f} CD {last['CD']:.5f} "
           f"CMy {last['CMy']:.4f} after {int(last['Inner_Iter'])} iterations, rms rho {last['rms[Rho]']:.2f}",
