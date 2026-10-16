@@ -146,9 +146,9 @@ def build(scale=1.0):
     oml.color = (*COATING, 1)
     tree = fighter.bvh(oml)
 
-    # Inlet cones, the Mirage's souris: half-cones against the flank, at
-    # the centre of the half-round capture.
-    y, z = fighter.hw_at(mouth, scale), fighter.duct_point(mouth, scale)[1]
+    # Inlet cones, the Mirage's souris: half-cones on the splitter plate,
+    # at the centre of the half-round capture.
+    y, z = fighter.splitter_y(scale) + 0.05, fighter.duct_point(mouth, scale)[1]
     for side in (-1, 1):
         rings = []
         for i in range(8):
@@ -176,11 +176,12 @@ def build(scale=1.0):
     disc("turret_window", top + Vector((-0.09, 0, 0.07)), (-0.6, 0, 1), 0.13, look, glass)
 
     # Sensor windows where a canopy would be: two each side of the nose, a
-    # chin pair, and two on the spine looking up and back.
+    # chin pair, and two on the spine looking up and back; x as a share of
+    # the length.
     end = fighter.FUSELAGE[-1][0] * scale
-    for x, y, top_side in [(2.2, 0.35, True), (2.2, -0.35, True), (3.4, 0.55, True), (3.4, -0.55, True),
-                           (2.8, 0.25, False), (2.8, -0.25, False), (12.0, 0.25, True), (12.0, -0.25, True)]:
-        p, nn = snap(tree, x * end / 14.2, y, top_side)
+    for x, y, top_side in [(0.155, 0.35, True), (0.155, -0.35, True), (0.24, 0.55, True), (0.24, -0.55, True),
+                           (0.197, 0.25, False), (0.197, -0.25, False), (0.845, 0.25, True), (0.845, -0.25, True)]:
+        p, nn = snap(tree, x * end, y, top_side)
         if p is not None:
             disc(f"eye_{x}_{y}", p + nn * 0.004, nn, 0.07, look, glass)
 
@@ -299,6 +300,7 @@ def shoot(directory):
     cam = bpy.data.objects.new("look_cam", cam_data)
     sc.collection.objects.link(cam)
     sc.camera = cam
+    # Framed for a 14.2 m airframe, and scaled to this one.
     k = fighter.FUSELAGE[-1][0] / 14.2
     target = Vector((7.6 * k, 0.0, 0.0))
     shots = {

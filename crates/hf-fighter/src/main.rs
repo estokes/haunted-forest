@@ -221,6 +221,7 @@ fn worlds(v: &Vehicle) -> Result<()> {
             let mut budget = 0.;
             let mut nose = 0.;
             let mut ok = true;
+            let mut hot_limited = false;
             for _ in 0..3 {
                 let at = |s: f64| {
                     close_on(
@@ -255,15 +256,38 @@ fn worlds(v: &Vehicle) -> Result<()> {
                 mission.braking = if fly(0.).nose.temperature <= NOSE_MAX {
                     0.
                 } else {
-                    hf_engine::gas::brent(
+                    match hf_engine::gas::brent(
                         |b| Ok(fly(b).nose.temperature - NOSE_MAX),
                         0.,
                         6000.,
                         1e-4,
-                    )?
+                    ) {
+                        Ok(b) => b,
+                        Err(_) => {
+                            let hot = |s: f64| {
+                                Ok(EntrySpec { mass: at(s).entry_mass, ..EntrySpec::default() }
+                                    .fly(&planet, &aero)
+                                    .nose
+                                    .temperature
+                                    - NOSE_MAX)
+                            };
+                            match hf_engine::gas::brent(hot, 0., budget, 1e-3) {
+                                Ok(s) => {
+                                    budget = s;
+                                    nose = NOSE_MAX;
+                                    mission.braking = 0.;
+                                    hot_limited = true;
+                                }
+                                Err(_) => ok = false,
+                            }
+                            break;
+                        }
+                    }
                 };
             }
-            let landing = if from > 0. {
+            let landing = if hot_limited {
+                "entry heat limits the budget".to_string()
+            } else if from > 0. {
                 "-".to_string()
             } else {
                 let strip = StripSpec { gravity: 9.80665 * g, ..StripSpec::default() };
@@ -278,8 +302,13 @@ fn worlds(v: &Vehicle) -> Result<()> {
             };
             let orbit = planet.circular_speed(200e3);
             if !ok {
+                let why = if nose > NOSE_MAX {
+                    "no budget: no braking burn keeps the nose cool"
+                } else {
+                    "no budget: the climb alone overfills the tanks"
+                };
                 println!(
-                    "  {g:.1}  {:6.0} km {:4.1} km/s {name:12} {:5.1} t      no budget: the climb alone overfills the tanks",
+                    "  {g:.1}  {:6.0} km {:4.1} km/s {name:12} {:5.1} t      {why}",
                     planet.radius / 1e3,
                     orbit / 1e3,
                     c.0 / 1e3
