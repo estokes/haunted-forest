@@ -294,12 +294,12 @@ wing roots; the swivel nozzle at the tail.
 chord, not half: its trailing edge is straight, so a section thick to
 the back would stack the whole span's thickness in the last two metres
 and pile area on the tail. Measured from the model's cross-sections, the
-Mach-1 wave drag is ~2.4 m² of D/q, twice a Sears-Haack body's of the
-same length and volume, about a usual fighter's. It is high in absolute
-terms because the fighter is fat for its length, ~40 m³ inside to a
-Mirage's ~25, and wave drag goes with the square of volume; the volume
-is the tanks. Area ruling harder costs tank faster than it saves drag:
-a 4.5% wing would save ~0.26 m² and lose ~0.56 m³ of tank and the bays;
+Mach-1 wave drag is ~1.9 m² of D/q, 1.75 times a Sears-Haack body's of
+the same length and volume, a little better than a usual fighter's. It
+is high in absolute terms because the fighter is fat for its length,
+~40 m³ inside to a Mirage's ~25, and wave drag goes with the square of
+volume; the volume is the tanks. Area ruling harder costs tank faster than it saves drag:
+a 4.5% wing would save little and lose ~0.56 m³ of tank and the bays;
 moving the saddle tanks forward to slim the tail lost 1.5 m³ for almost
 nothing. The mission sim takes the measured figure.
 
@@ -478,7 +478,7 @@ MW/m², well short of a rocket's usual.
 
 The ramjet does not pay on the way up. Against a rocket of ~1,430 s it
 wins only by a little, and the fighter's wave drag takes that: the
-climb optimiser leaves the air at Mach 0.95 at the measured ~2.4 m² of
+climb optimiser leaves the air at Mach 0.95 at the measured ~1.9 m² of
 D/q, goes on to Mach 2.2 at ~1.4 m², and only below ~1 m² rides the
 ramjet to Mach ~4.5 at 23 km first, which would save ~0.5 t. A fighter
 area-ruled that well would be longer, or carry less.

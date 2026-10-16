@@ -3,7 +3,7 @@
 # and the bottom-up mass that the down-and-back mission (crates/hf-fighter)
 # turns on.
 #
-# Headless:  blender -b --factory-startup --python modeling/fighter.py -- [--scale S] [--gauge MM] [--high] [--sweep] [--save FILE] [--render DIR]
+# Headless:  blender -b --factory-startup --python modeling/fighter.py -- [--scale S] [--stretch K] [--gauge MM] [--high] [--sweep] [--save FILE] [--render DIR]
 # Live:      exec(open('/home/eric/proj/haunted-forest/modeling/fighter.py').read())
 #
 # X runs aft from the nose, Y to starboard, Z up; metres. The airframe
@@ -19,10 +19,10 @@
 # modeling/fighter_structure.py; the Mach-1 wave drag, which
 # crates/hf-fighter takes as aero::WAVE, from the area distribution.
 
+import copy
 import math
-import sys
-
 import os
+import sys
 
 import bmesh
 import bpy
@@ -63,7 +63,7 @@ FUSELAGE = [
     (11.00, 1.02, 0.80, 0.66, 0.22, 0.65),
     (12.50, 0.76, 0.70, 0.60, 0.16, 0.55),
     (13.60, 0.60, 0.56, 0.56, 0.04, 0.40),
-    (14.20, 0.55, 0.53, 0.53, 0.00, 0.00),
+    (14.20, 0.48, 0.43, 0.53, 0.00, 0.00),
 ]
 # Superellipse exponents of the top and the belly along x: a round radome,
 # then the chine.
@@ -124,7 +124,10 @@ EQUIPMENT = {
 EXTERNAL = ("fel_director", "swivel_nozzle")
 # Inlet ducts: semicircular capture each side, then a round duct of the
 # same area to the engine face, passing the lift fan. (x, y, z) waypoints.
-INLET = {"area": 0.30, "face_x": 8.60, "mouth_x": 4.90, "fair_x": 8.60, "fairing": (0.40, 0.52)}
+# The capture is a half-circle against the body's flank, its area the
+# duct's; the trunk round it is the capture and a thin lip, so that the
+# mouth adds no blunt face to the area distribution.
+INLET = {"area": 0.30, "face_x": 8.60, "mouth_x": 4.90, "fair_x": 8.60, "lip": 0.025}
 DUCT_PATH = [(4.80, 1.24, -0.05), (5.80, 1.26, -0.05), (6.60, 1.20, -0.05), (7.60, 0.90, -0.05), (8.60, 0.25, -0.05)]
 
 # Tank regions: name -> box (x0, x1, y0, y1, z0, z1), or "wing" for the wing
@@ -150,10 +153,38 @@ C_CFT = (0.30, 0.55, 1.00)
 C_DUCT = (0.75, 0.75, 0.75)
 
 
+# The fuselage as drawn, before any stretch.
+_DRAWN = copy.deepcopy((FUSELAGE, SECTION, EQUIPMENT, DUCT_PATH, INLET, TANKS, WING, FIN))
+CG_DRAWN = 8.56  # full, as drawn
+
+
+def stretch(k):
+    """Lengthen the fuselage by k: its stations, what it carries and its
+    tanks spread along x; sections, equipment, wing and fin keep their
+    size. The wing and its bays move with the centre of gravity, so that
+    the trim is unchanged; the fin moves with the tail."""
+    fus, sec, eq, duct, inlet, tanks, wing, fin = copy.deepcopy(_DRAWN)
+    shift = CG_DRAWN * (k - 1)
+    FUSELAGE[:] = [(x * k, *r) for x, *r in fus]
+    SECTION[:] = [(x * k, *r) for x, *r in sec]
+    EQUIPMENT.clear()
+    for name, (kind, size, cen, mass, color) in eq.items():
+        x = cen[0] + shift if name.startswith("bay") else cen[0] * k
+        EQUIPMENT[name] = (kind, size, (x, cen[1], cen[2]), mass, color)
+    DUCT_PATH[:] = [(x * k, y, z) for x, y, z in duct]
+    INLET.update({key: inlet[key] * k for key in ("face_x", "mouth_x", "fair_x")})
+    for name, (kind, spec) in tanks.items():
+        TANKS[name] = (kind, (spec[0] * k, spec[1] * k, *spec[2:]) if kind == "box" else spec)
+    WING["apex"] = wing["apex"] + shift
+    FIN["root_x"] = fin["root_x"] * k
+
+
 def args():
     a = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     out = {"scale": SCALE, "save": None, "render": None}
     for i, k in enumerate(a):
+        if k == "--stretch":
+            stretch(float(a[i + 1]))
         if k == "--gauge":
             fighter_structure.MIN_GAUGE = float(a[i + 1]) * 1e-3
             fighter_structure.BELLY_GAUGE = max(fighter_structure.BELLY_GAUGE, fighter_structure.MIN_GAUGE)
@@ -309,7 +340,7 @@ def surface(name, sections, coll, color, vertical=False, alpha=1.0, peak=0.5):
     """Closed mesh through airfoil sections: (x_le, span, chord, tc, base,
     fullness)."""
     verts, faces = [], []
-    n = 24
+    n = 96
     for x_le, s, chord, tc, base, fullness in sections:
         up = section(chord, tc, fullness, peak, n)
         ring = [(x_le + x, z) for x, z in up] + [(x_le + x, -z) for x, z in reversed(up[1:-1])]
@@ -429,17 +460,17 @@ def build(scale):
     for x in fuselage_stations(s):
         rings.append([(x, y, z) for y, z in fuselage_section(*station(x, s))])
     fus = ring_loft("fuselage", rings, skin, C_SKIN)
-    # Half-cone inlets on the flanks: a D-shaped trunk round each duct from
-    # its mouth, its outer face a tall half-ellipse, its top and bottom
-    # running flat into the body; it sinks into the body as the duct turns
-    # in to the engine.
+    # Half-cone inlets on the flanks: a half-round trunk on the body's flank
+    # from the mouth, the capture and its lip, running straight back while
+    # the body widens round it to the lift fan.
     nacelles = []
-    ry, rz = (r * s for r in INLET["fairing"])
+    ry = rz = inlet_radius(s) + INLET["lip"] * s
+    y = hw_at(INLET["mouth_x"] * s, s)
     for side in (-1, 1):
         nrings = []
         for i in range(24):
             x = (INLET["mouth_x"] + (INLET["fair_x"] - INLET["mouth_x"]) * i / 23) * s
-            y, z = duct_point(x, s)
+            z = duct_point(x, s)[1]
             ring = [(y + ry * math.cos(t), z + rz * math.sin(t))
                     for t in [math.pi * (j / 24 - 0.5) for j in range(25)]]
             ring += [(y - 0.6 * s * j / 6, z + rz) for j in range(1, 6)]
@@ -600,7 +631,7 @@ def build(scale):
             "design_mass": DESIGN_KG,
             "landing_mass": LANDING_KG,
             "wing": {k: (v * s if k in ("apex", "root", "semispan") else v) for k, v in w.items()},
-            "y_in": hw_at(9.0 * s, s),
+            "y_in": hw_at((w["apex"] + w["root"] / 2) * s, s),
             "sections": [(x, fuselage_section(*station(x, s))) for x in fuselage_stations(s, 60)],
             "fuselage_masses": lay + [(max(0.0, DESIGN_KG - empty_guess), fuel_x)],
             "lift_x": None,
@@ -675,7 +706,7 @@ def build(scale):
                           round(split(cg), 2))
     nozzle = eq["swivel_nozzle"]["obj"]
     length = max((nozzle.matrix_world @ Vector(c)).x for c in nozzle.bound_box)
-    dist = area_distribution([oml, nozzle, eq["fel_director"]["obj"]], length)
+    dist = area_distribution([fus, *nacelles, wing, fin, nozzle, eq["fel_director"]["obj"]], length)
     dq, dq_sh, v_eff = wave_drag(dist, 2 * INLET["area"], INLET["mouth_x"] * s, length)
     return {
         "scale": s,
@@ -708,54 +739,65 @@ def build(scale):
         "cp_super_hyper": cp_high,
         "trim (cg, subsonic margin %MAC, high-speed margin %MAC, nozzle/fan)": margins,
         "area_peak": max(dist, key=lambda d: d[1]),
-        "wave_drag (D/q Mach 1 m2, Sears-Haack, E_WD)": (round(dq, 2), round(dq_sh, 2), round(dq / dq_sh, 2)),
+        "wave_drag (D/q Mach 1 m2, Sears-Haack, E_WD)": (round(float(dq), 2), round(float(dq_sh), 2), round(float(dq / dq_sh), 2)),
         "area_distribution": dist,
     }
 
 
-def area_distribution(objs, x_end, dx=0.05, dz=0.02):
-    """Cross-sectional area of the union of `objs` at stations dx apart,
-    from rays along y in rows dz apart: [(x, m2)]."""
-    trees = []
-    for o in objs:
-        bb = [o.matrix_world @ Vector(c) for c in o.bound_box]
-        trees.append((bvh(o), min(v.x for v in bb), max(v.x for v in bb),
-                      min(v.z for v in bb), max(v.z for v in bb)))
-
-    def chords(t, x, z):
-        hits, origin = [], Vector((x, -10.0, z))
-        while len(hits) < 40:
-            h = t.ray_cast(origin, Vector((0, 1, 0)))
-            if h[0] is None:
-                break
-            hits.append(h[0].y)
-            origin = Vector((x, h[0].y + 1e-5, z))
-        return [(hits[i], hits[i + 1]) for i in range(0, len(hits) - 1, 2)]
-
+def area_distribution(objs, x_end, dx=0.05):
+    """Cross-sectional area of the union of `objs` at stations dx apart:
+    [(x, m2)]. Each station cuts the union's triangles with its plane and
+    sums the cut polygon's area, each segment oriented by its triangle's
+    outward normal, so the area is exact for the closed mesh."""
+    import numpy as np
+    whole = union("area_body", objs, bpy.context.scene.collection, C_SKIN, 0.0)
+    bm = bmesh.new()
+    bm.from_mesh(whole.data)
+    bm.transform(whole.matrix_world)
+    bmesh.ops.triangulate(bm, faces=bm.faces[:])
+    bm.verts.ensure_lookup_table()
+    v = np.array([vert.co[:] for vert in bm.verts])
+    tri = np.array([[vert.index for vert in f.verts] for f in bm.faces])
+    bm.free()
+    bpy.data.objects.remove(whole)
+    a, b, c = v[tri[:, 0]], v[tri[:, 1]], v[tri[:, 2]]
+    n = np.cross(b - a, c - a)
     out = []
     for i in range(int(x_end / dx) + 2):
-        x, area = i * dx, 0.0
-        live = [t for t in trees if t[1] <= x <= t[2]]
-        if live:
-            z = min(t[3] for t in live) + dz / 2
-            while z < max(t[4] for t in live):
-                spans = sorted(c for t in live if t[3] <= z <= t[4] for c in chords(t[0], x, z))
-                end = -1e9
-                for a, b in spans:
-                    area += max(0.0, b - max(a, end)) * dz
-                    end = max(end, b)
-                z += dz
-        out.append((x, area))
+        x = i * dx + 1e-7
+        da, db, dc = a[:, 0] - x, b[:, 0] - x, c[:, 0] - x
+        hit = (np.minimum(np.minimum(da, db), dc) < 0) & (np.maximum(np.maximum(da, db), dc) > 0)
+        if not hit.any():
+            out.append((i * dx, 0.0))
+            continue
+        pts = []
+        for (p, dp), (q, dq) in (((a, da), (b, db)), ((b, db), (c, dc)), ((c, dc), (a, da))):
+            cross = hit & ((dp < 0) != (dq < 0))
+            t = np.where(cross, dp / np.where(cross, dp - dq, 1.0), 0.0)
+            pts.append((cross, p + (q - p) * t[:, None]))
+        first = np.where(pts[0][0][:, None], pts[0][1], pts[1][1])
+        second = np.where(pts[2][0][:, None], pts[2][1], pts[1][1])
+        p0, p1, nn = first[hit][:, 1:], second[hit][:, 1:], n[hit]
+        seg = p1 - p0
+        flip = seg[:, 0] * nn[:, 2] - seg[:, 1] * nn[:, 1] < 0
+        p0, p1 = np.where(flip[:, None], p1, p0), np.where(flip[:, None], p0, p1)
+        out.append((i * dx, abs(0.5 * np.sum(p0[:, 0] * p1[:, 1] - p0[:, 1] * p1[:, 0]))))
     return out
 
 
-def wave_drag(dist, capture, mouth_x, length, terms=16):
+def wave_drag(dist, capture, mouth_x, length, terms=24, smooth=0.15):
     """Mach-1 wave drag, D/q in m2, of the area distribution less the inlet
     capture aft of the mouth (the stream tube is not the body), by von
     Karman's slender-body series; and of the Sears-Haack body of the same
-    length and volume."""
+    length and volume. The distribution is smoothed over `smooth` m first:
+    the series charges every kink, and a faceted mesh is all kinks."""
     xs = [x for x, _ in dist if x <= length]
-    a = [max(0.0, s - (capture if x >= mouth_x else 0.0)) for x, s in dist[:len(xs)]]
+    dx = xs[1] - xs[0]
+    raw = [max(0.0, s - (capture if x > mouth_x + dx / 2 else 0.0)) for x, s in dist[:len(xs)]]
+    taps = range(-int(3 * smooth / dx), int(3 * smooth / dx) + 1)
+    w = [math.exp(-0.5 * (j * dx / smooth) ** 2) for j in taps]
+    a = [sum(wj * raw[min(max(i + j, 0), len(raw) - 1)] for wj, j in zip(w, taps)) / sum(w)
+         for i in range(len(raw))]
     vol = sum((a[i] + a[i + 1]) / 2 * (xs[i + 1] - xs[i]) for i in range(len(xs) - 1))
     slope = [(a[min(i + 1, len(a) - 1)] - a[max(i - 1, 0)]) / (xs[min(i + 1, len(a) - 1)] - xs[max(i - 1, 0)])
              for i in range(len(a))]
@@ -773,6 +815,11 @@ def wave_drag(dist, capture, mouth_x, length, terms=16):
                               for j in range(k))
         dq += math.pi / 4 * n * b * b
     return dq, 128 * vol * vol / (math.pi * length ** 4), vol
+
+
+def inlet_radius(s):
+    """The half-circle capture's radius."""
+    return math.sqrt(2 * INLET["area"] / math.pi) * s
 
 
 def hw_at(x, s):

@@ -688,7 +688,8 @@ fn limits(v: &Vehicle) -> Result<()> {
 /// The mission for an airframe of this wing area, empty mass (with the
 /// pilot and internal tank walls), conformal-tank structure and tankage,
 /// and turbopump and lift-fan ratings: `--size WING EMPTY TANKS_DRY
-/// TANKAGE [TURBOPUMP_MW FAN_MW CD0_EXTRA]`.
+/// TANKAGE [TURBOPUMP_MW FAN_MW CD0_EXTRA]`; with `--worlds`, its sortie
+/// budget on each world instead.
 fn size(v: &Vehicle, turbopump: f64, fan: f64) -> Result<()> {
     let engine = EngineSpec::default();
     let cr = cruise(&engine, 11000.)?;
@@ -744,7 +745,9 @@ fn main() -> Result<()> {
             ..v
         };
         let (tp, fan) = (n(5).unwrap_or(50.) * 1e6, n(6).unwrap_or(30.) * 1e6);
-        return size(&v, tp, fan);
+        if !args.iter().any(|a| a == "--worlds") {
+            return size(&v, tp, fan);
+        }
     }
     if args.iter().any(|a| a == "--worlds") {
         return worlds(&v);

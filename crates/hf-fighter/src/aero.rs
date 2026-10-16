@@ -16,7 +16,7 @@ use std::f64::consts::PI;
 
 /// The airframe's Mach-1 wave drag, D/q, m2, as modeling/fighter.py
 /// measures it.
-pub const WAVE: f64 = 2.41;
+pub const WAVE: f64 = 1.92;
 /// Where Raymer's fit gives way to linear theory.
 const FIT_MACH: f64 = 2.5;
 

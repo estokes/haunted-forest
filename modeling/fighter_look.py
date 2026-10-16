@@ -4,7 +4,7 @@
 # panel lines for doors and control surfaces, the swivel nozzle, wingtip
 # thrusters; a dark high-emissivity coating; sky, sun and cameras.
 #
-# Headless:  blender -b --factory-startup --python modeling/fighter_look.py -- [--render DIR] [--save FILE] [--samples N]
+# Headless:  blender -b --factory-startup --python modeling/fighter_look.py -- [--stretch K] [--render DIR] [--save FILE] [--samples N]
 
 import math
 import os
@@ -146,16 +146,18 @@ def build(scale=1.0):
     oml.color = (*COATING, 1)
     tree = fighter.bvh(oml)
 
-    # Inlet cones, the Mirage's souris: half-cones on the duct axis.
+    # Inlet cones, the Mirage's souris: half-cones against the flank, at
+    # the centre of the half-round capture.
+    y, z = fighter.hw_at(mouth, scale), fighter.duct_point(mouth, scale)[1]
     for side in (-1, 1):
-        y, z = fighter.duct_point(mouth, scale)
-        k, rings = 32, []
+        rings = []
         for i in range(8):
             u = i / 7
             x = mouth - 0.62 + 0.62 * u
-            r = 0.005 + 0.24 * u
-            rings.append([(x, side * y + r * math.cos(t), z + r * math.sin(t))
-                          for t in [2 * math.pi * j / k for j in range(k)]])
+            r = 0.005 + 0.26 * u
+            ring = [(y - 0.05 + r * math.cos(t), z + r * math.sin(t)) for t in [math.pi * (j / 24 - 0.5) for j in range(25)]]
+            ring += [(y - 0.05, z + r * (1 - 2 * j / 8)) for j in range(1, 8)]
+            rings.append([(x, side * a, b) for a, b in (ring if side > 0 else reversed(ring))])
         cone = fighter.ring_loft(f"cone_{side}", rings, look, (0, 0, 0))
         link(cone, cone_m, look)
         smooth(cone, 60)
@@ -175,9 +177,10 @@ def build(scale=1.0):
 
     # Sensor windows where a canopy would be: two each side of the nose, a
     # chin pair, and two on the spine looking up and back.
+    end = fighter.FUSELAGE[-1][0] * scale
     for x, y, top_side in [(2.2, 0.35, True), (2.2, -0.35, True), (3.4, 0.55, True), (3.4, -0.55, True),
                            (2.8, 0.25, False), (2.8, -0.25, False), (12.0, 0.25, True), (12.0, -0.25, True)]:
-        p, nn = snap(tree, x * scale, y, top_side)
+        p, nn = snap(tree, x * end / 14.2, y, top_side)
         if p is not None:
             disc(f"eye_{x}_{y}", p + nn * 0.004, nn, 0.07, look, glass)
 
@@ -227,28 +230,27 @@ def build(scale=1.0):
 
     # The swivel nozzle: the three-bearing duct's segments and the petals,
     # dark metal, its lip turning in to a black throat well inside.
-    nz0 = 13.75 * scale
     rings = []
-    for x, r in [(nz0, 0.50), (14.05 * scale, 0.50), (14.35 * scale, 0.49), (14.62 * scale, 0.48),
-                 (14.95 * scale, 0.45), (15.05 * scale, 0.445), (15.05 * scale, 0.42),
-                 (14.85 * scale, 0.40), (14.30 * scale, 0.33)]:
-        rings.append([(x, r * math.cos(t), -0.05 + r * math.sin(t)) for t in [2 * math.pi * j / 48 for j in range(48)]])
+    for dx, r in [(-0.45, 0.46), (-0.15, 0.46), (0.15, 0.455), (0.42, 0.45), (0.75, 0.42), (0.85, 0.415),
+                  (0.85, 0.39), (0.65, 0.37), (0.10, 0.30)]:
+        rings.append([(end + dx * scale, r * math.cos(t), -0.05 + r * math.sin(t))
+                      for t in [2 * math.pi * j / 48 for j in range(48)]])
     noz = fighter.ring_loft("nozzle", rings, look, (0, 0, 0))
     link(noz, metal, look)
     noz.data.materials.append(black)
     for p in noz.data.polygons:
-        if math.hypot(p.center.y, p.center.z + 0.05) < 0.425:
+        if math.hypot(p.center.y, p.center.z + 0.05) < 0.40:
             p.material_index = 1
     smooth(noz, 50)
-    for i, x in enumerate((14.05 * scale, 14.35 * scale, 14.62 * scale)):
+    for i, x in enumerate((end - 0.15 * scale, end + 0.15 * scale, end + 0.42 * scale)):
         tilt = 0.0 if i == 2 else (0.18 if i == 0 else -0.18)
-        r = 0.505
+        r = 0.465
         line(f"bearing_{i}", [(x + tilt * math.sin(t) * r, r * math.cos(t), -0.05 + r * math.sin(t))
                               for t in [2 * math.pi * j / 48 for j in range(49)]], look, lines_m, 0.008)
     for j in range(16):
         t = 2 * math.pi * j / 16
-        line(f"petal_{j}", [(14.62 * scale, 0.483 * math.cos(t), -0.05 + 0.483 * math.sin(t)),
-                            (15.05 * scale, 0.448 * math.cos(t), -0.05 + 0.448 * math.sin(t))], look, lines_m, 0.005)
+        line(f"petal_{j}", [(end + 0.42 * scale, 0.453 * math.cos(t), -0.05 + 0.453 * math.sin(t)),
+                            (end + 0.85 * scale, 0.418 * math.cos(t), -0.05 + 0.418 * math.sin(t))], look, lines_m, 0.005)
 
     # Wingtip thrusters: a pod on each tip with nozzles out, up and down.
     tip_x = le(w["semispan"]) + 0.15 * scale
@@ -297,7 +299,8 @@ def shoot(directory):
     cam = bpy.data.objects.new("look_cam", cam_data)
     sc.collection.objects.link(cam)
     sc.camera = cam
-    target = Vector((7.6, 0.0, 0.0))
+    k = fighter.FUSELAGE[-1][0] / 14.2
+    target = Vector((7.6 * k, 0.0, 0.0))
     shots = {
         "front_three_quarter": ((-7.0, -11.0, 5.5), 50),
         "rear_three_quarter": ((27.0, 13.0, 6.0), 50),
@@ -306,6 +309,7 @@ def shoot(directory):
         "below": ((-3.0, -17.0, -9.0), 50),
     }
     for name, (loc, lens) in shots.items():
+        loc = target + (Vector(loc) - Vector((7.6, 0, 0))) * k
         cam.location = loc
         cam_data.lens = lens
         cam.rotation_euler = (target - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
@@ -316,6 +320,8 @@ def shoot(directory):
 def main():
     a = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     opt = lambda k, d=None: a[a.index(k) + 1] if k in a else d
+    if opt("--stretch"):
+        fighter.stretch(float(opt("--stretch")))
     build()
     stage(int(opt("--samples", "48")))
     if opt("--save"):
