@@ -80,8 +80,10 @@ impl Default for FlowpathSpec {
     }
 }
 
-/// Combustor reference Mach number, and liner length over height.
+/// Combustor reference Mach number, and liner length over height; the
+/// pre-diffuser ahead of its dump, m.
 const COMBUSTOR: (f64, f64) = (0.1, 3.);
+const DIFFUSER: f64 = 0.1;
 /// Bypass duct Mach number; reheat duct Mach number and length over
 /// diameter.
 const BYPASS_MACH: f64 = 0.4;
@@ -90,7 +92,7 @@ const REHEAT: (f64, f64) = (0.25, 1.5);
 const ROW_GAP: f64 = 0.25;
 const WALL: f64 = 0.03;
 /// Superconducting machines, W/kg.
-const MOTOR_SPECIFIC: f64 = 100e3;
+pub const MOTOR_SPECIFIC: f64 = 100e3;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 pub enum Component {
@@ -144,6 +146,16 @@ pub struct Duct {
     pub r_out: f64,
 }
 
+/// The mixer's plane, inside the reheat duct's wall: the core in an
+/// annulus round the tail cone, the bypass outside the lobes.
+#[derive(Clone, Copy, Debug, Serialize)]
+pub struct Mixer {
+    pub x: f64,
+    pub r_cone: f64,
+    pub r_lobes: f64,
+    pub r_out: f64,
+}
+
 #[derive(Clone, Copy, Debug, Serialize)]
 pub struct Nozzle {
     pub throat: f64,
@@ -166,8 +178,7 @@ pub struct Flowpath {
     pub splitter: (f64, f64),
     pub combustor: Duct,
     pub bypass: Duct,
-    /// Radius of the mixed stream's round duct at the mixer.
-    pub mixer: (f64, f64),
+    pub mixer: Mixer,
     pub reheat: Duct,
     /// Radii, m, dry and in reheat.
     pub nozzle: (Nozzle, Nozzle),
@@ -488,7 +499,7 @@ impl FlowpathSpec {
         let v3 = COMBUSTOR.0 * (k3 * R / g3.mw() * t3s).sqrt();
         let a_comb = compressor_exit.m / (static_at(&g3, v3).rho() * v3);
         let h_comb = a_comb / (2. * PI * r_mean);
-        let x_comb = comp.x;
+        let x_comb = comp.x + DIFFUSER;
         let combustor = Duct {
             x0: x_comb,
             x1: x_comb + COMBUSTOR.1 * h_comb,
@@ -518,15 +529,19 @@ impl FlowpathSpec {
         let t4s = g4.t * (p_mix / g4.p).powf((k4 - 1.) / k4);
         let v4 = (2. * g4.cp() * (g4.t - t4s)).sqrt();
         let a_core_mix = combustor_exit.m / (g4.at(t4s, p_mix).rho() * v4);
-        let a_mix = a_core_mix + area_at(&gb, bypass.m, engine.mixer_mach);
-        let mixer = (combustor.x1, (a_mix / PI).sqrt());
-
+        let a_bypass_mix = area_at(&gb, bypass.m, engine.mixer_mach);
         let r_reheat = (area_at(&nozzle_entry.gas, nozzle_entry.m, REHEAT.0) / PI).sqrt();
+        let r_lobes = (r_reheat * r_reheat - a_bypass_mix / PI).sqrt();
+        let r_cone_sq = r_lobes * r_lobes - a_core_mix / PI;
+        if r_cone_sq < 0. {
+            bail!("the mixer's streams need more than the reheat duct's {r_reheat:.3} m radius");
+        }
+        let mixer = Mixer { x: combustor.x1 + 2. * (combustor.r_out - combustor.r_in), r_cone: r_cone_sq.sqrt(), r_lobes, r_out: r_reheat };
         let reheat = Duct {
-            x0: mixer.0,
-            x1: mixer.0 + REHEAT.1 * 2. * r_reheat,
+            x0: mixer.x,
+            x1: mixer.x + REHEAT.1 * 2. * r_reheat,
             r_in: 0.,
-            r_out: r_reheat.max(mixer.1),
+            r_out: r_reheat,
         };
         let nozzles = (
             nozzle(&nozzle_entry.gas, nozzle_entry.m, ambient),

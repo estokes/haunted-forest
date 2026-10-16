@@ -11,9 +11,9 @@
 use anyhow::{Context, Result};
 use hf_engine::{
     atmos::{altitude_for_q, isa, Air},
-    blade::{blade_heat, coolant_heat},
+    blade::{blade_heat, coolant_heat, BladeHeat},
     cycle::{rocket, EngineSpec, Mode, Point, PointReport},
-    flowpath::FlowpathSpec,
+    flowpath::{FlowpathSpec, MOTOR_SPECIFIC},
     gas::{eq_hp, Diluent, Feed, Gas},
     hover::{calibrated_efficiency, lift_fan, Airframe},
     parts::{Turbopump, TurbopumpSpec, G0},
@@ -396,18 +396,25 @@ fn loads(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
     Ok(())
 }
 
-fn blades(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
-    let d = spec.turbopump.diluent;
+/// The turbopump's blades at its rating, into 1.5 MPa, non-catalytic
+/// surfaces at 4,000 K cooled by diluent cracked to 2,500 K; its gas flow,
+/// kg/s, and the J/kg that coolant takes.
+fn turbopump_blades(spec: &EngineSpec) -> Result<(BladeHeat, f64, f64)> {
     let k = spec.turbopump.per_kg(1.5e6)?;
     let m_gas = TURBOPUMP_MAX / k.electric;
+    let cracked = coolant_dh(spec.turbopump.diluent, spec.turbopump.p_reverter, 2500., true)?;
+    Ok((blade_heat(&k, m_gas, 4000., cracked, false)?, m_gas, cracked))
+}
+
+fn blades(spec: &EngineSpec, sum: &mut Summary) -> Result<()> {
+    let d = spec.turbopump.diluent;
     let p = spec.turbopump.p_reverter;
     println!(
         "== Turbopump blades on {} at {:.0} MW into 1.5 MPa: non-catalytic surfaces at 4,000 K",
         d,
         TURBOPUMP_MAX / 1e6
     );
-    let cracked = coolant_dh(d, p, 2500., true)?;
-    let b = blade_heat(&k, m_gas, 4000., cracked, false)?;
+    let (b, _, cracked) = turbopump_blades(spec)?;
     println!("  mean radius {:.0} mm, {:.0} rpm", b.mean_radius * 1e3, b.rpm);
     for s in &b.stages[..b.n_stages] {
         println!(
@@ -564,8 +571,8 @@ fn flowpath(spec: &EngineSpec) -> Result<()> {
         f.bypass.r_in, f.bypass.r_out
     );
     println!(
-        "  mixer at x {:.2}, r {:.3}; reheat to x {:.2}, r {:.3}; nozzle throat/exit r dry {:.3}/{:.3}, reheat {:.3}/{:.3}",
-        f.mixer.0, f.mixer.1, f.reheat.x1, f.reheat.r_out, f.nozzle.0.throat, f.nozzle.0.exit,
+        "  mixer at x {:.2}, cone/lobes/wall r {:.3}/{:.3}/{:.3}; reheat to x {:.2}, r {:.3}; nozzle throat/exit r dry {:.3}/{:.3}, reheat {:.3}/{:.3}",
+        f.mixer.x, f.mixer.r_cone, f.mixer.r_lobes, f.mixer.r_out, f.reheat.x1, f.reheat.r_out, f.nozzle.0.throat, f.nozzle.0.exit,
         f.nozzle.1.throat, f.nozzle.1.exit
     );
     println!(
@@ -576,10 +583,51 @@ fn flowpath(spec: &EngineSpec) -> Result<()> {
         "  motors, kg: {}",
         f.motors.iter().map(|m| format!("{m:.0}")).collect::<Vec<_>>().join(", ")
     );
+    let (b, m_gas, _) = turbopump_blades(spec)?;
+    let reverter = spec.turbopump.reverter()?.1;
+    let turbopump = TurbopumpGeometry {
+        mean_radius: b.mean_radius,
+        rpm: b.rpm,
+        blades: b.stages[..b.n_stages].iter().map(|s| s.blade).collect(),
+        generator: TURBOPUMP_MAX / MOTOR_SPECIFIC,
+        reverter: m_gas * REVERTER_RESIDENCE / reverter.rho(),
+        flow: m_gas,
+    };
+    println!(
+        "  turbopump: {} stages at r {:.0} mm, {:.0} rpm, blades {:.1}-{:.1} mm; generator {:.0} kg; reverter {:.1} L for {:.2} kg/s",
+        turbopump.blades.len(),
+        turbopump.mean_radius * 1e3,
+        turbopump.rpm,
+        turbopump.blades[0] * 1e3,
+        turbopump.blades[turbopump.blades.len() - 1] * 1e3,
+        turbopump.generator,
+        turbopump.reverter * 1e3,
+        turbopump.flow
+    );
     if let Some(out) = flag("--json") {
-        serde_json::to_writer_pretty(File::create(&out).context(out.clone())?, &f)?;
+        serde_json::to_writer_pretty(
+            File::create(&out).context(out.clone())?,
+            &serde_json::json!({ "air": f, "turbopump": turbopump }),
+        )?;
     }
     Ok(())
+}
+
+/// The reverter holds its gas this long, s.
+const REVERTER_RESIDENCE: f64 = 3e-3;
+
+#[derive(serde::Serialize)]
+struct TurbopumpGeometry {
+    mean_radius: f64,
+    rpm: f64,
+    /// Blade height of each stage, m.
+    blades: Vec<f64>,
+    /// kg
+    generator: f64,
+    /// m3
+    reverter: f64,
+    /// kg/s
+    flow: f64,
 }
 
 fn main() -> Result<()> {
