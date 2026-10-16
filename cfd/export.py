@@ -5,10 +5,13 @@
 # it exhausts. Beside it, OUT.json: the lifting surfaces' planforms and the
 # centre of gravity, for cfd/vlm.py.
 #
-# Headless:  blender -b --factory-startup --python cfd/export.py -- OUT.stl [--bare] [--slats DEG]
+# Headless:  blender -b --factory-startup --python cfd/export.py -- OUT.stl [--bare] [--slats DEG] [--parts A,B] [--half] [--sharp]
 #
 # --bare leaves the canards off, for the wing and body's own centre of lift;
-# --slats droops the slats DEG degrees.
+# --slats droops the slats DEG degrees; --parts exports only those of
+# modeling/fighter.py's parts ("wing", "fuselage"), closed, all wall, for
+# the viscous runs (cfd/rans.py); --half keeps the half at y >= 0, open on
+# the plane of symmetry; --sharp gives the wing a knife-edged leading edge.
 
 import json
 import os
@@ -61,20 +64,32 @@ def main():
     path = args[0]
     if "--slats" in args:
         fighter.SLAT["deflection"] = float(args[args.index("--slats") + 1])
+    if "--sharp" in args:
+        fighter.WING["le_radius"] = None
     r = fighter.build(1.0)
     with open(os.path.splitext(path)[0] + ".json", "w") as f:
         json.dump({"wing": fighter.WING, "canard": fighter.CANARD, "fin": fighter.FIN,
                    "cg": (r["cg_empty"], r["cg_full"]), "mac": r["mac"], "ac_subsonic": r["ac_subsonic"]}, f)
-    parts = [bpy.data.objects["airframe"]]
-    if "--bare" not in args:
-        parts += [o for o in bpy.data.objects if o.name.startswith("canard_")]
+    named = args[args.index("--parts") + 1].split(",") if "--parts" in args else None
+    if named:
+        parts = [bpy.data.objects[n] for n in named]
+    else:
+        parts = [bpy.data.objects["airframe"]]
+        if "--bare" not in args:
+            parts += [o for o in bpy.data.objects if o.name.startswith("canard_")]
     whole = fighter.union("cfd_body", parts, bpy.context.scene.collection, fighter.C_SKIN, 1.0)
     bm = bmesh.new()
     bm.from_mesh(whole.data)
     print("CFD body: volume", round(fighter.volume(whole)[0], 2), "m3, non-manifold edges",
           sum(1 for e in bm.edges if not e.is_manifold))
+    if "--half" in args:
+        bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=(0, 0, 0),
+                               plane_no=(0, 1, 0), clear_inner=True)
+        bm.to_mesh(whole.data)
     bm.free()
     groups = faces_by_group(whole)
+    if named:
+        groups = {"wall": [t for g in groups.values() for t in g]}
     print("CFD faces:", {k: len(v) for k, v in groups.items()})
     write_stl(path, groups)
 

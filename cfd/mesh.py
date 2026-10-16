@@ -6,10 +6,11 @@
 # Boundaries: wall, inflow (the inlets' capture faces), exhaust (the base
 # at the tail), farfield.
 #
-# ~/.local/opt/cfd-venv/bin/python cfd/mesh.py IN.stl OUT.su2 [--body 0.1] [--edge 0.05] [--far 5] [--near 0.2] [--surfdist 0.005]
+# ~/.local/opt/cfd-venv/bin/python cfd/mesh.py IN.stl OUT.su2 [--body 0.1] [--edge 0.05] [--far 5] [--near 0.2] [--surfdist 0.005] [--allwall]
 #
 # --near is how far, m, the body's cell size holds before the cells grow;
-# --surfdist how far, m, the remeshed surface may stand off the original.
+# --surfdist how far, m, the remeshed surface may stand off the original;
+# --allwall makes the whole surface wall, for a part with no inlets.
 
 import math
 import os
@@ -53,14 +54,14 @@ def main():
     xs = [gmsh.model.getBoundingBox(2, t) for t in surfaces]
     x_min, x_max = min(b[0] for b in xs), max(b[3] for b in xs)
     length = x_max - x_min
-    mouth = min(b[0] for b in xs if b[3] - b[0] < 0.02 and b[0] > x_min + 0.2 * length)
+    mouth = min((b[0] for b in xs if b[3] - b[0] < 0.02 and b[0] > x_min + 0.2 * length), default=None)
 
     def flat_at(x, b):
         return b[3] - b[0] < 0.02 and abs(b[0] - x) < 0.02
 
     groups = {"inflow": [], "exhaust": [], "wall": []}
     for t, b in zip(surfaces, xs):
-        key = "inflow" if flat_at(mouth, b) else "exhaust" if flat_at(x_max, b) else "wall"
+        key = "wall" if "--allwall" in sys.argv else "inflow" if flat_at(mouth, b) else "exhaust" if flat_at(x_max, b) else "wall"
         groups[key].append(t)
 
     # The far field: a box `far` lengths out, the body centred in it.

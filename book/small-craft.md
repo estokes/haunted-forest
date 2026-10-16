@@ -182,6 +182,30 @@ dust.
 - **Cooling**: the whole hot section is ammonia-cooled, and that
   ammonia, cracked and hot, feeds the reverter.
 
+**The design**, from `hf-engine --flowpath`, at sea level, full airflow,
+and built by `modeling/engine.py`: 3.1 m from the fan face to the
+reheat's end, 0.80 m across the fan.
+
+- **Fan**: two stages, each rotor on its own motor at ~11,900 rpm with a
+  stator behind it, its tip at 500 m/s and Mach ~1.6 to the air; a
+  meanline puts it at 0.88, what the cycle assumes. One stage at a
+  pressure ratio of 3.5 would meet the air at Mach ~2.4 at its tip and
+  lose half its efficiency to the shocks; counter-rotating rotors, with
+  no stator between them, are shorter but meet it at Mach ~1.9 on the
+  second, for 0.865.
+- **Compressor**: three stages on a 0.22 m mean radius at ~18,200 rpm,
+  a duct turning the core in to it behind the splitter; 0.87.
+- **Motors**: each rotor's in its hub, rated for full airflow at Mach 2,
+  48 MW in all. They set the stages' spacing: the compressor's are
+  ~0.25 m apart, where their blades would sit closer.
+- **The hover's pitch**: the fan's first rotor turns at 0.43 of its
+  design speed, its blades pitched ~20° toward axial.
+- **Nozzle**: RANS (SU2, `cfd/nozzle.py`) puts its gross thrust
+  coefficient at 0.974, dry and in reheat, grid-converged, and the cycle
+  takes 0.95 for its kinetic-energy efficiency. Its sharp-cornered throat
+  passes ~6.5% less than its ideal area, which the nozzle's schedule
+  opens for.
+
 ### Modes
 
 | Mode | Speed | Isp, all propellant | Doors |
@@ -276,7 +300,7 @@ renders it.
 | Wing | 55 m², a 68° cropped delta, slatted; 70 m² of planform with the body |
 | Canards | ~6 m², all-moving, 50° |
 | Inside the skin | ~54 m³, ~195 m² of skin |
-| Tanks | 24.7 m³: forward 5.7, middle 7.4, around the engine 9.5, wing box 2.2 |
+| Tanks | 25.2 m³: forward 5.7, middle 7.4, around the engine 10.0, wing box 2.2 |
 | Bays | two, in the wing roots, for four missiles |
 | Empty | ~6.4 t (~10.1 t if its equipment came out as heavy as today's practice) |
 | Full internal tanks and four missiles | ~24 t |
@@ -288,13 +312,19 @@ the inlets; the lift fan's shaft, 1.5 m across and skin to skin, 8.3 m
 back, with the inlet ducts curving round it; the middle tank behind it,
 holding in its upper part the space decoys under dorsal doors and in its
 lower the jammers, dropped through the belly; the laser's dorsal
-director, and the laser along the spine over the engine face, with the
-ventral director stowed under it; the engine, from 13 m back, with the
-turbopump and its electronics beside it, dense and so aft, and the main
-gear stowed under them; tanks wrapped round all of it and in the wing
-box; the missile bays in the wing roots; the chaff and flare dispensers
-flanking the engine; the towed decoys in the fin root, the jammer's
-antennas in the fin-tip pod; the swivel nozzle at the tail.
+director, and the laser along the spine, with the ventral director
+stowed under it; the inlet ducts, behind their S-bend, running on side
+by side to the fan face, which they hide; the power electronics beside
+them; the engine, from 15.1 m back, its reheat feeding the swivel
+nozzle directly, with the turbopump beside it, its turbine's end at the
+combustor so that its exhaust crosses no length of pipe; tanks wrapped
+round all of it and in the wing box; the missile bays in the wing
+roots, and the main gear inboard of them, its tyres stowed flat, as the
+Mirage 2000's are; the chaff and flare dispensers flanking the engine;
+the towed decoys in the fin root, the jammer's antennas in the fin-tip
+pod; the swivel nozzle at the tail. `modeling/fighter_internals.py`
+puts the parts themselves in the airframe and checks that every one
+fits, clear of the others and inside the skin.
 
 **Why 20 m.** Wave drag goes with the square of the volume over the
 fourth power of the length. At the Mirage's 14.2 m, the fighter held
@@ -307,9 +337,10 @@ stretch costs ~0.15 t: with near-ideal materials the longer skin and
 structure are minimum gauge too. It nearly triples the sortie budget.
 The wing's section is thickest at 40% of its chord: its trailing edge is
 straight, so a section thick to the back would stack the whole span's
-thickness in the last two metres and pile area on the tail. The mission
-sim takes the wave drag measured from the model's cross-sections: ~1.0 m²
-of D/q as the airframe stands.
+thickness in the last two metres and pile area on the tail. Euler CFD of
+the airframe (SU2, `cfd/`) finds less than the cross-sections' slender-body
+estimate: ~0.7 m² of D/q at Mach 1.5 and ~0.63 at Mach 2, converged on a
+3.3-million-node mesh, and the mission sim takes that.
 
 **The wing.** At 45 m² the wing was loaded to ~490 kg/m² just after
 entry, worse than an F-16; it is 55 m², loaded ~290 kg/m² mid-sortie, a
@@ -323,40 +354,51 @@ less on entry. The sortie budget hardly cared. The usual price of high
 sweep, a nose-high, fast landing, is nothing to an aircraft that lands
 on its lift fan. 68° is the trade, at an aspect ratio of 1.2: ~20% less
 sustained turn subsonic than at 58°, ~30% more supersonic, ~20% more
-instantaneous. Two slat segments a side, set by the flight computer,
-hold the flow on the leading edge to a higher angle of attack, which
-keeps the drag due to lift down in a hard turn.
+instantaneous. Its leading edge is rounded, 3 cm inboard, which entry
+wants, and outboard as round as a 4% section allows, ~1 cm near the
+tip: NACA's modified 4-digit section, still thickest at 40%. Two slat
+segments a side, set by the flight computer, droop to win back the
+leading edge's suction: in Euler CFD of the knife-edged wing it keeps
+none, its lift tilting back with the angle of attack, and the slats
+recover ~30% of the suction at low lift and ~20% near the maximum. How
+much more the round edge keeps is a viscous question, which RANS of the
+wing is settling.
 
 **Canards.** Close-coupled, all-moving, on the intake trunks just behind
 the lips, ~6 m², 11% of the wing, as on the Rafale and the Typhoon. A
 tailless delta trims with its elevons, which push down when the centre
 of gravity is ahead of the wing's lift and cost lift and drag; canards
-trim lifting, and their vortices keep the wing's flow attached to a
-higher angle. They let the aircraft be balanced well unstable, as the
-eurodeltas are, the flight computer flying it and fuel moved between
-tanks setting the centre of gravity for each regime. Against the same
-aircraft tailless, with strakes on its intakes and the same freedom to
-move its fuel, they buy ~5% more turn subsonic, sustained and
-instantaneous, and ~15% more instantaneous supersonic, for ~0.18 t and
-~0.3 t of sortie budget. At 4 m² they were too small: supersonic, with
-the wing's lift moved aft, they stalled before the wing did. In entry
-they turn edge-on to the flow.
+trim lifting, the elevons taking over once they stall, and their
+vortices hold the wing's: in Euler CFD the bare wing's leading-edge
+vortex bursts by ~25°, holding its lift to ~1.0, and behind the canards
+it holds to past 30°, for ~1.3. They let the aircraft be balanced well
+unstable, as the eurodeltas are, the flight computer flying it and fuel
+moved between tanks setting the centre of gravity for each regime.
+Against the same aircraft tailless, with the same freedom to move its
+fuel, they buy ~30% more instantaneous turn subsonic and ~55%
+supersonic, ~5% more sustained subsonic and ~15% supersonic, for their
+~0.17 t. At 4 m² they were too small: supersonic, with the wing's lift
+moved aft, they stalled before the wing did. In entry they turn edge-on
+to the flow.
 
 **Turning**, mid-sortie at 16 t, from `hf-fighter --turn`:
 
 | | Instantaneous | Sustained |
 |---|---|---|
-| Mach 0.5 at 3 km | ~6.9 g, 23°/s | ~3.1 g |
-| Mach 0.9 at 3 km | ~18.8 g, 36°/s, the structure's limit | ~5.5 g |
-| Mach 0.9 at 10 km | ~8.4 g, 18°/s | ~2.3 g |
-| Mach 1.5 at 11 km | ~17.4 g, 22°/s | ~3.5 g |
-| Mach 2 at 15 km | ~16.5 g, 16°/s | ~3.0 g |
+| Mach 0.5 at 3 km | ~6.2 g, 21°/s | ~2.6 g |
+| Mach 0.9 at 3 km | ~18.8 g, 36°/s, the structure's limit | ~4.7 g |
+| Mach 0.9 at 10 km | ~7.6 g, 16°/s | ~1.9 g |
+| Mach 1.5 at 11 km | ~17.7 g, 23°/s | ~2.7 g |
+| Mach 2 at 15 km | ~16.8 g, 16°/s | ~2.4 g |
 
 Light, at 11 t, it reaches the 27 g its structure allows at that weight
-at Mach 0.9 low down, and sustains ~8 g. The turns are bound by thrust
-and by a low-aspect delta's drag due to lift, not by the pilot. The
-maximum lift coefficients behind the instantaneous turns, ~1.6 subsonic
-and ~1.4 supersonic, trimmed, are estimates for CFD to settle.
+at Mach 0.9 low down, and sustains ~7 g. The turns are bound by thrust
+and by a low-aspect delta's drag due to lift, not by the pilot. The aero
+model behind them is calibrated on Euler CFD of the airframe, with and
+without canards, slats in and drooped, Mach 0.5 to 2 and up to 35°:
+maximum lift, trimmed, ~1.44 subsonic and ~1.41 supersonic. The
+subsonic sustained turns are the knife-edged wing's; the round edge will
+raise them by what RANS finds it keeps of its suction.
 
 **The intakes** are the Mirage's: a half-round capture with a half-cone
 shock body, its flat side a splitter plate standing 7 cm off the flank.
@@ -431,7 +473,7 @@ more.
 | Engine | |
 |---|---|
 | Airflow | ~90 kg/s |
-| Thrust, sea level | ~115 kN dry, ~135 kN with reheat |
+| Thrust, sea level | ~115 kN dry, ~134 kN with reheat |
 | Fan and compressor | 26 MW at full thrust at sea level; ~49 MW at Mach 2 |
 | Turbopump | 50 MW: full thrust at Mach 2, or full thrust at sea level with the laser |
 | Electric machines | ~1.25 t: generator ~500 kg, engine motors ~450 kg, lift-fan motor ~300 kg |
@@ -469,16 +511,19 @@ what makes the difference.
   for every lift-fan aircraft. The capsule goes.
 
 **Balance.** The fighter is unstable by design and flown by wire, so its
-centre of gravity is set for trim drag, not stability. Subsonic, the
-wing's lift acts ~12.3 m back, supersonic ~13.0 m; the canards bring the
-whole aircraft's ~0.65 m forward of that. Full, the centre of gravity is
-at ~11.7 m; empty, ~12.3 m. The forward tank, ~3.9 t of propellant
+centre of gravity is set for trim drag, not stability. In Euler CFD the
+wing and body's lift acts ~12.4 m back subsonic and ~13.2 m supersonic;
+the canards bring the whole aircraft's ~1 m forward of that, to ~11.4 m
+and ~12.2 m, so that at mid-fuel it is ~9% unstable subsonic and near
+neutral supersonic. Full, the centre of gravity is at ~11.8 m; empty,
+~12.5 m. The forward tank, ~3.9 t of propellant
 ~6 m ahead of the centre of gravity, is the trim tank, as Concorde's
 aft tanks were: draining it moves the centre of gravity aft by ~1.1 m,
 for supersonic flight and for entry, and filling it moves it forward,
 which the hover likes. Dust and ammonia can be moved between any of the
-tanks in flight. In the hover the nozzle carries 0.45–0.75 of the fan's
-thrust, depending on the load.
+tanks in flight. In the hover the nozzle carries 0.47–0.75 of the fan's
+thrust, depending on the load; empty, 0.63, so it lands with its reserve
+in the forward tank.
 
 **Seeing.** The pilot sees all round, as an F-35's does: eleven
 wide-angle imaging and infrared windows, each seeing 65° either side of
@@ -555,39 +600,38 @@ through, as the X-15A-2's nearly did at Mach 6.7.
 
 **The sortie budget.** What the mission is worth is how much the
 fighter can spend down in the air before it must climb back: a planner
-always wants more. On an Earth-like world, with its 24.7 m³ full, the
-climb back costs ~5.4 t of propellant from an 11.9 t start, and the
-deorbit burn a little; **~11.5 t is left for the sortie**, a day of
+always wants more. On an Earth-like world, with its 25.2 m³ full, the
+climb back costs ~5.0 t of propellant from an 11.5 t start, and the
+deorbit burn a little; **~12.2 t is left for the sortie**, a day of
 subsonic cruise.
 
 | | Mass |
 |---|---|
 | In orbit, empty, with a 150 kg reserve | ~6.5 t |
-| Climb back to orbit, from the ground or from flight | ~5.4 t |
-| Sortie budget | ~11.5 t |
-| Entry, budget unspent | ~23.4 t, ~420 kg/m² of wing |
+| Climb back to orbit, from the ground or from flight | ~5.0 t |
+| Sortie budget | ~12.2 t |
+| Entry, budget unspent | ~24.1 t, ~435 kg/m² of wing |
 
 It loads the climb's propellant aft first and keeps the forward tank for
 the sortie, so that it enters with its centre of gravity near the
 hypersonic centre of lift and its elevons nearly neutral, out of the
 worst heat.
 
-**The climb.** Turbine mode with reheat to Mach ~2.2 at 15 km, its
-compressor unloading as the air warms, ~0.4 t in six minutes. Then the
-rocket: 250 kN from the main combustor as a 4 MPa chamber, through the
-nozzle opened to an area ratio of ~18 in a 0.6 m² exit. It burns
-dust-rich, about one part ammonia to seven of dust, at ~1,430 s and a
-~5,200 K chamber: ~5.1 t over four and a half minutes and the burn to
-circularise, 8.1 km/s in all, peaking near 3.7 g. At 4 MPa a first-order
+**The climb.** Turbine mode with reheat to Mach ~2.5 at 16 km, its
+compressor unloading as the air warms, then the ramjet to Mach ~4.2 at
+23 km: ~0.8 t in eight minutes. Then the rocket: 250 kN from the main
+combustor as a 4 MPa chamber, through the nozzle opened to an area ratio
+of ~18 in a 0.6 m² exit. It burns dust-rich, one part ammonia to ten of
+dust, at ~1,460 s and a ~5,200 K chamber: ~4.2 t over four minutes and
+the burn to circularise, 7.1 km/s in all, peaking near 3.9 g. At 4 MPa a first-order
 Bartz estimate puts the throat at a few tens of MW/m², well short of a
 rocket's usual.
 
-The ramjet pays only by a little against a rocket of ~1,430 s, and
+The ramjet pays only by a little against a rocket of ~1,460 s, and
 drag decides it: at the 14.2 m airframe's ~1.9 m² of wave drag the
-climb left the air at Mach 0.95; at ~1.0 m², before trim was in the
-model, it rode the ramjet to Mach ~4 first; with the canards' trim drag
-it leaves the air at Mach 2.2. A tenth of a square metre of drag either
-way tips it, and the difference is ~0.3 t.
+climb left the air at Mach 0.95; with the ~0.7 m² Euler finds, it rides
+the ramjet to Mach ~4.2 first. A tenth of a square metre of drag either
+way tips it.
 
 **Entry.** A 50 m/s deorbit burn; then belly-first at 40° angle of
 attack, banking to hold an equilibrium glide, as the Shuttle did. At
@@ -595,28 +639,28 @@ that angle the fin is in the wing's shadow, and the reaction jets give
 yaw until the fighter is low and slow; a Mirage 2000 flies to 30°.
 With the budget spent, peak heating is near 70 km and 6.2 km/s, ~1.1 g
 at worst, ~50 minutes and up to 17,000 km of glide to Mach 2; with it
-unspent, ~23 t, the nose runs ~2,220 K:
+unspent, ~24 t, the nose runs ~2,230 K:
 
 | Surface | Peak |
 |---|---|
-| Nose, 10 cm radius | ~2,060 K, ~0.9 MW/m² |
-| Wing leading edge, 3 cm, at 68° | ~1,980 K |
-| Belly, 1 m back | ~1,350 K |
-| Belly, 6–10 m back | ~1,100 K (~1,450 K if its flow trips early) |
-| Back | ~500 K |
+| Nose, 10 cm radius | ~2,050 K, ~0.85 MW/m² |
+| Wing leading edge, 3 cm, at 68° | ~1,970 K; ~2,250 K where it is ~1 cm, near the tip |
+| Belly, 1 m back | ~1,290 K |
+| Belly, 6–10 m back | ~1,000 K (~1,200 K if its flow trips early) |
+| Back | ~440 K |
 
 The blade skin, good to ~4,000 K, non-catalytic and proof against hot
 oxygen, makes it a hot structure that needs nothing after a flight: no
 ablator, no tiles. It even leaves the fighter its sharp edges; a 3 cm
-nose would run ~2,400–2,500 K. At 30° the nose runs ~100 K hotter. The
-climb, leaving the air at Mach 2.2, arcs its rocket burn lower and runs
-the nose to ~2,250 K, hotter than entry. The belly's bay doors
+nose would run ~2,370 K. At 30° the nose runs ~100 K hotter. The climb,
+leaving the air at Mach ~4.2, runs the nose to ~1,830 K, cooler than
+entry. The belly's bay doors
 and gear doors seal against hot gas, as the Shuttle's gear doors did.
 Behind 5 cm of insulation, ~8 kg/m², a belly tank takes ~1.5 MJ/m²
 through the whole entry and the hours after, which boils off ~15–20 kg
 of its ammonia.
 
-**The strip.** At 11.9 t, and at anything up to ~18–19 t, the fighter
+**The strip.** At 11.5 t, and at anything up to ~18–19 t, the fighter
 hovers off it and lands on it vertically: the 30 MW lift fan and the
 nozzle carry its weight with the engine on the rest of the turbopump.
 From 300 m of dirt it takes off at up to ~21.9 t, short of full tanks.
@@ -626,21 +670,20 @@ with Earth's air at the surface thinning faster with height:
 
 | Surface gravity | Orbital speed | Sortie budget | Nose on entry | Landing |
 |---|---|---|---|---|
-| 1.0 g | 7.8 km/s | ~11.5–11.6 t | ~2,220 K | vertical |
-| 1.1 g | 8.6 km/s | ~10.7–10.9 t | ~2,370 K | vertical |
-| 1.2 g | 9.4 km/s | ~9.9–10.0 t | ~2,510 K | vertical |
-| 1.3 g | 10.2 km/s | ~8.7–8.9 t | ~2,650 K | vertical |
-| 1.4 g | 11.0 km/s | ~6.9–7.6 t | ~2,780 K | a runway, or never lands |
-| **1.5 g** | **11.7 km/s** | **~7.4–8.6 t, as much as entry allows** | **2,900 K** | **a runway, or never lands** |
-| 1.6 g | 12.5 km/s | ~0.8–1.0 t, as much as entry allows | 2,900 K | |
-| 1.7 g and up | 13.3 km/s and up | none: brought down, the climb's own propellant runs entry too hot | | |
+| 1.0 g | 7.8 km/s | ~12.2–12.3 t | ~2,230 K | vertical |
+| 1.1 g | 8.6 km/s | ~11.4–11.6 t | ~2,370 K | vertical |
+| 1.2 g | 9.4 km/s | ~10.6–10.8 t | ~2,510 K | vertical |
+| 1.3 g | 10.2 km/s | ~9.6–9.8 t | ~2,650 K | vertical |
+| **1.4 g** | **11.0 km/s** | **~8.2–8.4 t** | **~2,790 K** | **a 200 m roll, or never lands** |
+| 1.5 g | 11.7 km/s | ~5.3–5.6 t | 2,900 K | a runway, or never lands |
+| 1.6 g and up | 12.5 km/s and up | none: brought down, the climb's own propellant runs entry too hot | | |
 
-Landing or not changes the budget by only ~0.1–0.7 t. **About 1.5 g is
-the practical limit**, with most of a day of work down in the air,
-though from 1.4 g its takeoff for the climb, at 15–16 t, wants more than
-300 m of dirt; at 1.6 g entry heat, not the tanks, holds the budget to
-a tonne; beyond, the fighter goes down one way, or refuels on the
-ground. No braking burn helps: the heavier it comes down, the hotter.
+Landing or not changes the budget by only ~0.1–0.3 t. **About 1.4 g is
+the practical limit**, with most of a day of work down in the air; at
+1.5 g its takeoff for the climb, at ~17–18 t, wants a runway and the
+budget falls to ~5 t; from 1.6 g, entry heat leaves it nothing, and the
+fighter goes down one way, or refuels on the ground. No braking burn
+helps: the heavier it comes down, the hotter.
 
 **Water in the gaps.** Water is denser than ammonia, 1.0 t/m³ against
 0.68, and the skin takes hot oxygen anyway, so it was tried in the
@@ -660,7 +703,7 @@ spare, and mass is what binds, so the fighter carries ammonia. Water
 also freezes in a cold tank, and steam eats carbon in the cooling
 passages unless they are skinned too.
 
-On a world harder than ~1.6 g, more than ~12.5 km/s to orbit, there is no
+On a world harder than ~1.5 g, more than ~11.7 km/s to orbit, there is no
 down and back: it goes down one way, or refuels on the ground.
 
 ## Logistics and Austere Operations
@@ -938,14 +981,19 @@ A courier cannot dodge, but it is a hard thing to approach:
 - A real heat-transfer model of the turbopump's blades: the first-order
   one puts ~90 MW/m² on the first stage, and the skin's catalytic
   behaviour doubles or halves it.
-- The fighter's aerodynamics, by CFD once the shape settles: the
-  outer lines exported from `modeling/fighter.py`; vortex-lattice and
-  panel runs (OpenVSP's VSPAERO) for lift, drag due to lift and trim;
-  Euler and RANS (SU2) for maximum lift and where the leading-edge
-  vortices burst, what the slats and canards add, the transonic drag rise
-  and wave drag, the inlets and their diverters, drag above Mach 2 and
-  where the ramjet stops holding level flight, and heating in entry, the
-  canards edge-on to the flow included.
+- The fighter's aerodynamics. SU2 Euler of the airframe (`cfd/`) has
+  set the knife-edged wing's lift, drag due to lift, maximum lift,
+  centres of lift and wave drag, with and without canards, slats in and
+  drooped; RANS of the wing alone (`cfd/rans.py`), round-edged and
+  sharp, is settling what the round edge keeps of its suction. Still to
+  run: the canards deflected, for trim at high angles; the inlets and
+  their diverters, in RANS; drag above Mach 2 and where the ramjet stops
+  holding level flight; heating in entry, the canards edge-on to the
+  flow included.
+- The engine by CFD: the intake and duct's recovery and distortion from
+  Mach 0.5 to the ramjet's 3.5; the fan stage's speed lines at two or
+  three pitches against the meanline's 0.88; the compressor's first and
+  last stages; the lobed mixer's gain.
 - The fighter's equipment beyond first order: built to today's practice
   it would weigh ~3.5 t more, and every tonne of it costs the sortie
   budget ~0.8 t.
