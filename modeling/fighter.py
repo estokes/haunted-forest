@@ -98,7 +98,9 @@ CFT = None
 # the reheat's end, where the swivel nozzle takes its exit: its casing,
 # with a skin, as a solid of revolution.
 SWIVEL = (0.90, 1.70, 19.08)
-_AIR = turbo.load()["air"]
+_ENGINE = turbo.load()
+_AIR = _ENGINE["air"]
+TURBOPUMP_SIZE = turbo.turbopump_size(_ENGINE["turbopump"])
 ENGINE_PROFILE = ([(-0.05, 0.0)] + [(x, r + 0.012) for x, r in turbo.walls(_AIR)[3] if x <= _AIR["reheat"]["x1"] + 1e-9]
                   + [(_AIR["reheat"]["x1"], 0.0)])
 ENGINE_FACE_X = SWIVEL[2] - SWIVEL[1] / 2 - _AIR["reheat"]["x1"]
@@ -127,15 +129,18 @@ EQUIPMENT = {
     # Beside the engine, its turbine's end at the combustor, so that its
     # 4,000 K exhaust has no length of pipe to cross; the power
     # electronics opposite, forward, where cable is all they need.
-    "turbopump":       ("cyl_x", (0.45, 1.40), (ENGINE_FACE_X + _AIR["combustor"]["x0"] - 0.70, 0.64, 0.18), _EQ["turbopump"], (0.85, 0.2, 0.6)),
-    "power_electronics": ("box", (1.20, 0.45, 0.40), (14.37, -0.68, 0.22), _EQ["power_electronics"], (0.9, 0.9, 0.2)),
+    "turbopump":       ("cyl_x", TURBOPUMP_SIZE, (ENGINE_FACE_X + _AIR["combustor"]["x0"] - TURBOPUMP_SIZE[1] / 2, 0.64, 0.18),
+                        _EQ["turbopump"], (0.85, 0.2, 0.6)),
+    "power_electronics": ("box", (1.60, 0.38, 0.36), (14.37, -0.70, 0.32), _EQ["power_electronics"], (0.9, 0.9, 0.2)),
     # The laser along the spine over the engine face, its turret at the
     # front, just aft of the lift fan.
     "fel":             ("box", (3.00, 0.55, 0.40), (13.24, 0.0, 0.66), _EQ["laser"], (0.2, 0.9, 0.3)),
     "fel_director":    ("cyl_z", (0.60, 0.40), (10.92, 0.0, 0.98), _EQ["laser_turret"], (0.1, 1.0, 0.4)),
-    # Stowed beside the engine's belly; the legs swing out to a wide track.
-    "main_gear_l":     ("box", (1.30, 0.40, 0.32), (14.51, -0.66, -0.40), 0, (0.3, 0.3, 0.3)),
-    "main_gear_r":     ("box", (1.30, 0.40, 0.32), (14.51, 0.66, -0.40), 0, (0.3, 0.3, 0.3)),
+    # Stowed in the wing roots, inboard of the bays, as the Mirage 2000's
+    # are: the tyre lying flat aft, its leg forward, swinging down to a
+    # wide track behind the centre of gravity.
+    "main_gear_l":     ("box", (1.30, 0.72, 0.26), (13.10, -1.25, -0.48), 0, (0.3, 0.3, 0.3)),
+    "main_gear_r":     ("box", (1.30, 0.72, 0.26), (13.10, 1.25, -0.48), 0, (0.3, 0.3, 0.3)),
     # Two dust missiles side by side in each wing root, ~2.4 m x 0.18 m and
     # ~90 kg each; doors on the belly, sealed for entry like the Shuttle's
     # gear doors. Mass: doors, ejectors, hot seals.

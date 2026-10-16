@@ -133,3 +133,24 @@ def walls(air):
     outer += nozzle_profile(air)[1:]
     bypass = [(sx, sr), (b["x0"] + TRANSITION, b["r_in"]), (b["x1"], b["r_in"]), (m["x"], m["r_lobes"])]
     return inner, core, bypass, outer
+
+
+# The turbopump's stage length and the gap between its parts, m.
+TP_STAGE = 0.025
+TP_GAP = 0.01
+
+
+def turbopump_parts(tp):
+    """The turbopump's parts along its shaft, forward to aft, as (name,
+    radius, length): slurry pump, generator, reverter, the turbine's
+    stages, whose exhaust leaves the aft end."""
+    rev_r = (tp["reverter"] / (2 * math.pi)) ** (1 / 3)
+    parts = [("slurry_pump", 0.07, 0.12), ("generator", tp["generator_radius"], tp["generator_length"]),
+             ("reverter", rev_r, 2 * rev_r)]
+    return parts + [(f"turbine_{i}", tp["mean_radius"] + b / 2, TP_STAGE) for i, b in enumerate(tp["blades"])]
+
+
+def turbopump_size(tp):
+    """The turbopump's diameter and length, m."""
+    parts = turbopump_parts(tp)
+    return 2 * max(p[1] for p in parts), sum(p[2] for p in parts) + TP_GAP * (len(parts) - 1)
